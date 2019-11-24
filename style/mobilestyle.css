@@ -84,15 +84,21 @@ button{
 
 
 .navigation{
-	border-radius:2em;
+	
 	border-spacing: 0px;
 	width:100%;
 }
-
+#userButton img{
+	 height:90%;
+	 margin-left:auto;
+	 margin-right:auto;
+	 display:block;
+	 margin-top:-0.2em;
+ }
 
 .navigation td {
 	height:5em;
-	border-radius:2em;
+	
 }
 .navigation button {
 	border-radius:0em;
@@ -149,6 +155,11 @@ button{
 	position:fixed;
 	overflow:auto;
 	max-width:100% !important;
+	padding-bottom:50.5em;
+}
+.subnavigation .spacer{
+	height:5.5em;
+	display:block;
 }
 
 .yogList td{

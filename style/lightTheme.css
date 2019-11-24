@@ -2,17 +2,22 @@ body {
     background-color: #efefee;
 }
 
-.copyButtonsContainer button, .responseContainer button, #container button, #sessionTimeoutMessageContainer button, #userButton, #studentButton, #staffButton, #parentButton, #techButton{
+.copyButtonsContainer button, .responseContainer button, #container button, #sessionTimeoutMessageContainer button{
     border-color: #4285f4;
 }
 
-button, #userButton, #studentButton, #staffButton, #parentButton, #techButton, .floatingEditButton,.floatingDebugButton, .floatingHelpButton {
+button, #userButton, #navigation, #studentButton, #staffButton, #parentButton, #techButton, .floatingEditButton,.floatingDebugButton, .floatingHelpButton {
     background-color: #4285f4;
     box-shadow: 2px 2px 10px #888888;
 }
 
 #disclaimer, .homepage_footer, .subnavigation button {
     color: black;
+}
+
+.navigationButton button{
+	border:none;
+	box-shadow:0px 0px 0px #0000 !important;
 }
 
 .red{
@@ -23,14 +28,14 @@ button, #userButton, #studentButton, #staffButton, #parentButton, #techButton, .
     border-color: #2253b7;
 }
 
-.copyButtonsContainer, .responseContainer, #container, #sessionTimeoutMessageContainer, #debugConsoleMessageContainer, #debugConfigMessageContainer, #debugIncludeMessageContainer, #logonAuditPopup {
+.subnavigation, .copyButtonsContainer, .responseContainer, #container, #sessionTimeoutMessageContainer, #debugConsoleMessageContainer, #debugConfigMessageContainer, #debugIncludeMessageContainer, #logonAuditPopup {
     background-color: #F6F6F8;
     box-shadow: 5px 5px 25px #888888;
 }
-#loginPopupContainer{
+#loginPopupContainer, .subNavigation button{
 background-color: #F6F6F8;
 }
-.navigation_selected {
+.navigation_selected{
     background-color: #2253b7 !important;
     border-color: #2253b7 !important;
 }
@@ -82,19 +87,16 @@ button {
 
 
 
- .subnavigation button{
-    background-color: #ffffff;
-    border-color:#ffffff;
-}
+
 
 
 .subnavigation button:hover {
-    background-color: #4285f4 !important;
+    
     border-color: #4285f4 !important;
-    color: white !important;
+    color: black;
 }
 
-.settingsList {
+.settingsList, .subnavigation button:hover {
     background-color: #ebebec;
 }
 
@@ -107,5 +109,6 @@ button {
 .currentPageButtonHighlight {
     background-color: #2253b7 !important;
     color: white !important;
+	font-weight:bold !important;
     border-color:#2253b7 !important;
 }
