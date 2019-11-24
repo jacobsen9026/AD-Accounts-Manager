@@ -1,13 +1,13 @@
 <td  class="navigationButton">
 			
 				<button id="userButton" onclick="showUserDropdown()">
-				Menu
-				
+				<img src="./img/user_avatar.png"/>
+				<text id="loggedInUser"><?php echo $_SESSION["userFirstName"]." ".$_SESSION["userLastName"];?></text>
 				</button>
+				
 	<div id="userDropdown" class="subnavigation" >
 	
 		<?php
-		include("./includes/navigation/consumerButton.php");
 		
 			if(strpos($_SERVER['REQUEST_URI'],"/?")!== false){
 				include("./includes/navigation/user/homeButton.php");
@@ -33,6 +33,6 @@
 		include("./includes/navigation/user/logoutButton.php");
 		
 		?>
-		<br/><br/><br/><br/><br/>
+		<span class="spacer"></span>
 </div>		
 </td>

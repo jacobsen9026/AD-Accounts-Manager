@@ -18,10 +18,9 @@
 			?>
 	
 			<div id="techDropdown" class="subnavigation">
-			
 				<?php
 					
-		include("./includes/navigation/consumerButton.php");
+		
 					include("./includes/navigation/tech/googleButton.php");
 					include("./includes/navigation/tech/googleDriveButton.php");
 					include("./includes/navigation/tech/computersButton.php");

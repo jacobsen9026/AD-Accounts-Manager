@@ -16,9 +16,10 @@
 			</button>
 
 <div id="studentDropdown" class="subnavigation">
+
 	<?php
 	
-		include("./includes/navigation/consumerButton.php");
+		
 		include("./includes/navigation/students/accountStatusButton.php");
 		include("./includes/navigation/students/accountStatusChangeButton.php");
 		include("./includes/navigation/students/googleClassroomButton.php");
@@ -27,7 +28,6 @@
 		include("./includes/navigation/students/newPasswordButton.php");
 		include("./includes/navigation/students/newUserButton.php");
 		?>
-
-	<br/><br/><br/><br/><br/>
+<span class="spacer"></span>
 </div>
 		</td>

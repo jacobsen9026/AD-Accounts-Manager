@@ -12,7 +12,6 @@
 	<?php
 
 		
-		include("./includes/navigation/consumerButton.php");
 		include("./includes/navigation/staff/accountStatusButton.php");
 		if($_SESSION["authenticated_tech"]=="true"){
 			include("./includes/navigation/staff/accountStatusChangeButton.php");
@@ -30,7 +29,7 @@
 	
 	
 	?>
-	<br/><br/><br/><br/><br/>
+	<span class="spacer"></span>
 </div>
 
 		</td>
