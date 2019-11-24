@@ -6,3 +6,6 @@ config/config.json
 *.dll
 web.config
 web.config
+lib/gam-64/oauth2.txt
+lib/gam-64/oauth2service.json
+lib/gam-64/client_secret.json
