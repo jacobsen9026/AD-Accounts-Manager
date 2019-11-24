@@ -35,3 +35,14 @@ IIS
 Apache
 WAMP
 NGINX
+
+# Screenshots
+## Homepage
+![Homepage](https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/homepage.png?raw=true)
+## New Student Creation Page
+![newstudent](https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/newstudent.png?raw=true)
+## One of the Tech Tools Page
+![techtools](https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/techtools.png?raw=true)
+## Mobile-Friendly
+![mobile](https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/mobile.png?raw=true)
+
