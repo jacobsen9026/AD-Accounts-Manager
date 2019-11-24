@@ -68,9 +68,6 @@ if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!
                 $_SESSION["authenticated_power"]="false";
                 $_SESSION["authenticated_admin"]="false";
                 $_SESSION["authenticated_tech"]="false";
-
-                $_SESSION["userLastName"] = $infoBasic[$i]["sn"][0];
-                $_SESSION["userFirstName"] = $infoBasic[$i]["givenname"][0];
             }
         }
         for ($i=0; $i<$infoPower["count"]; $i++)
@@ -82,8 +79,6 @@ if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!
                 $_SESSION["authenticated_power"]="true";
                 $_SESSION["authenticated_admin"]="false";
                 $_SESSION["authenticated_tech"]="false";
-                $_SESSION["userLastName"] = $infoPower[$i]["sn"][0];
-                $_SESSION["userFirstName"] = $infoPower[$i]["givenname"][0];
 
             }
         }
@@ -96,44 +91,43 @@ if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!
                 $_SESSION["authenticated_power"]="true";
                 $_SESSION["authenticated_admin"]="true";
                 $_SESSION["authenticated_tech"]="false";
-                $_SESSION["userLastName"] = $infoAdmin[$i]["sn"][0];
-                $_SESSION["userFirstName"] = $infoAdmin[$i]["givenname"][0];
             }
         }
         for ($i=0; $i<$infoTech["count"]; $i++)
         {
-            //print_r($infoBasic[$i])."<br/><br/><br/>";
+
             if ($username == strtolower($infoTech[$i]["samaccountname"][0])){
                 $passed=true;
                 $_SESSION["authenticated_basic"]="true";
                 $_SESSION["authenticated_power"]="true";
                 $_SESSION["authenticated_admin"]="true";
                 $_SESSION["authenticated_tech"]="true";
-                $_SESSION["userLastName"] = $infoTech[$i]["sn"][0];
-                $_SESSION["userFirstName"] = $infoTech[$i]["givenname"][0];
+                
             }
         }
-        //exit();
+     
 
         if($passed){
-            //echo "authenticated";
-            echo "<div id='authenticated'></div>";
+
 ?>
 <script>reauthenticatedSession();</script>
 
 <?php
-            //exit();
+   
+			
+			
+			$_SESSION["userLastName"] = $infoTech[$i]["sn"][0];
+			$_SESSION["userFirstName"] = $infoTech[$i]["givenname"][0];
+			$_SESSION["username"] = $username;
             file_put_contents("./logs/login.log",$date.",".$time.",".$username."\r\n", FILE_APPEND);
             if(isset($_POST["rememberUsername"])||isset($_POST["rememberMe"])){
-                //echo "remember me";
-                //$_COOKIE["username"] = $username;
+
                 setcookie("username",$username,time() + (86400 * 3650));
             }
             if(isset($_POST["rememberMe"])){
-                //echo "remember me";
+
                 setcookie("token",json_encode(Array(getSIDHash($username),hash("sha256",$_SESSION["authenticated_basic"]),hash("sha256",$_SESSION["authenticated_power"]),hash("sha256",$_SESSION["authenticated_admin"]),hash("sha256",$_SESSION["authenticated_tech"])),time() + (86400 * 3650)));
-                //echo getSIDHash($username);
-                //exit();
+
             }
 
             if($_POST["intent"]!=""){
@@ -199,6 +193,9 @@ if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!
         $_SESSION["authenticated_power"]="true";
         $_SESSION["authenticated_admin"]="true";
         $_SESSION["authenticated_tech"]="true";
+		$_SESSION["userLastName"] = "Admin";
+		$_SESSION["userFirstName"] = "Welcome";
+		$_SESSION["username"] = $username;
 
         file_put_contents("./logs/login.log",$date.",".$time.",".$username."\r\n", FILE_APPEND);
         if(isset($_POST["rememberUsername"])||isset($_POST["rememberMe"])){
