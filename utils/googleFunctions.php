@@ -306,7 +306,7 @@ function addTechDrivePermission ($username,$id,$url){
 function removeTechDrivePermission ($username,$id){
     global $appConfig;
     //include("./config/siteVariables.php");
-    $cmd = "gam user $username@$appConfig['domainName'] delete drivefileacl $id techstaff@$appConfig['domainName']";
+    $cmd = "gam user ".$username."@".$appConfig["domainName"]." delete drivefileacl $id techstaff@".$appConfig["domainName"];
     //echo $Error[0];
     //echo $cmd;
     debug("CMD: ".$cmd);
