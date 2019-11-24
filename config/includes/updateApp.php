@@ -1,15 +1,18 @@
 <?php
 $availableVersion=file_get_contents('https://raw.githubusercontent.com/jacobsen9026/School-Accounts-Manager/master/version.txt');
 if(isset($_POST["updateApp"])){
-	if($appConfig["debugMode"]){
-	$cmd = str_replace("\\", "/",$_SERVER['DOCUMENT_ROOT'])."/lib/git/bin/git.exe clone https://github.com/jacobsen9026/School-Accounts-Manager ".str_replace("\\", "/",$_SERVER['DOCUMENT_ROOT'])."/testClone";
+	if(!$appConfig["debugMode"]){
+	$cmd = "git.exe clone https://github.com/jacobsen9026/School-Accounts-Manager ".str_replace("\\", "/",$_SERVER['DOCUMENT_ROOT']);
  
 	}
 	else{
-		$cmd = str_replace("\\", "/",$_SERVER['DOCUMENT_ROOT'])."/lib/git/bin/git.exe clone --branch dev https://github.com/jacobsen9026/School-Accounts-Manager ".str_replace("\\", "/",$_SERVER['DOCUMENT_ROOT'])."/testClone";
+		$cmd = "git.exe clone --branch dev https://github.com/jacobsen9026/School-Accounts-Manager ".str_replace("\\", "/",$_SERVER['DOCUMENT_ROOT']);
     
+	
 	}
-	   runPowershellCommand($cmd);
+	debug($cmd);
+	   $result = shell_exec($cmd);
+	   debug($result);
 }
 
 if ($availableVersion>$appConfig["version"]){
