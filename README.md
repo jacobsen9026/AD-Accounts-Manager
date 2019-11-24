@@ -21,3 +21,17 @@ I am open to suggestions along the way. Feel free to open an issue with a reques
 1. Other Tech Support related tools
 1. Elegant UI with clean design
 1. Currently on PK-8 implemented
+
+# Requirements
+
+## Server OS
+Windows Client or Server Operating System
+
+## PHP
+PHP 7+
+
+## WebServer
+IIS
+Apache
+WAMP
+NGINX
