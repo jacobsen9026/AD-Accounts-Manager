@@ -14,7 +14,6 @@
 			</button>
 
 <div id="parentDropdown" class="subnavigation">
-<span class="spacer"></span>
 	<?php
 	if ($_SESSION["authenticated_admin"]=="true") {
 		include("./includes/navigation/parents/googleGroupsCheckButton.php");
