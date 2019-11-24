@@ -28,32 +28,33 @@
 
 
 <?php
+/*
 switch ($numberOfButtons){
     case 2:
         echo "<style>
-	.subnavigation{
-		    max-width: 50%;
+	.navigation td, .subnavigation{
+		    width: 50%;
 	}
 </style>";
         break;
     case 3:
         echo "<style>
-	.subnavigation{
-		    max-width: 33%;
+	.navigation td, .subnavigation{
+		    width: 33%;
 	}
 </style>";
         break;
     case 4:
         echo "<style>
-	.subnavigation{
-		    max-width: 25%;
+	.navigation td, .subnavigation{
+		    width: 25%;
 	}
 </style>";
         break;
     case 5:
         echo "<style>
-	.subnavigation{
-		    max-width: 20%;
+	.navigation td, .subnavigation{
+		    width: 20%;
 	}
 </style>";
         break;
@@ -61,6 +62,8 @@ switch ($numberOfButtons){
 
 
 }
+*/
+?>
 
 
 
