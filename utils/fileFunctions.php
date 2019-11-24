@@ -52,6 +52,7 @@ function createNewPage($path){
 
 function saveConfig(){
     global $appConfig;
+	
     ksort($appConfig);
     $dateTime=date("Y-m-d_h-i-s");
     if(!file_exists($_SERVER['DOCUMENT_ROOT']."/config/backup/")){
@@ -63,6 +64,7 @@ function saveConfig(){
 function loadConfig(){
     global $appConfig;
     $appConfig=json_decode(file_get_contents("./config/config.json"),true);
+	$appConfig["version"]=file_get_contents("./version.txt");
      ksort($appConfig);
 }
 

@@ -93,7 +93,13 @@ button{
 	 margin-left:auto;
 	 margin-right:auto;
 	 display:block;
+	 float:none;
 	 margin-top:-0.2em;
+ }
+ #loggedInUser{
+	 width:0px;
+	 height:0px;
+	 display:none;
  }
 
 .navigation td {

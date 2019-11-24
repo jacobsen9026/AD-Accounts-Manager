@@ -2,7 +2,7 @@
 			
 				<button id="userButton" onclick="showUserDropdown()">
 				<img src="./img/user_avatar.png"/>
-				<text id="loggedInUser"><?php echo $_SESSION["userFirstName"]." ".$_SESSION["userLastName"];?></text>
+				<div id="loggedInUser"><?php echo $_SESSION["username"];?></div>
 				</button>
 				
 	<div id="userDropdown" class="subnavigation" >

@@ -253,11 +253,11 @@ input,select{
 
 button{
     -webkit-transition: 0.1s;
-    -webkit-transition-delay: 0.1s;
+   # -webkit-transition-delay: 0.1s;
     -o-transition: 0.1s;
-    -o-transition-delay: 0.1s;
+   # -o-transition-delay: 0.1s;
     -moz-transition: 0.1s;
-    -moz-transition-delay: 0.1s;
+   # -moz-transition-delay: 0.1s;
 
     font-family:'Roboto',sans-serif;
     cursor:pointer;
@@ -496,8 +496,12 @@ p:hover{
 
 }
 #loggedInUser{
+	text-align:left;
+	
+	padding-top:1em;
+	vertical-align:middle;
+	height:100%;
 	width:auto;
-	display:block;
 	    -webkit-transition: 0.5s;
     -o-transition: 0.5s;
     -moz-transition: 0.5s;
@@ -505,15 +509,17 @@ p:hover{
 }
 
 #userButton img{
+	 margin-right:0.25em;
 	 height:90%;
 	 margin-left:0.25em;
-	 display:block;
-	 margin-top:-0.2em;
+	 float:left;
+	 margin-top:0.15em;
  }
 
 
-#userButton:hover, #studentButton:hover, #staffButton:hover, #techButton:hover {
-	font-weight:bold;
+#userButton:hover, #studentButton:hover, #staffButton:hover, #techButton:hover, #parentButton:hover {
+	font-weight:bold !important;
+	background-color:#3c6cce !important;
 }
 #studentDropdown,#userDropdown,#staffDropdown,#techDropdown{
 

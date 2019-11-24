@@ -2,7 +2,9 @@
 function runPowershellCommand($command){
     $cmd = 'Powershell.exe Invoke-Command -ScriptBlock{'.$command.'}';
     debug("CMD: ".$cmd);
-    return explode("\n",shell_exec ($cmd));
+	$result = explode("\n",shell_exec ($cmd));
+	debug($result);
+    return $result;
 
 }
 
