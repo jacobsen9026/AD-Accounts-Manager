@@ -1,5 +1,7 @@
 <td  class="navigationButton">
-		
+			<?php if(isset($_SESSION['authenticated_tech'])){
+            if($_SESSION['authenticated_tech']=="true"){
+				?>
 			<button id="techButton" <?php
 			if($_SESSION["authenticated_tech"]!="true"){
 				echo "style='visibility:hidden;'";
@@ -41,5 +43,8 @@
 			
 			<?php
 }
-?>
+
+			}
+			}
+			?>
 		</td>

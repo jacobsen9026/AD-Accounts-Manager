@@ -2,7 +2,9 @@
 <table id="container">
     <tr>
         <th>
-            School Accounts Manager
+		<?php
+		echo $appConfig["webAppName"];
+		?>
 
         </th>
     </tr>
