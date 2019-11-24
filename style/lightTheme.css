@@ -1,0 +1,111 @@
+body {
+    background-color: #efefee;
+}
+
+.copyButtonsContainer button, .responseContainer button, #container button, #sessionTimeoutMessageContainer button, #userButton, #studentButton, #staffButton, #parentButton, #techButton{
+    border-color: #4285f4;
+}
+
+button, #userButton, #studentButton, #staffButton, #parentButton, #techButton, .floatingEditButton,.floatingDebugButton, .floatingHelpButton {
+    background-color: #4285f4;
+    box-shadow: 2px 2px 10px #888888;
+}
+
+#disclaimer, .homepage_footer, .subnavigation button {
+    color: black;
+}
+
+.red{
+    color:red;
+}
+.copyButtonsContainer button:hover, button:hover{
+    background-color: #2253b7;
+    border-color: #2253b7;
+}
+
+.copyButtonsContainer, .responseContainer, #container, #sessionTimeoutMessageContainer, #debugConsoleMessageContainer, #debugConfigMessageContainer, #debugIncludeMessageContainer, #logonAuditPopup {
+    background-color: #F6F6F8;
+    box-shadow: 5px 5px 25px #888888;
+}
+#loginPopupContainer{
+background-color: #F6F6F8;
+}
+.navigation_selected {
+    background-color: #2253b7 !important;
+    border-color: #2253b7 !important;
+}
+
+
+.editableEmailEntry{
+    background-color:white;
+    box-shadow: 5px 5px 15px #888888;
+}
+
+.floatingPanel{
+    background-color:#444547;
+    border-color:#242527;
+    color:#CFCFCF;
+}
+
+.floatingPanel, .editableEmailEntry, .floatingDebugButton, .floatingConsoleButton{
+    box-shadow: 5px 5px 25px #111111;
+}
+
+#container {
+    -webkit-transition: 0.5s;
+    -webkit-transition-delay: 0.1s;
+    -o-transition: 0.5s;
+    -o-transition-delay: 0.1s;
+    -moz-transition: 0.5s;
+    -moz-transition-delay: 0.1s;
+}
+
+#container:hover {
+    box-shadow: 10px 10px 35px #424242;
+}
+
+
+
+
+.clickable:hover{
+    background-color:#E1E1E1;
+}
+
+
+
+
+button {
+    color: white;
+    overflow: visible
+}
+
+
+
+
+ .subnavigation button{
+    background-color: #ffffff;
+    border-color:#ffffff;
+}
+
+
+.subnavigation button:hover {
+    background-color: #4285f4 !important;
+    border-color: #4285f4 !important;
+    color: white !important;
+}
+
+.settingsList {
+    background-color: #ebebec;
+}
+
+.highlightEditButton, .highlightDebugButton{
+    box-shadow: 0px 0px 50px #4285f4;
+}
+
+
+
+.currentPageButtonHighlight {
+    background-color: #2253b7 !important;
+    color: white !important;
+    border-color:#2253b7 !important;
+}

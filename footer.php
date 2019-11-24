@@ -37,7 +37,7 @@ if(isset($_SESSION['authenticated_tech'])){
 <?php
             if ($appConfig["debugMode"] and $_SESSION["authenticated_tech"]=="true"){
 ?>
-<div title="Debug Mode is On" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick="window.open('/?goto=/config/index.php&config=webAdminSettings#dm_input');" class="floatingDebugButton">
+<div title="Debug Mode is On" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick="window.open('/?goto=/config/index.php#dm_input');" class="floatingDebugButton">
     <img src="/img/warning2.png"/>
 </div>
 <div title="Open Debug Console" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugConsoleContainer").style="visibility:visible";' class="floatingConsoleButton">
@@ -62,42 +62,19 @@ if(isset($_SESSION['authenticated_tech'])){
 
 
 ?>
+<script>
+    onLoad();
+</script>
 
 
 
 
 </div>
 
-
-
-
-<?php
-if($appConfig["installComplete"]){
-    //Load the top menu navigation
-    include("./includes/navigation.php");
-}
-?>
-
-
-<?php
-//Load waiting animation that consumes the screen during operations and debug console.
-include("./includes/pageLoader.php");
-include("./includes/debugConsole.php");
-include("./includes/debugConfig.php");
-
-
-
-if($_SESSION["authenticated_basic"]=="true"){
-    include("./includes/sessionTimeoutWarning.php");
-}
-
-
-?>
-
 <?php
 if ($appConfig["debugMode"] and $_SESSION["authenticated_tech"]=="true"){
-    include("./includes/debugInclude.php");
-}
+     include("./includes/debugInclude.php");
+    }
 ?>
 
 
@@ -111,34 +88,5 @@ Updated: October 2019
 </body>
 
 </html>
-<script src="/scripts/navigationScripts.js"></script>
-<script src="/scripts/otherScripts.js"></script>
-<script src="/scripts/auth.js"></script>
-
-<script src="/scripts/js-toast-master/toast.js"></script>
-<script src="/lib/jquery.min.js"></script>
-<script src="/lib/jquery.plugin.js"></script>
-
-
-
-
-
-        <script type="text/javascript">
-    var timeoutTimer;
-    function startSessionTimeoutTimer(){
-        timer=setTimeout(function(){showSessionTimeoutWarningMessege(); }, <?php echo (($appConfig["sessionTimeout"]*1000)-(($appConfig["sessionTimeout"]*1000)*.2));?>);
-    }
-    function showSessionTimeoutWarningMessege(){
-        blurPage();
-        document.getElementById("sessionTimeoutWarningContainer").style="visibility:visible";
-        timeoutTimer=setTimeout(function(){showSessionTimedOutMessege(); },<?php echo (($appConfig["sessionTimeout"]*1000)*.2);?>);
-    }
-</script>
-<?php if (isset($_SESSION["authenticated_basic"]) && $_SESSION["authenticated_basic"]=="true"){ ?>
-<script>startSessionTimeoutTimer()</script>
-<?php } ?>
-<script>
-    onLoad();
-</script>
 
 

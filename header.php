@@ -88,19 +88,15 @@ if(isset($_POST["theme"])){
 }
 
 //Check to make sure user is logged in
-if(!isset($_SESSION['authenticated_basic'])){
-
-    $_SESSION['authenticated_basic']=false;
-    if(isset($_COOKIE["token"])){
-            runAutoLogon("");
+        if(!isset($_SESSION['authenticated_basic'])){
+            $_SESSION['authenticated_basic']=false;
         }
-}
 
 ?>
 <html>
     <head>
 
-        <title>SIF Branchburg Accounts Manager</title>
+        <title>School Accounts Manager</title>
 
         <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
@@ -117,7 +113,30 @@ if(!isset($_SESSION['authenticated_basic'])){
 
         ?>
 
+        <script src="/scripts/navigationScripts.js"></script>
+        <script src="/scripts/otherScripts.js"></script>
+        <script src="/scripts/auth.js"></script>
 
+        <script src="/scripts/js-toast-master/toast.js"></script>
+        <script src="/lib/jquery.min.js"></script>
+        <script src="/lib/jquery.plugin.js"></script>
+
+
+
+
+
+
+        <script type="text/javascript">
+            var timeoutTimer;
+            function startSessionTimeoutTimer(){
+                timer=setTimeout(function(){showSessionTimeoutWarningMessege(); }, <?php echo (($appConfig["sessionTimeout"]*1000)-(($appConfig["sessionTimeout"]*1000)*.2));?>);
+            }
+            function showSessionTimeoutWarningMessege(){
+                blurPage();
+                document.getElementById("sessionTimeoutWarningContainer").style="visibility:visible";
+                timeoutTimer=setTimeout(function(){showSessionTimedOutMessege(); },<?php echo (($appConfig["sessionTimeout"]*1000)*.2);?>);
+            }
+        </script>
 
 
 
@@ -125,12 +144,33 @@ if(!isset($_SESSION['authenticated_basic'])){
     </head>
 
 
-    <body>
+    <body <?php if (isset($_SESSION["authenticated_basic"]) && $_SESSION["authenticated_basic"]=="true"){ ?> onload="startSessionTimeoutTimer();"<?php } ?> >
 
 
 
 
+        <?php
+        if($appConfig["installComplete"]){
+            //Load the top menu navigation
+            include("./includes/navigation.php");
+        }
+        ?>
 
+
+        <?php
+        //Load waiting animation that consumes the screen during operations and debug console.
+        include("./includes/pageLoader.php");
+        include("./includes/debugConsole.php");
+        include("./includes/debugConfig.php");
+        
+
+
+        if($_SESSION["authenticated_basic"]=="true"){
+            include("./includes/sessionTimeoutWarning.php");
+        }
+
+
+        ?>
         <div id="wrapper" class=''>
 
 
