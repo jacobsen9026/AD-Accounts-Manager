@@ -1,5 +1,6 @@
 <?php
 $availableVersion=file_get_contents('https://raw.githubusercontent.com/jacobsen9026/School-Accounts-Manager/master/version.txt');
+/*
 if(isset($_POST["updateApp"])){
 	if(!$appConfig["debugMode"]){
 	$cmd = "git.exe clone https://github.com/jacobsen9026/School-Accounts-Manager ".str_replace("\\", "/",$_SERVER['DOCUMENT_ROOT']);
@@ -14,8 +15,9 @@ if(isset($_POST["updateApp"])){
 	   $result = shell_exec($cmd);
 	   debug($result);
 }
+*/
 
-if ($availableVersion>$appConfig["version"]){
+if (floatval($availableVersion)>floatval($appConfig["version"])){
 ?>
  <div class="shortSettingsContainer">
         <form action="<?php echo $pageURL."#ap_input";?>" method="post">
@@ -30,7 +32,8 @@ if ($availableVersion>$appConfig["version"]){
 
                     <td>
                         Current Version:<?php echo $appConfig["version"];?><br/>
-						Available Version:<?php echo $availableVersion;?>
+						Available Version:<?php echo $availableVersion;?><br/><br/>
+						<a href="https://github.com/jacobsen9026/School-Accounts-Manager/archive/master.zip">Download</a>
                     </td>
                 </tr>
                 <tr>
@@ -46,9 +49,10 @@ if ($availableVersion>$appConfig["version"]){
 
             </table>
             <br/>
+			<!--
 			<input name="updateApp" value="updateApp" hidden/>
             <button id="ap_input" type="submit"  value="Update Admin Password">Update App to Latest <?php if($appConfig["debugMode"]){echo "Dev";}?> Version</button><br/>
-
+-->
         </form>
     </div>
 	
