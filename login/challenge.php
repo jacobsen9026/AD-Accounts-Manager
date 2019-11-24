@@ -1,13 +1,19 @@
-<br/>
-<br/>
-<br/>
+
 
 <?php
+//echo "start Challenge";
+//exit();
+session_start();
 $date=date("Y/m/d");
 $time=date("h:i:s");
 
 if(!isset($_POST["rememberUsername"])){
     setcookie("username", "", time() - 3600);
+}
+if(!isset($_POST["rememberMe"])){
+    setcookie("token", "", time() - 3600);
+}else{
+    runAutoLogon($_POST["password"]);
 }
 
 if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!="" && $_POST['password']!= "" && extension_loaded("ldap") && $_POST['username']!="admin"){
@@ -30,10 +36,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!
     ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
 
     $bind = @ldap_bind($ldap, $ldaprdn, $password);
-    //$bind = @ldap_bind($ldap);
-    //echo $adServer;
-    //echo $ldaprdn;
-    //exit();
+
     if ($bind) {
         $filter="(sAMAccountName=$username)";
         $result = ldap_search($ldap,$distinguishedName,$filter);
@@ -48,16 +51,12 @@ if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!
         $resultPower = ldap_search($ldap,$distinguishedName,$filterPower);
         $resultAdmin = ldap_search($ldap,$distinguishedName,$filterAdmin);
         $resultTech = ldap_search($ldap,$distinguishedName,$filterTech);
-
-
-        //ldap_sort($ldap,$result,"sn");
         $infoBasic = ldap_get_entries($ldap, $resultBasic);
         $infoPower = ldap_get_entries($ldap, $resultPower);
         $infoAdmin = ldap_get_entries($ldap, $resultAdmin);
         $infoTech = ldap_get_entries($ldap, $resultTech);
 
-        //print_r($info);
-        echo "<br/><br/><br/><br/>";
+        //echo "<br/><br/><br/><br/>";
         $passed=false;
 
         for ($i=0; $i<$infoBasic["count"]; $i++)
@@ -125,16 +124,17 @@ if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!
 <?php
             //exit();
             file_put_contents("./logs/login.log",$date.",".$time.",".$username."\r\n", FILE_APPEND);
-            if(isset($_POST["rememberUsername"])){
+            if(isset($_POST["rememberUsername"])||isset($_POST["rememberMe"])){
                 //echo "remember me";
-                $_COOKIE["username"] = $username;
-                setcookie("username",$username,time() + (86400 * 3650),"/");
-
-
-
+                //$_COOKIE["username"] = $username;
+                setcookie("username",$username,time() + (86400 * 3650));
             }
-            //exit();
-            //echo "<br/><br/>Passed<br/><br/>";
+            if(isset($_POST["rememberMe"])){
+                //echo "remember me";
+                setcookie("token",json_encode(Array(getSIDHash($username),hash("sha256",$_SESSION["authenticated_basic"]),hash("sha256",$_SESSION["authenticated_power"]),hash("sha256",$_SESSION["authenticated_admin"]),hash("sha256",$_SESSION["authenticated_tech"])),time() + (86400 * 3650)));
+                //echo getSIDHash($username);
+                //exit();
+            }
 
             if($_POST["intent"]!=""){
 
@@ -143,7 +143,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!
     window.location="/?goto=<?php echo $_POST['intent']; ?>";
 </script>
 <?php
-            }else{
+                                    }else{
 
 ?>
 <script>
@@ -187,38 +187,55 @@ if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!
 
 
 if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!="" && $_POST['password']!= "" && strtolower($_POST['username']) == "admin"){
-	
+    $username = strtolower($_POST['username']);
+    //Fall back in case LDAP authentication isn't working
+    //       echo "admin";
 
-        //Fall back in case LDAP authentication isn't working
-//       echo "admin";
-
-        if(hash("sha256",$_POST["password"])==$appConfig['adminPassword']){
+    if(hash("sha256",$_POST["password"])==$appConfig['adminPassword']){
 
 
-            file_put_contents("./logs/login.log",$date.",".$time.",".$username."\n", FILE_APPEND);
 
-            $_SESSION["authenticated_basic"]="true";
-            $_SESSION["authenticated_power"]="true";
-            $_SESSION["authenticated_admin"]="true";
-            $_SESSION["authenticated_tech"]="true";
+        $_SESSION["authenticated_basic"]="true";
+        $_SESSION["authenticated_power"]="true";
+        $_SESSION["authenticated_admin"]="true";
+        $_SESSION["authenticated_tech"]="true";
 
-            if($_POST["intent"]!=""){
-                //header( 'Location: /?goto='.$_POST['intent'] );
+        file_put_contents("./logs/login.log",$date.",".$time.",".$username."\r\n", FILE_APPEND);
+        if(isset($_POST["rememberUsername"])||isset($_POST["rememberMe"])){
+            //echo "remember me";
+            //$_COOKIE["username"] = $username;
+            setcookie("username",$username,time() + (86400 * 3650));
+            //echo $username;
+            //echo $_COOKIE["username"];
+            //phpinfo();
+            //exit();
+        }
+        if(isset($_POST["rememberMe"])){
+            //echo "remember me";
+
+            setcookie("token",json_encode(Array(hash("sha256",$_POST["password"]),hash("sha256",$_SESSION["authenticated_basic"]),hash("sha256",$_SESSION["authenticated_power"]),hash("sha256",$_SESSION["authenticated_admin"]),hash("sha256",$_SESSION["authenticated_tech"]))) ,time() + (86400 * 3650));
+            //echo "Set Cookie";
+            //exit();
+        }
+
+        if($_POST["intent"]!=""){
+            //header( 'Location: /?goto='.$_POST['intent'] );
 ?>
 <script>
     window.location="/?goto=<?php echo $_POST['intent']; ?>";
 </script>
 <?php
-            }else{
-                //header( 'Location: /' ) ;
+        }else{
+            //header( 'Location: /' ) ;
 ?>
 <script>
     window.location="/";
 </script>
 <?php
-            }
         }
-    } 
+    }
+}
+
 ?>
 
 
