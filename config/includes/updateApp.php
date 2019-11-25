@@ -1,59 +1,66 @@
 <?php
 $availableVersion=file_get_contents('https://raw.githubusercontent.com/jacobsen9026/School-Accounts-Manager/master/version.txt');
-/*
-if(isset($_POST["updateApp"])){
-	if(!$appConfig["debugMode"]){
-	$cmd = "git.exe clone https://github.com/jacobsen9026/School-Accounts-Manager ".str_replace("\\", "/",$_SERVER['DOCUMENT_ROOT']);
- 
+
+if(isset($_POST["updateApp"])){	   
+	$zip = new ZipArchive;
+	if(!file_exists("./temp")){
+		mkdir("./temp");
 	}
-	else{
-		$cmd = "git.exe clone --branch dev https://github.com/jacobsen9026/School-Accounts-Manager ".str_replace("\\", "/",$_SERVER['DOCUMENT_ROOT']);
-    
+	copy ("https://github.com/jacobsen9026/School-Accounts-Manager/archive/master.zip", "./temp/update.zip");
 	
+	$res = $zip->open("./temp/update.zip");
+	//var_export($res);
+	//exit();
+	if ($res === TRUE) {
+		$zip->extractTo('./update');
+		$zip->close();
+		//exit();
+		recurse_copy ("./update/School-Accounts-Manager-master","./");
+		//echo 'ok';
+		//exit();
 	}
-	debug($cmd);
-	   $result = shell_exec($cmd);
-	   debug($result);
+	//unlink("/temp/update.zip");
+	delete_directory("./temp");
+	delete_directory("./update");
+	loadConfig();
+	$appConfig["configuredVersion"]=$appConfig["version"];
+	saveConfig();
 }
-*/
+
 
 if (floatval($availableVersion)>floatval($appConfig["version"])){
 ?>
  <div class="shortSettingsContainer">
-        <form action="<?php echo $pageURL."#ap_input";?>" method="post">
-            <table  class="settingsList">
-                <tr>
-                    <th>
+        
+            
+        <div  class="settingsList">
+		<div>
+                
+                    <h3>
                         Update the Application
-                    </th>
-
-                </tr>
-                <tr>
-
-                    <td>
-                        Current Version:<?php echo $appConfig["version"];?><br/>
+                    </h3>
+Current Version:<?php echo $appConfig["version"];?><br/>
 						Available Version:<?php echo $availableVersion;?><br/><br/>
-						<a href="https://github.com/jacobsen9026/School-Accounts-Manager/archive/master.zip">Download</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <?php
+						<?php
 
                         if(isset($_POST["updateApp"])){
                             echo"<div class='alert'>Application Updated Succefully!</div>";
                         }
                         ?>
-                    </td>
-                </tr>
+                </div>
+                
+           
+				<div>
+			
+				Update Application<br/><br/><input type="checkbox" name="updateApp" value="updateApp" /><br/><br/>
+            <button id="ap_input" type="submit"  value="Update App">Submit</button><br/>
 
-            </table>
-            <br/>
-			<!--
-			<input name="updateApp" value="updateApp" hidden/>
-            <button id="ap_input" type="submit"  value="Update Admin Password">Update App to Latest <?php if($appConfig["debugMode"]){echo "Dev";}?> Version</button><br/>
--->
-        </form>
+				
+				</div>
+
+            </div>
+			
+		
     </div>
 	
 <?php

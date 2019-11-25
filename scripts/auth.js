@@ -136,7 +136,9 @@ function lockSession(){
 
     console.log("Lock Broadcast Sent");
     lockSessionEvent.postMessage('lockSession');
-}function password_onkeypress(event){
+}
+
+function password_onkeypress(event){
                 if (event.keyCode == 13 || event.which == 13){
                     reauthenticateSession();
                 }

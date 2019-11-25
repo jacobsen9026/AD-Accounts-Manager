@@ -1,11 +1,15 @@
 
-.htaccess
-config/config.json
+tech/computers/termsrv/win10-1809.dll
+tech/computers/termsrv/win10-1903.dll
+tech/computers/termsrv/win10.dll
 *.ps1
-*.dll
-*.dll
-web.config
-web.config
+config/config.json
+tech/computers/termsrv/new.dll
+tech/computers/termsrv/old.dll
+tech/computers/termsrv/old_new.dll
+tech/computers/termsrv/win10-1703.dll
+tech/computers/termsrv/win10-1803.dll
+tech/computers/termsrv/win10-1809-2.dll
+.htaccess
 lib/gam-64/oauth2.txt
-lib/gam-64/oauth2service.json
-lib/gam-64/client_secret.json
+web.config
