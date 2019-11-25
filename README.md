@@ -40,6 +40,12 @@ Apache
 WAMP
 NGINX
 
+
+# Installation
+
+Pleae see the install wiki page [here](https://github.com/jacobsen9026/School-Accounts-Manager/wiki/Installation).
+
+
 # Screenshots
 ## Homepage
 ![Homepage](https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/homepage.png?raw=true)
