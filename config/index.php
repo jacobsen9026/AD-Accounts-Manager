@@ -10,6 +10,15 @@ if(isset($_GET["config"])){
 
 
 $views = getViews("./config");
+foreach($views as $view){
+	$viewFile = getViewFiles("./config/views/".$view)[0];
+	$viewVariable = explode(".",$viewFile)[0];
+	$search[]="&config=".$viewVariable;
+	if($viewVariable==$config){
+		$currentView=$view;
+	//echo $currentView;
+	}
+}
 //var_export($views);
 debug($views);
 ?>
@@ -34,10 +43,10 @@ debug($views);
     <?php
     debug($config);
 	include("./config/includes/configController.php");
-    if(file_exists("./config/views/".$config.".php")){
+    if(file_exists("./config/views/".$currentView."/".$config.".php")){
         debug("File Exists");
 		
-        include("./config/views/".$config.".php");
+        include("./config/views/".$currentView."/".$config.".php");
 		?>
 		<tr>
 			<td>
