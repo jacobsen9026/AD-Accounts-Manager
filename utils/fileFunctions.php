@@ -20,6 +20,33 @@ function recurse_copy($src,$dst) {
     } 
     closedir($dir); 
 }
+function getViews($path){
+	$views = scandir($path."/views/");
+	$folders = Array();
+	foreach ($views as $folder){
+		if ($folder!="." and $folder != ".." and strpos($folder ,".")==null){
+			$folders[]=$folder;
+			//echo $folder;
+		}
+		
+	}
+	return $folders;
+		
+}
+
+function getViewFiles($viewPath){
+	$views = scandir($viewPath);
+	$files = Array();
+	foreach ($views as $file){
+		if ($file!="." and $file != ".." and strpos($file ,".")!=null){
+			$files[]=$file;
+			//echo $folder;
+		}
+		
+	}
+	return $files;
+		
+}
 
 function auditLogon($username){
 	$dir="./logs/";

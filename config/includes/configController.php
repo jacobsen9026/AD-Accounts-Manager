@@ -43,6 +43,21 @@ if(isset($_POST["testEmailTo"]) and trim($_POST["testEmailTo"])!=""){
 }
 
 
+if(isset($_FILES["oauth2_txt"])){
+	
+	debug($_FILES);
+	if(file_exists("./lib/gam-64/oauth2.txt")){
+		if (isset($_POST["overwrite"])){
+		
+			
+		   move_uploaded_file($_FILES["oauth2_txt"]["tmp_name"], "./lib/gam-64/oauth2.txt");
+		}
+	}else{
+   move_uploaded_file($_FILES["oauth2_txt"]["tmp_name"], "./lib/gam-64/oauth2.txt");
+	}
+}
+
+
 
 
 

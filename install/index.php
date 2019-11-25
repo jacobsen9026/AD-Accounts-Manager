@@ -12,7 +12,30 @@ if(isset($_POST["complete_install"])){
 <?php
 }
 
-
+function isGAMConfigured(){
+		$result=runGAMCommand("info domain")[0];
+		debug(strpos($result,"ID"));
+		//echo $result;
+	if(strpos($result,"ID")>0){
+		return true;
+	}
+	return false;
+	
+}
+function isGAMAuthorized(){
+	
+	if(file_exists("./lib/gam-64/ouath2.txt")){
+		return true;
+	}
+	return false;
+}
+function isGAMCredentialReady(){
+	
+	if(file_exists("./lib/gam-64/client_secret.json") and file_exists("./lib/gam-64/oaut2service.json")){
+		return true;
+	}
+	return false;
+}
 
 function isGitAvailable(){
 	$result=shell_exec("git");
@@ -22,162 +45,33 @@ function isGitAvailable(){
 	return false;
 }
 
+function isPowershellAvailable(){
+	$result=shell_exec("powershell.exe /?");
+	if(strpos($result,"-Version")>0){
+		return true;
+	}
+	return false;
+	
+}
+
+function isPowershellADAvailable(){
+	$result=shell_exec("git");
+	if(strpos($result,"-Version")>0){
+		return true;
+	}
+	return false;
+	
+}
+
 
 
 if (isset($_GET["advancedConfig"])){
-	include("./config/includes/configController.php");
+	//include("./config/includes/configController.php");
 	include("./config/index.php");
+	//phpinfo();
 	
 }else{
-?>
-
-<table id="container">
-    <tr>
-        <th>
-            Installation
-    </tr>
-    <tr>
-        <td>
-
-
-            <br/>
-            <table class="settingsList">
-			<!--
-				<tr>
-                    <td>Git Available</td>
-                    <td>
-                        <?php
-                       /* if(isGitAvailable()){
-                            $gitChecked=true;
-                            echo "Yes";
-                        }else{
-                            echo "No";
-                        }
-						*/
-                        ?>
-                    </td>
-
-                </tr>
-				-->
-                <tr>
-                    <td>LDAP Extension Enabled</td>
-                    <td>
-                        <?php
-                        if(extension_loaded("ldap")){
-                            $ldapChecked=true;
-                            echo "Yes";
-                        }else{
-                            echo "No";
-                        }
-                        ?>
-                    </td>
-
-                </tr>
-                <tr>
-                    <td>Administrator Privelege</td>
-                    <td>
-                        <?php
-                        if(testAdministrator()){
-                            $adminChecked=true;
-                            echo "Yes";
-                        }else{
-                            echo "<text class='red'>No</text>";
-                        }
-                        ?>
-                    </td>
-
-                </tr>
-
-                <tr>
-
-                    <td>Admin Password</td>
-                    <td>
-                        <?php
-                        if(isset($appConfig["adminPassword"]) and $appConfig["adminPassword"] !=''){
-                            $passwordChecked=true;
-                            echo "Yes";
-                        }else{
-                            echo "<text class='red'>No</text>";
-                        }
-                        ?>
-                    </td>
-
-                </tr>
-				<tr>
-
-                    <td>Domain Name</td>
-                    <td>
-                        <?php
-                        if(isset($appConfig["domainName"]) and $appConfig["domainName"]!=''){
-                            $domainNameChecked=true;
-                            echo "Yes";
-                        }else{
-                            echo "<text class='red'>No</text>";
-                        }
-                        ?>
-                    </td>
-
-                </tr>
-				<tr>
-
-                    <td>Web App Name</td>
-                    <td>
-                        <?php
-                        if(isset($appConfig["webAppName"]) and $appConfig["webAppName"]!=''){
-                            $webAppNameChecked=true;
-                            echo "Yes";
-                        }else{
-                            echo "<text class='red'>No</text>";
-                        }
-                        ?>
-                    </td>
-
-                </tr>
-
-
-            </table>
-            <br/><br/>
-        </td>
-    </tr>
-	<form action="/?goto=/config/index.php&advancedConfig=true" method="post">
-	<tr>
-				
-                <td>
-                    <input type="text" name="advancedConfig" value="true" hidden />
-                        <button type="submit">
-                            Initial Config
-                        </button>
-						<br/><br/>
-				</td>
-                   
-	</tr>
-	 </form>
-    <?php
-
-    if($webAppNameChecked and $domainNameChecked and $passwordChecked and $adminChecked and !$appConfig["installComplete"]){
-    ?>
-
-    <tr>
-        <td>
-            <?php 
-			
-			
-			if(!$ldapChecked){
-        echo "<strong>You won't be able to log in via<br/>Active Directory/LDAP credentials.<br/><br/>Only the admin user will work.</strong><br/><br/><br/>";
-    }
-	
-            ?>
-            <form action="<?php echo $pageURL;?>" method="post">
-
-                All Checks Passed<br/><br/>
-                <input name="complete_install" value="yes" hidden/>
-                <button  type="submit" value="Complet Install">Finish</button>
-            </form>
-        </td>
-    </tr>
-</table>
-<?php
-    }
+include ("./install/welcome.php");
 	}
 ?>
 

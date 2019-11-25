@@ -1,7 +1,6 @@
-
     <tr>
         <th>
-            Web Admin Settings
+            Email Settings
         </th>
     </tr>
     <tr>
@@ -14,19 +13,22 @@
             //include("./config/includes/staffEmailGroups.php");
             //include("./config/includes/parentEmailGroups.php");
             //include("./config/includes/adminUsernames.php");
-            //include("./config/includes/adminEmails.php");
+            include("./config/includes/adminEmails.php");
+            include("./config/includes/emailFromName.php");
+            include("./config/includes/emailFromAddress.php");
+            include("./config/includes/welcomeEmailReceivers.php");
+            include("./config/includes/emailTest.php");
             //include("./config/includes/accessLevels.php");
             //include("./config/includes/domainName.php");
             //include("./config/includes/domainController.php");
             //include("./config/includes/domainNetbios.php");
-            include("./config/includes/resetAdminPassword.php");
-            include("./config/includes/updateApp.php");
+            //include("./config/includes/resetAdminPassword.php");
             //include("./config/includes/sessionTimeout.php");
-            include("./config/includes/websiteFQDN.php");
+            //include("./config/includes/websiteFQDN.php");
             //include("./config/includes/redirectHTTP.php");
-            include("./config/includes/debugMode.php");
-            //include("./config/includes/editWelcomeEmail.php");
-            include("./config/includes/logonAudit.php")
+            //include("./config/includes/debugMode.php");
+            include("./config/includes/editWelcomeEmail.php");
+            //include("./config/includes/logonAudit.php")
             ?>
 
 
@@ -39,4 +41,8 @@
 
         </td>
     </tr>
-    
+    <tr>
+        <td>
+        </td>
+    </tr>
+

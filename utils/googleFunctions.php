@@ -1,8 +1,12 @@
 <?php
 function runGAMCommand($command){
-    $cmd = 'gam '.$command;
+    $cmd = $_SERVER["DOCUMENT_ROOT"].'/lib/gam-64/gam.exe '.$command;
+	//echo $cmd;
     debug("CMD: ".$cmd);
-    return explode("\n",shell_exec ($cmd));
+	//debug(shell_exec ($cmd));
+	$result = explode("\n",shell_exec ($cmd));
+	debug($result);
+    return $result;
 }
 
 function doesGAUserExist($username) {

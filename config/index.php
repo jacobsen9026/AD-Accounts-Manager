@@ -6,18 +6,28 @@ if(isset($_GET["config"])){
 }else{
     $config="webApplicationSettings";
 }
+
+
+
+$views = getViews("./config");
+//var_export($views);
+debug($views);
 ?>
 
 		
-
+<form action="<?php echo $pageURL;?>" method="post" enctype="multipart/form-data">
 <table id="container">
-<form action="<?php echo $pageURL;?>" method="post">
+
     <tr>
+	
         <td>
+		
             <?php
             include("./config/includes/configNavBar.php");
             ?>
+			
         </td>
+		
 		</tr>
 
 	
@@ -34,21 +44,25 @@ if(isset($_GET["config"])){
 				<button type="submit">Update Settings</button><br/>
 			</td>
 		</tr>
-		</form>
+		
 		<?php
     }
-	if(isset($_GET["advancedConfig"])){
-    ?>
-	<form action="/" method="post">
-	<tr>
-	<td>
-	<br/>
-		<button type="submit">Go Back</button>
-	</td>
-	</tr>
-	
+	?>
+	</form>
 	<?php
+	if(isset($_GET["advancedConfig"])){
+		?>
+		
+		<tr>
+		<td>
+		<br/>
+		<a href="/">
+			<button type="button">Go Back</button>
+			</a>
+		</td>
+		</tr>
+		<?php
 	}
 	?>
 </table>
-
+</form>
