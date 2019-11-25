@@ -26,6 +26,16 @@ input,select{
 .floatingPanel{
 	width:95%;
 }
+
+.debugFloatingToolsContainer{
+	position:fixed;	
+    right:0em;
+    bottom:1em;
+	height:3.5em;
+	width:100%;
+	text-align:center;
+}
+
 .sandboxBanner{
 	width:100%;	
 	margin:0;
@@ -160,11 +170,9 @@ button{
 	height:0em;
 }
 .subnavigation {
-	top:5.5em;
 	position:fixed;
-	overflow:auto;
+	overflow-y:auto;
 	max-width:100% !important;
-	padding-bottom:50.5em;
 }
 .subnavigation .spacer{
 	height:5.5em;

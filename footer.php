@@ -23,40 +23,26 @@ if(strpos($pageURL,"/editor")==false){
 }
 
 if(isset($_SESSION['authenticated_tech'])){
-    if($_SESSION["authenticated_tech"]=="true"){
-        if(strpos($pageURL,"/editor")==false){
+	if($_SESSION["authenticated_tech"]=="true"){
+		if ($appConfig["debugMode"] and $_SESSION["authenticated_tech"]=="true"){
 ?>
-
-
-<div title="Edit this page" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick="window.open('/icecoder');" class="floatingEditButton">
-    <img src="/img/border-color.png"/>
-</div>
-
-
-
-<?php
-            if ($appConfig["debugMode"] and $_SESSION["authenticated_tech"]=="true"){
-?>
-<div title="Debug Mode is On" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick="window.open('/?goto=/config/index.php#dm_input');" class="floatingDebugButton">
-    <img src="/img/warning2.png"/>
-</div>
-<div title="Open Debug Console" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugConsoleContainer").style="visibility:visible";' class="floatingConsoleButton">
-    <img src="/img/console.png"/>
-</div>
-<div title="Open Config Debug" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugConfigContainer").style="visibility:visible";' class="floatingConfigButton">
-    <img src="/img/config.png"/>
-</div>
-<div title="Open Config Includes" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugIncludeContainer").style="visibility:visible";' class="floatingIncludeButton">
-    <img src="/img/console.png"/>
+<div class="debugFloatingToolsContainer">
+	<div title="Debug Mode is On" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick="window.open('/?goto=/config/index.php#dm_input');" class="floatingButton">
+		<img src="/img/warning2.png"/>
+	</div>
+	<div title="Open Debug Console" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugConsoleContainer").style="visibility:visible";' class="floatingButton">
+		<img src="/img/console.png"/>
+	</div>
+	<div title="Open Config Debug" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugConfigContainer").style="visibility:visible";' class="floatingButton">
+		<img src="/img/config.png"/>
+	</div>
+	<div title="Open Config Includes" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugIncludeContainer").style="visibility:visible";' class="floatingButton">
+		<img src="/img/console.png"/>
+	</div>
 </div>
 <?php
-            }
-
-
-
-
-        }
-    }
+		}
+	}
 }
 
 
