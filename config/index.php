@@ -42,7 +42,7 @@ debug($views);
 	
     <?php
     debug($config);
-	include("./config/includes/configController.php");
+	include("./config/configController.php");
     if(file_exists("./config/views/".$currentView."/".$config.".php")){
         debug("File Exists");
 		

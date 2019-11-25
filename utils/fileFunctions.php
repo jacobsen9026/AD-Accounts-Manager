@@ -97,9 +97,9 @@ function createNewPage($path){
 
 function initializeConfig(){
 	global $appConfig;
-	$appConfig["installComplete"]=true;
     $appConfig["sessionTimeout"]=1200;
 	$appConfig["configuredVersion"]=file_get_contents("./version.txt");
+	$appConfig["domainNetBIOS"]=$_SERVER['USERDOMAIN'];
 	saveConfig();
 }
 

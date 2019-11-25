@@ -24,7 +24,7 @@
         <td>
 		<?php
 		
-		if(isset($appConfig["homepageMessage"])){
+		if(isset($appConfig["homepageMessage"]) and $appConfig["homepageMessage"][0]!=""){
 			echo "<br/>";
 			foreach ($appConfig["homepageMessage"] as $line){
 			echo $line."<br/>";

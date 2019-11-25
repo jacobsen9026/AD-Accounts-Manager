@@ -72,7 +72,7 @@
     <table id="container">
         <tr>
             <th>
-                Install RDP Multi-User Hack
+                Install RDP Multi-User Patch
             </th>
         </tr>
         <tr>

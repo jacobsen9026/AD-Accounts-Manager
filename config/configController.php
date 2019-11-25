@@ -1,24 +1,32 @@
 <?php
 $configSingleLineOptions = Array("emailFromName","emailFromAddress",
-"domainName","domainController","webAppName");
+"domainName","domainController","webAppName","domainNetBIOS");
+
+
+
+
+$configMultiLineOptions = Array("adminUsernames", "parentEmailGroups", 
+"staffEmailGroups", "welcomeEmailReceivers", "adminUsernames",
+"adminEmails","homepageMessage");
+
+
 
 
 foreach ($configSingleLineOptions as $option){
 	if(isset($_POST[$option])){
+		debug("saving ".$option);
 		$appConfig[$option] = trim($_POST[$option]) ;
 
 		saveConfig();
 	}
 }
 
-$configMultiLineOptions = Array("adminUsernames", "parentEmails", 
-"staffEmails", "welcomeEmailReceivers", "adminUsernames",
-"adminEmails","homepageMessage");
-
 
 foreach ($configMultiLineOptions as $option){
 	if(isset($_POST[$option])){
+		debug("saving ".$option);
 		$appConfig[$option] = explode("\r\n",trim($_POST[$option])) ;
+		debug($appConfig[$option]);
 		saveConfig();
 	}
 }

@@ -10,6 +10,7 @@
                         <div>
 						<h3>
                                 Student Google Group
+								
                             </h3>
 							</div>
 					</div>
@@ -102,6 +103,8 @@
                             <input  placeholder="Enter 3 Yr PreK student email group" type="text" name="sggpk3" value="<?php echo $appConfig["studentEmailGroups"]["PK3"];?>"/>
                         </div>
                     </div>
+					<br/>
+							Do not include the domain name
                     
                     </div>
                 

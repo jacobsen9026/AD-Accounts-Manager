@@ -1,12 +1,17 @@
 <?php
 //Redirect to login page after completing install.
 if(isset($_POST["complete_install"])){   
-	initializeConfig();
+	$appConfig["installComplete"]=true;
+	saveConfig();
 ?>
 <script>
     window.location="/";
 </script>
 <?php
+}
+
+if(!file_exists("./config/config.json")){
+	intializeConfig();
 }
 
 
