@@ -359,7 +359,7 @@ iframe {
     padding:15px;
     z-index:0;
     font-size:1em;
-    border-radius:0.5em;
+    #border-radius:0.5em;
     min-width:350px;
 
 }
