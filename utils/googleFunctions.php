@@ -1,11 +1,11 @@
 <?php
 function runGAMCommand($command){
     $cmd = $_SERVER["DOCUMENT_ROOT"].'/lib/gam-64/gam.exe '.$command;
-	//echo $cmd;
+    //echo $cmd;
     debug("CMD: ".$cmd);
-	//debug(shell_exec ($cmd));
-	$result = explode("\n",shell_exec ($cmd));
-	debug($result);
+    //debug(shell_exec ($cmd));
+    $result = explode("\n",shell_exec ($cmd));
+    debug($result);
     return $result;
 }
 
@@ -47,7 +47,7 @@ function getGAUser($username){
     $result = explode("\n",shell_exec($cmd));
     //Break out result to array
     foreach($result as $line){
-         $keyValue = explode(':', $line,2);
+        $keyValue = explode(':', $line,2);
         if(trim($keyValue[0]) != '' ){
             $output[trim($keyValue[0])]=trim($keyValue[1]);
         }
@@ -73,16 +73,16 @@ function getGAUser($username){
         }
 
     }
-    
-    
+
+
     //Cleanup Array Output
     $output["Groups"]=$groups;
     $output["Last login time"]=str_replace("T"," ",$output["Last login time"]);
     $output["Last login time"]=str_replace(".000Z","",$output["Last login time"]);
     if($GAUser["Account Suspended"]=="False"){
-    $output["Account Enabled"]="True";
-        }else{
-    $output["Account Enabled"]="False";
+        $output["Account Enabled"]="True";
+    }else{
+        $output["Account Enabled"]="False";
     }
 
     debug ($output);
@@ -264,7 +264,7 @@ function getParentGoogleGroupMembership($email){
     debug("inside getparents");
     //include("./config/email-groups/parentEmailGroups.php");
     debug("EMAIL: ".$email);
-   debug($appConfig["parentEmailGroups"]);
+    debug($appConfig["parentEmailGroups"]);
     //header('Content-Type: text/event-stream');
     //header('Cache-Control: no-cache'); // recommended to prevent caching of event data.
     $x=0;

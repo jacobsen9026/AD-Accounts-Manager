@@ -10,9 +10,9 @@
                 <table id="loginPopupContainer">
                     <tr>
                         <th>
-                            		<?php
-									echo $appConfig["webAppName"];
-									?>
+                            <?php
+                            echo $appConfig["webAppName"];
+                            ?>
                         </th>
                     </tr>
                     <tr>

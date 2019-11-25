@@ -1,8 +1,6 @@
 
 
 <?php
-//echo "start Challenge";
-//exit();
 session_start();
 
 
@@ -101,23 +99,24 @@ if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!
                 $_SESSION["authenticated_power"]="true";
                 $_SESSION["authenticated_admin"]="true";
                 $_SESSION["authenticated_tech"]="true";
-                
+
             }
         }
-     
+
 
         if($passed){
-
+            //Output Authenticated for reauthenticate Javascript
+            echo "<div id='authenticated'></div>";
 ?>
 <script>reauthenticatedSession();</script>
 
 <?php
-   
-			
-			
-			$_SESSION["userLastName"] = $infoTech[$i]["sn"][0];
-			$_SESSION["userFirstName"] = $infoTech[$i]["givenname"][0];
-			$_SESSION["username"] = $username;
+
+
+
+            $_SESSION["userLastName"] = $infoTech[$i]["sn"][0];
+            $_SESSION["userFirstName"] = $infoTech[$i]["givenname"][0];
+            $_SESSION["username"] = $username;
             auditLogon($username);
             if(isset($_POST["rememberUsername"])||isset($_POST["rememberMe"])){
 
@@ -182,7 +181,6 @@ if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!
 if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!="" && $_POST['password']!= "" && strtolower($_POST['username']) == "admin"){
     $username = strtolower($_POST['username']);
     //Fall back in case LDAP authentication isn't working
-    //       echo "admin";
 
     if(hash("sha256",$_POST["password"])==$appConfig['adminPassword']){
 
@@ -192,37 +190,31 @@ if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!
         $_SESSION["authenticated_power"]="true";
         $_SESSION["authenticated_admin"]="true";
         $_SESSION["authenticated_tech"]="true";
-		$_SESSION["userLastName"] = "Admin";
-		$_SESSION["userFirstName"] = "Welcome";
-		$_SESSION["username"] = $username;
+        $_SESSION["userLastName"] = "Admin";
+        $_SESSION["userFirstName"] = "Welcome";
+        $_SESSION["username"] = $username;
 
         auditLogon($username);
+
+        //Output Authenticated for reauthenticate Javascript
+        echo "<div id='authenticated'></div>";
+
         if(isset($_POST["rememberUsername"])||isset($_POST["rememberMe"])){
-            //echo "remember me";
-            //$_COOKIE["username"] = $username;
+
             setcookie("username",$username,time() + (86400 * 3650));
-            //echo $username;
-            //echo $_COOKIE["username"];
-            //phpinfo();
-            //exit();
+
         }
         if(isset($_POST["rememberMe"])){
-            //echo "remember me";
-
             setcookie("token",json_encode(Array(hash("sha256",$_POST["password"]),hash("sha256",$_SESSION["authenticated_basic"]),hash("sha256",$_SESSION["authenticated_power"]),hash("sha256",$_SESSION["authenticated_admin"]),hash("sha256",$_SESSION["authenticated_tech"]))) ,time() + (86400 * 3650));
-            //echo "Set Cookie";
-            //exit();
         }
 
         if($_POST["intent"]!=""){
-            //header( 'Location: /?goto='.$_POST['intent'] );
 ?>
 <script>
     window.location="/?goto=<?php echo $_POST['intent']; ?>";
 </script>
 <?php
-        }else{
-            //header( 'Location: /' ) ;
+                                }else{
 ?>
 <script>
     window.location="/";

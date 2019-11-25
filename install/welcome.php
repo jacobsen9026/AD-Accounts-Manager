@@ -10,23 +10,7 @@
 
             <br/>
             <table class="settingsList">
-			<!--
-				<tr>
-                    <td>Git Available</td>
-                    <td>
-                        <?php
-                       /* if(isGitAvailable()){
-                            $gitChecked=true;
-                            echo "Yes";
-                        }else{
-                            echo "No";
-                        }
-						*/
-                        ?>
-                    </td>
-
-                </tr>
-				-->
+               
                 <tr>
                     <td>LDAP Extension Enabled</td>
                     <td>
@@ -55,7 +39,7 @@
                     </td>
 
                 </tr>
-				<tr>
+                <tr>
                     <td>GAM Configured</td>
                     <td>
                         <?php
@@ -84,7 +68,7 @@
                     </td>
 
                 </tr>
-				<tr>
+                <tr>
 
                     <td>Domain Name</td>
                     <td>
@@ -99,7 +83,7 @@
                     </td>
 
                 </tr>
-				<tr>
+                <tr>
 
                     <td>Web App Name</td>
                     <td>
@@ -120,19 +104,19 @@
             <br/><br/>
         </td>
     </tr>
-	<form action="/?goto=/config/index.php&advancedConfig=true" method="post">
-	<tr>
-				
-                <td>
-                    <input type="text" name="advancedConfig" value="true" hidden />
-                        <button type="submit">
-                            Initial Config
-                        </button>
-						<br/><br/>
-				</td>
-                   
-	</tr>
-	 </form>
+    <form action="/?goto=/config/index.php&advancedConfig=true" method="post">
+        <tr>
+
+            <td>
+                <input type="text" name="advancedConfig" value="true" hidden />
+                <button type="submit">
+                    Initial Config
+                </button>
+                <br/><br/>
+            </td>
+
+        </tr>
+    </form>
     <?php
 
     if($webAppNameChecked and $domainNameChecked and $passwordChecked and $adminChecked and !$appConfig["installComplete"]){
@@ -141,12 +125,12 @@
     <tr>
         <td>
             <?php 
-			
-			
-			if(!$ldapChecked){
-        echo "<strong>You won't be able to log in via<br/>Active Directory/LDAP credentials.<br/><br/>Only the admin user will work.</strong><br/><br/><br/>";
-    }
-	
+
+
+        if(!$ldapChecked){
+            echo "<strong>You won't be able to log in via<br/>Active Directory/LDAP credentials.<br/><br/>Only the admin user will work.</strong><br/><br/><br/>";
+        }
+
             ?>
             <form action="<?php echo $pageURL;?>" method="post">
 
@@ -156,7 +140,7 @@
             </form>
         </td>
     </tr>
-	<?php
-	}
-	?>
+    <?php
+    }
+    ?>
 </table>

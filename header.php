@@ -63,7 +63,7 @@ if(isset($appConfig["websiteFQDN"]) && $appConfig["websiteFQDN"]!=""){
     if(strtolower($_SERVER['SERVER_NAME'])==strtolower($_SERVER['COMPUTERNAME'])){
         if(isset($appConfig["redirectHTTP"])){
             if($appConfig["redirectHTTP"]){
-				
+
                 header("location: https://".$appConfig["websiteFQDN"].$pageURL);
             }
         }
@@ -87,19 +87,19 @@ if(isset($_POST["theme"])){
 }
 
 //Check to make sure user is logged in
-        if(!isset($_SESSION['authenticated_basic'])){
-            $_SESSION['authenticated_basic']=false;
-        }
+if(!isset($_SESSION['authenticated_basic'])){
+    $_SESSION['authenticated_basic']=false;
+}
 
 ?>
 <html>
     <head>
 
         <title>		
-		<?php
-		echo $appConfig["webAppName"];
-		?>
-		</title>
+            <?php
+            echo $appConfig["webAppName"];
+            ?>
+        </title>
 
         <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
@@ -165,7 +165,7 @@ if(isset($_POST["theme"])){
         include("./includes/pageLoader.php");
         include("./includes/debugConsole.php");
         include("./includes/debugConfig.php");
-        
+
 
 
         if($_SESSION["authenticated_basic"]=="true"){

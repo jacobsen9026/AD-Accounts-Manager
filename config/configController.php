@@ -1,34 +1,34 @@
 <?php
 $configSingleLineOptions = Array("emailFromName","emailFromAddress",
-"domainName","domainController","webAppName","domainNetBIOS");
+                                 "domainName","domainController","webAppName","domainNetBIOS","sessionTimeout");
 
 
 
 
 $configMultiLineOptions = Array("adminUsernames", "parentEmailGroups", 
-"staffEmailGroups", "welcomeEmailReceivers", "adminUsernames",
-"adminEmails","homepageMessage");
+                                "staffEmailGroups", "welcomeEmailReceivers", "adminUsernames",
+                                "adminEmails","homepageMessage");
 
 
 
 
 foreach ($configSingleLineOptions as $option){
-	if(isset($_POST[$option])){
-		debug("saving ".$option);
-		$appConfig[$option] = trim($_POST[$option]) ;
+    if(isset($_POST[$option])){
+        debug("saving ".$option);
+        $appConfig[$option] = trim($_POST[$option]) ;
 
-		saveConfig();
-	}
+        saveConfig();
+    }
 }
 
 
 foreach ($configMultiLineOptions as $option){
-	if(isset($_POST[$option])){
-		debug("saving ".$option);
-		$appConfig[$option] = explode("\r\n",trim($_POST[$option])) ;
-		debug($appConfig[$option]);
-		saveConfig();
-	}
+    if(isset($_POST[$option])){
+        debug("saving ".$option);
+        $appConfig[$option] = explode("\r\n",trim($_POST[$option])) ;
+        debug($appConfig[$option]);
+        saveConfig();
+    }
 }
 
 
@@ -46,23 +46,23 @@ if(isset($_POST["testEmailTo"]) and trim($_POST["testEmailTo"])!=""){
 }
 
 if(isset($_POST["testEmailTo"]) and trim($_POST["testEmailTo"])!=""){
-	
+
     debug(sendEmail($_POST["to"],"Test Email","This is a test notification from the ".$appConfig["webAppName"]."."));
 }
 
 
 if(isset($_FILES["oauth2_txt"])){
-	
-	debug($_FILES);
-	if(file_exists("./lib/gam-64/oauth2.txt")){
-		if (isset($_POST["overwrite"])){
-		
-			
-		   move_uploaded_file($_FILES["oauth2_txt"]["tmp_name"], "./lib/gam-64/oauth2.txt");
-		}
-	}else{
-   move_uploaded_file($_FILES["oauth2_txt"]["tmp_name"], "./lib/gam-64/oauth2.txt");
-	}
+
+    debug($_FILES);
+    if(file_exists("./lib/gam-64/oauth2.txt")){
+        if (isset($_POST["overwrite"])){
+
+
+            move_uploaded_file($_FILES["oauth2_txt"]["tmp_name"], "./lib/gam-64/oauth2.txt");
+        }
+    }else{
+        move_uploaded_file($_FILES["oauth2_txt"]["tmp_name"], "./lib/gam-64/oauth2.txt");
+    }
 }
 
 
@@ -72,13 +72,13 @@ if(isset($_FILES["oauth2_txt"])){
 
 
 if(isset($_POST["welcomeEmailHTML"]) and $_POST["welcomeEmailHTML"]!=""){
-	if(file_get_contents($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html")!=$_POST["welcomeEmailHTML"] and file_get_contents($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html.example")!=$_POST["welcomeEmailHTML"]) {
-		$dateTime=date("Y-m-d_h-i-s");
-		copy($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html" ,$_SERVER['DOCUMENT_ROOT']."/config/backup/".$dateTime."_staffemail.html");
-	   file_put_contents($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html",trim($_POST["welcomeEmailHTML"])) ;
+    if(file_get_contents($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html")!=$_POST["welcomeEmailHTML"] and file_get_contents($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html.example")!=$_POST["welcomeEmailHTML"]) {
+        $dateTime=date("Y-m-d_h-i-s");
+        copy($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html" ,$_SERVER['DOCUMENT_ROOT']."/config/backup/".$dateTime."_staffemail.html");
+        file_put_contents($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html",trim($_POST["welcomeEmailHTML"])) ;
 
-		saveConfig();
-	}
+        saveConfig();
+    }
 }
 
 
@@ -89,7 +89,7 @@ if(isset($_POST["websiteFQDN"]) and $_POST["websiteFQDN"]!=""){
     $websiteFQDN=$_POST["websiteFQDN"];
     if(strpos( $websiteFQDN,"//")!=false){
         $websiteFQDN=substr( $websiteFQDN,strpos( $websiteFQDN,"//")+2,strlen( $websiteFQDN)-strpos( $websiteFQDN,"//")-2);
-        }
+    }
     $appConfig["websiteFQDN"] = trim($websiteFQDN) ;
 
     saveConfig();
@@ -97,15 +97,27 @@ if(isset($_POST["websiteFQDN"]) and $_POST["websiteFQDN"]!=""){
 
 debug("Debug Mode is on");
 if(isset($_POST["debugMode"])){
+    if($appConfig["debugMode"]!=$_POST["debugModeCheck"]){
+        $refresh=true;
+    }else{
+        $refresh=false;
+    }
     print_r ($_POST["debugMode"]);
     if($_POST['debugModeCheck']==true){
-    $appConfig["debugMode"]=true;
+        $appConfig["debugMode"]=true;
     }else{
-    $appConfig["debugMode"]=false;
+        $appConfig["debugMode"]=false;
     }
     //$appConfig["debugMode"] = IsChecked($_POST["debugMode"]) ;
 
     saveConfig();
+    if ($refresh){
+?>
+<script>
+    window.location="<?php echo str_replace("&rolloverGrades=true","",$pageURL);?>";
+</script>
+<?php
+                 }
 }
 
 
@@ -174,9 +186,9 @@ if(isset($_GET["rolloverGrades"]) and $_GET["rolloverGrades"]=="true"){
     //var_export $appConfig["gradeMappings"];
     saveConfig();
 
-	
 
-	?>
+
+?>
 <script>
     window.location="<?php echo str_replace("&rolloverGrades=true","",$pageURL);?>";
 </script>

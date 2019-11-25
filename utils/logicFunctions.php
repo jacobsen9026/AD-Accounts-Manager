@@ -161,7 +161,7 @@ function notProtectedUsername($username){
 
 
 function sendEmail($to,$subject,$message){
-	global $appConfig;
+    global $appConfig;
     $clientHostname=gethostbyaddr($_SERVER['REMOTE_ADDR']);
     $message=$message." <br/><br/> Client Hostname: ".$clientHostname." <br/> User: ".$_SESSION["userFirstName"]." ".$_SESSION["userLastName"];
     $headers[] = 'MIME-Version: 1.0';
@@ -170,12 +170,12 @@ function sendEmail($to,$subject,$message){
     // Additional headers
     $headers[] = 'From: '.$appConfig["emailFromName"].' <'.$appConfig["emailFromAddress"].'>';
     // Mail it
-	debug($to);
-	debug($subject);
-	debug($message);
-	debug($headers);
+    debug($to);
+    debug($subject);
+    debug($message);
+    debug($headers);
     $result = mail($to, $subject, $message, implode("\r\n", $headers));
-	debug($result);
+    debug($result);
 }
 
 function sendNotificationEmail($subject,$message){
@@ -217,8 +217,8 @@ function sendWelcomeEmail($to){
     $bcc=substr($to,0,strlen($to)-1);
 
 
-        // Subject
-        $subject = 'Welcome to $appConfig["domainNetBIOS"]';
+    // Subject
+    $subject = 'Welcome to $appConfig["domainNetBIOS"]';
 
     // Message
     $message=file_get_contents("./config/staffemail.html");

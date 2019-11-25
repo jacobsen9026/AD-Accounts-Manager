@@ -39,9 +39,9 @@
         <tr>
             <td>
                 <form name="loginPrompt" method="post" action="/?goto=/login/challenge.php">
-                <?php
-    			include("./login/loginPrompt.php");
-    			?>
+                    <?php
+                    include("./login/loginPrompt.php");
+                    ?>
                 </form>
             </td>
         </tr>

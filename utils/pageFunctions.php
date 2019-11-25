@@ -25,7 +25,7 @@ function debug($message){
     if($appConfig["debugMode"]){
         if ($_SESSION["authenticated_tech"] or $appConfig["installComplete"]!="true"){
             if (is_array($message)){
-                    $message=debugArray($message);
+                $message=debugArray($message);
             }
             $message = str_replace("\n","",$message);
             $bt = debug_backtrace(1);
