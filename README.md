@@ -48,7 +48,7 @@ Pleae see the install wiki page [here](https://github.com/jacobsen9026/School-Ac
 
 # Screenshots
 ## Homepage
-![Homepage](https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/homepage.png?raw=true | width=100)
+![Homepage](https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/homepage.png?raw=true){:height="50%" width="50%"}
 ## New Student Creation Page
 ![newstudent](https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/newstudent.png?raw=true)
 ## One of the Tech Tools Page
