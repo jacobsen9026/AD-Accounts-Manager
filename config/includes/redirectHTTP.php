@@ -1,28 +1,11 @@
-<?php
-if(isset($_POST["redirectHTTP"])){
-    print_r ($_POST["redirectHTTP"]);
-    if($_POST['redirectHTTPCheck']==true){
-        $appConfig["redirectHTTP"]=true;
-    }else{
-        $appConfig["redirectHTTP"]=false;
-    }
-    //$appConfig["redirectHTTP"] = IsChecked($_POST["redirectHTTP"]) ;
 
-    saveConfig();
-}
-?>
 <div class="shortSettingsContainer">
-    <form action="<?php echo $pageURL."#rh_input";?>" method="post">
-        <table  class="settingsList">
-            <tr>
-                <th>
+        <div  class="settingsList">
+            <div>
+                <h3>
                     Redirect to HTTPS
-                </th>
-
-            </tr>
-            <tr>
-
-                <td><?php //echo  $appConfig["redirectHTTP"];
+                </h3>
+<?php //echo  $appConfig["redirectHTTP"];
                     //echo $_POST["redirectHTTPCheck"];
 
                     if(isset($appConfig["redirectHTTP"])){
@@ -38,6 +21,9 @@ if(isset($_POST["redirectHTTP"])){
                         echo "You are not using HTTPS.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
                     }  
                     ?>
+            </div>
+
+                <div>
                     <input type="text" name="redirectHTTP" hidden/>
                     <input type="checkbox"  name="redirectHTTPCheck" value="true" <?php //echo  $appConfig["redirectHTTP"];
                            if(isset($appConfig["redirectHTTP"])){
@@ -46,22 +32,10 @@ if(isset($_POST["redirectHTTP"])){
                                }
                            }
                            ?>>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <?php
+                </div>
+            
+            
 
-                    if(isset($_POST["redirectHTTP"])){
-                        echo"<div class='alert'>Redirection Updated Succefully!</div>";
-                    }
-                    ?>
-                </td>
-            </tr>
-
-        </table>
-        <br/>
-        <button id="rh_input" type="submit"  value="Update Redirection">Update Redirection</button><br/>
-
-    </form>
+        </div>
+        
 </div>

@@ -1,6 +1,7 @@
 <td  class="navigationButton">
 			
 				<button id="userButton" onclick="showUserDropdown()">
+				
 				<img src="./img/user_avatar.png"/>
 				<div id="loggedInUser"><?php echo $_SESSION["username"];?></div>
 				</button>

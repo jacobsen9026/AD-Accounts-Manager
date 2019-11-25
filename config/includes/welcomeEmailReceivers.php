@@ -1,15 +1,12 @@
-<?php
-if(isset($_POST["welcomeEmailReceivers"])){
-    $appConfig["welcomeEmailReceivers"] = explode("\r\n",trim($_POST["welcomeEmailReceivers"])) ;
-    saveConfig();
 
-}
-?>
 <div class="settingsContainer">
-        <form action="<?php echo $pageURL."#we_input"?>" method="post">
-
+        <div  class="settingsList">
+		<div>
             <strong>
-                Welcome Email Recipients</strong><br/>Blinded all welcome notification emails.<br/>
+                Welcome Email Recipients</strong><br/>Blinded all welcome notification emails.
+				
+				</div>
+				<div>
 
 
             <textarea placeholder="Enter list of emails, one per line." class="settingsList" name="welcomeEmailReceivers" rows="15" cols="31" spellcheck="false"><?php
@@ -20,13 +17,9 @@ if(isset($_POST["welcomeEmailReceivers"])){
 
                 }
 
-                ?></textarea><?php
-            if(isset($_POST["welcomeEmailReceivers"])){
-                echo"<div class='alert'>Welcome Email Recipients Updated Succefully!</div>";
-            }
-            ?>
+                ?></textarea>
 
-            <br/><br/>
-            <button id="we_input" type="submit" value="Update Welcome Email Recipients">Update Welcome Email Recipients</button>
-        </form>
+            </div>
+			</div>
+            
     </div>

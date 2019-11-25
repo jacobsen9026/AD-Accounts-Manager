@@ -135,8 +135,15 @@ button{
 }
 .settingsList{
 	font-size:0.9em;
-	width:100%;
+	#width:100%;
 }
+
+.settingsList div, .tableList div div{
+	display:block;
+	width:95%;
+}
+
+
 .settingsList TextArea{
 	padding:0em;
 	border-radius:0em;

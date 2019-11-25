@@ -63,9 +63,8 @@ if(isset($appConfig["websiteFQDN"]) && $appConfig["websiteFQDN"]!=""){
     if(strtolower($_SERVER['SERVER_NAME'])==strtolower($_SERVER['COMPUTERNAME'])){
         if(isset($appConfig["redirectHTTP"])){
             if($appConfig["redirectHTTP"]){
+				
                 header("location: https://".$appConfig["websiteFQDN"].$pageURL);
-            }else{
-                header("location: ".$protocol."://".$_SERVER['COMPUTERNAME'].$pageURL);
             }
         }
     }

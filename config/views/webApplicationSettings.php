@@ -21,7 +21,7 @@
             //include("./config/includes/domainNetbios.php");
             //include("./config/includes/resetAdminPassword.php");
             include("./config/includes/sessionTimeout.php");
-            include("./config/includes/websiteFQDN.php");
+            //include("./config/includes/websiteFQDN.php");
 			
             include("./config/includes/webAppName.php");
             include("./config/includes/redirectHTTP.php");

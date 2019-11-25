@@ -1,15 +1,5 @@
-<?php
 
-if(isset($_POST["welcomeEmailHTML"])){
-    $dateTime=date("Y-m-d_h-i-s");
-    copy($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html" ,$_SERVER['DOCUMENT_ROOT']."/config/backup/".$dateTime."_staffemail.html");
-   file_put_contents($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html",trim($_POST["welcomeEmailHTML"])) ;
-
-    saveConfig();
-}
-?>
  <div style="width:90%" class="settingsContainer">
-        <form action="<?php echo $pageURL."#ap_input";?>" method="post">
             <table style="width:95%" class="settingsList">
                 <tr>
                     <th>
@@ -23,22 +13,12 @@ if(isset($_POST["welcomeEmailHTML"])){
                         <textarea style="width:95%;height:30em" type="text" name="welcomeEmailHTML" value=""><?php echo file_get_contents("./config/staffemail.html");?></textarea>
                     </td>
                 </tr>
-                <tr>
-                    <td>
-                        <?php
 
-                        if(isset($_POST["welcomeEmailHTML"])){
-                            echo"<div class='alert'>Welcome Email Updated Succefully!</div>";
-                        }
-                        ?>
-                    </td>
-                </tr>
 
             </table>
             <br/>
-            <button id="ap_input" type="submit"  value="Update Welcome Email">Update Welcome Email</button><br/>
-
-        </form>
+          
+        
     </div>
 
 

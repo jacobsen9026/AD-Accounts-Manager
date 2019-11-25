@@ -8,6 +8,8 @@ if(isset($_GET["config"])){
 }
 ?>
 
+		<form action="<?php echo $pageURL;?>" method="post">
+
 <table id="container">
     <tr>
         <td>
@@ -15,13 +17,24 @@ if(isset($_GET["config"])){
             include("./config/includes/configNavBar.php");
             ?>
         </td>
-    </tr>
+		</tr>
+
+	
     <?php
     debug($config);
-
+	include("./config/includes/configController.php");
     if(file_exists("./config/views/".$config.".php")){
         debug("File Exists");
+		
         include("./config/views/".$config.".php");
+		?>
+		<tr>
+			<td>
+				<button type="submit">Update Settings</button><br/>
+			</td>
+		</tr>
+		<?php
     }
     ?>
 </table>
+</form>
