@@ -4,8 +4,7 @@
 //echo "start Challenge";
 //exit();
 session_start();
-$date=date("Y/m/d");
-$time=date("h:i:s");
+
 
 if(!isset($_POST["rememberUsername"])){
     setcookie("username", "", time() - 3600);
@@ -119,7 +118,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!
 			$_SESSION["userLastName"] = $infoTech[$i]["sn"][0];
 			$_SESSION["userFirstName"] = $infoTech[$i]["givenname"][0];
 			$_SESSION["username"] = $username;
-            file_put_contents("./logs/login.log",$date.",".$time.",".$username."\r\n", FILE_APPEND);
+            auditLogon($username);
             if(isset($_POST["rememberUsername"])||isset($_POST["rememberMe"])){
 
                 setcookie("username",$username,time() + (86400 * 3650));
@@ -197,7 +196,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username']!
 		$_SESSION["userFirstName"] = "Welcome";
 		$_SESSION["username"] = $username;
 
-        file_put_contents("./logs/login.log",$date.",".$time.",".$username."\r\n", FILE_APPEND);
+        auditLogon($username);
         if(isset($_POST["rememberUsername"])||isset($_POST["rememberMe"])){
             //echo "remember me";
             //$_COOKIE["username"] = $username;

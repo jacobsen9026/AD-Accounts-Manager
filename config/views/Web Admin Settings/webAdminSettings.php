@@ -22,7 +22,7 @@
             include("./config/includes/resetAdminPassword.php");
             include("./config/includes/updateApp.php");
             //include("./config/includes/sessionTimeout.php");
-            //include("./config/includes/websiteFQDN.php");
+            include("./config/includes/websiteFQDN.php");
             //include("./config/includes/redirectHTTP.php");
             include("./config/includes/debugMode.php");
             //include("./config/includes/editWelcomeEmail.php");
@@ -39,7 +39,4 @@
 
         </td>
     </tr>
-    <tr>
-        <td>
-        </td>
-    </tr>
+    

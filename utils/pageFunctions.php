@@ -23,7 +23,7 @@ function printGAUserGroups($username){
 function debug($message){
     global $appConfig;
     if($appConfig["debugMode"]){
-        if ($_SESSION["authenticated_tech"]){
+        if ($_SESSION["authenticated_tech"] or $appConfig["installComplete"]!="true"){
             if (is_array($message)){
                     $message=debugArray($message);
             }

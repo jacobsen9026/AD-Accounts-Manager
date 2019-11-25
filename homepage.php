@@ -1,8 +1,10 @@
-
+6
 <table id="container">
     <tr>
         <th>
-            School Accounts Manager
+		<?php
+		echo $appConfig["webAppName"];
+		?>
 
         </th>
     </tr>
@@ -20,14 +22,24 @@
         </td></tr>
     <tr>
         <td>
-            <br/><br/>
-            Use these tools with caution, for most functions there is no undo.
-            <br />
+		<?php
+		
+		if(isset($appConfig["homepageMessage"]) and $appConfig["homepageMessage"][0]!=""){
+			echo "<br/>";
+			foreach ($appConfig["homepageMessage"] as $line){
+			echo $line."<br/>";
+			}
+		}
+		
+		if ($_SESSION["authenticated_tech"]){
+			?>
             <br />If there are any errors displayed,
             <br />or a command that does not actually happen
-            <br /> please <a href="https://github.com/jacobsen9026/School-Accounts-Manager/issues/new" target="_blank">enter a ticket</a>.
+            <br /> please <a href="https://github.com/jacobsen9026/School-Accounts-Manager/issues" target="_blank">enter a ticket</a>.
             <br/><br/>
-
+<?php
+		}
+		?>
             <!--            <img style="height:50%;border-radius:12%;box-shadow:0px 0px 15px #888888" onmouseover="this.style.boxShadow='0px 0px 50px #4285f4';" onmouseleave="this.style.boxShadow='0px 0px 15px #888888';" src="img/mobile.png"/>//-->
             <!--            <br/><br/>//-->
             This site is mobile friendly<br/>

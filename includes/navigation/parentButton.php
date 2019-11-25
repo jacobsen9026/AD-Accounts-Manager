@@ -1,5 +1,7 @@
 <td  class="navigationButton">
-		
+		<?php if(isset($_SESSION['authenticated_admin'])){
+            if($_SESSION['authenticated_admin']=="true"){
+				?>
 			<button id="parentButton" <?php
 			if($_SESSION["authenticated_admin"]!="true"){
 				echo "style='opacity:0.0;'";
@@ -22,4 +24,8 @@
 	?>
 	
 </div>
+	<?php
+			}
+			}
+			?>
 		</td>

@@ -10,7 +10,9 @@
                 <table id="loginPopupContainer">
                     <tr>
                         <th>
-                            School Accounts Manager
+                            		<?php
+									echo $appConfig["webAppName"];
+									?>
                         </th>
                     </tr>
                     <tr>

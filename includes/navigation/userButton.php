@@ -1,6 +1,9 @@
 <td  class="navigationButton">
-			
+		<?php if(isset($_SESSION['authenticated_basic'])){
+            if($_SESSION['authenticated_basic']=="true"){
+				?>
 				<button id="userButton" onclick="showUserDropdown()">
+				
 				<img src="./img/user_avatar.png"/>
 				<div id="loggedInUser"><?php echo $_SESSION["username"];?></div>
 				</button>
@@ -34,5 +37,10 @@
 		
 		?>
 		<span class="spacer"></span>
-</div>		
+</div>	
+<?php
+		}
+		}
+		?>
+		
 </td>

@@ -5,6 +5,7 @@
 
         include("./includes/navigation/userButton.php");
         include("./includes/navigation/studentButton.php");
+		/*
         if(isset($_SESSION['authenticated_admin'])){
             if($_SESSION['authenticated_admin']=="true"){
                 include("./includes/navigation/staffButton.php");
@@ -13,12 +14,18 @@
                 $numberOfButtons++;
             }
         }
+		*/
+		include("./includes/navigation/staffButton.php");
+        include("./includes/navigation/parentButton.php");
+		/*
         if(isset($_SESSION['authenticated_tech'])){
             if($_SESSION["authenticated_tech"]=="true"){
                 include("./includes/navigation/techButton.php");
                 $numberOfButtons++;
             }
         }
+		*/
+		include("./includes/navigation/techButton.php");
         ?>
     </tr>
 </table>
