@@ -72,6 +72,7 @@ function initializeConfig(){
 	global $appConfig;
 	$appConfig["installComplete"]=true;
     $appConfig["sessionTimeout"]=1200;
+	$appConfig["configuredVersion"]=file_get_contents("./version.txt");
 	saveConfig();
 }
 
@@ -88,9 +89,12 @@ function saveConfig(){
 }
 function loadConfig(){
     global $appConfig;
-    $appConfig=json_decode(file_get_contents("./config/config.json"),true);
-	$appConfig["version"]=file_get_contents("./version.txt");
-     ksort($appConfig);
+    $appConfig = json_decode(file_get_contents("./config/config.json"),true);
+	$appConfig["version"] = file_get_contents("./version.txt");
+	
+	 
+	 
+	 ksort($appConfig);
 }
 
 ?>
