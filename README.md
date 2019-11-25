@@ -26,10 +26,6 @@ If you try this out during this development phase, you may need to delete the co
 1. Elegant UI with clean design
 1. Currently only PK-8 implemented
 
-# Installation
-
-Pleae see the install wiki page [here](https://github.com/jacobsen9026/School-Accounts-Manager/wiki/Installation).
-
 # Requirements
 
 ## Server OS
@@ -43,6 +39,12 @@ IIS
 Apache
 WAMP
 NGINX
+
+
+# Installation
+
+Pleae see the install wiki page [here](https://github.com/jacobsen9026/School-Accounts-Manager/wiki/Installation).
+
 
 # Screenshots
 ## Homepage
