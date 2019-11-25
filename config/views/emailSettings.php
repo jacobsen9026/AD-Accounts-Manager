@@ -17,6 +17,7 @@
             include("./config/includes/emailFromName.php");
             include("./config/includes/emailFromAddress.php");
             include("./config/includes/welcomeEmailReceivers.php");
+            include("./config/includes/emailTest.php");
             //include("./config/includes/accessLevels.php");
             //include("./config/includes/domainName.php");
             //include("./config/includes/domainController.php");

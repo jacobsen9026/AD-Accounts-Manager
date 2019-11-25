@@ -8,7 +8,7 @@
 
                 </div>
                 <div>
-                        <input  placeholder="Enter FQDN" type="text" name="websiteFQDN" value="<?php echo  $appConfig["websiteFQDN"];?>">
+                        <input title="Enter the FQDN this server is reachable from" placeholder="Enter FQDN" type="text" name="websiteFQDN" value="<?php echo  $appConfig["websiteFQDN"];?>">
              
                 </div>
                 

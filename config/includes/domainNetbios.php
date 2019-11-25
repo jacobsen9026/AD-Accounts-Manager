@@ -10,7 +10,7 @@
                 <div>
 
                    
-                        <input placeholder="Enter domain NetBIOS name" type="text" name="domainNetBIOS" value="<?php echo  $appConfig["domainNetBIOS"];?>">
+                        <input title="Enter domain NetBIOS name. Do not enter a FQDN" pattern="^[^\.]*$" placeholder="Enter domain NetBIOS name" type="text" name="domainNetBIOS" value="<?php echo  $appConfig["domainNetBIOS"];?>">
                     
                 </div>
                 

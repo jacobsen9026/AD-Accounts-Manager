@@ -7,7 +7,7 @@
                     </h3>
 				</div>
 				<div>
-					<input placeholder="Enter hostname or domain NetBIOS" type="text" name="domainController" value="<?php echo  $appConfig["domainController"];?>">
+					<input title="Enter hostname or domain NetBIOS. Do not enter a FQDN" pattern="^[^\.]*$" placeholder="Enter hostname or domain NetBIOS" type="text" name="domainController" value="<?php echo  $appConfig["domainController"];?>">
 				</div>
             </div>            
     </div>

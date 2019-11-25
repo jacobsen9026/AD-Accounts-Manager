@@ -17,11 +17,7 @@
 
                 }
 
-                ?></textarea><?php
-            if(isset($_POST["adminEmails"])){
-                echo"<div class='alert'>GAdmin Usernames Updated Succefully!</div>";
-            }
-            ?>
+                ?></textarea>
 </div>
 </div>
             

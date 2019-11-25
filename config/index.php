@@ -8,9 +8,10 @@ if(isset($_GET["config"])){
 }
 ?>
 
-		<form action="<?php echo $pageURL;?>" method="post">
+		
 
 <table id="container">
+<form action="<?php echo $pageURL;?>" method="post">
     <tr>
         <td>
             <?php
@@ -33,8 +34,21 @@ if(isset($_GET["config"])){
 				<button type="submit">Update Settings</button><br/>
 			</td>
 		</tr>
+		</form>
 		<?php
     }
+	if(isset($_GET["advancedConfig"])){
     ?>
+	<form action="/" method="post">
+	<tr>
+	<td>
+	<br/>
+		<button type="submit">Go Back</button>
+	</td>
+	</tr>
+	
+	<?php
+	}
+	?>
 </table>
-</form>
+

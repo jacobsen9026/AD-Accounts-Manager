@@ -13,7 +13,7 @@ foreach ($configSingleLineOptions as $option){
 
 $configMultiLineOptions = Array("adminUsernames", "parentEmails", 
 "staffEmails", "welcomeEmailReceivers", "adminUsernames",
-"adminEmails");
+"adminEmails","homepageMessage");
 
 
 foreach ($configMultiLineOptions as $option){
@@ -31,10 +31,15 @@ if(isset($_POST["adminPassword"]) and trim($_POST["adminPassword"])!=""){
     saveConfig();
 }
 
-if(isset($_POST["sessionTimeout"]) and trim($_POST["sessionTimeout"])!=""){
-    $appConfig["sessionTimeout"] = trim($_POST["sessionTimeout"]) ;
+if(isset($_POST["testEmailTo"]) and trim($_POST["testEmailTo"])!=""){
+    $appConfig["testEmailTo"] = trim($_POST["testEmailTo"]) ;
 
     saveConfig();
+}
+
+if(isset($_POST["testEmailTo"]) and trim($_POST["testEmailTo"])!=""){
+	
+    debug(sendEmail($_POST["to"],"Test Email","This is a test notification from the ".$appConfig["webAppName"]."."));
 }
 
 
@@ -43,10 +48,8 @@ if(isset($_POST["sessionTimeout"]) and trim($_POST["sessionTimeout"])!=""){
 
 
 
-
-
 if(isset($_POST["welcomeEmailHTML"]) and $_POST["welcomeEmailHTML"]!=""){
-	if(file_get_contents($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html")!=$_POST["welcomeEmailHTML"]){
+	if(file_get_contents($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html")!=$_POST["welcomeEmailHTML"] and file_get_contents($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html.example")!=$_POST["welcomeEmailHTML"]) {
 		$dateTime=date("Y-m-d_h-i-s");
 		copy($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html" ,$_SERVER['DOCUMENT_ROOT']."/config/backup/".$dateTime."_staffemail.html");
 	   file_put_contents($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html",trim($_POST["welcomeEmailHTML"])) ;

@@ -1,12 +1,17 @@
 <div class="configNavContainer">
+<?php
+$search=Array("&config=webAdminSettings","config=webApplicationSettings",
+"&config=districtSettings","&config=googleSettings","&config=emailSettings");
+
+?>
 
         <div class="configNavButton">
-            <a href="/?goto=/config/index.php&config=webApplicationSettings">
+            <a href="<?php echo str_replace($search,"",$pageURL);?>&config=webApplicationSettings">
                 <button type="button" <?php if($config=='webApplicationSettings' or $config==""){echo 'class="currentPageButtonHighlight"';}?> >Web Application Settings</button>
             </a>
         </div>
         <div class="configNavButton">
-            <a href="/?goto=/config/index.php&config=webAdminSettings">
+            <a href="<?php echo str_replace($search,"",$pageURL);?>&config=webAdminSettings">
                 <button type="button" <?php
                         if(isset($config)){
                             if($config=='webAdminSettings'){
@@ -17,7 +22,7 @@
             </a>
         </div>
         <div class="configNavButton">
-            <a href="/?goto=/config/index.php&config=districtSettings">
+            <a href="<?php echo str_replace($search,"",$pageURL);?>&config=districtSettings">
                 <button type="button" <?php
                         if(isset($config)){
                             if($config=='districtSettings'){
@@ -28,7 +33,7 @@
             </a>
         </div>
         <div class="configNavButton">
-            <a href="/?goto=/config/index.php&config=googleSettings">
+            <a href="<?php echo str_replace($search,"",$pageURL);?>&config=googleSettings">
                 <button type="button" <?php
                         if(isset($config)){
                             if($config=='googleSettings'){
@@ -39,7 +44,7 @@
             </a>
         </div>
         <div class="configNavButton">
-            <a href="/?goto=/config/index.php&config=adSettings">
+            <a href="<?php echo str_replace($search,"",$pageURL);?>&config=adSettings">
                 <button type="button" <?php
                         if(isset($config)){
                             if($config=='adSettings'){
@@ -50,7 +55,7 @@
             </a>
         </div>
         <div class="configNavButton">
-            <a href="/?goto=/config/index.php&config=emailSettings">
+            <a href="<?php echo str_replace($search,"",$pageURL);?>&config=emailSettings">
                 <button type="button" <?php
                         if(isset($config)){
                             if($config=='emailSettings'){

@@ -2,9 +2,9 @@
 //var_export($_POST);
 if(isset($_POST["complete_install"])){
     //echo $_POST["complete_install"];
-    $appConfig["installComplete"]=true;
-    $appConfig["sessionTimeout"]=1200;
-    saveConfig();
+	//exit();
+    
+	initializeConfig();
 ?>
 <script>
     window.location="/";
@@ -12,14 +12,25 @@ if(isset($_POST["complete_install"])){
 <?php
 }
 
-if(isset($_POST["to"])){
-    sendEmail($_POST["to"],"Test Email","This is a test notification from the School Accounts Manager.");
+
+
+function isGitAvailable(){
+	$result=shell_exec("git");
+	if(strpos($result,"--version")>0){
+		return true;
+	}
+	return false;
 }
 
-if(isset($appConfig["adminPassword"])){
-    $passwordChecked=true;
-}
+
+
+if (isset($_GET["advancedConfig"])){
+	include("./config/includes/configController.php");
+	include("./config/index.php");
+	
+}else{
 ?>
+
 <table id="container">
     <tr>
         <th>
@@ -28,31 +39,26 @@ if(isset($appConfig["adminPassword"])){
     <tr>
         <td>
 
-            <?php 
-
-            //include("./config/includes/yearOfGraduation.php");
-            //include("./config/includes/studentGoogleGroups.php");
-            //include("./config/includes/staffEmailGroups.php");
-            //include("./config/includes/parentEmailGroups.php");
-            //include("./config/includes/adminUsernames.php");
-            //include("./config/includes/adminEmails.php");
-            //include("./config/includes/accessLevels.php");
-            //include("./config/includes/domainName.php");
-            //include("./config/includes/domainController.php");
-            //include("./config/includes/domainNetbios.php");
-            include("./config/includes/resetAdminPassword.php");
-            //include("./config/includes/sessionTimeout.php");
-            //include("./config/includes/websiteFQDN.php");
-            //include("./config/includes/redirectHTTP.php");
-            //include("./config/includes/debugMode.php");
-            //include("./config/includes/editWelcomeEmail.php");
-            //include("./config/includes/logonAudit.php");
-            //phpinfo();
-            ?>
-
 
             <br/>
             <table class="settingsList">
+			<!--
+				<tr>
+                    <td>Git Available</td>
+                    <td>
+                        <?php
+                       /* if(isGitAvailable()){
+                            $gitChecked=true;
+                            echo "Yes";
+                        }else{
+                            echo "No";
+                        }
+						*/
+                        ?>
+                    </td>
+
+                </tr>
+				-->
                 <tr>
                     <td>LDAP Extension Enabled</td>
                     <td>
@@ -87,7 +93,7 @@ if(isset($appConfig["adminPassword"])){
                     <td>Admin Password</td>
                     <td>
                         <?php
-                        if(isset($appConfig["adminPassword"])){
+                        if(isset($appConfig["adminPassword"]) and $appConfig["adminPassword"] !=''){
                             $passwordChecked=true;
                             echo "Yes";
                         }else{
@@ -97,35 +103,73 @@ if(isset($appConfig["adminPassword"])){
                     </td>
 
                 </tr>
- <form action="/" method="post">
-                <tr>
-                    <td><input type="text" name="to"/></td>
+				<tr>
+
+                    <td>Domain Name</td>
                     <td>
-                        <button type="submit">
-                            Send Test Email
-                        </button>
+                        <?php
+                        if(isset($appConfig["domainName"]) and $appConfig["domainName"]!=''){
+                            $domainNameChecked=true;
+                            echo "Yes";
+                        }else{
+                            echo "<text class='red'>No</text>";
+                        }
+                        ?>
                     </td>
 
                 </tr>
-                    </form>
+				<tr>
+
+                    <td>Web App Name</td>
+                    <td>
+                        <?php
+                        if(isset($appConfig["webAppName"]) and $appConfig["webAppName"]!=''){
+                            $webAppNameChecked=true;
+                            echo "Yes";
+                        }else{
+                            echo "<text class='red'>No</text>";
+                        }
+                        ?>
+                    </td>
+
+                </tr>
+
+
             </table>
             <br/><br/>
         </td>
     </tr>
+	<form action="/?goto=/config/index.php&advancedConfig=true" method="post">
+	<tr>
+				
+                <td>
+                    <input type="text" name="advancedConfig" value="true" hidden />
+                        <button type="submit">
+                            Initial Config
+                        </button>
+						<br/><br/>
+				</td>
+                   
+	</tr>
+	 </form>
     <?php
 
-    if($passwordChecked and $adminChecked and !$appConfig["installComplete"]){
+    if($webAppNameChecked and $domainNameChecked and $passwordChecked and $adminChecked and !$appConfig["installComplete"]){
     ?>
 
     <tr>
         <td>
-            <?php if(!$ldapChecked){
+            <?php 
+			
+			
+			if(!$ldapChecked){
         echo "<strong>You won't be able to log in via<br/>Active Directory/LDAP credentials.<br/><br/>Only the admin user will work.</strong><br/><br/><br/>";
     }
+	
             ?>
             <form action="<?php echo $pageURL;?>" method="post">
 
-                No going back. More settings inside.<br/><br/>
+                All Checks Passed<br/><br/>
                 <input name="complete_install" value="yes" hidden/>
                 <button  type="submit" value="Complet Install">Finish</button>
             </form>
@@ -134,6 +178,7 @@ if(isset($appConfig["adminPassword"])){
 </table>
 <?php
     }
+	}
 ?>
 
 

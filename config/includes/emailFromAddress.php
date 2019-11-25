@@ -9,7 +9,7 @@
                 </div>
                 <div>
 
-                        <input type="text" name="emailFromAddress" value="<?php echo  $appConfig["emailFromAddress"];?>">
+                        <input type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" name="emailFromAddress" value="<?php echo  $appConfig["emailFromAddress"];?>">
                  
                 </div>
                 

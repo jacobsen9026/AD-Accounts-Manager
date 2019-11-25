@@ -68,6 +68,12 @@ function createNewPage($path){
 
 }
 
+function initializeConfig(){
+	global $appConfig;
+	$appConfig["installComplete"]=true;
+    $appConfig["sessionTimeout"]=1200;
+	saveConfig();
+}
 
 function saveConfig(){
     global $appConfig;
