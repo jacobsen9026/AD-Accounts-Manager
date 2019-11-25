@@ -48,11 +48,18 @@ Pleae see the install wiki page [here](https://github.com/jacobsen9026/School-Ac
 
 # Screenshots
 ## Homepage
+
 <img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/homepage.png?raw=true" width=400/>
+
 ## New Student Creation Page
+
 <img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/newstudent.png?raw=true" width=400/>
+
 ## One of the Tech Tools Page
+
 <img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/techtools.png?raw=true" width=400/>
+
 ## Mobile-Friendly
+
 <img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/mobile.png?raw=true" width=400/>
 
