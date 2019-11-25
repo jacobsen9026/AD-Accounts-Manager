@@ -109,7 +109,7 @@ button{
  }
 
 .navigation td {
-	height:5em;
+	height:100%;
 	
 }
 .navigation button {
@@ -117,28 +117,12 @@ button{
 	height:5em;
 	font-size:0.8em;
 }
-#studentDropdown{
+#studentDropdown, #staffDropdown, #parentDropdown, #userDropdown, #techDropdown{
 	left:0%;
 	width:100%;
 }
-#staffDropdown{
-	left:0%;
-	width:100%;
-}
-#parentDropdown{
-	left:0%;
-	width:100%;
-}
-#userDropdown{
-	left:0%;
-	width:100%;
 
-}
-#techDropdown{
-	left:0%;
-	width:100%;
 
-}
 .settingsList{
 	font-size:0.9em;
 	#width:100%;
