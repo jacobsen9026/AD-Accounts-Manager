@@ -48,11 +48,11 @@ Pleae see the install wiki page [here](https://github.com/jacobsen9026/School-Ac
 
 # Screenshots
 ## Homepage
-<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/homepage.png?raw=true" style="width:50%;"/>
+<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/homepage.png?raw=true" width=400/>
 ## New Student Creation Page
-![newstudent](https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/newstudent.png?raw=true)
+<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/newstudent.png?raw=true" width=400/>
 ## One of the Tech Tools Page
-![techtools](https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/techtools.png?raw=true)
+<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/techtools.png?raw=true" width=400/>
 ## Mobile-Friendly
-![mobile](https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/mobile.png?raw=true)
+<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/mobile.png?raw=true" width=400/>
 
