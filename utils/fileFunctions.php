@@ -107,7 +107,7 @@ function saveConfig(){
     global $appConfig;
 
     ksort($appConfig);
-    $dateTime=date("Y-m-d_h-i-s");
+    $dateTime=date("Y-m-d_H-i-s");
     if(!file_exists($_SERVER['DOCUMENT_ROOT']."/config/backup/")){
         mkdir($_SERVER['DOCUMENT_ROOT']."/config/backup/", 0740, true);
     }
@@ -197,25 +197,34 @@ function delete_directory($dirname) {
     return true;
 }
 
+function takeFullBackup(){
+	$dateTime=date("Y-m-d_H-i-s");
+	copy ($_SERVER['DOCUMENT_ROOT']."/config/config.json" , $_SERVER['DOCUMENT_ROOT']."/config/backup/".$dateTime."_config.json");
+    if(!file_exists($_SERVER['DOCUMENT_ROOT']."/backup/")){
+        mkdir($_SERVER['DOCUMENT_ROOT']."/backup/", 0740, true);
+    }
+	$zip = new ZipArchive;
+	if ($zip->open('./backup/'.$dateTime.'-backup.zip') === TRUE) {
+		$zip->addFile('./*');
+		$zip->close();
+	}
+}
+
 function updateApp(){
-    $zip = new ZipArchive;
+	takeFullBackup();
+	
+	$zip = new ZipArchive;
     if(!file_exists("./temp")){
         mkdir("./temp");
     }
     copy ("https://github.com/jacobsen9026/School-Accounts-Manager/archive/master.zip", "./temp/update.zip");
 
-    $res = $zip->open("./temp/update.zip");
-    //var_export($res);
-    //exit();
-    if ($res === TRUE) {
+    
+    if ($zip->open("./temp/update.zip") === TRUE) {
         $zip->extractTo('./update');
         $zip->close();
-        //exit();
         recurse_copy ("./update/School-Accounts-Manager-master","./");
-        //echo 'ok';
-        //exit();
     }
-    //unlink("/temp/update.zip");
     delete_directory("./temp");
     delete_directory("./update");
     loadConfig();

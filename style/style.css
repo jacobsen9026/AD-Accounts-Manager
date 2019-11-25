@@ -228,10 +228,12 @@ email {
 }
 
 .configNavContainer{
+	position:relative;
 	min-width:100%;
 	border-collapse:collapse;
 	margin-left:auto;
 	margin-right:auto;
+	top:-1.2em;
 }
 
 .configNavButton button{
@@ -356,8 +358,8 @@ iframe {
     margin-top:4em;
     margin-left:auto;
     margin-right:auto;
-    padding:15px;
-    z-index:0;
+    padding:1em;
+	z-index:0;
     font-size:1em;
     #border-radius:0.5em;
     min-width:350px;
