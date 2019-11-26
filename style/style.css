@@ -228,10 +228,12 @@ email {
 }
 
 .configNavContainer{
+	position:relative;
 	min-width:100%;
 	border-collapse:collapse;
 	margin-left:auto;
 	margin-right:auto;
+	top:-1.2em;
 }
 
 .configNavButton button{
@@ -356,10 +358,10 @@ iframe {
     margin-top:4em;
     margin-left:auto;
     margin-right:auto;
-    padding:15px;
-    z-index:0;
+    padding:1em;
+	z-index:0;
     font-size:1em;
-    border-radius:0.5em;
+    #border-radius:0.5em;
     min-width:350px;
 
 }
@@ -472,7 +474,7 @@ p:hover{
     top:0px;
     left:0px;
     width:100%;
-    z-index:100;
+    z-index:95;
 	height:2.5em;
 	padding:0;
 	border-collapse:collapse;
@@ -499,6 +501,7 @@ p:hover{
 
 }
 #loggedInUser{
+	padding-top:.5em;
 	text-align:left;
 	display:inline-block;
 	#padding-top:1em;
@@ -513,15 +516,13 @@ p:hover{
 
 #userButton img{
 	 margin-right:0.25em;
-	 height:90%;
+	 height:2em;
 	 #margin-left:0.25em;
 	 display:inline-block;
 	 #float:left;
-	 margin-top:0.15em;
+	 margin-top:0.5em;
  }
- .navigationButton{
-	width:20%;
-	}
+
 
 
 #userButton:hover, #studentButton:hover, #staffButton:hover, #techButton:hover, #parentButton:hover {
@@ -530,7 +531,8 @@ p:hover{
 }
 #studentDropdown,#userDropdown,#staffDropdown,#techDropdown{
 
-
+	
+	z-index: 99;
     /*
     -webkit-transition: visibility 0.5s;
     -o-transition: visibility 0.5s;
@@ -634,6 +636,10 @@ p:hover{
     text-align:center;
     
 }
+#studentButton {
+	
+	z-index:100;
+}
 .settingsList h3 {
     font-size:1em;
     
@@ -697,11 +703,20 @@ p:hover{
     text-align:center;
     width:100%;
 }
-.floatingEditButton,.floatingDebugButton,.floatingConsoleButton, .floatingConfigButton, .floatingIncludeButton{
-    position:fixed;	
+
+.debugFloatingToolsContainer{
+	position:fixed;	
     right:1em;
     bottom:1em;
-    border-radius:1.75em;
+	width:3.5em;
+	-webkit-transition: 0.5s;
+    -o-transition: 0.5s;
+    -moz-transition: 0.5s;
+    transition: 0.5s;
+}
+.floatingButton{
+	display:inline-block;
+	border-radius:1.75em;
     width:3.5em;
     height:3.5em;
     text-align:center;
@@ -710,32 +725,18 @@ p:hover{
     -o-transition: box-shadow 0.25s;
     -moz-transition: box-shadow 0.25s;
     transition: box-shadow 0.25s;
+	margin-top:0.5em;
+	
 }
 
-.floatingDebugButton{
-    bottom:5em;
-}
-.floatingConsoleButton{
-    bottom:9em;
-}
-.floatingConfigButton{
-    bottom:13em;
-}
-.floatingIncludeButton{
-    bottom:17em;
-}
 
-.floatingEditButton img, .floatingDebugButton img, .floatingConsoleButton img, .floatingConfigButton img, .floatingIncludeButton img {
-    max-height: 50%;  
-    max-width: 50%; 
-    width: auto;
-    height: auto;
-    position: absolute;  
-    top: 0;  
-    bottom: 0;  
-    left: 0;  
-    right: 0;  
-    margin: auto;
+
+.floatingButton img {
+    display:inline;
+    width: 75%;
+    margin-top: 12.5%;
+	margin-bottom: auto;
+	
 }
 
 .floatingHelpButton{

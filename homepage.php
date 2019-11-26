@@ -2,9 +2,9 @@
 <table id="container">
     <tr>
         <th>
-		<?php
-		echo $appConfig["webAppName"];
-		?>
+            <?php
+            echo $appConfig["webAppName"];
+            ?>
 
         </th>
     </tr>
@@ -22,24 +22,24 @@
         </td></tr>
     <tr>
         <td>
-		<?php
-		
-		if(isset($appConfig["homepageMessage"]) and $appConfig["homepageMessage"][0]!=""){
-			echo "<br/>";
-			foreach ($appConfig["homepageMessage"] as $line){
-			echo $line."<br/>";
-			}
-		}
-		
-		if ($_SESSION["authenticated_tech"]){
-			?>
+            <?php
+
+            if(isset($appConfig["homepageMessage"]) and $appConfig["homepageMessage"][0]!=""){
+                echo "<br/>";
+                foreach ($appConfig["homepageMessage"] as $line){
+                    echo $line."<br/>";
+                }
+            }
+
+            if ($_SESSION["authenticated_tech"]){
+            ?>
             <br />If there are any errors displayed,
             <br />or a command that does not actually happen
             <br /> please <a href="https://github.com/jacobsen9026/School-Accounts-Manager/issues" target="_blank">enter a ticket</a>.
             <br/><br/>
-<?php
-		}
-		?>
+            <?php
+            }
+            ?>
             <!--            <img style="height:50%;border-radius:12%;box-shadow:0px 0px 15px #888888" onmouseover="this.style.boxShadow='0px 0px 50px #4285f4';" onmouseleave="this.style.boxShadow='0px 0px 15px #888888';" src="img/mobile.png"/>//-->
             <!--            <br/><br/>//-->
             This site is mobile friendly<br/>
@@ -48,7 +48,8 @@
 </table>
 <div class="homepage_footer centered"><?php
     if ($_SESSION["authenticated_tech"]=="true") {
-        echo "Access Level: Technology";
+        //echo "Access Level: Technology";
+		echo "<br/>Version: ".$appConfig["configuredVersion"];
         //echo "<br/>Tech: ".$_SESSION["authenticated_tech"];
         //echo "<br/>Admin: ".$_SESSION["authenticated_admin"];
         //echo "<br/>Power: ".$_SESSION["authenticated_power"];

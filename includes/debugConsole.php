@@ -3,12 +3,12 @@
 
         <div><strong>Debug Console</strong></div>
 
-                <div  id="debugConsoleText" class="debugConsoleText"></div>
+        <div  id="debugConsoleText" class="debugConsoleText"></div>
 
-                <br/>
-                <button onclick='document.getElementById("debugConsoleContainer").style="visibility:hidden";'>
-                    Close Console
-                </button>
+        <br/>
+        <button onclick='document.getElementById("debugConsoleContainer").style="visibility:hidden";'>
+            Close Console
+        </button>
 
     </div>
 

@@ -3,12 +3,12 @@
 
         <div><strong>Debug Include</strong></div>
 
-                <div  id="debugIncludeText" class="debugIncludeText"><?php echo debugArray(get_included_files());?></div>
+        <div  id="debugIncludeText" class="debugIncludeText"><?php echo debugArray(get_included_files());?></div>
 
-                <br/>
-                <button onclick='document.getElementById("debugIncludeContainer").style="visibility:hidden";'>
-                    Close Console
-                </button>
+        <br/>
+        <button onclick='document.getElementById("debugIncludeContainer").style="visibility:hidden";'>
+            Close Console
+        </button>
 
     </div>
 

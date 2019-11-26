@@ -2,8 +2,8 @@
 function runPowershellCommand($command){
     $cmd = 'Powershell.exe Invoke-Command -ScriptBlock{'.$command.'}';
     debug("CMD: ".$cmd);
-	$result = explode("\n",shell_exec ($cmd));
-	debug($result);
+    $result = explode("\n",shell_exec ($cmd));
+    debug($result);
     return $result;
 
 }
@@ -364,7 +364,7 @@ function rpcReachable($pc){
 
 function testAdministrator (){  
     $cmd='$user = [Security.Principal.WindowsIdentity]::GetCurrent();'
-    .'(New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)';
+        .'(New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)';
     return boolval(runPowershellCommand($cmd)[0]);
 }
 

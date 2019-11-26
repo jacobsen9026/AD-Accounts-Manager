@@ -1,69 +1,71 @@
 <table id="loginPopupContainer">
-        <tr>
-            <th>
-                School Accounts Manager
-            </th>
-        </tr>
-        <tr>
-            <td>
-                <div style="width:100%;text-align:center;">
-                    <?php
-                    if(isset($_POST['badpass'])){
+<tr>
+	<th>
+		<?php
+		echo $appConfig["webAppName"];
+		?>
+	</th>
+</tr>
+<tr>
+	<td>
+		<div style="width:100%;text-align:center;">
+			<?php
+			if(isset($_POST['badpass'])){
 
-                    ?>
-                    <script>var toast = new iqwerty.toast.Toast('Bad Username/Password');</script>
+			?>
+			<script>var toast = new iqwerty.toast.Toast('Bad Username/Password');</script>
+			<span style="color:red;font-size:0.6em;">Bad Username/Password</span><br/>
 
+			<?php
 
-                    <?php
+			}
+			if(isset($_POST['notauthorized'])){
 
-                    }
-                    ?>
-                    <span id="badPassMessage" style="display:none">Bad Username/Password</span>
-                     <?php
-                    if(isset($_POST['notauthorized'])){
+			?>
+			<script>var toast = new iqwerty.toast.Toast('Not Authorized');</script>
+			<span style="color:red;font-size:0.6em;">Not Authorized</span><br/>
 
-                    ?>
-                    <script>var toast = new iqwerty.toast.Toast('Not Authorized');</script>
+			<?php
 
+			}
+			if(isset($_SESSION)){
+				if(isset($timedOut)){
+					if($timedOut=="true"){
+						$timedOut="";
+						session_unset();
+			?>
 
-                    <?php
+			<span style="color:black;font-size:0.6em;">Your session has timed out. Please log in again.</span><br/>
 
-                    }
-                    ?>
-                     <span id="notAuthorizedMessage" style="display:none">Not Authorized</span>
-                    <?php
-                    if(isset($_SESSION)){
-                        if(isset($timedOut)){
-                            if($timedOut=="true"){
-                                $timedOut="";
-                                session_unset();
-                    ?>
+			<?php
+					}
+				}
+			}
 
-<!--                    <span style="color:black;">Your session has timed out. Please log in again.</span><br/>//-->
+			?>
 
-                    <?php
-                            }
-                        }
-                    }
-                    ?>
+			Username
+			<input name="intent" value="<?php echo $goto;?>" hidden>
+		</div>
+		<input <?php if (!isset($_COOKIE["username"])) { ?>autofocus<?php } ?> type="text" name="username" value="<?php if (isset($_COOKIE["username"])) { echo $_COOKIE["username"];} ?>" autocomplet /><br/>
+		Password
+		<input <?php if (isset($_COOKIE["username"])) { ?>autofocus<?php } ?> type="password" name="password" value="<?php if (isset($_COOKIE["token"])) { echo json_decode($_COOKIE["token"],true)[0];} ?>" autocomplet/><br/>
 
-                    Username
-                    <input name="intent" value="<?php echo $goto;?>" hidden>
-                </div>
-                <input <?php if (!isset($_COOKIE["username"])) { ?>autofocus<?php } ?> type="text" name="username" value="<?php if (isset($_COOKIE["username"])) { echo $_COOKIE["username"]; } ?>" autocomplete /><br/>
-                Password
-                <input id="passwordInput" <?php if (isset($_COOKIE["username"])) { ?>autofocus<?php } ?> type="password" name="password" autocomplete onkeypress="javascript:password_onkeypress(event);" /><br/>
+		<br />
+		<br /><div style="cursor:hand;" style="width:50%;height:3em;vertical-align:middle;display:inline">
+		<text onclick="checkOnPage('rememberUsernameCheckbox')">Remember Username</text> 
+		<input id="rememberUsernameCheckbox" style="cursor:hand;width:2em;vertical-align:middle;" type="checkbox" name="rememberUsername" <?php if (isset($_COOKIE["username"])) { echo 'checked=true'; }?>/>
+		<?php //print_r($_COOKIE);?>
+		</div>
+		<br/>
+		<div style="cursor:hand;" style="width:50%;height:3em;vertical-align:middle;display:inline">
+			<text onclick="checkOnPage('rememberMeCheckbox')">Remember Me</text> 
+			<input id="rememberMeCheckbox" style="cursor:hand;width:2em;vertical-align:middle;" type="checkbox" name="rememberMe" <?php if (isset($_COOKIE["token"])) { echo 'checked=true'; }?>/>
+			<?php //print_r($_COOKIE);?>
+		</div><br/>
+		<button type="submit">Login</button>
 
-                <br />
-                <br /><div style="cursor:hand;" style="width:50%;height:3em;vertical-align:middle;display:inline">
-                <text onclick="checkOnPage('rememberUsernameCheckbox')">Remember Username</text> 
-                <input id="rememberUsernameCheckbox" style="cursor:hand;width:2em;vertical-align:middle;" type="checkbox" name="rememberUsername" <?php if (isset($_COOKIE["username"])) { echo 'checked=true'; }?>/>
-                <?php //print_r($_COOKIE);?>
-                </div><br/><br/>
-                <button type="button" onclick="reauthenticateSession()">Login</button>
-<!--                <button type="submit" hidden>Login</button>//-->
+	</td>
+</tr>
 
-            </td>
-        </tr>
-
-    </table>
+</table>

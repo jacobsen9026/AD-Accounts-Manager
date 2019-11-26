@@ -1,13 +1,15 @@
 
 
 <div class="settingsContainer">
-        <div  class="settingsList">
-		<div>
-            <strong>
-                Staff Email Groups</strong><br/>
-				Do not include the domain name
-				</div>
-				<div>
+    <div  class="settingsList">
+        <div>
+            <h3>
+                Staff Email Groups</h3>
+            <small>
+                Do not include the domain name
+            </small>
+        </div>
+        <div>
             <textarea placeholder="Enter staff email groups, one per line" class="settingsList" name="staffEmailGroups" rows="10" spellcheck="false"><?php
                 foreach($appConfig["staffEmailGroups"] as $group){
 
@@ -16,7 +18,7 @@
                 }
 
                 ?></textarea>
-				</div>
-         
-           </div>
+        </div>
+
     </div>
+</div>

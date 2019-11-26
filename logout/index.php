@@ -10,5 +10,5 @@ session_destroy();
 //header( 'Location: /' ) ;
 ?>
 <script>
-window.location="/";
+    window.location="/";
 </script>

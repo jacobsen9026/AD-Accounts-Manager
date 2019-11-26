@@ -13,3 +13,5 @@ tech/computers/termsrv/win10-1809-2.dll
 .htaccess
 lib/gam-64/oauth2.txt
 web.config
+logs/login.log
+logs/login.log

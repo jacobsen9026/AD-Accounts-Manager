@@ -3,13 +3,13 @@
 
         <div><strong>Debug Config</strong></div>
 
-                <div  id="debugConfigText" class="debugConfigText"><?php echo debugArray($appConfig);
-				//phpinfo();?></div>
+        <div  id="debugConfigText" class="debugConfigText"><?php echo debugArray($appConfig);
+            //phpinfo();?></div>
 
-                <br/>
-                <button onclick='document.getElementById("debugConfigContainer").style="visibility:hidden";'>
-                    Close Console
-                </button>
+        <br/>
+        <button onclick='document.getElementById("debugConfigContainer").style="visibility:hidden";'>
+            Close Console
+        </button>
 
     </div>
 
