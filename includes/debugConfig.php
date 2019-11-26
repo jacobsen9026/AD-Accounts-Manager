@@ -3,7 +3,7 @@
 
         <div><strong>Debug Config</strong></div>
 
-        <div  id="debugConfigText" class="debugConfigText"><?php echo debugArray($appConfig);
+        <div  id="debugConfigText" class="debugConfigText"><?php echo debug(Array($appConfig));
             //phpinfo();?></div>
 
         <br/>

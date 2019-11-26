@@ -97,13 +97,13 @@ if(isset($_POST["websiteFQDN"]) and $_POST["websiteFQDN"]!=""){
 
 debug("Debug Mode is on");
 if(isset($_POST["debugMode"])){
-    if($appConfig["debugMode"]!=$_POST["debugModeCheck"]){
+    if(isset($appConfig["debugMode"]) and $appConfig["debugMode"]!=$_POST["debugModeCheck"]){
         $refresh=true;
     }else{
         $refresh=false;
     }
     print_r ($_POST["debugMode"]);
-    if($_POST['debugModeCheck']==true){
+    if(isset($appConfig["debugMode"]) and $_POST['debugModeCheck']==true){
         $appConfig["debugMode"]=true;
     }else{
         $appConfig["debugMode"]=false;
