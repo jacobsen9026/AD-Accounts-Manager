@@ -11,7 +11,7 @@
         <div>
 
 
-            <input title="Enter the FQDN this server is reachable from" placeholder="Enter FQDN" type="text" name="websiteFQDN" value="<?php if(isset($appConfig["websiteFQDN"]){ echo  $appConfig["websiteFQDN"];}?>">
+            <input title="Enter the FQDN this server is reachable from" placeholder="Enter FQDN" type="text" name="websiteFQDN" value="<?php if(isset($appConfig["websiteFQDN"])){ echo  $appConfig["websiteFQDN"];}?>">
         </div>
 
 
