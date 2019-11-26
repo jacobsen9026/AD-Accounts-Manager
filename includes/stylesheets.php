@@ -13,7 +13,7 @@ if(isset($_COOKIE["theme"])){
     echo '<link rel="stylesheet" type="text/css" href="/style/lightTheme.css">';
 
 }
-if ($appConfig["debugMode"] and $_SESSION["authenticated_tech"]){
+if (isset($_SESSION["authenticated_tech"]) and $appConfig["debugMode"] and $_SESSION["authenticated_tech"]){
     echo '<link rel="stylesheet" type="text/css" href="/style/sandbox.css">';
 }
 ?>

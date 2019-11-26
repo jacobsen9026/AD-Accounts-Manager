@@ -1,6 +1,9 @@
 <?php
 $configSingleLineOptions = Array("emailFromName","emailFromAddress",
-                                 "domainName","domainController","webAppName","domainNetBIOS","sessionTimeout");
+                                 "domainName","domainController","webAppName",
+								 "domainNetBIOS","sessionTimeout","emailServerFQDN",
+								 "emailAuthUsername","emailAuthPassword","emailReplyToName",
+								 "emailReplyToAddress","emailServerPort");
 
 
 
@@ -9,7 +12,7 @@ $configMultiLineOptions = Array("adminUsernames", "parentEmailGroups",
                                 "staffEmailGroups", "welcomeEmailReceivers", "adminUsernames",
                                 "adminEmails","homepageMessage");
 
-
+$configCheckboxOptions = Array("redirectHTTP","emailUseSMTPAuth","emailUseSSL");
 
 
 foreach ($configSingleLineOptions as $option){
@@ -31,6 +34,19 @@ foreach ($configMultiLineOptions as $option){
     }
 }
 
+foreach ($configCheckboxOptions as $option){
+    if(isset($_POST[$option])){
+        debug("saving ".$option);
+		if(isset($_POST[$option."Check"]) and $_POST[$option."Check"]==true){
+			$appConfig[$option]=true;
+		}else{
+			$appConfig[$option]=false;
+		}
+
+		saveConfig();
+	}
+}
+
 
 
 if(isset($_POST["adminPassword"]) and trim($_POST["adminPassword"])!=""){
@@ -39,16 +55,13 @@ if(isset($_POST["adminPassword"]) and trim($_POST["adminPassword"])!=""){
     saveConfig();
 }
 
-if(isset($_POST["testEmailTo"]) and trim($_POST["testEmailTo"])!=""){
-    $appConfig["testEmailTo"] = trim($_POST["testEmailTo"]) ;
 
-    saveConfig();
-}
 
 if(isset($_POST["testEmailTo"]) and trim($_POST["testEmailTo"])!=""){
 
-    debug(sendEmail($_POST["to"],"Test Email","This is a test notification from the ".$appConfig["webAppName"]."."));
-}
+    $testEmailResult = sendEmail2($_POST["testEmailTo"],"Test Email","This is a test notification from the ".$appConfig["webAppName"].".");
+	debug($testEmailResult);
+	}
 
 
 if(isset($_FILES["oauth2_txt"])){
@@ -85,25 +98,28 @@ if(isset($_POST["welcomeEmailHTML"]) and $_POST["welcomeEmailHTML"]!=""){
 
 
 
-if(isset($_POST["websiteFQDN"]) and $_POST["websiteFQDN"]!=""){
-    $websiteFQDN=$_POST["websiteFQDN"];
-    if(strpos( $websiteFQDN,"//")!=false){
-        $websiteFQDN=substr( $websiteFQDN,strpos( $websiteFQDN,"//")+2,strlen( $websiteFQDN)-strpos( $websiteFQDN,"//")-2);
-    }
-    $appConfig["websiteFQDN"] = trim($websiteFQDN) ;
-
+if(isset($_POST["websiteFQDN"])){
+	$websiteFQDN=$_POST["websiteFQDN"];
+	if($websiteFQDN != ""){
+		
+		if(strpos( $websiteFQDN,"//")!=false){
+			$websiteFQDN=substr( $websiteFQDN,strpos( $websiteFQDN,"//")+2,strlen( $websiteFQDN)-strpos( $websiteFQDN,"//")-2);
+		}
+		$appConfig["websiteFQDN"] = trim($websiteFQDN) ;
+	}else{
+		$appConfig["websiteFQDN"] = "" ;
+	}
     saveConfig();
 }
 
 debug("Debug Mode is on");
 if(isset($_POST["debugMode"])){
-    if($appConfig["debugMode"]!=$_POST["debugModeCheck"]){
+    if(isset($appConfig["debugMode"]) and $appConfig["debugMode"]!=$_POST["debugModeCheck"]){
         $refresh=true;
     }else{
         $refresh=false;
     }
-    print_r ($_POST["debugMode"]);
-    if($_POST['debugModeCheck']==true){
+    if(isset($appConfig["debugMode"]) and $_POST['debugModeCheck']==true){
         $appConfig["debugMode"]=true;
     }else{
         $appConfig["debugMode"]=false;
@@ -198,15 +214,4 @@ if(isset($_GET["rolloverGrades"]) and $_GET["rolloverGrades"]=="true"){
 }
 
 
-if(isset($_POST["redirectHTTP"])){
-    print_r ($_POST["redirectHTTP"]);
-    if($_POST['redirectHTTPCheck']==true){
-        $appConfig["redirectHTTP"]=true;
-    }else{
-        $appConfig["redirectHTTP"]=false;
-    }
-    //$appConfig["redirectHTTP"] = IsChecked($_POST["redirectHTTP"]) ;
-
-    saveConfig();
-}
 ?>

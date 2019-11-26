@@ -158,6 +158,74 @@ function notProtectedUsername($username){
     return true;
 }
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+use PHPMailer\PHPMailer\POP;
+use PHPMailer\PHPMailer\OAuth;
+use PHPMailer\PHPMailer\SMTP;
+
+require './lib/PHPMailer/src/Exception.php';
+require './lib/PHPMailer/src/PHPMailer.php';
+require './lib/PHPMailer/src/SMTP.php';
+require './lib/PHPMailer/src/POP3.php';
+require './lib/PHPMailer/src/OAuth.php';
+	
+
+function sendEmail2 ($to,$subject,$message){
+	global $appConfig;
+	$mail = new PHPMailer(true);
+
+	try {
+		//Server settings
+		//$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
+		$mail->isSMTP();                                            // Send using SMTP
+		$mail->Host       = $appConfig["emailServerFQDN"];                    // Set the SMTP server to send through
+		if(isset($appConfig["emailUseSMTPAuth"]) and $appConfig["emailUseSMTPAuth"]){
+			debug("Using SMTP Auth");
+			$mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+			$mail->Username   = $appConfig["emailAuthUsername"];                     // SMTP username
+			$mail->Password   = $appConfig["emailAuthPassword"];                               // SMTP password
+		}else{
+			debug("Not using SMTP Auth");
+			$mail->SMTPAuth   = false;                                   // Disable SMTP authentication
+		}
+		
+		if(isset($appConfig["emailUseSSL"]) and $appConfig["emailUseSSL"]!=""){
+			$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` also accepted
+		}
+		$mail->Port       = $appConfig["emailServerPort"];                                    // TCP port to connect to
+
+		//Recipients
+		debug ("From Address: ".$appConfig["emailFromAddress"]);
+		$mail->setFrom($appConfig["emailFromAddress"], $appConfig["emailFromName"]);
+		$mail->addAddress($to);     // Add a recipient
+		//$mail->addAddress('ellen@example.com');               // Name is optional
+		if(isset($appConfig["emailReplyToAddress"]) and $appConfig["emailReplyToAddress"]!=""){
+			$mail->addReplyTo($appConfig["emailReplyToAddress"], $appConfig["emailReplyToName"]);
+		}
+		//$mail->addCC('cc@example.com');
+		//$mail->addBCC('bcc@example.com');
+
+		// Attachments
+		//$mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
+		//$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
+
+		// Content
+		$mail->isHTML(true);                                  // Set email format to HTML
+		$mail->Subject = $subject;
+		$mail->Body    = $message;
+		//$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+		$mail->send();
+		Return 'Message has been sent';
+	} catch (Exception $e) {
+		Return "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+	}
+
+	
+}
+
 
 
 function sendEmail($to,$subject,$message){
@@ -257,6 +325,8 @@ function hostReachable ($hostname){
 
 
 }
+
+
 
 
 ?>

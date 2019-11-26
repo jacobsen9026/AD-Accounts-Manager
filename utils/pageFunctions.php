@@ -21,21 +21,28 @@ function printGAUserGroups($username){
 }
 
 function debug($message){
+	//echo "debug";
     global $appConfig;
     if($appConfig["debugMode"]){
-        if ($_SESSION["authenticated_tech"] or $appConfig["installComplete"]!="true"){
-            if (is_array($message)){
+		//echo "debug mode on";
+        if ((isset($_SESSION["authenticated_tech"]) and $_SESSION["authenticated_tech"]) or $appConfig["installComplete"]!=true){
+            //echo "passed checks";
+			if (is_array($message)){
+				echo "debug array";
                 $message=debugArray($message);
             }
+			//echo "debug string";
+			
             $message = str_replace("\n","",$message);
             $bt = debug_backtrace(1);
             $caller = array_shift($bt);
             $caller["file"]=str_replace("\\","/",$caller['file']);
             $consoleMessage="Called From: ".$caller["file"]." Line: ".$caller["line"].$message;
             $htmlMessage="Called From: ".$caller["file"]." Line: ".$caller["line"]."<br/>".$message;
+			//echo $htmlMessage;
             echo '<script>console.log("'.$consoleMessage.'")</script>';
 ?>
-<script>document.getElementById("debugConsoleText").innerHTML=document.getElementById("debugConsoleText").innerHTML+"<?php echo $htmlMessage;?><br/><br/><br/>"</script>
+<script>document.getElementById("debugConsoleText").innerHTML=document.getElementById("debugConsoleText").innerHTML+"<?php //echo $htmlMessage;?><br/><br/><br/>"</script>
 
 
 <?php

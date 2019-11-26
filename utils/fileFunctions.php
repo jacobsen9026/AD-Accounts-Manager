@@ -20,8 +20,9 @@ function recurse_copy($src,$dst) {
     } 
     closedir($dir); 
 }
-function getViews($path){
-    $views = scandir($path."/views/");
+
+function getFolders($path){
+    $views = scandir($path."/");
     $folders = Array();
     foreach ($views as $folder){
         if ($folder!="." and $folder != ".." and strpos($folder ,".")==null){
@@ -34,7 +35,9 @@ function getViews($path){
 
 }
 
-function getViewFiles($viewPath){
+
+
+function getFiles($viewPath){
     $views = scandir($viewPath);
     $files = Array();
     foreach ($views as $file){
@@ -47,6 +50,8 @@ function getViewFiles($viewPath){
     return $files;
 
 }
+
+
 
 function auditLogon($username){
     $dir="./logs/";

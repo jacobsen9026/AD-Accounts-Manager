@@ -58,7 +58,7 @@ if(isset($_SESSION['authenticated_tech'])){
 </div>
 
 <?php
-if ($appConfig["debugMode"] and $_SESSION["authenticated_tech"]=="true"){
+if (isset($_SESSION["authenticated_tech"]) and $appConfig["debugMode"] and $_SESSION["authenticated_tech"]=="true"){
     include("./includes/debugInclude.php");
 }
 ?>
