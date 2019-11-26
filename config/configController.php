@@ -1,6 +1,9 @@
 <?php
 $configSingleLineOptions = Array("emailFromName","emailFromAddress",
-                                 "domainName","domainController","webAppName","domainNetBIOS","sessionTimeout");
+                                 "domainName","domainController","webAppName",
+								 "domainNetBIOS","sessionTimeout","emailServerFQDN",
+								 "emailAuthUsername","emailAuthPassword","emailReplyToName",
+								 "emailReplyToAddress","emailServerPort");
 
 
 
@@ -9,7 +12,7 @@ $configMultiLineOptions = Array("adminUsernames", "parentEmailGroups",
                                 "staffEmailGroups", "welcomeEmailReceivers", "adminUsernames",
                                 "adminEmails","homepageMessage");
 
-$configCheckboxOptions = Array("redirectHTTP");
+$configCheckboxOptions = Array("redirectHTTP","emailUseSMTPAuth","emailUseSSL");
 
 
 foreach ($configSingleLineOptions as $option){
@@ -33,7 +36,8 @@ foreach ($configMultiLineOptions as $option){
 
 foreach ($configCheckboxOptions as $option){
     if(isset($_POST[$option])){
-		if($_POST['redirectHTTPCheck']==true){
+        debug("saving ".$option);
+		if(isset($_POST[$option."Check"]) and $_POST[$option."Check"]==true){
 			$appConfig[$option]=true;
 		}else{
 			$appConfig[$option]=false;
@@ -51,16 +55,13 @@ if(isset($_POST["adminPassword"]) and trim($_POST["adminPassword"])!=""){
     saveConfig();
 }
 
-if(isset($_POST["testEmailTo"]) and trim($_POST["testEmailTo"])!=""){
-    $appConfig["testEmailTo"] = trim($_POST["testEmailTo"]) ;
 
-    saveConfig();
-}
 
 if(isset($_POST["testEmailTo"]) and trim($_POST["testEmailTo"])!=""){
 
-    debug(sendEmail($_POST["to"],"Test Email","This is a test notification from the ".$appConfig["webAppName"]."."));
-}
+    $testEmailResult = sendEmail2($_POST["testEmailTo"],"Test Email","This is a test notification from the ".$appConfig["webAppName"].".");
+	debug($testEmailResult);
+	}
 
 
 if(isset($_FILES["oauth2_txt"])){
