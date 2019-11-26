@@ -501,6 +501,7 @@ p:hover{
 
 }
 #loggedInUser{
+	padding-top:.5em;
 	text-align:left;
 	display:inline-block;
 	#padding-top:1em;
@@ -515,11 +516,11 @@ p:hover{
 
 #userButton img{
 	 margin-right:0.25em;
-	 height:90%;
+	 height:2em;
 	 #margin-left:0.25em;
 	 display:inline-block;
 	 #float:left;
-	 margin-top:0.15em;
+	 margin-top:0.5em;
  }
 
 
