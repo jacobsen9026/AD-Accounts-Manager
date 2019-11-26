@@ -22,7 +22,7 @@ button, #userButton, #navigation, #studentButton, #staffButton, #parentButton, #
 
 #userButton:hover, #studentButton:hover, #staffButton:hover, #techButton:hover, #parentButton:hover {
 
-	background-color:#2c59b5 !important;
+	background-color:#2c59b5;
 }
 
 .red{

@@ -228,12 +228,12 @@ email {
 }
 
 .configNavContainer{
-	position:relative;
+	#position:relative;
 	min-width:100%;
 	border-collapse:collapse;
 	margin-left:auto;
 	margin-right:auto;
-	top:-1.2em;
+	#top:-1.2em;
 }
 
 .configNavButton button{
@@ -573,7 +573,7 @@ p:hover{
 	width:100%;
     #margin-left:10px;
     #margin-right:10px;
-	margin-bottom:1em;
+	#margin-bottom:0.5em;
     #min-height:450px;
     -webkit-transition: 0.5s;
     -webkit-transition-delay: 0.1s;
@@ -583,19 +583,30 @@ p:hover{
     -moz-transition-delay: 0.1s;
 }
 
+.required input{
+	border-color:red;
+}
 
 .settingsList {
     margin-right:auto;
     margin-left:auto;
     width:90%;
     padding:1em;
-    border-radius:0.5em;
-    box-shadow: 5px 5px 5px #888888;
+	padding-top:0.5em;
+	padding-bottom:0.5em;
+    #border-radius:0.5em;
+    #box-shadow: 5px 5px 5px #888888;
 }
 .settingsList div{
 	vertical-align:middle;
 	display:inline-block;
 	width:45%;
+}
+
+.settingsList div div{
+	vertical-align:middle;
+	display:inline-block;
+	#width:45%;
 }
 .mediumSettingsContainer{
     #margin-left:70px;
