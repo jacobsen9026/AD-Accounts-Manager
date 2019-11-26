@@ -9,7 +9,7 @@ $configMultiLineOptions = Array("adminUsernames", "parentEmailGroups",
                                 "staffEmailGroups", "welcomeEmailReceivers", "adminUsernames",
                                 "adminEmails","homepageMessage");
 
-
+$configCheckboxOptions = Array("redirectHTTP");
 
 
 foreach ($configSingleLineOptions as $option){
@@ -29,6 +29,18 @@ foreach ($configMultiLineOptions as $option){
         debug($appConfig[$option]);
         saveConfig();
     }
+}
+
+foreach ($configCheckboxOptions as $option){
+    if(isset($_POST[$option])){
+		if($_POST['redirectHTTPCheck']==true){
+			$appConfig[$option]=true;
+		}else{
+			$appConfig[$option]=false;
+		}
+
+		saveConfig();
+	}
 }
 
 
@@ -85,13 +97,17 @@ if(isset($_POST["welcomeEmailHTML"]) and $_POST["welcomeEmailHTML"]!=""){
 
 
 
-if(isset($_POST["websiteFQDN"]) and $_POST["websiteFQDN"]!=""){
-    $websiteFQDN=$_POST["websiteFQDN"];
-    if(strpos( $websiteFQDN,"//")!=false){
-        $websiteFQDN=substr( $websiteFQDN,strpos( $websiteFQDN,"//")+2,strlen( $websiteFQDN)-strpos( $websiteFQDN,"//")-2);
-    }
-    $appConfig["websiteFQDN"] = trim($websiteFQDN) ;
-
+if(isset($_POST["websiteFQDN"])){
+	$websiteFQDN=$_POST["websiteFQDN"];
+	if($websiteFQDN != ""){
+		
+		if(strpos( $websiteFQDN,"//")!=false){
+			$websiteFQDN=substr( $websiteFQDN,strpos( $websiteFQDN,"//")+2,strlen( $websiteFQDN)-strpos( $websiteFQDN,"//")-2);
+		}
+		$appConfig["websiteFQDN"] = trim($websiteFQDN) ;
+	}else{
+		$appConfig["websiteFQDN"] = "" ;
+	}
     saveConfig();
 }
 
@@ -102,7 +118,6 @@ if(isset($_POST["debugMode"])){
     }else{
         $refresh=false;
     }
-    print_r ($_POST["debugMode"]);
     if(isset($appConfig["debugMode"]) and $_POST['debugModeCheck']==true){
         $appConfig["debugMode"]=true;
     }else{
@@ -198,15 +213,4 @@ if(isset($_GET["rolloverGrades"]) and $_GET["rolloverGrades"]=="true"){
 }
 
 
-if(isset($_POST["redirectHTTP"])){
-    print_r ($_POST["redirectHTTP"]);
-    if($_POST['redirectHTTPCheck']==true){
-        $appConfig["redirectHTTP"]=true;
-    }else{
-        $appConfig["redirectHTTP"]=false;
-    }
-    //$appConfig["redirectHTTP"] = IsChecked($_POST["redirectHTTP"]) ;
-
-    saveConfig();
-}
 ?>

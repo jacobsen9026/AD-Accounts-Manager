@@ -1,25 +1,30 @@
 <?php
 global $appConfig;
 //debug($_GET["config"]);
-if(isset($_GET["config"])){
+if(isset($_GET["config"]) and $_GET["config"]!=""){
     $config=$_GET["config"];
 }else{
     $config="webApplicationSettings";
 }
 
+	//echo "<br/><br/><br/>sadjhksakjdhsakjd";
 
-
-$views = getViews("./config");
+$views = getFolders("./config/views");
+//var_export($views);
 foreach($views as $view){
-    $viewFile = getViewFiles("./config/views/".$view)[0];
+    $viewFile = getFolders("./config/views/".$view)[0];
+	
+	//echo $viewFile;
     $viewVariable = explode(".",$viewFile)[0];
-    $search[]="&config=".$viewVariable;
+	if(isset($viewVariable) and $viewVariable!=""){
+		$search[]="&config=".$viewVariable;
+	}
     if($viewVariable==$config){
         $currentView=$view;
         //echo $currentView;
     }
 }
-//var_export($views);
+//var_export($search);
 debug($views);
 ?>
 
@@ -32,7 +37,7 @@ debug($views);
             <td>
 
                 <?php
-                include("./config/includes/configNavBar.php");
+                include("./config/configNavBar.php");
                 ?>
 
             </td>
@@ -43,10 +48,41 @@ debug($views);
         <?php
         debug($config);
         include("./config/configController.php");
-        if(file_exists("./config/views/".$currentView."/".$config.".php")){
+        if(file_exists("./config/views/".$currentView."/".$config)){
             debug("File Exists");
+			?>
+			
+<tr>
+    <th>
+        <?php echo $currentView;?>
+    </th>
+</tr>
+<tr>
+    <td>
+        <br/><br/>
 
-            include("./config/views/".$currentView."/".$config.".php");
+        <?php
+        foreach(getFiles("./config/views/".$currentView."/".$config) as $settingTool){
+			include("./config/views/".$currentView."/".$config."/".$settingTool);
+		}
+        ?>
+
+
+
+
+
+
+
+
+
+    </td>
+</tr>
+
+			
+			
+			<?php
+
+            //include("./config/views/".$currentView."/".$config.".php");
         ?>
         <tr>
             <td>
