@@ -48,7 +48,8 @@
 </table>
 <div class="homepage_footer centered"><?php
     if ($_SESSION["authenticated_tech"]=="true") {
-        echo "Access Level: Technology";
+        //echo "Access Level: Technology";
+		echo "<br/>Version: ".$appConfig["configuredVersion"];
         //echo "<br/>Tech: ".$_SESSION["authenticated_tech"];
         //echo "<br/>Admin: ".$_SESSION["authenticated_admin"];
         //echo "<br/>Power: ".$_SESSION["authenticated_power"];
