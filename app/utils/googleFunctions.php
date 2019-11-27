@@ -1,11 +1,13 @@
 <?php
 function runGAMCommand($command){
-    $cmd = './lib/gam-64/gam.exe '.$command;
-    //echo $cmd;
+	$currentWD = getcwd();
+	chdir($currentWD."/lib/gam-64");
+    $cmd = 'gam.exe '.$command;
     debug("CMD: ".$cmd);
     //debug(shell_exec ($cmd));
     $result = explode("\n",shell_exec ($cmd));
     debug($result);
+	chdir($currentWD);
     return $result;
 }
 
