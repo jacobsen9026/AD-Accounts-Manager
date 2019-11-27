@@ -120,9 +120,9 @@ if(!isset($_SESSION['authenticated_basic'])){
         <script src="/scripts/otherScripts.js"></script>
         <script src="/scripts/auth.js"></script>
 
-        <script src="/scripts/js-toast-master/toast.js"></script>
-        <script src="/lib/jquery.min.js"></script>
-        <script src="/lib/jquery.plugin.js"></script>
+        <script src="/scripts/lib/js-toast-master/toast.js"></script>
+        <script src="/scripts/lib/jquery.min.js"></script>
+        <script src="/scripts/lib/jquery.plugin.js"></script>
 
 
 

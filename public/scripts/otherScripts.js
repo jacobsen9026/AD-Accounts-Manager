@@ -1,4 +1,63 @@
 
+async function getHTTPResponse(url, formData){
+
+    
+
+    // send it out
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url);
+    xhr.send(formData);
+
+    xhr.onload = () => {
+		let response = xhr.response;
+		console.log(response);
+		return response;
+	}
+	return false;
+
+}
+
+async function getInstallChecklist(){
+	
+	var url = "/install/runChecks.php";
+	 console.log(url);
+
+    // send it out
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.send();
+
+    xhr.onload = () => {
+		let response = xhr.response;
+		document.getElementById('container').innerHTML=response;
+		console.log(response);
+		
+	}
+
+	//console.log("get install checklist");
+	
+	//console.log(response.responseText);
+	
+}
+
+
+
+async function getHTTPResponse(url){
+
+    console.log(url);
+
+    // send it out
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.send();
+
+    xhr.onload = () => {
+		let response = xhr.response;
+		console.log(response);
+		return response;
+	}
+	return false;
+}
 
 function CopyToClipboard(containerid) {
     if (window.getSelection) {

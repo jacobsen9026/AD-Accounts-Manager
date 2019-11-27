@@ -92,45 +92,39 @@ function reauthenticatedSession(){
 
 async function reauthenticateSession(){
 
-    let formData = new FormData(document.forms.loginPrompt);
-
-    // add one more field
-    //formData.append("middle", "Lee");
-
-    // send it out
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "/?goto=/login/challenge.php");
-    xhr.send(formData);
-    let response = xhr.response;
-    //response.getElementById("authenticated");
-
-    xhr.onload = () => {
-        let authenticated=xhr.response.includes('authenticated');
-        let badPass=xhr.response.includes('badPass');
-        let notAuthorized=xhr.response.includes('notAuthorized');
-        console.log(authenticated);
-        console.log(badPass);
-        console.log(notAuthorized);
+    let response = getHTTPResponse("/?goto=/login/challenge.php", new FormData(document.forms.loginPrompt));
+	
+	authenticated=response.includes('authenticated');
+    badPass=response.includes('badPass');
+    notAuthorized=response.includes('notAuthorized');
+	console.log(authenticated);
+	console.log(badPass);
+	console.log(notAuthorized);
 
 
-        if(authenticated){
-            reauthenticatedSession();
-        }
-        else if(notAuthorized){
-            document.getElementById("notAuthorizedMessage").style="";
-        }
-        else if(badPass){
-            document.getElementById("badPassMessage").style="";
-        }
-        else{
-            document.getElementById("notAuthorizedMessage").style="display:none";
-            document.getElementById("badPassMessage").style="display:none";
-        }
-
-    };
-    document.getElementById('passwordInput').value="";
-
+	if(authenticated){
+		reauthenticatedSession();
+	}
+	else if(notAuthorized){
+		document.getElementById("notAuthorizedMessage").style="";
+	}
+	else if(badPass){
+		document.getElementById("badPassMessage").style="";
+	}
+	else{
+		document.getElementById("notAuthorizedMessage").style="display:none";
+		document.getElementById("badPassMessage").style="display:none";
+	}
+	
+	document.getElementById('passwordInput').value="";
 }
+
+
+        
+
+    
+    
+
 
 function lockSession(){
 
