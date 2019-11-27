@@ -1,6 +1,6 @@
 <?php
 function runGAMCommand($command){
-    $cmd = $_SERVER["DOCUMENT_ROOT"].'/lib/gam-64/gam.exe '.$command;
+    $cmd = './lib/gam-64/gam.exe '.$command;
     //echo $cmd;
     debug("CMD: ".$cmd);
     //debug(shell_exec ($cmd));
@@ -296,7 +296,7 @@ function addTechDrivePermission ($username,$id,$url){
     //echo $cmd;
     $result = shell_exec($cmd);
     if($result!=""){
-        $flagFile = $_SERVER['DOCUMENT_ROOT']."/tech/google-drive/history/".$id;
+        $flagFile = "./app/views/tech/google-drive/history/".$id;
         //echo $flagFile;
         if(!file_exists($flagFile)){
             $fo = fopen($flagFile,"w");
@@ -316,7 +316,7 @@ function removeTechDrivePermission ($username,$id){
     //echo $cmd;
     debug("CMD: ".$cmd);
     $result = shell_exec($cmd);
-    $flagFile = $_SERVER['DOCUMENT_ROOT']."/tech/google-drive/history/".$id;
+    $flagFile = "./app/views/tech/google-drive/history/".$id;
 
     unlink($flagFile);
 

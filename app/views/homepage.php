@@ -1,4 +1,3 @@
-6
 <table id="container">
     <tr>
         <th>

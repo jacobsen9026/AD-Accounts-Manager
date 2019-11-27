@@ -85,10 +85,10 @@ if(isset($_FILES["oauth2_txt"])){
 
 
 if(isset($_POST["welcomeEmailHTML"]) and $_POST["welcomeEmailHTML"]!=""){
-    if(file_get_contents($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html")!=$_POST["welcomeEmailHTML"] and file_get_contents($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html.example")!=$_POST["welcomeEmailHTML"]) {
+    if(file_get_contents("./app/config/staffemail.html")!=$_POST["welcomeEmailHTML"] and file_get_contents("./app/config/staffemail.html.example")!=$_POST["welcomeEmailHTML"]) {
         $dateTime=date("Y-m-d_h-i-s");
-        copy($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html" ,$_SERVER['DOCUMENT_ROOT']."/config/backup/".$dateTime."_staffemail.html");
-        file_put_contents($_SERVER['DOCUMENT_ROOT']."/config/staffemail.html",trim($_POST["welcomeEmailHTML"])) ;
+        copy("./app/config/staffemail.html" ,"./app/config/backup/".$dateTime."_staffemail.html");
+        file_put_contents("./app/config/staffemail.html",trim($_POST["welcomeEmailHTML"])) ;
 
         saveConfig();
     }
