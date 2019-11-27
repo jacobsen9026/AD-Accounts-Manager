@@ -11,7 +11,7 @@ include ("./app/includes/backendIncludes.php");
 
 
             <br/>
-            <table class="settingsList">
+            <table class="settingsList" style="background-color:unset;">
                
                 <tr>
                     <td>LDAP Extension Enabled</td>
