@@ -1,15 +1,18 @@
 <?php
 if (!file_exists("./lib/gam-64/oauth2.txt")){
 ?>
-<table class="settingsList">
-    <tr>
-        <td>New Credentials</td>
-        <td>
-            Please run gam-setup.bat found in /lib/gam-64/
-        </td>
+<div class="settingsContainer">
+    <div  class="settingsList">
+		<div>
+			<h3>New Credentials</h3>
+        </div>
+		<div>
+            Please run gam-setup.bat found in /lib/gam-64/<br/>
+			<small>Or upload an oauth2 file below</small>
+		</div>
 
-    </tr>	
-</table>
+	</div>	
+</div>
 <?php	
 }
 ?>

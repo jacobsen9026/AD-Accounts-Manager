@@ -3,6 +3,8 @@ $auditContents= file_get_contents("./logs/login.log");
 $auditEntries=explode("\n",$auditContents);
 
 ?>
+<br/><br/>
+<button type="button" onclick='document.getElementById("logonAuditPopup").style.display = "block";'>Show Logon Audit</button><br/><br/>
 <div  id="logonAuditPopup" style="overflow-y: scroll;
                                   overflow-x: hidden;
                                   height: 450px;
@@ -11,7 +13,8 @@ $auditEntries=explode("\n",$auditContents);
                                   margin-left: auto;
                                   margin-right: auto;
                                   border:groove;
-                                  margin-top:15px">
+                                  margin-top:15px;
+								  display:none">
     <strong>Logon Audit</strong><br/>
     <div>
 

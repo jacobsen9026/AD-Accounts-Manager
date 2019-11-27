@@ -51,15 +51,15 @@ debug($views);
         if(file_exists("./config/views/".$currentView."/".$config)){
             debug("File Exists");
 			?>
-			
+<!--			
 <tr>
     <th>
         <?php echo $currentView;?>
     </th>
 </tr>
+-->
 <tr>
     <td>
-        <br/><br/>
 
         <?php
         foreach(getFiles("./config/views/".$currentView."/".$config) as $settingTool){
@@ -86,6 +86,7 @@ debug($views);
         ?>
         <tr>
             <td>
+			<br/><br/>
                 <button type="submit">Update Settings</button><br/>
             </td>
         </tr>

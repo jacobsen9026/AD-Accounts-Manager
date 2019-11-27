@@ -18,8 +18,10 @@
         
 		</div>
 
-
-    
+	</div>
+</div>
+ <div class="shortSettingsContainer">
+    <div  class="settingsList">   
 	
 		  <div>
             <h3>
@@ -33,7 +35,10 @@
         </div>
 	
 	
-	
+	</div>
+</div>
+ <div class="shortSettingsContainer">
+    <div  class="settingsList">   	
 	
 	
 	
@@ -60,7 +65,10 @@
 		
 		
 		
-		
+	</div>
+</div>
+ <div class="shortSettingsContainer">
+    <div  class="settingsList">   		
 		
 		
 
@@ -85,7 +93,10 @@
         </div>
 
 
-
+	</div>
+</div>
+ <div class="shortSettingsContainer">
+    <div  class="settingsList">   
 
 
 		<div>
@@ -102,7 +113,10 @@
 		
 		
 		
-		
+	</div>
+</div>
+ <div class="shortSettingsContainer">
+    <div  class="settingsList">   		
 		
 		
 		
@@ -120,7 +134,10 @@
 
 
 
-
+	</div>
+</div>
+ <div class="shortSettingsContainer">
+    <div  class="settingsList">   
 		
 		
 		
@@ -140,7 +157,10 @@
 
 
 		
-		
+	</div>
+</div>
+ <div class="shortSettingsContainer">
+    <div  class="settingsList">   		
 		
 		
 		
@@ -162,7 +182,10 @@
 		
 		
 		
-		
+	</div>
+</div>
+ <div class="shortSettingsContainer">
+    <div  class="settingsList">   		
 		
 		
 		
@@ -184,7 +207,10 @@
 		
 		
 		
-		
+	</div>
+</div>
+ <div class="shortSettingsContainer">
+    <div  class="settingsList">   		
 		
 		
 		
@@ -203,8 +229,7 @@
         </div>
 		
 		
-		
-		
+	 		
 		
 		
 		

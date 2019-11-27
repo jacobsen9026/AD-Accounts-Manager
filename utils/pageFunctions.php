@@ -28,7 +28,7 @@ function debug($message){
         if ((isset($_SESSION["authenticated_tech"]) and $_SESSION["authenticated_tech"]) or $appConfig["installComplete"]!=true){
             //echo "passed checks";
 			if (is_array($message)){
-				echo "debug array";
+				//echo "debug array";
                 $message=debugArray($message);
             }
 			//echo "debug string";
