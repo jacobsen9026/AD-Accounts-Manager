@@ -6,10 +6,10 @@
                 Edit Welcome Email
             </h3>
 <textarea id="staffEmailEditor" onkeypress="setInterval(function(){updatePreview(document.getElementById('staffEmailEditor').value);},100)" style="width:95%;height:30em" type="text" name="welcomeEmailHTML" value=""><?php
-                    if(file_exists("./config/staffemail.html")){
-                        echo file_get_contents("./config/staffemail.html");
+                    if(file_exists("./app/config/staffemail.html")){
+                        echo file_get_contents("./app/config/staffemail.html");
                     }else{
-                        echo file_get_contents("./config/staffemail.html.example");
+                        echo file_get_contents("./app/config/staffemail.html.example");
                     }
 
                     ?></textarea>
@@ -34,9 +34,9 @@
 <button type="button" onclick='document.getElementById("staffEmailPreview").style.display = "block";'>Show Live Welcome Email Preview</button><br/><br/>
 
 <?php
-if(file_exists("./config/staffemail.html")){
+if(file_exists("./app/config/staffemail.html")){
 ?>
-<iframe id="staffEmailPreview" src="./config/staffemail.html?a=<?php echo rand(0,9999999999);?>" style="display:none">
+<iframe id="staffEmailPreview" onload="setInterval(function(){updatePreview(document.getElementById('staffEmailEditor').value);},100)" style="display:none">
     Browser not compatible.
 </iframe>
 <?php
