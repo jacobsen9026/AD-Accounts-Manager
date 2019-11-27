@@ -11,7 +11,8 @@ if(isset($_POST["complete_install"])){
 }
 
 if(!file_exists("./app/config/config.json")){
-    intializeConfig();
+	//exit();
+    initializeConfig();
 }
 
 
@@ -24,7 +25,7 @@ if (isset($_GET["advancedConfig"])){
     //phpinfo();
 
 }else{
-    include ("welcome.php");
+    include ("./app/views/install/welcome.php");
 }
 ?>
 

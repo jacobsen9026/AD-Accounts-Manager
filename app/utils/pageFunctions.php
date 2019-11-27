@@ -51,23 +51,24 @@ function debug($message){
 }
 
 function debugArray($array){
+	if(isset($array)){
+		$message="<div>";
+		foreach ($array as $name=>$option){
+			if(is_array($option)){
+				$message=$message."<strong>".$name."</strong><br/>";
+				foreach ($option as $name=>$option2){
 
-    $message="<div>";
-    foreach ($array as $name=>$option){
-        if(is_array($option)){
-            $message=$message."<strong>".$name."</strong><br/>";
-            foreach ($option as $name=>$option2){
+					$message = $message.$name.": ".var_export($option2,true)."<br/>";
 
-                $message = $message.$name.": ".var_export($option2,true)."<br/>";
-
-            }
-        }else{
-            $message = $message."<strong>".$name."</strong><br/>".var_export($option,true)."<br/>";
-        }
-        $message=$message."<br/>";
-    }
-    $message=$message."</div>";
-    return $message;
+				}
+			}else{
+				$message = $message."<strong>".$name."</strong><br/>".var_export($option,true)."<br/>";
+			}
+			$message=$message."<br/>";
+		}
+		$message=$message."</div>";
+		return $message;
+	}
 }
 
 function printGAUserGroupsEditable($username){
