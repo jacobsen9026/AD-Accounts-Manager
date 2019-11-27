@@ -119,7 +119,7 @@
     </form>
     <?php
 
-    if($webAppNameChecked and $domainNameChecked and $passwordChecked and $adminChecked and !$appConfig["installComplete"]){
+    if($webAppNameChecked and $domainNameChecked and $passwordChecked and $adminChecked and $gamChecked and !$appConfig["installComplete"]){
     ?>
 
     <tr>
