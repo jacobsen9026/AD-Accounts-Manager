@@ -42,14 +42,15 @@ function disableGAUserAccount($username){
 }
 
 function getGAUser($username){
+	$x=0;
     $cmd = "gam info user ".$username;
     debug("CMD: ".$cmd);
     $result = explode("\n",shell_exec($cmd));
     //Break out result to array
     foreach($result as $line){
         $keyValue = explode(':', $line,2);
-        if(trim($keyValue[0]) != '' ){
-            $output[trim($keyValue[0])]=trim($keyValue[1]);
+        if(trim($keyValue[0]) != '' and isset($keyValue[1]) and trim($keyValue[1]) != ''){
+            $GAUser[trim($keyValue[0])]=trim($keyValue[1]);
         }
         if(strpos($line, "Groups:")!==false){
             //echo $line;
@@ -62,7 +63,7 @@ function getGAUser($username){
         }elseif(strpos($line,"Licenses:")!==false){
             $inGroups=false;
         }
-        elseif($inGroups){
+        elseif(isset($inGroups) and $inGroups){
             if($line!=""){
                 //echo $line."<br/>";
                 $group[0]=trim(substr($line,0,strpos($line,"<")));//Group Name
@@ -76,17 +77,17 @@ function getGAUser($username){
 
 
     //Cleanup Array Output
-    $output["Groups"]=$groups;
-    $output["Last login time"]=str_replace("T"," ",$output["Last login time"]);
-    $output["Last login time"]=str_replace(".000Z","",$output["Last login time"]);
-    if($GAUser["Account Suspended"]=="False"){
-        $output["Account Enabled"]="True";
+    $GAUser["Groups"]=$groups;
+    $GAUser["Last login time"]=str_replace("T"," ",$GAUser["Last login time"]);
+    $GAUser["Last login time"]=str_replace(".000Z","",$GAUser["Last login time"]);
+    if(isset($GAUser["Account Suspended"]) and $GAUser["Account Suspended"]=="False"){
+        $GAUser["Account Enabled"]="True";
     }else{
-        $output["Account Enabled"]="False";
+        $GAUser["Account Enabled"]="False";
     }
 
-    debug ($output);
-    return $output;
+    debug ($GAUser);
+    return $GAUser;
 }
 
 function removeGAUserFromGroup($username,$group){

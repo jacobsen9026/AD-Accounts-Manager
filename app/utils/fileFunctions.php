@@ -82,7 +82,7 @@ function createNewPage($path){
 
                 if(!file_exists(".".$folder)){
                     mkdir(".".$folder, 0740, true);
-                    if(copy("./page-template.php",".".$path)){
+                    if(copy("./app/page-template.php",".".$path)){
 
                         return true;
                     }
@@ -102,7 +102,7 @@ function createNewPage($path){
 function initializeConfig(){
     global $appConfig;
     $appConfig["sessionTimeout"]=1200;
-    $appConfig["configuredVersion"]=file_get_contents("./version.txt");
+    $appConfig["configuredVersion"]=file_get_contents("./app/version.txt");
     $appConfig["domainNetBIOS"]=$_SERVER['USERDOMAIN'];
     saveConfig();
 }
@@ -122,7 +122,7 @@ function loadConfig(){
     global $appConfig;
 	$configDir = "./app/config";
     $appConfig = json_decode(file_get_contents($configDir."/config.json"),true);
-    $appConfig["version"] = file_get_contents("./version.txt");
+    $appConfig["version"] = file_get_contents("./app//version.txt");
 
 
 
@@ -204,12 +204,12 @@ function delete_directory($dirname) {
 
 function takeFullBackup(){
 	$dateTime=date("Y-m-d_H-i-s");
-	copy ($_SERVER['DOCUMENT_ROOT']."/config/config.json" , $_SERVER['DOCUMENT_ROOT']."/config/backup/".$dateTime."_config.json");
-    if(!file_exists($_SERVER['DOCUMENT_ROOT']."/backup/")){
-        mkdir($_SERVER['DOCUMENT_ROOT']."/backup/", 0740, true);
+	copy ($configDir."/config.json" , $configDir."/backup/".$dateTime."_config.json");
+    if(!file_exists($configDir."/backup/")){
+        mkdir($configDir."/backup/", 0740, true);
     }
 	$zip = new ZipArchive;
-	if ($zip->open('./backup/'.$dateTime.'-backup.zip') === TRUE) {
+	if ($zip->open($configDir.'/backup/'.$dateTime.'-backup.zip') === TRUE) {
 		$zip->addFile('./*');
 		$zip->close();
 	}

@@ -40,7 +40,7 @@
             <td>
                 <form name="loginPrompt" method="post" action="/?goto=/login/challenge.php">
                     <?php
-                    include("./login/loginPrompt.php");
+                    include("./app/views/login/loginPrompt.php");
                     ?>
                 </form>
             </td>

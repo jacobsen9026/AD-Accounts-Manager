@@ -34,7 +34,7 @@ function getADUser($username){
     //$x=0;
     foreach($lines as $line){
         $keyValue = explode(':', $line);
-        if(trim($keyValue[0]) != ''){
+        if(trim($keyValue[0]) != '' and isset($keyValue[1]) and trim($keyValue[1]) != ''){
             $output[trim($keyValue[0])]=trim($keyValue[1]);
         }
         //$x++;

@@ -8,7 +8,7 @@
         <tr>
             <td>
                 <?php
-				include("./login/loginPrompt.php");
+				include("loginPrompt.php");
 				?>
             </td>
         </tr>

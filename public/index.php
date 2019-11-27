@@ -1,15 +1,15 @@
 <?php
 chdir("../");
 //Show header
-include("./header.php");
+include("./app/header.php");
 
 
 //Show content
-include("./viewController.php");
+include("./app/viewController.php");
 
 
 //Show footer
-include("./footer.php");
+include("./app/footer.php");
 
 //debug("Footer");
 //debug(get_included_files());

@@ -4,9 +4,9 @@ if($_SESSION["authenticated_basic"]!="true" and substr($goto,0,6)!="/error" and 
     //Show install page if not completed
     if($appConfig["installComplete"]){
 
-        include("./login/index.php");
+        include("./app/views/login/index.php");
     }else{
-        include("./install/index.php");
+        include("./app/views/install/index.php");
     }
 
 }
@@ -16,7 +16,7 @@ elseif($goto==null){
     //Show homepage if goto is blank or missing
     $_SESSION['timeout']=time();
 
-    include("./homepage.php");
+    include("./app/views/homepage.php");
 
 
 }
@@ -34,6 +34,6 @@ else{
     //Show error page when goto file is missing
     $_SESSION['timeout']=time();
 
-    include("./error404.php");
+    include("./app/views/error404.php");
 }
 ?>
