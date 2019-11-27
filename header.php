@@ -3,7 +3,7 @@
 session_start();
 
 //Load all major functions of the webapp
-include($_SERVER['DOCUMENT_ROOT']."/includes/backendIncludes.php");
+include("./app/includes/backendIncludes.php");
 
 //Intialize Goto variable and check if the Get goto variable is set, if so set it as the Goto variable
 global $goto;
@@ -112,7 +112,7 @@ if(!isset($_SESSION['authenticated_basic'])){
         <?php
 
         //Include Stylesheets
-        include("./includes/stylesheets.php");
+        include("./app/includes/stylesheets.php");
 
         ?>
 
@@ -155,21 +155,21 @@ if(!isset($_SESSION['authenticated_basic'])){
         <?php
         if($appConfig["installComplete"]){
             //Load the top menu navigation
-            include("./includes/navigation.php");
+            include("./app/includes/navigation.php");
         }
         ?>
 
 
         <?php
         //Load waiting animation that consumes the screen during operations and debug console.
-        include("./includes/pageLoader.php");
-        include("./includes/debugConsole.php");
-        include("./includes/debugConfig.php");
+        include("./app/includes/pageLoader.php");
+        include("./app/includes/debugConsole.php");
+        include("./app/includes/debugConfig.php");
 
 
 
         if($_SESSION["authenticated_basic"]=="true"){
-            include("./includes/sessionTimeoutWarning.php");
+            include("./app/includes/sessionTimeoutWarning.php");
         }
 
 

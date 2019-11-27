@@ -22,11 +22,11 @@ elseif($goto==null){
 }
 //Check the the file goto is calling actually exists
 //If a goto variable file is found show it
-elseif(file_exists($_SERVER['DOCUMENT_ROOT'].$goto)){
+elseif(file_exists("./app/views/".$goto)){
     //Show goto file if it exists
     $_SESSION['timeout']=time();
 
-    include(".".$goto);
+    include("./app/views".$goto);
 }
 
 //Otherwise the file doesn't exist and show an error page
