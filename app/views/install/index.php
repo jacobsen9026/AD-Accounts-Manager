@@ -10,7 +10,7 @@ if(isset($_POST["complete_install"])){
 <?php
 }
 
-if(!file_exists("./config/config.json")){
+if(!file_exists("./app/config/config.json")){
     intializeConfig();
 }
 
@@ -20,11 +20,11 @@ if(!file_exists("./config/config.json")){
 
 if (isset($_GET["advancedConfig"])){
     //include("./config/includes/configController.php");
-    include("./config/index.php");
+    include("./app/views/config/index.php");
     //phpinfo();
 
 }else{
-    include ("./install/welcome.php");
+    include ("welcome.php");
 }
 ?>
 
