@@ -18,9 +18,9 @@ if (isset($_GET["advancedConfig"])){
     include("./app/views/config/index.php");
     //phpinfo();
 
-}
+}else{
     include ("./app/views/install/welcome.php");
-
+}
 ?>
 
 
