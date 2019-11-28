@@ -14,6 +14,37 @@ if(isset($_GET)){
     }
 }
 
+//Intialize Goto variable and check if the Get goto variable is set, if so set it as the Goto variable
+global $grab;
+$grab='';
+if(isset($_GET)){
+    if(isset($_GET["grab"])){
+        $grab=$_GET["grab"];
+		
+    }
+}
+//Intialize download variable and check if the download goto variable is set, if so set it as the download variable
+global $download;
+$download='';
+if(isset($_GET)){
+    if(isset($_GET["download"])){
+		$filepath = ".".$_GET["download"];
+	if(file_exists($filepath) and $_SESSION["authenticated_tech"]=="true") {
+			header('Content-Description: File Transfer');
+			header('Content-Type: application/octet-stream');
+			header('Content-Disposition: attachment; filename="'.basename($filepath).'"');
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate');
+			header('Pragma: public');
+			header('Content-Length: ' . filesize($filepath));
+			flush(); // Flush system output buffer
+			readfile($filepath);
+			exit;
+		}
+		
+	}
+}
+
 //Get the requested URL
 if(isset($_SERVER)){
     $pageURL= $_SERVER['REQUEST_URI'];
@@ -148,8 +179,55 @@ if(!isset($_SESSION['authenticated_basic'])){
 
 
     <body <?php if (isset($_SESSION["authenticated_basic"]) && $_SESSION["authenticated_basic"]=="true"){ ?> onload="startSessionTimeoutTimer();"<?php } ?> >
+<?php
+
+if($_SESSION["authenticated_basic"]=="true"){
+	//Load waiting animation that consumes the screen during operations and debug console.
+	include("./app/includes/pageLoader.php");
+	include("./app/includes/sessionTimeoutWarning.php");
+	//echo "./app/views".$grab;
+	if ($grab!='' and file_exists("./app/views".$grab)){
+		include ("./app/views".$grab);
+		exit();
+		
+		
+	}
+	
+}
 
 
+
+if(isset($_SESSION['authenticated_tech'])){
+	if($_SESSION["authenticated_tech"]=="true"){
+		if ($appConfig["debugMode"]){
+				include("./app/includes/debugConsole.php");
+				include("./app/includes/debugConfig.php");
+				include("./app/includes/debugConsole.php");
+				include("./app/includes/debugInclude.php");
+?>
+
+<div class="debugFloatingToolsContainer">
+	<div title="Debug Mode is On" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick="window.open('/?goto=/config/index.php#dm_input');" class="floatingButton">
+		<img src="/img/warning2.png"/>
+	</div>
+	<div title="Open Debug Console" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugConsoleContainer").style="visibility:visible";' class="floatingButton">
+		<img src="/img/console.png"/>
+	</div>
+	<div title="Open Config Debug" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugConfigContainer").style="visibility:visible";' class="floatingButton">
+		<img src="/img/config.png"/>
+	</div>
+	<div title="Open Config Includes" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugIncludeContainer").style="visibility:visible";' class="floatingButton">
+		<img src="/img/console.png"/>
+	</div>
+</div>
+<?php
+		}
+	}
+}
+
+
+
+?>
 
 
         <?php
@@ -160,20 +238,7 @@ if(!isset($_SESSION['authenticated_basic'])){
         ?>
 
 
-        <?php
-        //Load waiting animation that consumes the screen during operations and debug console.
-        include("./app/includes/pageLoader.php");
-        include("./app/includes/debugConsole.php");
-        include("./app/includes/debugConfig.php");
-
-
-
-        if($_SESSION["authenticated_basic"]=="true"){
-            include("./app/includes/sessionTimeoutWarning.php");
-        }
-
-
-        ?>
+       
         <div id="wrapper" class=''>
 
 
