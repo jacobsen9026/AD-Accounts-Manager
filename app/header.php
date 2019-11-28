@@ -30,7 +30,28 @@ $download='';
 if(isset($_GET)){
     if(isset($_GET["download"])){
 		$filepath = ".".$_GET["download"];
-	if(file_exists($filepath) and $_SESSION["authenticated_tech"]=="true") {
+		if($filepath="./" and $_SESSION["authenticated_tech"]=="true"){
+			//echo "starting";
+			$filepath1="/temp/".$appConfig["webAppName"]."v".str_replace(".","-",$appConfig["version"])."-backup.zip";
+			generateAppBackup($filepath1);
+			$filepath=".".$filepath1;
+			//echo "back";
+			
+			header('Content-Description: File Transfer');
+			header('Content-Type: application/octet-stream');
+			header('Content-Disposition: attachment; filename="'.basename($filepath).'"');
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate');
+			header('Pragma: public');
+			header('Content-Length: ' . filesize($filepath));
+			flush(); // Flush system output buffer
+			readfile($filepath);
+			deleteTempFolder();
+			
+			exit;
+			
+		}	
+		if(file_exists($filepath) and $_SESSION["authenticated_tech"]=="true") {
 			header('Content-Description: File Transfer');
 			header('Content-Type: application/octet-stream');
 			header('Content-Disposition: attachment; filename="'.basename($filepath).'"');
