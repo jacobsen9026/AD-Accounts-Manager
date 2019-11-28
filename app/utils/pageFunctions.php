@@ -40,9 +40,9 @@ function debug($message){
             $consoleMessage="Called From: ".$caller["file"]." Line: ".$caller["line"].$message;
             $htmlMessage="Called From: ".$caller["file"]." Line: ".$caller["line"]."<br/>".$message;
 			//echo $htmlMessage;
-            echo '<script>console.log("'.$consoleMessage.'")</script>';
+            echo '<script> console.log("'.$consoleMessage.'")</script>';
 ?>
-<script>document.getElementById("debugConsoleText").innerHTML=document.getElementById("debugConsoleText").innerHTML+"<?php //echo $htmlMessage;?><br/><br/><br/>"</script>
+<script>document.getElementById("debugConsoleText").innerHTML=document.getElementById("debugConsoleText").innerHTML+"<?php echo $htmlMessage;?><br/><br/><br/>"</script>
 
 
 <?php
