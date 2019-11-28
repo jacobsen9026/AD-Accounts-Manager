@@ -53,20 +53,16 @@ foreach ($configCheckboxOptions as $option){
 
 //debug("Debug Mode is on");
 if(isset($_POST["testADCredentials"])){
-    if(isset($appConfig["testADCredentials"]) and $appConfig["testADCredentials"]!=$_POST["testADCredentialsCheck"]){
-        $refresh=true;
-    }else{
-        $refresh=false;
-    }
-    if(isset($appConfig["testADCredentials"]) and $_POST['testADCredentialsCheck']==true){
-       ?>
-	   
-	   <script>
-	   testADCredentials();
-	   </script>
-	   
-	   <?php
-    }
+    
+		if(isset($_POST["testADCredentialsCheck"]) and $_POST['testADCredentialsCheck']==true){
+		   ?>
+		   
+		   <script>
+		   testADCredentials();
+		   </script>
+		   
+		   <?php
+		}
     
 }
 
