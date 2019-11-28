@@ -35,10 +35,7 @@ Windows Client or Server Operating System
 PHP 7+
 
 ## WebServer
-IIS
-Apache
-WAMP
-NGINX
+IIS/WAMP
 
 
 # Installation
