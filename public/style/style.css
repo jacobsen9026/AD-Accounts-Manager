@@ -284,7 +284,7 @@ button:focus {
 input:focus {
     outline:0;
 }
-#container select{
+#container select, .container select{
     width:auto;
     text-align-last:center;
     text-align:center;
@@ -354,7 +354,7 @@ iframe {
     width:auto;
 }
 
-#container{
+#container, .container{
     font-family:'Roboto',sans-serif;
     margin-top:4em;
     margin-left:auto;
@@ -366,7 +366,8 @@ iframe {
     min-width:350px;
 
 }
-#container button{
+
+#container button, .container button{
 	border-radius:0.2em;
 	
     padding:5px 10px;
@@ -409,7 +410,7 @@ iframe {
     margin-bottom:1em;
 }
 
-#container td{
+#container td, .container td{
     text-align:center;
 
 }

@@ -1,5 +1,5 @@
 
-.responseContainer button, .copyButtonsContainer button, #container button, #userButton, #studentButton, #staffButton,#parentButton,#techButton{
+.responseContainer button, .copyButtonsContainer button, #container button, .container button, #userButton, #studentButton, #staffButton,#parentButton,#techButton{
 	border-color: #bf3200;
 }
 button, #userButton, #studentButton, #staffButton,#parentButton,#techButton, .floatingButton, .configNavContainer, .floatingEditButton, .floatingDebugButton, .floatingConsoleButton, .floatingHelpButton, .floatingConfigButton, .floatingIncludeButton
@@ -11,7 +11,7 @@ button, #userButton, #studentButton, #staffButton,#parentButton,#techButton, .fl
 .copyButtonsContainer button:hover, button:hover{
 	background-color: #7c2000;
 }
-#container button:hover, .copyButtonsContainer button:hover{
+#container button:hover, .container button:hover, .copyButtonsContainer button:hover{
 	border-color: #7c2000;
 }
 
