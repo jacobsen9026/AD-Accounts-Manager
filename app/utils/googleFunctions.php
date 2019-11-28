@@ -292,7 +292,7 @@ function getParentGoogleGroupMembership($email){
 function addTechDrivePermission ($username,$id,$url){
     global $appConfig;
     //include("./config/siteVariables.php");
-    $cmd = "gam user $username@".$appConfig["domainName"]." add drivefileacl $id group techstaff@".$appConfig["domainName"]." role writer";
+    $cmd = "gam user $username@".$appConfig["domainName"]." add drivefileacl $id group ".$appConfig["googleTechDriveGroup"]." role writer";
     //echo $Error[0];
     debug("CMD: ".$cmd);
     //echo $cmd;
@@ -313,7 +313,7 @@ function addTechDrivePermission ($username,$id,$url){
 function removeTechDrivePermission ($username,$id){
     global $appConfig;
     //include("./config/siteVariables.php");
-    $cmd = "gam user ".$username."@".$appConfig["domainName"]." delete drivefileacl $id techstaff@".$appConfig["domainName"];
+    $cmd = "gam user ".$username."@".$appConfig["domainName"]." delete drivefileacl $id ".$appConfig["googleTechDriveGroup"];
     //echo $Error[0];
     //echo $cmd;
     debug("CMD: ".$cmd);
