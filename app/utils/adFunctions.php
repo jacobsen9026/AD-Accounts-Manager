@@ -10,9 +10,9 @@ function runPowershellCommand($command){
 		."\$domainUsername = '".$appConfig["powershellUsername"]."'; "
 		."\$domainUser = '".$appConfig["domainNetBIOS"]."\\".$appConfig["powershellUsername"]."'; "
 		."\$Credentials = New-Object System.Management.Automation.PSCredential \$domainUser,\$reencrypted;";
-		$cmd = 'Powershell.exe Invoke-Command -ScriptBlock{'.$cmd.$command.'}';
+		$cmd = 'Powershell.exe -NonInteractive Invoke-Command -ScriptBlock{'.$cmd.$command.'}';
 	}else{
-    $cmd = 'Powershell.exe Invoke-Command -ScriptBlock{'.$command.'}';
+    $cmd = 'Powershell.exe  -NonInteractive Invoke-Command -ScriptBlock{'.$command.'}';
 	}
 	//echo $cmd;
 	//exit;
@@ -392,7 +392,7 @@ function testAdministrator (){
 function testADCredentials(){
 	
 	global $appConfig;
-	$result = (runPowershellCommand('Get-ADUser -Credential $Credentials -Identity $domainUsername;'));
+	$result = (runPowershellCommand('Get-ADUser -Credential $Credfentials -Identity $domainUsername;'));
 	if (strpos($result[9],$appConfig["powershellUsername"])!=0){
 		return true;
 	}else{
