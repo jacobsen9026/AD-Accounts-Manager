@@ -10,11 +10,6 @@ if(isset($_POST["complete_install"])){
 <?php
 }
 
-if(!file_exists("./app/config/config.json")){
-	//exit();
-    initializeConfig();
-}
-
 
 
 
