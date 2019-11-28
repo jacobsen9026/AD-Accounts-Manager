@@ -1,12 +1,57 @@
 <?php
 function runPowershellCommand($command){
+	global $appConfig;
+	
+	if(isset($appConfig["powershellPassword"]) and  $appConfig["powershellPassword"] !=''){
+		
+		$cmd = "\$encrypted = '".$appConfig['powershellPassword']."'; "
+		."[Byte[]] \$key = (128,108,221,185,88,252,107,140,27,25,76,94,3,135,109,10); "
+		."\$reencrypted = ConvertTo-SecureString -String \$encrypted -Key \$key; "
+		."\$domainUsername = '".$appConfig["powershellUsername"]."'; "
+		."\$domainUser = '".$appConfig["domainNetBIOS"]."\\".$appConfig["powershellUsername"]."'; "
+		."\$Credentials = New-Object System.Management.Automation.PSCredential \$domainUser,\$reencrypted;";
+		$cmd = 'Powershell.exe Invoke-Command -ScriptBlock{'.$cmd.$command.'}';
+	}else{
     $cmd = 'Powershell.exe Invoke-Command -ScriptBlock{'.$command.'}';
-    debug("CMD: ".$cmd);
+	}
+	//echo $cmd;
+	//exit;
+    //debug("CMD: ".$cmd);
     $result = explode("\n",shell_exec ($cmd));
     debug($result);
     return $result;
 
 }
+
+function runLocalPowershellCommand($command){
+	global $appConfig;
+	
+	
+		
+    $cmd = 'Powershell.exe Invoke-Command -ScriptBlock{'.$command.'}';
+	
+	//echo $cmd;
+    //debug("CMD: ".$cmd);
+    $result = explode("\n",shell_exec ($cmd));
+    debug($result);
+    return $result;
+
+}
+
+
+function runSimplePowershellCommand($command){
+    $cmd = 'Powershell.exe '.$command;
+	echo $cmd;
+    //debug("CMD: ".$cmd);
+	$result=shell_exec ($cmd);
+	debug($result);
+	
+    $result = explode("\n",);
+    debug($result);
+    return $result;
+
+}
+
 
 function doesADUserExist($username) {
     //include("./config/siteVariables.php");
@@ -28,9 +73,20 @@ function doesADUserExist($username) {
         return true;
     }
 }
+function encryptADPassword($password){
+	$cmd = '$password = ConvertTo-SecureString -String "'.$password.'" -AsPlainText -force ;'
+	.'[Byte[]] $key = (128,108,221,185,88,252,107,140,27,25,76,94,3,135,109,10);'
+	.'$passwordText = ConvertFrom-SecureString -SecureString $password -Key $key;'
+	.'echo $passwordText;';
+	//echo $cmd;
+	return runLocalPowershellCommand($cmd);
+	
+}
+
 
 function getADUser($username){
-    $lines = runPowershellCommand ('Get-ADUser -Identity '.$username.' -Properties *');
+	debug ("getADUser");
+    $lines = runPowershellCommand ('Get-ADUser -Credential $Credentials -Identity '.$username.' -Properties *');
     //$x=0;
     foreach($lines as $line){
         $keyValue = explode(':', $line);
@@ -77,12 +133,12 @@ function getADUserHDrive($username){
 }
 
 function disableADUserAccount($username){
-    debug (runPowershellCommand("Disable-ADAccount -Identity ".$username));
+    debug (runPowershellCommand("Disable-ADAccount -Credential \$Credentials -Identity ".$username));
 }
 
 function enableADUserAccount($username){
-    debug (runPowershellCommand("Enable-ADAccount -Identity ".$username));
-    debug (runPowershellCommand("Unlock-ADAccount -Identity ".$username));
+    debug (runPowershellCommand("Enable-ADAccount -Credential \$Credentials -Identity ".$username));
+    debug (runPowershellCommand("Unlock-ADAccount -Credential \Credentials -Identity ".$username));
 }
 
 function fixADUserHDrive($username){
@@ -211,41 +267,6 @@ function renameADComputer($old,$new){
 
 }
 
-function prepDomainUsername(){
-
-    $cmd = "powershell.exe \$pass = ConvertTo-SecureString '}*,isUN4,xz;^<O*>2' -AsPlainText -Force ";
-    $result = shell_exec($cmd);
-    $cmd = "powershell.exe \$DomainCred = New-Object System.Management.Automation.PSCredential $user, $pass ";
-    $result = shell_exec($cmd);
-}
-
-
-/* 
-function renameADComputer($old,$new){
-    $rebootButton="	
-<br/>
-<form action='/?goto=/tech/computers/rebootPC.php' method='post'>
-	<input name='PCName' value='$old' hidden/>
-
-	<input name='delay' value='0' hidden/>
-<button type='submit'>Reboot this workstation now.</button><br/>
-
-
-</form>";
-    include("./config/siteVariables.php");
-    $cmd = "powershell.exe ./utils/powershell/renamePC.ps1 ".$old." ".$new." 2>&1; echo $?";
-    //echo $cmd."<br />";
-    $result = shell_exec($cmd);
-    //echo strpos($result,"rue");
-    if(strpos($result,"No such host is known")!=false){
-        return "$old was not found on the network!";
-
-    }else{
-        return $result.$rebootButton;
-    }
-
-}
- */
 
 
 function rebootADComputer($pc,$delay){
@@ -366,6 +387,18 @@ function testAdministrator (){
     $cmd='$user = [Security.Principal.WindowsIdentity]::GetCurrent();'
         .'(New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)';
     return boolval(runPowershellCommand($cmd)[0]);
+}
+
+function testADCredentials(){
+	
+	global $appConfig;
+	$result = (runPowershellCommand('Get-ADUser -Credential $Credentials -Identity $domainUsername;'));
+	if (strpos($result[9],$appConfig["powershellUsername"])!=0){
+		return true;
+	}else{
+		return false;
+	}
+	
 }
 
 
