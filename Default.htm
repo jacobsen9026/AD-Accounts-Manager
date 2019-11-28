@@ -17,14 +17,20 @@
 
         
 
-		<link rel="stylesheet" type="text/css" href="/public/style/lightTheme.css">
+<link rel="stylesheet" type="text/css" href="/public/style/lightTheme.css">
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" media="screen and (max-width: 719px)" type="text/css" href="/public/style/style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" media="screen and (max-width: 719px)" type="text/css" href="/public/style/style.css">
 
-		<link rel="stylesheet" media="screen and (max-width: 719px)" type="text/css" href="/public/style/mobilestyle.css">
+<link rel="stylesheet" media="screen and (max-width: 719px)" type="text/css" href="/public/style/mobilestyle.css">
 
-		<link rel="stylesheet" media="screen and (min-width: 720px)" type="text/css" href="/public/style/style.css">
+<link rel="stylesheet" media="screen and (min-width: 720px)" type="text/css" href="/public/style/style.css">
+
+
+
+
+
+
 
 
     </head>
@@ -64,25 +70,23 @@ padding-left:1em;
         <th>
             Web Server Configuration Issue
         </th>
+		
     </tr>
 
     <tr>
         <td>
-		<br/>
 		Please correct these errors to begin installation<br/><br/>
 		<ol>
 		<li>The root directory is not set to <pre style="display:inline">/public</pre></li>
-		<?php if (explode(".",phpversion())[0]<7){;?>
-         <li>Update PHP to version 7 or later</li>   
-		 <?php
-		}
-		?>
+		<li>The default document type is not set to <pre style="display:inline">.php</pre> files</li>
+            
 			</ol>
         </td>
     </tr>
 	<tr>
 		<td>
-			<button type="button" onclick="location.reload();">
+			
+				<button type="button" onclick="location.reload();">
 					Recheck
 				</button>
 		</td>

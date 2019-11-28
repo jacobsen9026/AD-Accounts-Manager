@@ -16,3 +16,10 @@ web.config
 logs/login.log
 logs/login.log
 config/staffemail.html
+app/config/config.json
+app/config/staffemail.html
+app/config/config.json.bak
+app/logs/login.log
+app/logs/login.log
+app/logs/login.log
+app/logs/login.log
