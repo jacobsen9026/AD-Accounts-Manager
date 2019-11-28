@@ -1,5 +1,5 @@
 
-<table id="container">
+<table class="container" id="installChecklist">
     <tr>
         <th>
             Installation
@@ -47,6 +47,6 @@
         </tr>
     </form>
     <script>
-	getInstallChecklist();
+	fillWithHTTPResponse('installChecklist','/install/runChecks.php');
 	</script>
 </table>
