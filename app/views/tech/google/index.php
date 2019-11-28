@@ -1,5 +1,5 @@
 <form action="/?goto=/tech/google/createNonStaffEmail.php" method="post"> 
-<table id="container">
+<table class="container">
 <tr>
 <th>
 Google Apps Manager

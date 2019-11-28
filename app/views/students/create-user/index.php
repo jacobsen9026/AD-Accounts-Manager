@@ -1,6 +1,6 @@
 
 <form method="post" action="/?goto=/students/create-user/createUser.php">
-<table id="container">
+<table class="container">
 
 <tr>
 <th>

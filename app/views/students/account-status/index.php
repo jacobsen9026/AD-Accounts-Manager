@@ -1,7 +1,7 @@
 
 
 <form method="post" action="/?goto=/students/account-status/accountStatus.php">
-    <table id="container">
+    <table class="container">
         <tr>
             <th>
                 Student Account Status Retrieval

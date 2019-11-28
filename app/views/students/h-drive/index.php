@@ -1,6 +1,6 @@
 
 <form method="post" action="/?goto=/students/h-drive/manageHDrive.php">
-<table id="container">
+<table class="container">
 
 <tr>
 <th>
