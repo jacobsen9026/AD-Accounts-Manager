@@ -25,12 +25,12 @@ foreach($views as $view){
     }
 }
 //var_export($search);
-debug($views);
+//debug($views);
 ?>
 
 
 <form action="<?php echo $pageURL;?>" method="post" enctype="multipart/form-data">
-    <table id="container">
+    <table class="container">
 
         <tr>
 
@@ -46,7 +46,7 @@ debug($views);
 
 
         <?php
-        debug($config);
+        //debug($config);
         include("./app/config/configController.php");
         if(file_exists("./app/views/config/views/".$currentView."/".$config)){
             debug("File Exists");
