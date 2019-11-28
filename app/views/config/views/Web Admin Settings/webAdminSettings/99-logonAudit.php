@@ -1,5 +1,8 @@
 <?php
-$auditContents= file_get_contents("./logs/login.log");
+
+if(file_exists("./app/logs/login.log")){
+
+$auditContents= file_get_contents("./app/logs/login.log");
 $auditEntries=explode("\n",$auditContents);
 
 ?>
@@ -39,3 +42,6 @@ $auditEntries=explode("\n",$auditContents);
         </table>
     </div>
 </div>
+<?php
+}
+?>

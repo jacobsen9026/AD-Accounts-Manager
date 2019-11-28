@@ -112,8 +112,9 @@ function createNewPage($path){
 function initializeConfig(){
     global $appConfig;
     $appConfig["sessionTimeout"]=1200;
-    $appConfig["configuredVersion"]=file_get_contents("./app/version.txt");
+    $appConfig["configuredVersion"]=file_get_contents("./version.txt");
     $appConfig["domainNetBIOS"]=$_SERVER['USERDOMAIN'];
+	$appConfig["webAppName"]="School Accounts Manager";
     saveConfig();
 }
 
@@ -128,17 +129,76 @@ function saveConfig(){
     copy ($configDir."/config.json" , $configDir."/backup/".$dateTime."_config.json");
     file_put_contents($configDir."/config.json", json_encode($appConfig));
 }
+
 function loadConfig(){
     global $appConfig;
 	$configDir = "./app/config";
+	$appConfig["version"] = file_get_contents("./version.txt");
 	if(file_exists($configDir."/config.json")){
 		$appConfig = json_decode(file_get_contents($configDir."/config.json"),true);
-		$appConfig["version"] = file_get_contents("./app/version.txt");
-
-
-
 		ksort($appConfig);
+	}else{
+		initializeConfig();
 	}
+}
+
+function generateAppBackup($destFilePath){
+    global $appConfig;
+	
+	// Get real path for our folder
+	$rootPath = realpath('./');
+	$destPath=$rootPath;
+	//echo basename($destFilePath);
+	//exit;
+	$destBasename=basename($destFilePath);
+	$tempFilePath = sys_get_temp_dir()."/".$destBasename;
+	
+	// Initialize archive object
+	$zip = new ZipArchive();
+//echo $tempFilePath;
+//echo $destPath.$destFilePath;
+//exit;
+	
+	$zip->open($tempFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+	// Create recursive directory iterator
+	/** @var SplFileInfo[] $files */
+	$files = new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator($rootPath),
+		RecursiveIteratorIterator::LEAVES_ONLY
+	);
+
+	foreach ($files as $name => $file)
+	{
+		// Skip directories (they would be added automatically)
+		if (!$file->isDir() and basename($name)!= $destBasename)
+		{
+			// Get real and relative path for current file
+			$tempFilePath = $file->getRealPath();
+			$relativePath = substr($tempFilePath, strlen($rootPath) + 1);
+
+			// Add current file to archive
+			$zip->addFile($tempFilePath, $relativePath);
+		}
+	}
+
+	// Zip archive will be created only after closing object
+	$zip->close();
+	$rootPath = realpath('./');
+	$tempFilePath = sys_get_temp_dir()."/".$destBasename;
+	//echo $tempFilePath;
+	//echo $destPath.$destFilePath;
+	//exit;
+	mkdir($destPath."/temp");
+	copy ($tempFilePath,$destPath.$destFilePath);
+	echo $tempFilePath.",".$destPath.$destFilePath."copied";
+	//exit;
+	//unlink($tempFilePath);
+}
+function deleteTempFolder(){
+    global $appConfig;
+	
+	delete_directory("./temp");
 }
 
 

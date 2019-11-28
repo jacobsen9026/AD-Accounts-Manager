@@ -6,30 +6,54 @@ session_start();
 include("./app/includes/backendIncludes.php");
 
 //Intialize Goto variable and check if the Get goto variable is set, if so set it as the Goto variable
-global $goto;
-$goto='';
+
 if(isset($_GET)){
+	global $goto;
+    $goto='';
     if(isset($_GET["goto"])){
         $goto=$_GET["goto"];
     }
 }
 
 //Intialize Goto variable and check if the Get goto variable is set, if so set it as the Goto variable
-global $grab;
-$grab='';
+
 if(isset($_GET)){
     if(isset($_GET["grab"])){
+		global $grab;
+		$grab='';
         $grab=$_GET["grab"];
 		
     }
 }
 //Intialize download variable and check if the download goto variable is set, if so set it as the download variable
-global $download;
-$download='';
+
 if(isset($_GET)){
-    if(isset($_GET["download"])){
+	global $download;
+	$download='';
+    if(isset($_GET["download"]) and $_SESSION["authenticated_tech"]=="true"){
 		$filepath = ".".$_GET["download"];
-	if(file_exists($filepath) and $_SESSION["authenticated_tech"]=="true") {
+		if($filepath=="./") {
+			//echo "starting";
+			$filepath1="/temp/".$appConfig["webAppName"]."v".str_replace(".","-",$appConfig["version"])."-backup.zip";
+			generateAppBackup($filepath1);
+			$filepath=".".$filepath1;
+			//echo "back";
+			
+			header('Content-Description: File Transfer');
+			header('Content-Type: application/octet-stream');
+			header('Content-Disposition: attachment; filename="'.basename($filepath).'"');
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate');
+			header('Pragma: public');
+			header('Content-Length: ' . filesize($filepath));
+			flush(); // Flush system output buffer
+			readfile($filepath);
+			deleteTempFolder();
+			
+			exit;
+			
+		}	
+		if(file_exists($filepath))  {
 			header('Content-Description: File Transfer');
 			header('Content-Type: application/octet-stream');
 			header('Content-Disposition: attachment; filename="'.basename($filepath).'"');
@@ -181,23 +205,16 @@ if(!isset($_SESSION['authenticated_basic'])){
     <body <?php if (isset($_SESSION["authenticated_basic"]) && $_SESSION["authenticated_basic"]=="true"){ ?> onload="startSessionTimeoutTimer();"<?php } ?> >
 <?php
 
-if($_SESSION["authenticated_basic"]=="true"){
+if($_SESSION["authenticated_basic"]=="true" and !isset($grab)){
 	//Load waiting animation that consumes the screen during operations and debug console.
 	include("./app/includes/pageLoader.php");
 	include("./app/includes/sessionTimeoutWarning.php");
-	//echo "./app/views".$grab;
-	if ($grab!='' and file_exists("./app/views".$grab)){
-		include ("./app/views".$grab);
-		exit();
-		
-		
-	}
-	
+	//echo "./app/views".$grab;	
 }
 
 
 
-if(isset($_SESSION['authenticated_tech'])){
+if(isset($_SESSION['authenticated_tech']) and !isset($grab)){
 	if($_SESSION["authenticated_tech"]=="true"){
 		if ($appConfig["debugMode"]){
 				include("./app/includes/debugConsole.php");
@@ -231,7 +248,7 @@ if(isset($_SESSION['authenticated_tech'])){
 
 
         <?php
-        if($appConfig["installComplete"]){
+        if($appConfig["installComplete"] and !isset($grab)){
             //Load the top menu navigation
             include("./app/includes/navigation.php");
         }

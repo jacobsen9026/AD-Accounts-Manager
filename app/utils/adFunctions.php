@@ -10,9 +10,9 @@ function runPowershellCommand($command){
 		."\$domainUsername = '".$appConfig["powershellUsername"]."'; "
 		."\$domainUser = '".$appConfig["domainNetBIOS"]."\\".$appConfig["powershellUsername"]."'; "
 		."\$Credentials = New-Object System.Management.Automation.PSCredential \$domainUser,\$reencrypted;";
-		$cmd = 'Powershell.exe Invoke-Command -ScriptBlock{'.$cmd.$command.'}';
+		$cmd = 'Powershell.exe -NonInteractive Invoke-Command -ScriptBlock{'.$cmd.$command.'}';
 	}else{
-    $cmd = 'Powershell.exe Invoke-Command -ScriptBlock{'.$command.'}';
+    $cmd = 'Powershell.exe  -NonInteractive Invoke-Command -ScriptBlock{'.$command.'}';
 	}
 	//echo $cmd;
 	//exit;

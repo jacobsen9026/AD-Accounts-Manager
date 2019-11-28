@@ -573,6 +573,7 @@ p:hover{
     margin-right:auto;
     margin-left:auto;
 	width:100%;
+	border-collapse:collapse;
     #margin-left:10px;
     #margin-right:10px;
 	#margin-bottom:0.5em;
@@ -596,6 +597,8 @@ p:hover{
     padding:1em;
 	padding-top:0.5em;
 	padding-bottom:0.5em;
+	border:groove;
+	border-collapse:collapse;
     #border-radius:0.5em;
     #box-shadow: 5px 5px 5px #888888;
 }
