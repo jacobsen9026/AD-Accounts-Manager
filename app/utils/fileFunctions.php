@@ -112,8 +112,9 @@ function createNewPage($path){
 function initializeConfig(){
     global $appConfig;
     $appConfig["sessionTimeout"]=1200;
-    $appConfig["configuredVersion"]=file_get_contents("./app/version.txt");
+    $appConfig["configuredVersion"]=file_get_contents("./version.txt");
     $appConfig["domainNetBIOS"]=$_SERVER['USERDOMAIN'];
+	$appConfig["webAppName"]="School Accounts Manager";
     saveConfig();
 }
 
@@ -128,12 +129,16 @@ function saveConfig(){
     copy ($configDir."/config.json" , $configDir."/backup/".$dateTime."_config.json");
     file_put_contents($configDir."/config.json", json_encode($appConfig));
 }
+
 function loadConfig(){
     global $appConfig;
 	$configDir = "./app/config";
+	
+	$appConfig["version"] = file_get_contents("./version.txt");
+	//echo $appConfig["version"];
 	if(file_exists($configDir."/config.json")){
 		$appConfig = json_decode(file_get_contents($configDir."/config.json"),true);
-		$appConfig["version"] = file_get_contents("./app/version.txt");
+		
 
 
 
