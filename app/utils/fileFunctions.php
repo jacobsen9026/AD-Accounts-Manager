@@ -133,16 +133,12 @@ function saveConfig(){
 function loadConfig(){
     global $appConfig;
 	$configDir = "./app/config";
-	
 	$appConfig["version"] = file_get_contents("./version.txt");
-	//echo $appConfig["version"];
 	if(file_exists($configDir."/config.json")){
 		$appConfig = json_decode(file_get_contents($configDir."/config.json"),true);
-		
-
-
-
 		ksort($appConfig);
+	}else{
+		initializeConfig();
 	}
 }
 
