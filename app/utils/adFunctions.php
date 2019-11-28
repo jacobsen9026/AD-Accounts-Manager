@@ -392,7 +392,7 @@ function testAdministrator (){
 function testADCredentials(){
 	
 	global $appConfig;
-	$result = (runPowershellCommand('Get-ADUser -Credential $Credfentials -Identity $domainUsername;'));
+	$result = (runPowershellCommand('Get-ADUser -Credential $Credentials -Identity $domainUsername;'));
 	if (strpos($result[9],$appConfig["powershellUsername"])!=0){
 		return true;
 	}else{

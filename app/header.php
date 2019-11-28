@@ -6,9 +6,10 @@ session_start();
 include("./app/includes/backendIncludes.php");
 
 //Intialize Goto variable and check if the Get goto variable is set, if so set it as the Goto variable
-global $goto;
-$goto='';
+
 if(isset($_GET)){
+	global $goto;
+    $goto='';
     if(isset($_GET["goto"])){
         $goto=$_GET["goto"];
     }
@@ -25,12 +26,13 @@ if(isset($_GET)){
     }
 }
 //Intialize download variable and check if the download goto variable is set, if so set it as the download variable
-global $download;
-$download='';
+
 if(isset($_GET)){
-    if(isset($_GET["download"])){
+	global $download;
+	$download='';
+    if(isset($_GET["download"]) and $_SESSION["authenticated_tech"]=="true"){
 		$filepath = ".".$_GET["download"];
-		if($filepath="./" and $_SESSION["authenticated_tech"]=="true"){
+		if($filepath=="./") {
 			//echo "starting";
 			$filepath1="/temp/".$appConfig["webAppName"]."v".str_replace(".","-",$appConfig["version"])."-backup.zip";
 			generateAppBackup($filepath1);
@@ -51,7 +53,7 @@ if(isset($_GET)){
 			exit;
 			
 		}	
-		if(file_exists($filepath) and $_SESSION["authenticated_tech"]=="true") {
+		if(file_exists($filepath))  {
 			header('Content-Description: File Transfer');
 			header('Content-Type: application/octet-stream');
 			header('Content-Disposition: attachment; filename="'.basename($filepath).'"');
