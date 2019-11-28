@@ -51,6 +51,16 @@ function getFiles($viewPath){
 
 }
 
+function savePowershellCredentials($username, $password){
+	global $appConfig;
+	$passwordFilePath="./app/config/adCred.key";
+	$appConfig["powershellPassword"] = encryptADPassword($password)[0];
+	//echo "teresres";
+	//exit;
+	saveConfig();
+	//file_put_contents($passwordFilePath,
+}
+
 
 
 function auditLogon($username){
