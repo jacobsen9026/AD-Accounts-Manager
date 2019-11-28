@@ -3,7 +3,8 @@ $configSingleLineOptions = Array("emailFromName","emailFromAddress",
                                  "domainName","domainController","webAppName",
 								 "domainNetBIOS","sessionTimeout","emailServerFQDN",
 								 "emailAuthUsername","emailAuthPassword","emailReplyToName",
-								 "emailReplyToAddress","emailServerPort");
+								 "emailReplyToAddress","emailServerPort", "googleTechDriveGroup",
+								 "powershellUsername");
 
 
 
@@ -49,10 +50,38 @@ foreach ($configCheckboxOptions as $option){
 
 
 
+
+//debug("Debug Mode is on");
+if(isset($_POST["testADCredentials"])){
+    if(isset($appConfig["testADCredentials"]) and $appConfig["testADCredentials"]!=$_POST["testADCredentialsCheck"]){
+        $refresh=true;
+    }else{
+        $refresh=false;
+    }
+    if(isset($appConfig["testADCredentials"]) and $_POST['testADCredentialsCheck']==true){
+       ?>
+	   
+	   <script>
+	   testADCredentials();
+	   </script>
+	   
+	   <?php
+    }
+    
+}
+
+
+
+
 if(isset($_POST["adminPassword"]) and trim($_POST["adminPassword"])!=""){
     $appConfig["adminPassword"] =  hash('sha256',trim($_POST["adminPassword"])) ;
 
     saveConfig();
+}
+
+if(isset($_POST["powershellPassword"]) and trim($_POST["powershellPassword"])!="" and $_POST["powershellPassword"]!= $appConfig["powershellPassword"]){
+	
+    savePowershellCredentials($appConfig["powershellUsername"],$_POST["powershellPassword"]);
 }
 
 
@@ -112,7 +141,7 @@ if(isset($_POST["websiteFQDN"])){
     saveConfig();
 }
 
-debug("Debug Mode is on");
+//debug("Debug Mode is on");
 if(isset($_POST["debugMode"])){
     if(isset($appConfig["debugMode"]) and $appConfig["debugMode"]!=$_POST["debugModeCheck"]){
         $refresh=true;
