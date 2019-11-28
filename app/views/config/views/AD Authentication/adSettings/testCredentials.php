@@ -34,7 +34,7 @@ if(isset($_POST["testADCredentials"])){
 			</div>
 			</div>
 			<script>
-				fillWithHTTPResponse('testingADCredentials','/?grab=/config/testAdCredentials.php');
+				fillWithHTTPResponse('testingADCredentials','/?grab=/config/testAdCredentials.php',2000);
 			</script>
 			
 			
