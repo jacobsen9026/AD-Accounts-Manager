@@ -46,6 +46,37 @@ async function fillWithHTTPResponse(target,url){
 	
 }
 
+async function fillWithHTTPResponse(target,url,timeout){
+	target = document.getElementById(target);
+	
+	if(	target.style.display == "none"){
+	target.style.display = "block";
+	}
+	var url = url;
+	 console.log(url);
+
+    // send it out
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+	xhr.timeout = timeout;
+    xhr.send();
+	xhr.onTimeout = () => {
+		target.innerHTML="<div><h3>Failed</h3></div>";
+		return;
+	}
+    xhr.onloadend = () => {
+		let response = xhr.response;
+		if(response==null || (response.includes("500") && (response.includes("error") || response.includes("Error")))){
+			target.innerHTML="<div><h3>Failed</h3></div>";
+		}else{
+		target.innerHTML=response;
+		}
+		//console.log(response);
+		
+	}
+	
+}
+
 
 
 
