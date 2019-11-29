@@ -364,7 +364,7 @@ iframe {
     font-size:1em;
     #border-radius:0.5em;
     min-width:350px;
-
+	display:table;
 }
 
 #container button, .container button{
@@ -410,7 +410,7 @@ iframe {
     margin-bottom:1em;
 }
 
-#container td, .container td{
+#container div, .container div,#container td, .container td{
     text-align:center;
 
 }

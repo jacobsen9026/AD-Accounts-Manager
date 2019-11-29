@@ -1,9 +1,11 @@
 <?= $this->extend('/layouts/default') ?>
 <?= $this->section('content') ?>
+
 <table class="container">
     <tr>
         <th>
             <?php
+			var_export($this->data);
             //echo $appConfig["webAppName"];
             ?>
 

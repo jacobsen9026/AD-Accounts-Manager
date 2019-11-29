@@ -11,9 +11,11 @@
     </head>
 	<body <?php //if (isset($_SESSION["authenticated_basic"]) && $_SESSION["authenticated_basic"]=="true"){ ?> onload="startSessionTimeoutTimer();"<?php //} ?> >
 <div id="wrapper" class=''>	
+<div id="container" class="container">
+<div id="loginPopupContainer">
 	<?php 
     echo $this->renderPartial('/common/header');
-    echo $this->renderPartial('/common/navigation');
+    //echo $this->renderPartial('/common/navigation');
 	$this->renderSection('content');
 ?>
 
@@ -24,8 +26,8 @@
         //}
         ?>
 
-
-       
+</div>
+      </div> 
       </div>  
 </body>
 </html>

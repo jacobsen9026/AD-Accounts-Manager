@@ -15,7 +15,6 @@ namespace App\Controllers;
  */
 
 use CodeIgniter\Controller;
-
 class BaseController extends Controller
 {
 	
@@ -26,7 +25,8 @@ class BaseController extends Controller
 	 *
 	 * @var array
 	 */
-	protected $helpers = [];
+	protected $helpers = ['cookie','app_form','url'];
+	public $appConfig;
 
 	/**
 	 * Constructor.
@@ -40,12 +40,59 @@ class BaseController extends Controller
 		// Preload any models, libraries, etc, here.
 		//--------------------------------------------------------------------
 		// E.g.:
+		
 		 $this->session = \Config\Services::session();
-		 
-		 //$this->showHeader();
-		 //$this->showNavigation();
+		 //$this->request = \Config\Services::request();
+		 $this->uri = \Config\Services::uri();
+		 $this->config = new \Config\App();
+		 //var_export($this->request->getServer());
+		 $this->requestedHostname = $this->request->getServer("HTTP_HOST");
+		 $this->appConfig = new \Config\ApplicationConfig();
+		 $this->appConfigInterface = new \App\Middleware\ApplicationConfigInterface();
+		 //$this->appConfigInterface->save($this->appConfig);
+		 $this->appConfig = $this->appConfigInterface->load();
+		 //$this->appConfig->webApplicationName = 'test';
+
+		 //echo $this->appConfig->webApplicationName;
+		 $this->config = config( 'App' );
+		//var_export($this->uri);
+		 //$this->logger->log_message('debug','Begin controlling');
+		
+		
+		$this->user = new \App\Models\User("admin",$this->session);
+		
+		
+		
+		$this->user->userAuth= new \App\Models\Auth($this->appConfig);
+		$this->user->userAuth->attemptAuthorization($this->user);
+		$this->user->save();
+		//$this->user->load();
+		//var_export($this->request->getServer('REQUEST_URI'));
+		
+		if(!$this->isUserLoggedIn()){
+			$data = [
+			"formAction" => $this->request->getServer('REQUEST_URI')
+			];
+			//var_export($data);
+			echo view('/login/prompt',$data);
+			exit;
+		}
+		
+		
+		//exit;
 		
 	}
+	
+	
+	private function isUserLoggedIn()
+	{
+		if($this->user->userAuth->authValid){
+			return true;
+		}
+		return false;
+		
+	}
+
 	
 	private function render(string $name, array $data = [], array $options = [])
     {
@@ -58,7 +105,7 @@ class BaseController extends Controller
         );
     }
 	
-
+	
 
 	
 	
