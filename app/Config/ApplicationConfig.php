@@ -22,11 +22,39 @@ class ApplicationConfig extends BaseConfig
 	|
 	*/
 	public $webApplicationName = 'testk';
-
+	public $webMOTD = 'This is the MOTD';
+	protected $webAdminPassword;
+	
+	
+	public $adminUsernames;
+	public $adminEmails;
+	
+	
+	public $welcomeEmailRecipients;
+	
+	public $welcomeEmail;
+	
+	
+	public $psDomainController;
+	public $psDomainFQDN;
+	public $psDomainNetBIOS;
+	
+	public $smtpServerFQDN;
+	public $smtpServerPort;
+	
+	
+	public $gamTechDriveEmailGroup;
+	public $gamParentGroups;
+	public $gamStaffGroups;
+	public $gamStudentGroups;
+	public $gamDomainName;
+	
+	public $emailFromAddress;
+	public $emailFromName;
+	public $emailToAddress;
 	
 	function __construct(){
-		$this->configInterface = new \App\Middleware\ApplicationConfigInterface();
-		
+		$this->webAdminPassword = hash("sha256","admin");
 	}
 	
 

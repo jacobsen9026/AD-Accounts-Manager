@@ -4,11 +4,7 @@
 
     <div>
         <h3>
-            <?php
-			var_export($this->data);
-            //echo $appConfig["webAppName"];
-            ?>
-
+            Settings
         </h3>
     </div>
     <div>

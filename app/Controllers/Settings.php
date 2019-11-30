@@ -6,7 +6,7 @@ class Settings extends BaseController
 	{
 		//$this->load->helper('url');
 		
-		return view('welcome_message');
+		return view('/settings/home');
 	}
 
 	//--------------------------------------------------------------------

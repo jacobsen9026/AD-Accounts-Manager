@@ -46,7 +46,7 @@ input,select{
 }
 
 
-#container,.container{
+#container,.appContainer{
 	
 	z-index:0;
 	margin-top:4em;
@@ -56,7 +56,7 @@ input,select{
 button{
 	min-width:0px;
 }
-#container button, .container button{
+#container button, .appContainer button{
 	font-size:1em;
 }
 .emailGroupList td{

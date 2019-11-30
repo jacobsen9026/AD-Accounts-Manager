@@ -1,6 +1,21 @@
 <div id="navigation" class="navigation">
     
         <?php
+		
+		echo $this->renderPartial('/common/navigation/user');
+		
+		echo $this->renderPartial('/common/navigation/student');
+		echo $this->renderPartial('/common/navigation/staff');
+		echo $this->renderPartial('/common/navigation/parent');
+		echo $this->renderPartial('/common/navigation/tech');
+		
+		
+		
+		
+		
+		
+		
+		
         $numberOfButtons=2;
 
         //include("./app/views/navigation/userButton.php");

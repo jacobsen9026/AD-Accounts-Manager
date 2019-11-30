@@ -269,6 +269,7 @@ class App extends BaseConfig
 	
 	
 	
-	public $appConfigPath = "/storage/config.json";
+	public $appConfigPath = "/writable/config/config.json";
+	public $appBackupPath = "/writable/backup/";
 
 }

@@ -9,11 +9,11 @@ body {
 .responseContainer{
 	background-color:#414244;
 }
-button, #sessionTimeoutMessageContainer, #debugConsoleMessageContainer, #container,.container, #disclaimer, .subnavigation button, .subnavigation button:hover, .responseContainer table, .responseContainer, .floatingPanel, .homepage_footer {
+button, #sessionTimeoutMessageContainer, #debugConsoleMessageContainer, #container,.appContainer, #disclaimer, .subnavigation button, .subnavigation button:hover, .responseContainer table, .responseContainer, .floatingPanel, .homepage_footer {
 	color:#DDDDDD;
 }
 
-#container,.container, #sessionTimeoutMessageContainer, #debugConsoleMessageContainer{
+#container,.appContainer, #sessionTimeoutMessageContainer, #debugConsoleMessageContainer{
 	background-color:#1c1c1c;
 	/*box-shadow:0px 0px 25px #DDDDDD;*/
 }

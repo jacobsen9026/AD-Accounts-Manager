@@ -61,7 +61,8 @@ class BaseController extends Controller
 		
 		$this->user = new \App\Models\User("admin",$this->session);
 		
-		
+		 $auth = service('auth');
+
 		
 		$this->user->userAuth= new \App\Models\Auth($this->appConfig);
 		$this->user->userAuth->attemptAuthorization($this->user);
@@ -82,6 +83,16 @@ class BaseController extends Controller
 		//exit;
 		
 	}
+	
+	public function before(RequestInterface $request)
+{
+    $auth = service('auth');
+
+    if (! $auth->isLoggedIn())
+    {
+        return redirect('login');
+    }
+}
 	
 	
 	private function isUserLoggedIn()

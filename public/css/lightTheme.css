@@ -2,7 +2,7 @@ body {
     background-color: #efefee;
 }
 
-.copyButtonsContainer button, .responseContainer button, #container button,.container button, #sessionTimeoutMessageContainer button{
+.copyButtonsContainer button, .responseContainer button, #container button,.appContainer button, #sessionTimeoutMessageContainer button{
     border-color: #3367d6;
 }
 
@@ -33,7 +33,7 @@ button, #userButton, #navigation, #studentButton, #staffButton, #parentButton, #
     border-color: #2253b7;
 }
 
-.subnavigation, .copyButtonsContainer, .responseContainer, .container, #container, #sessionTimeoutMessageContainer, #debugConsoleMessageContainer, #debugConfigMessageContainer, #debugIncludeMessageContainer, #logonAuditPopup {
+.subnavigation, .copyButtonsContainer, .responseContainer, .appContainer, #container, #sessionTimeoutMessageContainer, #debugConsoleMessageContainer, #debugConfigMessageContainer, #debugIncludeMessageContainer, #logonAuditPopup {
     background-color: #F6F6F8;
     box-shadow: 5px 5px 25px #888888;
 }
@@ -61,7 +61,7 @@ background-color: #F6F6F8;
     box-shadow: 5px 5px 25px #111111;
 }
 
-#container, .container {
+#container, .appContainer {
     -webkit-transition: 0.5s;
     -webkit-transition-delay: 0.1s;
     -o-transition: 0.5s;
@@ -70,7 +70,7 @@ background-color: #F6F6F8;
     -moz-transition-delay: 0.1s;
 }
 
-#container:hover , .container:hover{
+#container:hover , .appContainer:hover{
     box-shadow: 10px 10px 35px #424242;
 }
 
