@@ -6,13 +6,22 @@
  * and open the template in the editor.
  */
 
-namespace jacobsen\system;
+namespace jacobsen\app\config;
 
 /**
- * Description of Test
+ * Description of Router
  *
  * @author cjacobsen
  */
-class Test {
+use jacobsen\system\CoreRouter;
+
+class Router extends CoreRouter {
+
     //put your code here
+    function __construct(\jacobsen\app\App $app) {
+        parent::__construct($app);
+    }
+
 }
+
+?>

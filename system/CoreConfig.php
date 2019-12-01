@@ -6,16 +6,22 @@
  * and open the template in the editor.
  */
 
-namespace jacobsen\app\controllers;
+namespace jacobsen\system;
 
 /**
- * Description of Default
+ * Description of Config
  *
  * @author cjacobsen
  */
-use jacobsen\system\Controller;
-class BaseController extends Controller{
-    
-    
+class CoreConfig {
+
     //put your code here
+
+
+    function __construct() {
+
+    }
+
 }
+?>
+

@@ -25,12 +25,14 @@ class Request {
     public $module = null;
     public $page = null;
     public $action = null;
+    public $core;
 
     /**
-     * 
-     * @param \jacobsen\SAM\App $app
+     *
+     * @param \jacobsen\SAM\App $core
      */
-    function __construct(Core $app) {
+    function __construct(Core $core) {
+        $this->core = $core;
         if (isset($_GET)) {
             $this->get = $_GET;
         }
@@ -43,18 +45,19 @@ class Request {
             $exploded = explode("/", $this->uri);
             //var_export($exploded);
             if (sizeof($exploded) > 0) {
-                if(isset($exploded[1]) and $exploded[1]!=''){
-                $this->module = $exploded[1];
-                //echo "module";
+                if (isset($exploded[1]) and $exploded[1] != '') {
+                    $this->module = $exploded[1];
+                    //echo "module";
                 }
                 //echo $this->module;
-                if(isset($exploded[2]) and $exploded[2]!=''){
-                $this->page = $exploded[2];
+                if (isset($exploded[2]) and $exploded[2] != '') {
+                    $this->page = $exploded[2];
                 }
-                if(isset($exploded[3]) and $exploded[3]!=''){
-                $this->action = $exploded[3];
+                if (isset($exploded[3]) and $exploded[3] != '') {
+                    $this->action = $exploded[3];
                 }
             }
+            $this->core->debug("Request made: " . $this->module . "->" . $this->page . "->" . $this->action . ",br/>");
         }
         //var_export($this);
         //return $this;

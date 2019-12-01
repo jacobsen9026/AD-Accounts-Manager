@@ -6,17 +6,23 @@
  * and open the template in the editor.
  */
 
-namespace jacobsen\system;
+namespace jacobsen\app\config;
 
 /**
- * Description of Controller
+ * Description of App
  *
  * @author cjacobsen
  */
-class Controller {
-    
+use jacobsen\system\CoreConfig;
+
+class Config extends CoreConfig {
+
     //put your code here
-    function __construct($app) {
-        $this->app = $app;
-    }
+    private $authType;
+    private $authorized;
+    private $username;
+    private $privilegeLevel;
+
 }
+
+?>

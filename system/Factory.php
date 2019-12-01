@@ -13,14 +13,16 @@ namespace jacobsen\system;
  *
  * @author cjacobsen
  */
+use jacobsen\app\App;
+
 abstract class Factory {
-   
+
     //put your code here
-    public static function createController(Core $app) {
-        $controllerPath = '\\jacobsen\\SAM\\app\\controllers\\';
+    public static function createController(App $app) {
+        $controllerPath = '\\jacobsen\\app\\controllers\\';
         //echo $app->router->module();
-        $classname = $controllerPath . $app->router->module();
-        //var_export($app);
+        $classname = $controllerPath . $app->router->module;
+        //var_dump($router);
         //echo $app->router->module();
         if (class_exists($classname)) {
 
@@ -31,3 +33,5 @@ abstract class Factory {
     }
 
 }
+
+?>

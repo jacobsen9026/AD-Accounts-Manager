@@ -13,10 +13,15 @@ namespace jacobsen\app\Controllers;
  *
  * @author cjacobsen
  */
-class Home extends BaseController{
+class Home extends Controller {
+
     //put your code here
-    public function index(){
-        echo "home";
-         $this->app->addToBody("test");
+    public function index() {
+        $this->layoutName = "default";
+        return "home";
+        //$this->app->addToBody("test");
     }
+
 }
+
+?>

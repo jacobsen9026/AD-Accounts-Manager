@@ -14,16 +14,22 @@ namespace jacobsen\app;
  * @author cjacobsen
  */
 use jacobsen\system\Core;
-use jacobsen\system\BaseApp;
+use jacobsen\system\CoreApp;
 
-class App extends BaseApp {
+class App extends CoreApp {
 
-    //put your code here
-    public function run() {
-        $this->debug("debug test");
-        return "Success";
+    function __construct(Core $core) {
+        parent::__construct($core);
+        $this->router = new config\Router($this);
+
+        $this->config = new config\Config($this);
     }
 
+    public function start() {
+        $this->run();
+    }
+
+    //put your code here
 }
 
 ?>

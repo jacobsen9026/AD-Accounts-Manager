@@ -9,24 +9,25 @@
 namespace jacobsen\system;
 
 /**
- * Description of App
+ * Description of Controller
  *
  * @author cjacobsen
  */
-use jacobsen\system\Core;
+use jacobsen\app\App;
 
-class BaseApp {
+class CoreController {
+
+    public $app;
+    public $output;
+    public $layoutName;
 
     //put your code here
-    public $output;
-    public $core;
-
-    function __construct(Core $core) {
-        $this->core = $core;
+    function __construct(App $app) {
+        $this->app = $app;
     }
 
-    public function debug($string) {
-        $this->core->debug($string);
+    private function add($string) {
+        $this->output .= $string;
     }
 
 }

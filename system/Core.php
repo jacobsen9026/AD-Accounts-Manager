@@ -25,10 +25,10 @@ class Core {
     public $auth;
     public $router;
     public $factory;
-    public $moduleController;
     public $renderer;
     public $output;
     public $debugLog;
+    private $app;
 
     public function run() {
         /**
@@ -44,10 +44,10 @@ class Core {
          */
         $this->initializeApp();
         /**
-         * Route the request
+         * Run Web App
          */
-        $app = new App($this);
-        $this->output = $app->run();
+        $this->app = new App($this);
+        $this->output = $this->app->start();
         //$this->route();
         /**
          * Draw the request and deliver back to user
@@ -59,32 +59,10 @@ class Core {
         /**
          * Initialize all core systems
          */
-        //$this->config = new Config($this);
         $this->request = new Request($this);
+        $this->renderer = new Renderer($this);
         //$this->auth = new Authorization($this);
         //$this->router = new Router($this);
-    }
-
-    private function route() {
-        /**
-         * Route the request
-         *
-         * Call the router and the appropriate class and method to execute
-         *
-         * Create instance of this class
-         *
-         * Execute method
-         *
-         * Pass parameter if set
-         */
-        $this->router->getRoute($this);
-        $routedMethod = $this->router->page;
-        if ($this->moduleController = Factory::createController($this)) {
-            $this->moduleController->$routedMethod($this);
-        } else {
-            echo "No Controller found by name of " . $routedClass;
-            return false;
-        }
     }
 
     private function render() {
@@ -93,7 +71,7 @@ class Core {
          * Render the body into the full response
          */
         $this->renderer = new Renderer($this);
-        $this->renderer->renderView($this);
+        $this->renderer->draw($this);
     }
 
     public function addToBody($string) {
@@ -105,7 +83,13 @@ class Core {
     }
 
     public function debug($string) {
-        $this->debugLog[] = $string;
+        $string = str_replace("\n", "", $string);
+        $bt = debug_backtrace(1);
+        $caller = array_shift($bt);
+        $caller["file"] = str_replace("\\", "/", $caller['file']);
+        $consoleMessage = "Called From: " . $caller["file"] . ":" . $caller["line"] . ' ' . $string;
+        $htmlMessage = "Called From: " . $caller["file"] . ":" . $caller["line"] . "<br/>" . $string;
+        $this->debugLog[] = $consoleMessage;
     }
 
 }

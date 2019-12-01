@@ -18,25 +18,16 @@ class Renderer {
     //put your code here
     public $output;
 
-    public function renderView(Core $app) {
-        echo $this->getHeader();
-        echo $app->output;
-        echo $this->getFooter();
-        if ($app->debugLog) {
-            echo "<br/><br/>Debug:<br/>";
-            var_dump($app->debugLog);
+    public function draw(Core $core) {
+        echo $core->output;
+        if (isset($core->debugLog) and sizeof($core->debugLog) > 0) {
+            echo "<br/><br/>System Debug:<br/>";
+            var_dump($core->debugLog);
         }
+
         //var_export($app);
         //return  Success: ".var_export($app->request->get(),true);
         //$app->request->get;
-    }
-
-    public function getHeader() {
-
-    }
-
-    public function getFooter() {
-
     }
 
 }
