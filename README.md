@@ -6,3 +6,6 @@ I am building a complete portable(programatically) webapp framework for this pro
 
 If you want to help, please do.
 
+# UML
+
+<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/dev/.github/images/uml.png?raw=true" width=400/>
