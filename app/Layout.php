@@ -6,14 +6,21 @@
  * and open the template in the editor.
  */
 
-namespace system;
+namespace app;
 
 /**
- * Description of Error
+ * Description of Layout
  *
  * @author cjacobsen
  */
-class Error {
+use system\CoreLayout;
+
+class Layout extends CoreLayout {
+
+    function __construct(\app\App $app) {
+        parent::__construct($app);
+    }
+
     //put your code here
 }
 

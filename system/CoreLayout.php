@@ -15,7 +15,7 @@ namespace system;
  */
 use app\App;
 
-class CoreLayout {
+class CoreLayout extends Parser {
 
     public $layoutName;
     private $app;
@@ -34,8 +34,8 @@ class CoreLayout {
     }
 
     public function apply() {
-        //var_export($this->app->debugLog);
-        $output = $this->getHeader() . $this->app->outputBody . $this->getFooter();
+        //var_export($this->app->outputBody);
+        $output = $this->getHeader() . $this->getNavigation() . $this->app->outputBody . $this->getFooter();
         if (isset($this->app->debugLog) and sizeof($this->app->debugLog) > 0) {
             //$output .= '<br/><br/><br/>Application Debug:<br/>';
             //$output .= $this->renderDebug($this->app->debugLog);
@@ -44,11 +44,15 @@ class CoreLayout {
     }
 
     public function getHeader() {
-        return file_get_contents(ROOTPATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'layouts' . DIRECTORY_SEPARATOR . $this->layoutName . '_header.php');
+        return $this->view('layouts/' . $this->layoutName . '_header');
     }
 
     public function getFooter() {
-        return file_get_contents(ROOTPATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'layouts' . DIRECTORY_SEPARATOR . $this->layoutName . '_footer.php');
+        return $this->view('layouts/' . $this->layoutName . '_footer');
+    }
+
+    public function getNavigation() {
+        return $this->view('layouts/' . $this->layoutName . '_navigation');
     }
 
     private function renderDebug($log) {

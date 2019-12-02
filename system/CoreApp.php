@@ -17,9 +17,9 @@ use system\Core;
 use system\Request;
 use app\config\Router;
 use app\config\Config;
-use app\layouts\Layout;
+use app\Layout;
 
-class CoreApp {
+class CoreApp extends Parser {
 
 //put your code here
     public $request;
@@ -31,7 +31,7 @@ class CoreApp {
     public $output;
     public $route;
     public $outputBody;
-    public $layoutProcessor;
+    public $layout;
 
     /**
      *
@@ -98,7 +98,6 @@ class CoreApp {
     public function route() {
         $this->route = $this->router->route();
         //var_dump($this->route);
-        // . $this->printDebug();
     }
 
     public function control() {
@@ -106,7 +105,8 @@ class CoreApp {
         if ($this->controller = Factory::createController($this)) {
             $method = $this->route[1];
             if (method_exists($this->controller, $method)) {
-                $this->outputBody .= $this->controller->$method($this);
+                $this->outputBody .= $this->controller->$method();
+                //var_dump($this->outputBody);
             }
         } else {
             echo "No Controller found by name of " . $this->router->module;
@@ -117,8 +117,8 @@ class CoreApp {
     }
 
     public function layout() {
-        $this->layoutProcessor = new Layout($this);
-        $this->output = $this->layoutProcessor->apply();
+        $this->layout = new Layout($this);
+        $this->output = $this->layout->apply();
         //var_dump($this->output);
     }
 

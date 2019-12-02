@@ -13,7 +13,7 @@ namespace system;
  *
  * @author cjacobsen
  */
-class CoreConfig {
+class CoreConfig extends Parser {
 
     //put your code here
 

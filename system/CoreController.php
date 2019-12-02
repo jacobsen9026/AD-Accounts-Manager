@@ -15,10 +15,10 @@ namespace system;
  */
 use app\App;
 
-class CoreController {
+class CoreController extends Parser {
 
     public $app;
-    public $output;
+    public $content;
     public $layoutName;
 
     //put your code here
@@ -27,7 +27,7 @@ class CoreController {
     }
 
     private function add($string) {
-        $this->output .= $string;
+        $this->content .= $string;
     }
 
 }

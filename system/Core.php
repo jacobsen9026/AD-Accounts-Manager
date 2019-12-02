@@ -20,6 +20,8 @@ use system\CoreException;
 
 class Core {
 
+    private $parser;
+    public $logger;
     private $request;
     private $session;
     public $auth;
@@ -34,14 +36,14 @@ class Core {
          * Declare ROOTPATH constant which is used for all file interactions
          */
         define('ROOTPATH', getcwd());
-        define('VIEWPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "views");
+
         /**
          * Auto-load all classes in directories specified within class
          */
         try {
             $this->initializeApp();
         } catch (CoreException $ex) {
-            $this->debug($ex);
+            $this->error($ex);
         }
         /**
          * Run Web App
@@ -49,7 +51,7 @@ class Core {
         try {
             $this->execute();
         } catch (CoreException $ex) {
-            $this->debug($ex);
+            $this->error($ex);
         }
 
         //$this->route();
@@ -65,7 +67,9 @@ class Core {
          * Initialize all core systems
          */
         Autoloader::run($this);
-
+        $this->logger = new CoreLogger();
+        $this->parser = new Parser();
+        $this->parser->parseConfig("/system/Config");
         $this->request = new Request($this);
     }
 
@@ -95,34 +99,37 @@ class Core {
         $this->output .= $string;
     }
 
-    public function debug($string) {
-        $string = str_replace("\n", "", $string);
+    public function debug($message) {
+        $message = str_replace("\n", "", $message);
         $bt = debug_backtrace(1);
         $caller = array_shift($bt);
         $caller["file"] = str_replace("\\", "/", $caller['file']);
-        $consoleMessage = "Called From: " . $caller["file"] . ":" . $caller["line"] . ' ' . $string;
-        $htmlMessage = "Called From: " . $caller["file"] . ":" . $caller["line"] . "<br/>" . $string;
-        $this->debugLog[] = $consoleMessage;
+
+        $this->logger->debug($message, $caller);
     }
 
-    public function debugArray($array) {
-        if (isset($array)) {
-            $message = "<div>";
-            foreach ($array as $name => $option) {
-                if (is_array($option)) {
-                    $message = $message . "<strong>" . $name . "</strong><br/>";
-                    foreach ($option as $name => $option2) {
+    public function warning($message) {
+        $message = str_replace("\n", "", $message);
+        $bt = debug_backtrace(1);
+        $caller = array_shift($bt);
+        $caller["file"] = $this->parser->sanitize($caller['file']);
+        $this->logger->warning($message, $caller);
+    }
 
-                        $message = $message . $name . ": " . var_export($option2, true) . "<br/>";
-                    }
-                } else {
-                    $message = $message . "<strong>" . $name . "</strong><br/>" . var_export($option, true) . "<br/>";
-                }
-                $message = $message . "<br/>";
-            }
-            $message = $message . "</div>";
-            return $message;
-        }
+    public function error($message) {
+        $message = str_replace("\n", "", $message);
+        $bt = debug_backtrace(1);
+        $caller = array_shift($bt);
+        $caller["file"] = $this->parser->sanitize($caller['file']);
+        $this->logger->error($message, $caller);
+    }
+
+    public function info($message) {
+        $message = str_replace("\n", "", $message);
+        $bt = debug_backtrace(1);
+        $caller = array_shift($bt);
+        $caller["file"] = $this->parser->sanitize($caller['file']);
+        $this->logger->info($message, $caller);
     }
 
 }

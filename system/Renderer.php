@@ -26,14 +26,29 @@ class Renderer {
     public function draw() {
         //var_dump($this->core->output);
         echo $this->core->output;
-        if (isset($this->core->debugLog) and sizeof($this->core->debugLog) > 0) {
-            echo "<br/><br/>System Debug:<br/>";
-            var_dump($this->core->debugLog);
-        }
+        $this->checkDebug();
 
         //var_export($app);
         //return  Success: ".var_export($app->request->get(),true);
         //$app->request->get;
+    }
+
+    private function checkDebug() {
+
+        if (defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != null)) {
+
+            echo "<br/><br/>System Debug:<br/>";
+            var_dump($this->core->logger->getLogs()['debug']);
+
+            echo "<br/><br/>System Warning:<br/>";
+            var_dump($this->core->logger->getLogs()['warning']);
+
+            echo "<br/><br/>System Error:<br/>";
+            var_dump($this->core->logger->getLogs()['error']);
+
+            echo "<br/><br/>System Infor:<br/>";
+            var_dump($this->core->logger->getLogs()['info']);
+        }
     }
 
 }

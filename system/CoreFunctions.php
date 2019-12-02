@@ -7,13 +7,5 @@
  */
 if (!function_exists("view")) {
 
-    function view($view) {
-        $path = VIEWPATH . DIRECTORY_SEPARATOR . $view . ".php";
-        //echo $path;
-        if (file_exists($path)) {
-            return file_get_contents($path);
-        }
-    }
-
 }
 ?>

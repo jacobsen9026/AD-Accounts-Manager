@@ -1,0 +1,30 @@
+.navigation button {
+background-color:#6d1c10;
+border-color:#61150a;
+
+}
+button{
+	min-width:90px;
+	color:#DDDDDD;
+	padding:5px 10px;
+	border-radius:0.2em;
+	background-color:#6d1c10;
+	border-color:#61150a;
+}
+.subnavigation button {
+	border-color:#61150a;
+	color:#DDDDDD;
+	background-color:#6d1c10;
+}
+.subnavigation button:hover {
+	background-color:#190401;
+	color:#DDDDDD;
+    border-color:#190401;
+
+}
+#userButton, #studentButton, #staffButton, #parentButton, #techButton {
+
+    background-color:#6d1c10;
+	border-color:#61150a;
+    box-shadow: 2px 2px 10px #888888;
+}
