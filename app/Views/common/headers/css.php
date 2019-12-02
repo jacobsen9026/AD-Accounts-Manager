@@ -1,19 +1,16 @@
 
 <?php
-
-if(isset($_COOKIE["theme"])){
-    if($_COOKIE["theme"]=="light"){
+if (isset($_COOKIE["theme"])) {
+    if ($_COOKIE["theme"] == "light") {
         echo '<link rel="stylesheet" type="text/css" href="/style/lightTheme.css">';
-    }elseif ($_COOKIE["theme"]=="dark"){
+    } elseif ($_COOKIE["theme"] == "dark") {
 
         echo '<link rel="stylesheet" type="text/css" href="/style/darkTheme.css">';
     }
-
-}else{
+} else {
     echo '<link rel="stylesheet" type="text/css" href="/style/lightTheme.css">';
-
 }
-if (isset($_SESSION["authenticated_tech"]) and $appConfig["debugMode"] and $_SESSION["authenticated_tech"]){
+if (isset($_SESSION["authenticated_tech"]) and $appConfig["debugMode"] and $_SESSION["authenticated_tech"]) {
     echo '<link rel="stylesheet" type="text/css" href="/style/sandbox.css">';
 }
 ?>

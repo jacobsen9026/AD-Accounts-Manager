@@ -20,12 +20,12 @@ class ApplicationConfigInterface{
 	}
 	
 	function load(){
-		$file = file_get_contents($this->filePath);
-		$unserialized = unserialize($file);
-		$loaded = $unserialized;
+		//$file = file_get_contents($this->filePath);
+		//$unserialized = unserialize($file);
+		//$loaded = $unserialized;
 		//var_export($loaded);
 		//var_export($loaded);
-		return $loaded;
+		//return $loaded;
 		
 	}
 	
