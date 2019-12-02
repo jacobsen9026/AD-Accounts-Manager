@@ -1,11 +1,13 @@
-
+<?php
+var_dump($this);
+?>
 
 
 <div>
     <h3>
         <?php
         var_export($this->data);
-        //echo $appConfig["webAppName"];
+//echo $appConfig["webAppName"];
         ?>
 
     </h3>

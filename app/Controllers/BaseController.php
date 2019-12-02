@@ -39,9 +39,9 @@ class BaseController extends Controller {
         // Preload any models, libraries, etc, here.
         //--------------------------------------------------------------------
         // E.g.:
-
         $this->session = \Config\Services::session();
-        //$this->request = \Config\Services::request();
+        //var_dump($this);
+        var_dump($this->get);
         $this->logger->debug("Begin Controller");
         $this->uri = \Config\Services::uri();
         $this->config = new \Config\App();
