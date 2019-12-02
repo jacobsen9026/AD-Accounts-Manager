@@ -1,5 +1,7 @@
 <?php
-namespace jacobsen\system;
+
+namespace system;
+
 chdir("../");
 
 require('./system/Core.php');

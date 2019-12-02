@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace jacobsen\app\Controllers;
+namespace app\Controllers;
 
 /**
  * Description of Home
@@ -18,7 +18,7 @@ class Home extends Controller {
     //put your code here
     public function index() {
         $this->layoutName = "default";
-        return "home";
+        return view('homepage');
         //$this->app->addToBody("test");
     }
 

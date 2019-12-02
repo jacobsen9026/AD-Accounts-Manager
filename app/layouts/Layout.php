@@ -6,18 +6,18 @@
  * and open the template in the editor.
  */
 
-namespace jacobsen\app\layouts;
+namespace app\layouts;
 
 /**
  * Description of Layout
  *
  * @author cjacobsen
  */
-use jacobsen\system\CoreLayout;
+use system\CoreLayout;
 
 class Layout extends CoreLayout {
 
-    function __construct(\jacobsen\app\App $app) {
+    function __construct(\app\App $app) {
         parent::__construct($app);
     }
 

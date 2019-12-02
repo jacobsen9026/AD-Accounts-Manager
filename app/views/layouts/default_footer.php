@@ -10,5 +10,3 @@
 
 <br/>
 Default Footer
-
-default header<br/>

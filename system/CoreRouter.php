@@ -6,14 +6,14 @@
  * and open the template in the editor.
  */
 
-namespace jacobsen\system;
+namespace system;
 
 /**
  * Description of Router
  *
  * @author cjacobsen
  */
-use jacobsen\app\App;
+use app\App;
 
 /**
  * @name CoreRouter
@@ -84,7 +84,7 @@ class CoreRouter {
             $this->action = $this->request->action;
         }
         //var_dump($this);
-        $this->app->core->debug("Route taken: " . $this->module . "->" . $this->page . "->" . $this->action . "<br/>");
+        $this->app->debug("Route taken: " . $this->module . "->" . $this->page . "->" . $this->action);
     }
 
 }

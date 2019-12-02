@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace jacobsen\system;
+namespace system;
 
 /**
  * Description of Renderer
@@ -17,12 +17,18 @@ class Renderer {
 
     //put your code here
     public $output;
+    private $core;
 
-    public function draw(Core $core) {
-        echo $core->output;
-        if (isset($core->debugLog) and sizeof($core->debugLog) > 0) {
+    function __construct(Core $core) {
+        $this->core = $core;
+    }
+
+    public function draw() {
+        //var_dump($this->core->output);
+        echo $this->core->output;
+        if (isset($this->core->debugLog) and sizeof($this->core->debugLog) > 0) {
             echo "<br/><br/>System Debug:<br/>";
-            var_dump($core->debugLog);
+            var_dump($this->core->debugLog);
         }
 
         //var_export($app);

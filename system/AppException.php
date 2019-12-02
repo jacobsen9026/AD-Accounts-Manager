@@ -9,19 +9,12 @@
 namespace system;
 
 /**
- * Description of Config
+ * Description of AppException
  *
  * @author cjacobsen
  */
-class CoreConfig {
-
+class AppException extends CoreException {
     //put your code here
-
-
-    function __construct() {
-
-    }
-
 }
-?>
 
+?>

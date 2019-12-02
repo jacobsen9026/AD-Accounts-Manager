@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace jacobsen\system;
+namespace system;
 
 /**
  * Description of File

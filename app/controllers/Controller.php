@@ -6,16 +6,17 @@
  * and open the template in the editor.
  */
 
-namespace jacobsen\app\controllers;
+namespace app\controllers;
 
 /**
  * Description of Default
  *
  * @author cjacobsen
  */
-use jacobsen\system\CoreController;
+use system\CoreController;
 
 class Controller extends CoreController {
     //put your code here
 }
+
 ?>

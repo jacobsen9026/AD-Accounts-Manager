@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace jacobsen\system;
+namespace system;
 
 /**
  * Description of Request
@@ -29,7 +29,7 @@ class Request {
 
     /**
      *
-     * @param \jacobsen\SAM\App $core
+     * @param \SAM\App $core
      */
     function __construct(Core $core) {
         $this->core = $core;
@@ -57,7 +57,7 @@ class Request {
                     $this->action = $exploded[3];
                 }
             }
-            $this->core->debug("Request made: " . $this->module . "->" . $this->page . "->" . $this->action . ",br/>");
+            $this->core->debug("Request made: " . $this->module . "->" . $this->page . "->" . $this->action);
         }
         //var_export($this);
         //return $this;

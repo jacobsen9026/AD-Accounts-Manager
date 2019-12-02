@@ -6,14 +6,14 @@
  * and open the template in the editor.
  */
 
-namespace jacobsen\system;
+namespace system;
 
 /**
  * Description of Controller
  *
  * @author cjacobsen
  */
-use jacobsen\app\App;
+use app\App;
 
 class CoreController {
 

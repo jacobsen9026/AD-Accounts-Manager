@@ -6,27 +6,20 @@
  * and open the template in the editor.
  */
 
-namespace jacobsen\app;
+namespace app;
 
 /**
  * Description of App
  *
  * @author cjacobsen
  */
-use jacobsen\system\Core;
-use jacobsen\system\CoreApp;
+use system\Core;
+use system\CoreApp;
 
 class App extends CoreApp {
 
-    function __construct(Core $core) {
-        parent::__construct($core);
-        $this->router = new config\Router($this);
-
-        $this->config = new config\Config($this);
-    }
-
     public function start() {
-        $this->run();
+        return $this->run();
     }
 
     //put your code here

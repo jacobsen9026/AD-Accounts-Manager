@@ -6,22 +6,13 @@
  * and open the template in the editor.
  */
 
-namespace system;
+namespace app\controllers;
 
 /**
- * Description of Config
+ * Description of Admin
  *
  * @author cjacobsen
  */
-class CoreConfig {
-
+class Admin extends Controller {
     //put your code here
-
-
-    function __construct() {
-
-    }
-
 }
-?>
-

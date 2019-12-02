@@ -6,22 +6,24 @@
  * and open the template in the editor.
  */
 
-namespace jacobsen\system;
+namespace system;
 
 /**
  * Description of Factory
  *
  * @author cjacobsen
  */
-use jacobsen\app\App;
+use app\App;
 
 abstract class Factory {
 
     //put your code here
     public static function createController(App $app) {
-        $controllerPath = '\\jacobsen\\app\\controllers\\';
-        //echo $app->router->module();
-        $classname = $controllerPath . $app->router->module;
+        //var_dump($app);
+        $controllerPath = '\\app\\controllers\\';
+        //echo $app->route[0];
+        $classname = $controllerPath . $app->route[0];
+        //echo $classname;
         //var_dump($router);
         //echo $app->router->module();
         if (class_exists($classname)) {

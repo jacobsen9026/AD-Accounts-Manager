@@ -6,14 +6,14 @@
  * and open the template in the editor.
  */
 
-namespace jacobsen\app\config;
+namespace app\config;
 
 /**
  * Description of App
  *
  * @author cjacobsen
  */
-use jacobsen\system\CoreConfig;
+use system\CoreConfig;
 
 class Config extends CoreConfig {
 
