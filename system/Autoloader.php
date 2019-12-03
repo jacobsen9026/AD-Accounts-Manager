@@ -22,7 +22,11 @@ abstract class Autoloader {
             $filename = ROOTPATH . DIRECTORY_SEPARATOR . $class . '.php';
             if (!class_exists($class)) {
                 if (file_exists($filename)) {
-                    require $filename;
+                    try {
+                        require $filename;
+                    } catch (Exception $ex) {
+                        echo $ex;
+                    }
                 }
             }
         });

@@ -29,6 +29,42 @@ class CoreException extends \Exception {
         // some code
         // make sure everything is assigned properly
         parent::__construct($message, $code, $previous);
+        $that = $this;
+        set_error_handler(function() use ($that) {
+            $that->handleError();
+        });
+    }
+
+    public function handleError($errno, $errstr, $errfile, $errline) {
+        if (!(error_reporting() & $errno)) {
+            // This error code is not included in error_reporting, so let it fall
+            // through to the standard PHP error handler
+            return false;
+        }
+
+        switch ($errno) {
+            case E_USER_ERROR:
+                $message .= "<b>My ERROR</b> [$errno] $errstr<br />\n";
+                $message .= "  Fatal error on line $errline in file $errfile";
+                $message .= ", PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\n";
+                $message .= "Aborting...<br />\n";
+                break;
+
+            case E_USER_WARNING:
+                $message .= "<b>My WARNING</b> [$errno] $errstr<br />\n";
+                break;
+
+            case E_USER_NOTICE:
+                $message .= "<b>My NOTICE</b> [$errno] $errstr<br />\n";
+                break;
+
+            default:
+                $message .= "Unknown error type: [$errno] $errstr<br />\n";
+                break;
+        }
+        CoreLogger::get()->error($message);
+        /* Don't execute PHP internal error handler */
+        return true;
     }
 
     // custom string representation of object

@@ -13,7 +13,7 @@ namespace system;
  *
  * @author cjacobsen
  */
-class CoreLogger {
+class CoreLogger extends Parser {
 
     private $debugLog;
     private $errorLog;
@@ -25,6 +25,10 @@ class CoreLogger {
         self::$instance = $this;
     }
 
+    /**
+     *
+     * @return type
+     */
     public static function get() {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -32,45 +36,85 @@ class CoreLogger {
         return self::$instance;
     }
 
+    /**
+     *
+     * @return type
+     */
     public function getLogs() {
         return array('debug' => $this->debugLog, 'error' => $this->errorLog, 'warning' => $this->warningLog, 'info' => $this->infoLog);
     }
 
+    /**
+     *
+     * @param type $message
+     * @return type
+     */
+    private function preProcessMessage($message) {
+        if (is_object($message)) {
+            $message = $this->debugObject($message);
+        }
+        return str_replace("\n", "", $message);
+    }
+
+    /**
+     *
+     * @param type $message
+     */
     public function debug($message) {
-        $message = str_replace("\n", "", $message);
+        $this->preProcessMessage($message);
         $bt = debug_backtrace(1);
         $caller = array_shift($bt);
-        $caller["file"] = str_replace("\\", "/", $caller['file']);
+        $caller["file"] = $this->sanitize($caller['file']);
         $logMessage = $caller["file"] . ":" . $caller["line"] . ' ' . $message;
         $this->debugLog[] = $logMessage;
     }
 
+    /**
+     *
+     * @param type $message
+     */
     public function warning($message) {
-        $message = str_replace("\n", "", $message);
+        $this->preProcessMessage($message);
         $bt = debug_backtrace(1);
         $caller = array_shift($bt);
+        $caller["file"] = $this->sanitize($caller['file']);
         $logMessage = $caller["file"] . ":" . $caller["line"] . ' ' . $message;
         $this->warningLog[] = $logMessage;
     }
 
+    /**
+     *
+     * @param type $message
+     */
     public function error($message) {
-        $message = str_replace("\n", "", $message);
+        $this->preProcessMessage($message);
         $bt = debug_backtrace(1);
         $caller = array_shift($bt);
+
+        $caller["file"] = $this->sanitize($caller['file']);
         $logMessage = $caller["file"] . ":" . $caller["line"] . ' ' . $message;
         $this->errorLog[] = $logMessage;
     }
 
+    /**
+     *
+     * @param type $message
+     */
     public function info($message) {
-
-        $message = str_replace("\n", "", $message);
+        $this->preProcessMessage($message);
         $bt = debug_backtrace(1);
         $caller = array_shift($bt);
+
+        $caller["file"] = $this->sanitize($caller['file']);
         $logMessage = $caller["file"] . ":" . $caller["line"] . ' ' . $message;
         $this->infoLog[] = $logMessage;
     }
 
-//put your code here
+    /**
+     *
+     * @param type $array
+     * @return string
+     */
     public function debugArray($array) {
         if (isset($array)) {
             $message = "<div>";
@@ -89,6 +133,15 @@ class CoreLogger {
             $message = $message . "</div>";
             return $message;
         }
+    }
+
+    /**
+     *
+     * @param type $object
+     * @return type
+     */
+    public function debugObject($object) {
+        return htmlspecialchars(print_r($object, true));
     }
 
 }

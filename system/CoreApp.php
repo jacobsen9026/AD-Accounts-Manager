@@ -14,6 +14,7 @@ namespace system;
  * @author cjacobsen
  */
 use system\Core;
+use system\CoreException;
 use system\Request;
 use app\config\Router;
 use app\config\Config;

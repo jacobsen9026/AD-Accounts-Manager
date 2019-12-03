@@ -2,14 +2,73 @@
 .systemDebugToolBar{
     position: fixed;
     width:100%;
-    height:25%;
-    bottom:0px;
+    height:75%;
+    bottom:-75.5%;
     left:0px;
-    overflow-y: scroll;
-    overflow-x: auto;
+    transition: all 0.5s;
+    transition-property: box-shadow, bottom;
     border-style: ridge;
+     background-image: linear-gradient(#3367d6, black); 
+    border: none;
+    z-index: 1000;
+}
+.systemDebugToolBar button {
+    box-shadow:unset;
+     border:none;
+}
+.systemDebugToolBar button:hover {
+    box-shadow: 0em 1em 3em #2253b7;;
+}
+.systemDebugToolBar.shown{
+    bottom:0px;
+    box-shadow: 0em -2em 30em #000;
+}
+.systemDebugEntry {
+    display:table;
+    width:100%;
+}
+.systemDebugEntry div{
+    display:table-cell;
+    padding-right: 1em;
+    text-align: left;
+}
+.systemDebugEntry .file{
+    width:20%;
+}
+.systemDebugEntry .message{
+      width:80%;
+}
+.systemDebugToolBar .scroll{
+    max-height:100%;
+    overflow-y: auto;
+    overflow-x: auto;
+    position:relative;
+    bottom:3em;
+}
+.systemError{
+    background-color: darksalmon;
+}
+.systemDebug{
+    background-color: gold;
+}
+.systemWarning{
+    background-color: darkorange;
+}
+.systemInfo{
+    background-color: darkseagreen;
+}
+#systemDebugButton{
+    border-top-left-radius: 2em;
+    border-top-right-radius: 2em;
+    height:3em;
+    width:10em;
+    position: relative;
+    bottom:3em;
     
 }
 .systemDebugContainer{
+    margin: 1.5em;
+    padding:1em;
+    box-shadow: 0.2em 0.4em 2em #000;
     
 }

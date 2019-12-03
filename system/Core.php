@@ -17,6 +17,7 @@ require './system/Autoloader.php';
 
 use app\App;
 use system\CoreException;
+use system\SystemLogger;
 
 class Core {
 
@@ -82,15 +83,23 @@ class Core {
 
         $this->parser = new Parser();
         $this->logger = new SystemLogger();
+        $this->logger->info("Logger started");
         $this->parser->include("/system/Config");
+        $this->logger->info("Core config loaded");
         $this->request = new Request($this);
+
+        $this->logger->info("Request created");
     }
 
     private function execute() {
+
+        $this->logger->info("App starting");
         ob_start();
         $this->app = new App($this->request);
         $this->output = $this->app->start();
         ob_get_clean();
+
+        $this->logger->info("App execution completed");
     }
 
     private function render() {
