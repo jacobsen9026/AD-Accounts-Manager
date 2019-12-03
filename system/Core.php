@@ -34,6 +34,10 @@ class Core {
     public static $instance;
 
     function __construct() {
+        error_reporting(E_ALL);
+        ini_set('display_errors', TRUE);
+        ini_set('display_startup_errors', TRUE);
+        session_start();
         self::$instance = $this;
     }
 
@@ -67,7 +71,6 @@ class Core {
             $this->error($ex);
         }
 
-        //$this->route();
         try {
             $this->render();
         } catch (CoreException $ex) {
@@ -84,8 +87,11 @@ class Core {
         $this->parser = new Parser();
         $this->logger = new SystemLogger();
         $this->logger->info("Logger started");
-        $this->parser->include("/system/Config");
+        $this->parser->include("system/Config");
         $this->logger->info("Core config loaded");
+        var_dump(DEBUG_MODE);
+
+        $this->setErrorMode();
         $this->request = new Request($this);
 
         $this->logger->info("Request created");
@@ -94,11 +100,12 @@ class Core {
     private function execute() {
 
         $this->logger->info("App starting");
+        disablePHPErrors();
         ob_start();
         $this->app = new App($this->request);
         $this->output = $this->app->start();
         ob_get_clean();
-
+        $this->setErrorMode();
         $this->logger->info("App execution completed");
     }
 
@@ -114,12 +121,12 @@ class Core {
         $this->renderer->draw($this);
     }
 
-    public function addToBody($string) {
-        /**
-         * Add an element to the end of the body
-         */
-        echo $string;
-        $this->output .= $string;
+    private function setErrorMode() {
+        if (defined('DEBUG_MODE')and DEBUG_MODE) {
+            enablePHPErrors();
+        } else {
+            disablePHPErrors();
+        }
     }
 
 }

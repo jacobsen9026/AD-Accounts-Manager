@@ -6,24 +6,20 @@
  * and open the template in the editor.
  */
 
-namespace system;
+namespace app;
 
 /**
- * Description of Config
+ * Description of Session
  *
  * @author cjacobsen
  */
-class CoreConfig extends Parser {
+use system\CoreSession;
+
+class Session extends CoreSession {
 
     //put your code here
-
-
-
-
-    function __construct() {
-
-    }
+    public $theme;
+    public $privilege;
+    public $authenticated;
 
 }
-?>
-

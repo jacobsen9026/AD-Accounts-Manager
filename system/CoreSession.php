@@ -9,21 +9,14 @@
 namespace system;
 
 /**
- * Description of Config
+ * Description of Session
  *
  * @author cjacobsen
  */
-class CoreConfig extends Parser {
+class CoreSession extends CoreConfig {
 
     //put your code here
-
-
-
-
-    function __construct() {
-
-    }
+    public $username;
+    public $token;
 
 }
-?>
-

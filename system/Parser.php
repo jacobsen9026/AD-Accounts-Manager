@@ -29,12 +29,14 @@ class Parser {
     }
 
     public function include($file) {
+
         $file = $this->sanitize($file);
 
         $path = ROOTPATH . DIRECTORY_SEPARATOR . $file . ".php";
         //echo $path;
         if (file_exists($path)) {
             //ob_start();
+            //echo "loaded";
             include $path;
             return true;
             //return ob_get_clean();

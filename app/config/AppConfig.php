@@ -6,24 +6,19 @@
  * and open the template in the editor.
  */
 
-namespace system;
+namespace app\config;
 
 /**
- * Description of Config
+ * Description of AppConfig
  *
  * @author cjacobsen
  */
-class CoreConfig extends Parser {
+class AppConfig {
 
     //put your code here
-
-
-
-
-    function __construct() {
-
-    }
+    private $name;
+    private $forceHTTPS;
+    private $timeout;
+    private $admins;
 
 }
-?>
-

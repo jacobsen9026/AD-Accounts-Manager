@@ -17,6 +17,7 @@ abstract class Autoloader {
 
     public static function run(Core $core) {
 
+        include(ROOTPATH . DIRECTORY_SEPARATOR . "system" . DIRECTORY_SEPARATOR . "CoreFunctions.php");
         spl_autoload_register(function ($class) {
             //var_dump($class);
             $filename = ROOTPATH . DIRECTORY_SEPARATOR . $class . '.php';

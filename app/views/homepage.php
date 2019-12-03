@@ -10,6 +10,7 @@
     <div>
 
         <?php
+        var_dump($_SESSION);
         /*
           echo $_SESSION["userFirstName"] . " " . $_SESSION["userLastName"];
 

@@ -17,12 +17,14 @@ use system\Core;
 use system\CoreException;
 use system\Request;
 use app\config\Router;
-use app\config\Config;
+use app\config\MasterConfig;
 use app\Layout;
 
 class CoreApp extends Parser {
 
 //put your code here
+
+    public $config;
     public $request;
     public $session;
     public $router;
@@ -48,9 +50,10 @@ class CoreApp extends Parser {
      */
     function __construct(Request $req) {
         self::$instance = $this;
-        $this->config = new Config($this);
+        $this->config = new MasterConfig($this);
         $this->request = $req;
         $this->router = new Router($this);
+        ECHO $THIS;
     }
 
     public function run() {

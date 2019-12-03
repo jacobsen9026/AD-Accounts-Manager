@@ -6,24 +6,20 @@
  * and open the template in the editor.
  */
 
-namespace system;
+namespace app\config;
 
 /**
- * Description of Config
+ * Description of EmailConfig
  *
  * @author cjacobsen
  */
-class CoreConfig extends Parser {
+class EmailConfig {
 
     //put your code here
-
-
-
-
-    function __construct() {
-
-    }
+    private $fromAdd;
+    private $fromName;
+    private $admins;
+    private $welcomeBCC;
+    private $welcomeEmail;
 
 }
-?>
-

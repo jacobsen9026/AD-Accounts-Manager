@@ -9,20 +9,12 @@
 namespace app\config;
 
 /**
- * Description of App
+ * Description of AuthConfig
  *
  * @author cjacobsen
  */
 use system\CoreConfig;
 
-class Config extends CoreConfig {
-
+class AuthConfig extends CoreConfig {
     //put your code here
-    private $authType;
-    private $authorized;
-    private $username;
-    private $privilegeLevel;
-
 }
-
-?>

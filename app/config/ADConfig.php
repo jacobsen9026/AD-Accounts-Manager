@@ -6,24 +6,20 @@
  * and open the template in the editor.
  */
 
-namespace system;
+namespace app\config;
 
 /**
- * Description of Config
+ * Description of ADConfig
  *
  * @author cjacobsen
  */
-class CoreConfig extends Parser {
+use system\CoreConfig;
+
+class ADConfig extends CoreConfig {
 
     //put your code here
-
-
-
-
-    function __construct() {
-
-    }
+    private $priviledgeMappings;
+    private $domainController;
+    private $domainNetBIOS;
 
 }
-?>
-

@@ -5,10 +5,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
+//echo "loaded";
+define('APPPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app");
 define('VIEWPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "views");
-define('DEBUG_MODE', true);
+define('DEBUG_MODE', TRUE);
 
 /*
  * Include other config files like the example below
