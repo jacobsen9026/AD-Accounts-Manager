@@ -9,7 +9,7 @@
 namespace system;
 
 /**
- * Description of Debugger
+ * Description of CoreLogger
  *
  * @author cjacobsen
  */
@@ -19,27 +19,53 @@ class CoreLogger {
     private $errorLog;
     private $infoLog;
     private $warningLog;
+    public static $instance;
+
+    function __construct() {
+        self::$instance = $this;
+    }
+
+    public static function get() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
     public function getLogs() {
         return array('debug' => $this->debugLog, 'error' => $this->errorLog, 'warning' => $this->warningLog, 'info' => $this->infoLog);
     }
 
-    public function debug($message, $caller) {
+    public function debug($message) {
+        $message = str_replace("\n", "", $message);
+        $bt = debug_backtrace(1);
+        $caller = array_shift($bt);
+        $caller["file"] = str_replace("\\", "/", $caller['file']);
         $logMessage = $caller["file"] . ":" . $caller["line"] . ' ' . $message;
         $this->debugLog[] = $logMessage;
     }
 
-    public function warning($message, $caller) {
+    public function warning($message) {
+        $message = str_replace("\n", "", $message);
+        $bt = debug_backtrace(1);
+        $caller = array_shift($bt);
         $logMessage = $caller["file"] . ":" . $caller["line"] . ' ' . $message;
         $this->warningLog[] = $logMessage;
     }
 
-    public function error($message, $caller) {
+    public function error($message) {
+        $message = str_replace("\n", "", $message);
+        $bt = debug_backtrace(1);
+        $caller = array_shift($bt);
         $logMessage = $caller["file"] . ":" . $caller["line"] . ' ' . $message;
         $this->errorLog[] = $logMessage;
     }
 
-    public function info($message, $caller) {
+    public function info($message) {
+
+        $message = str_replace("\n", "", $message);
+        $bt = debug_backtrace(1);
+        $caller = array_shift($bt);
         $logMessage = $caller["file"] . ":" . $caller["line"] . ' ' . $message;
         $this->infoLog[] = $logMessage;
     }

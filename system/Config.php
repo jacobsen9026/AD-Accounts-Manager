@@ -9,4 +9,9 @@
 
 define('VIEWPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "views");
 define('DEBUG_MODE', true);
+
+/*
+ * Include other config files like the example below
+ * $this->include('system/example');
+ */
 ?>

@@ -19,7 +19,7 @@ class CoreController extends Parser {
 
     public $app;
     public $content;
-    public $layoutName;
+    public $layout;
 
     //put your code here
     function __construct(App $app) {

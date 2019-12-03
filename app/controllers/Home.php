@@ -17,8 +17,9 @@ class Home extends Controller {
 
     //put your code here
     public function index() {
-        $this->layoutName = "default";
+        $this->layout = "default";
         //echo "test";
+
         return $this->view('homepage');
         //var_dump($this->content);
         //$this->app->addToBody("test");

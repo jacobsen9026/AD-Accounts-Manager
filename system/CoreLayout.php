@@ -24,8 +24,8 @@ class CoreLayout extends Parser {
     function __construct(App $app) {
         $this->app = $app;
         if (isset($app->controller)) {
-            if (isset($app->controller->layoutName)) {
-                $this->layoutName = $app->controller->layoutName;
+            if (isset($app->controller->layout)) {
+                $this->layoutName = $app->controller->layout;
             } else {
                 $this->layoutName = 'default';
             }

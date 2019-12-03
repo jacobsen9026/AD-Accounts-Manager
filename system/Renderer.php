@@ -13,41 +13,25 @@ namespace system;
  *
  * @author cjacobsen
  */
-class Renderer {
+class Renderer extends Parser {
 
     //put your code here
     public $output;
-    private $core;
+    public $core;
+    private $logger;
 
     function __construct(Core $core) {
         $this->core = $core;
+        $this->logger = $core->logger;
     }
 
     public function draw() {
-        //var_dump($this->core->output);
+
+        $this->logger->info("Drawing of app started");
         echo $this->core->output;
-        $this->checkDebug();
-
-        //var_export($app);
-        //return  Success: ".var_export($app->request->get(),true);
-        //$app->request->get;
-    }
-
-    private function checkDebug() {
-
+        $this->logger->info("Drawing of app finished");
         if (defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != null)) {
-
-            echo "<br/><br/>System Debug:<br/>";
-            var_dump($this->core->logger->getLogs()['debug']);
-
-            echo "<br/><br/>System Warning:<br/>";
-            var_dump($this->core->logger->getLogs()['warning']);
-
-            echo "<br/><br/>System Error:<br/>";
-            var_dump($this->core->logger->getLogs()['error']);
-
-            echo "<br/><br/>System Infor:<br/>";
-            var_dump($this->core->logger->getLogs()['info']);
+            echo $this->view('layouts/system_debug');
         }
     }
 

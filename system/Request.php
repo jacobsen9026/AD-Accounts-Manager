@@ -57,7 +57,7 @@ class Request {
                     $this->action = $exploded[3];
                 }
             }
-            $this->core->debug("Request made: " . $this->module . "->" . $this->page . "->" . $this->action);
+            $this->core->logger->debug("Request made: " . $this->module . "->" . $this->page . "->" . $this->action);
         }
         //var_export($this);
         //return $this;

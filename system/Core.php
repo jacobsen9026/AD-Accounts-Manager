@@ -30,6 +30,18 @@ class Core {
     public $output;
     public $debugLog;
     private $app;
+    public static $instance;
+
+    function __construct() {
+        self::$instance = $this;
+    }
+
+    public static function get() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
     public function run() {
         /**
@@ -67,16 +79,18 @@ class Core {
          * Initialize all core systems
          */
         Autoloader::run($this);
-        $this->logger = new CoreLogger();
+
         $this->parser = new Parser();
-        $this->parser->parseConfig("/system/Config");
+        $this->logger = new SystemLogger();
+        $this->parser->include("/system/Config");
         $this->request = new Request($this);
     }
 
     private function execute() {
-
+        ob_start();
         $this->app = new App($this->request);
         $this->output = $this->app->start();
+        ob_get_clean();
     }
 
     private function render() {
@@ -97,39 +111,6 @@ class Core {
          */
         echo $string;
         $this->output .= $string;
-    }
-
-    public function debug($message) {
-        $message = str_replace("\n", "", $message);
-        $bt = debug_backtrace(1);
-        $caller = array_shift($bt);
-        $caller["file"] = str_replace("\\", "/", $caller['file']);
-
-        $this->logger->debug($message, $caller);
-    }
-
-    public function warning($message) {
-        $message = str_replace("\n", "", $message);
-        $bt = debug_backtrace(1);
-        $caller = array_shift($bt);
-        $caller["file"] = $this->parser->sanitize($caller['file']);
-        $this->logger->warning($message, $caller);
-    }
-
-    public function error($message) {
-        $message = str_replace("\n", "", $message);
-        $bt = debug_backtrace(1);
-        $caller = array_shift($bt);
-        $caller["file"] = $this->parser->sanitize($caller['file']);
-        $this->logger->error($message, $caller);
-    }
-
-    public function info($message) {
-        $message = str_replace("\n", "", $message);
-        $bt = debug_backtrace(1);
-        $caller = array_shift($bt);
-        $caller["file"] = $this->parser->sanitize($caller['file']);
-        $this->logger->info($message, $caller);
     }
 
 }

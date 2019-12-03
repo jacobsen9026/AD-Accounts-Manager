@@ -7,5 +7,19 @@
  */
 if (!function_exists("view")) {
 
+
+    function view($view) {
+        $view = $this->sanitize($view);
+
+        $path = VIEWPATH . DIRECTORY_SEPARATOR . $view . ".php";
+        //echo $path;
+        if (file_exists($path)) {
+            ob_start();
+            include $path;
+            return ob_get_clean();
+        }
+        return false;
+    }
+
 }
 ?>

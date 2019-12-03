@@ -1,2 +1,76 @@
 
-<p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus</p>
+
+<table class="container">
+    <tr>
+        <th>
+            <?php
+            //echo $appConfig["webAppName"];
+            ?>
+
+        </th>
+    </tr>
+    <tr>
+        <td>
+            <?php
+            /*
+              echo $_SESSION["userFirstName"] . " " . $_SESSION["userLastName"];
+
+              if ($appConfig["debugMode"] and $_SESSION["authenticated_tech"] == "true") {
+              echo "<br/><br/><strong>DEBUG MODE ENABLED</strong>";
+              }
+
+              //var_dump($_SERVER);
+             *
+             */
+            ?>
+
+        </td></tr>
+    <tr>
+        <td>
+            <?php
+            if (isset($appConfig["homepageMessage"]) and $appConfig["homepageMessage"][0] != "") {
+                echo "<br/>";
+                foreach ($appConfig["homepageMessage"] as $line) {
+                    echo $line . "<br/>";
+                }
+            }
+            /*
+              if ($_SESSION["authenticated_tech"]) {
+              ?>
+              <br />If there are any errors displayed,
+              <br />or a command that does not actually happen
+              <br /> please <a href="https://github.com/jacobsen9026/School-Accounts-Manager/issues" target="_blank">enter a ticket</a>.
+              <br/><br/>
+              <?php
+              }
+             *
+             */
+            ?>
+        <!--            <img style="height:50%;border-radius:12%;box-shadow:0px 0px 15px #888888" onmouseover="this.style.boxShadow='0px 0px 50px #4285f4';" onmouseleave="this.style.boxShadow='0px 0px 15px #888888';" src="img/mobile.png"/>//-->
+            <!--            <br/><br/>//-->
+            This site is mobile friendly<br/>
+        </td>
+    </tr>
+</table>
+<div class="homepage_footer centered"><?php
+    /*
+      if ($_SESSION["authenticated_tech"] == "true") {
+      //echo "Access Level: Technology";
+      echo "<br/>Version: " . $appConfig["configuredVersion"];
+      //echo "<br/>Tech: ".$_SESSION["authenticated_tech"];
+      //echo "<br/>Admin: ".$_SESSION["authenticated_admin"];
+      //echo "<br/>Power: ".$_SESSION["authenticated_power"];
+      //echo "<br/>Basic: ".$_SESSION["authenticated_basic"];
+      } elseif ($_SESSION["authenticated_admin"] == "true") {
+      echo "Access Level: Office";
+      } elseif ($_SESSION["authenticated_power"] == "true") {
+      echo "Access Level: Tech Teacher";
+      } elseif ($_SESSION["authenticated_basic"] == "true") {
+      echo "Access Level: Teacher";
+      } else {
+      echo "Currently Not Logged In";
+      }
+     *
+     */
+    ?>
+</div>

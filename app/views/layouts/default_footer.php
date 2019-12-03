@@ -1,13 +1,25 @@
+<?php
+//include ("./app/views/hoveringHelpButton.php");
+?>
+
+<script>
+    onLoad();
+</script>
+
+
+
+
+</div>
+
+
 
 <!--
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+Site Written By: Chris Jacobsen
+With Credit to Codiad and IceCoder
+Creation: September-October 2017
+Updated: October 2019
 -->
-<br/>
 
-<br/>
-Default Footer
+</body>
 
+</html>

@@ -1,0 +1,15 @@
+
+.systemDebugToolBar{
+    position: fixed;
+    width:100%;
+    height:25%;
+    bottom:0px;
+    left:0px;
+    overflow-y: scroll;
+    overflow-x: auto;
+    border-style: ridge;
+    
+}
+.systemDebugContainer{
+    
+}

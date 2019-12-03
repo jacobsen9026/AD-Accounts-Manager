@@ -32,23 +32,24 @@ class CoreApp extends Parser {
     public $route;
     public $outputBody;
     public $layout;
+    public static $instance;
+
+    public static function get() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
     /**
      *
      * @param Core $core
      */
     function __construct(Request $req) {
-
+        self::$instance = $this;
         $this->config = new Config($this);
         $this->request = $req;
         $this->router = new Router($this);
-    }
-
-    public static function getInstance() {
-        if (!App::$instance instanceof self) {
-            App::$instance = new self();
-        }
-        return App::$instance;
     }
 
     public function run() {

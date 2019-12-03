@@ -15,7 +15,6 @@ namespace system;
  */
 class Parser {
 
-    //put your code here
     public function view($view) {
         $view = $this->sanitize($view);
 
@@ -29,7 +28,7 @@ class Parser {
         return false;
     }
 
-    public function parseConfig($file) {
+    public function include($file) {
         $file = $this->sanitize($file);
 
         $path = ROOTPATH . DIRECTORY_SEPARATOR . $file . ".php";
@@ -39,8 +38,10 @@ class Parser {
             include $path;
             return true;
             //return ob_get_clean();
+        } else {
+
+            return false;
         }
-        return false;
     }
 
     public function sanitize($path) {
@@ -49,6 +50,12 @@ class Parser {
         }
         $path = str_replace(array('/', '\\'), strval(DIRECTORY_SEPARATOR), $path);
         return $path;
+    }
+
+    public function bufferVarDump($object) {
+        ob_start();
+        var_dump($object);
+        return ob_get_clean();
     }
 
 }

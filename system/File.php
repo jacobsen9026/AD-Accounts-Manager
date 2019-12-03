@@ -32,6 +32,7 @@ abstract class File {
                 //echo 'file';
                 //var_dump($file);
 
+
                 $files[] = realpath($dir . DIRECTORY_SEPARATOR . $file);
             }
         }
