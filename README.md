@@ -8,4 +8,4 @@ If you want to help, please do.
 
 # UML
 
-<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/classify/.github/images/uml.jpg?raw=true" width=400/>
+<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/classify/.github/images/uml.png?raw=true" width=400/>
