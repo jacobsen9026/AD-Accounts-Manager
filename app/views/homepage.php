@@ -2,6 +2,9 @@
     <div>
         <h3>
             <?php
+            //echo "<br/><br/><br/><br/><br/><br/><br/>test";
+            //echo $this->view('install/index');
+            echo "test";
             //echo $appConfig["webAppName"];
             ?>
 
@@ -10,7 +13,7 @@
     <div>
 
         <?php
-        var_dump($_SESSION);
+        //var_dump($_SESSION);
         /*
           echo $_SESSION["userFirstName"] . " " . $_SESSION["userLastName"];
 

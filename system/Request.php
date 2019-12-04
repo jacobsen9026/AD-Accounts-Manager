@@ -33,15 +33,29 @@ class Request {
      */
     function __construct(Core $core) {
         $this->core = $core;
+        /*
+         * Store GET
+         */
         if (isset($_GET)) {
             $this->get = $_GET;
         }
+        /*
+         * Store POST
+         */
         if (isset($_POST)) {
             $this->post = $_POST;
         }
-        //var_export($_SERVER);
+        /*
+         * Check that URI is set
+         */
         if (isset($_SERVER["REQUEST_URI"])) {
+            /*
+             * Set Request URI
+             */
             $this->uri = $_SERVER["REQUEST_URI"];
+            /*
+             * Break up the request by slashes into /module/page/action
+             */
             $exploded = explode("/", $this->uri);
             //var_export($exploded);
             if (sizeof($exploded) > 0) {

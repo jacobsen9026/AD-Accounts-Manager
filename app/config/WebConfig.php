@@ -18,7 +18,23 @@ use system\CoreConfig;
 class WebConfig extends CoreConfig {
 
     //put your code here
-    private $debug;
+    private $debug = true;
     private $adminPassword;
+
+    function getDebug() {
+        return $this->debug;
+    }
+
+    function getAdminPassword() {
+        return $this->adminPassword;
+    }
+
+    function setDebug($debug) {
+        $this->debug = $debug;
+    }
+
+    function setAdminPassword($adminPassword) {
+        $this->adminPassword = $adminPassword;
+    }
 
 }

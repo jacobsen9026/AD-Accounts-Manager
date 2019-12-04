@@ -12,11 +12,18 @@
     border: none;
     z-index: 1000;
 }
+.systemDebugToolBar button.shown {
+    background-color: #2253b7;
+    
+}
+.systemDebugToolBar .tab{
+    display:none;
+}
 .systemDebugToolBar button {
     box-shadow:unset;
      border:none;
 }
-.systemDebugToolBar button:hover {
+.systemDebugToolBar button:hover , .showDebugButton:hover{
     box-shadow: 0em 1em 3em #2253b7;;
 }
 .systemDebugToolBar.shown{
@@ -42,8 +49,8 @@
     max-height:100%;
     overflow-y: auto;
     overflow-x: auto;
-    position:relative;
-    bottom:3em;
+    #position:relative;
+    #bottom:3em;
 }
 .systemError{
     background-color: darksalmon;
@@ -57,14 +64,24 @@
 .systemInfo{
     background-color: darkseagreen;
 }
-#systemDebugButton{
-    border-top-left-radius: 2em;
-    border-top-right-radius: 2em;
+.tab.shown {
+    display:block;
+}
+#showDebugButton{
+    height:3em;
+    width:10em;
+    bottom:3em;
+    position: relative;
+   
+    
+}
+.systemDebugToolbar .tabContainer{
+    #margin-top: 2em;
+}
+#systemDebugButton,#appDebugButton{
     height:3em;
     width:10em;
     position: relative;
-    bottom:3em;
-    
 }
 .systemDebugContainer{
     margin: 1.5em;
@@ -72,3 +89,69 @@
     box-shadow: 0.2em 0.4em 2em #000;
     
 }
+
+   .appDebugToolBar{
+        position: fixed;
+        width:100%;
+        height:75%;
+        bottom:-75.5%;
+        left:0px;
+        transition: all 0.5s;
+        transition-property: box-shadow, bottom;
+        border-style: ridge;
+        background-image: linear-gradient(#3367d6, black);
+        border: none;
+        z-index: 1000;
+    }
+    .appDebugToolBar button {
+        box-shadow:unset;
+        border:none;
+    }
+    .appDebugToolBar button:hover {
+        box-shadow: 0em 1em 3em #2253b7;;
+    }
+    .appDebugToolBar.shown{
+        bottom:0px;
+        box-shadow: 0em -2em 30em #000;
+    }
+    .appDebugEntry {
+        display:table;
+        width:100%;
+    }
+    .appDebugEntry div{
+        display:table-cell;
+        padding-right: 1em;
+        text-align: left;
+    }
+    .appDebugEntry .file{
+        width:20%;
+    }
+    .appDebugEntry .message{
+        width:80%;
+    }
+    .appDebugToolBar .scroll{
+        max-height:100%;
+        overflow-y: auto;
+        overflow-x: auto;
+        position:relative;
+        bottom:3em;
+    }
+    .appError{
+        background-color: darksalmon;
+    }
+    .appDebug{
+        background-color: gold;
+    }
+    .appWarning{
+        background-color: darkorange;
+    }
+    .appInfo{
+        background-color: darkseagreen;
+    }
+
+    .appDebugContainer{
+        margin: 1.5em;
+        padding:1em;
+        box-shadow: 0.2em 0.4em 2em #000;
+
+    }

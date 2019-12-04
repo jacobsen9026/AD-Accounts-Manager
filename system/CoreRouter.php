@@ -21,15 +21,24 @@ use app\App;
  */
 class CoreRouter {
 
-    //put your code here
+    private $logger;
+    private $app = null;
+    private $userPrivilege = null;
+    private $request = null;
     public $module = null;
     public $page = null;
     public $action = null;
-    private $request = null;
-    private $app = null;
+    public $data = null;
+    private $usingAuth = false;
 
     public function __construct(App $app) {
         $this->app = $app;
+        $this->logger = $app->logger;
+        if ($this->app->user != null) {
+            //$this->userPrivilege = $app->user->privilege;
+        } else {
+            throw new CoreException('The user privilege object was not found');
+        }
         $this->request = $app->request;
     }
 
@@ -66,6 +75,9 @@ class CoreRouter {
         if (isset($this->action) and $this->action != '') {
             $route[] = $this->action;
         }
+        if (isset($this->data)) {
+            $route[] = $this->data;
+        }
         return $route;
     }
 
@@ -84,7 +96,7 @@ class CoreRouter {
             $this->action = $this->request->action;
         }
         //var_dump($this);
-        $this->app->debug("Route taken: " . $this->module . "->" . $this->page . "->" . $this->action);
+        $this->logger->info("Route taken: " . $this->module . "->" . $this->page . "->" . $this->action);
     }
 
 }

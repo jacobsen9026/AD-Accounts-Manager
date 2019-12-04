@@ -16,5 +16,5 @@ namespace app;
 use system\CoreLogger;
 
 class AppLogger extends CoreLogger {
-//put your code here
+
 }

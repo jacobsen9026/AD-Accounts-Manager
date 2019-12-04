@@ -69,42 +69,6 @@ abstract class File {
         return $files;
     }
 
-    public static function getAutoloadFiles($dir) {
-
-// Will exclude everything under these directories
-        $exclude = array("views");
-
-        /**
-         * @param SplFileInfo $file
-         * @param mixed $key
-         * @param RecursiveCallbackFilterIterator $iterator
-         * @return bool True if you need to recurse or if the item is acceptable
-         */
-        $filter = function ($file, $key, $iterator) use ($exclude) {
-            if ($iterator->hasChildren() && !in_array($file->getFilename(), $exclude)) {
-                return true;
-            }
-            return $file->isFile();
-        };
-
-        $innerIterator = new \RecursiveDirectoryIterator(
-                $dir,
-                \RecursiveDirectoryIterator::SKIP_DOTS
-        );
-        $iterator = new \RecursiveIteratorIterator(
-                new \RecursiveCallbackFilterIterator($innerIterator, $filter)
-        );
-
-        foreach ($iterator as $pathname => $fileInfo) {
-            if (basename($pathname) == "." or basename($pathname) == ".." or is_dir($pathname) or!strpos(basename($pathname), ".php")) {
-                continue;
-            }
-            //echo $file;
-            $files[] = realpath($pathname);
-        }
-        return $files;
-    }
-
 }
 
 ?>

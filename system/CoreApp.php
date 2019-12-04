@@ -15,6 +15,7 @@ namespace system;
  */
 use system\Core;
 use system\CoreException;
+use app\AppLogger;
 use system\Request;
 use app\config\Router;
 use app\config\MasterConfig;
@@ -28,13 +29,15 @@ class CoreApp extends Parser {
     public $request;
     public $session;
     public $router;
+    private $coreLogger;
     public $controller;
     public $debugLog;
-    public $debugOutput;
+    public $logger;
     public $output;
     public $route;
     public $outputBody;
     public $layout;
+    public $user;
     public static $instance;
 
     public static function get() {
@@ -48,30 +51,50 @@ class CoreApp extends Parser {
      *
      * @param Core $core
      */
-    function __construct(Request $req) {
+    function __construct(Request $req, CoreLogger $cLogger) {
+
+        $this->user = "this";
         self::$instance = $this;
+        /*
+         * Start up the app logger
+         */
+        $this->coreLogger = $cLogger;
+        $this->logger = new AppLogger;
+        $this->logger->info("The app logger has been created");
+        /*
+         * Load the app configuration
+         */
         $this->config = new MasterConfig($this);
+        /*
+         * Set the php errror mode repective of the setting
+         * in the webConfig.
+         */
+        $this->setErrorMode();
+        /*
+         * Load the request into the app
+         */
         $this->request = $req;
-        $this->router = new Router($this);
-        ECHO $THIS;
     }
 
+    /**
+     * @return App
+     */
     public function run() {
+        echo "test";
         try {
             $this->route();
             $this->control();
-            $this->layout();
-            //$this->debug("debug test");
-            //var_dump($this->output);
-            return $this->output;
-        } catch (AppException $ex) {
-            var_dump($ex);
+        } catch (\Exception $ex) {
+            $this->logger->error($ex);
         }
-        /*
 
+        $this->layout();
+        //var_dump($this->output);
+        if (!$this->inDebugMode()) {
+            $this->logger = null;
+        }
 
-         */
-        //return "Success";
+        return array($this->output, $this->logger);
     }
 
     /**
@@ -101,6 +124,13 @@ class CoreApp extends Parser {
     }
 
     public function route() {
+        /*
+         * Build a router based on the current app state
+         */
+        $this->router = new Router($this);
+        /*
+         * Route the app state and store the route
+         */
         $this->route = $this->router->route();
         //var_dump($this->route);
     }
@@ -115,16 +145,30 @@ class CoreApp extends Parser {
             }
         } else {
             echo "No Controller found by name of " . $this->router->module;
-            return false;
+            //return false;
         }
-        $this->debug("Output: " . $this->outputBody);
-        //var_dump($this->outputBody);
     }
 
     public function layout() {
         $this->layout = new Layout($this);
         $this->output = $this->layout->apply();
         //var_dump($this->output);
+    }
+
+    private function setErrorMode() {
+        if ($this->inDebugMode()) {
+            enablePHPErrors();
+        } else {
+            disablePHPErrors();
+        }
+    }
+
+    private function inDebugMode() {
+        if ($this->config->webConfig->getDebug()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

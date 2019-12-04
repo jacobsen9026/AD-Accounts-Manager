@@ -8,6 +8,7 @@
 //echo "loaded";
 define('APPPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app");
 define('VIEWPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "views");
+define('APPCLASS', "app\App");
 define('DEBUG_MODE', TRUE);
 
 /*

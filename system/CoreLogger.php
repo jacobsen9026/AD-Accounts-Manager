@@ -53,7 +53,10 @@ class CoreLogger extends Parser {
         if (is_object($message)) {
             $message = $this->debugObject($message);
         }
-        return str_replace("\n", "", $message);
+        $message = str_replace("\n", "", $message);
+        $caller = backTrace();
+        $caller["file"] = $this->sanitize($caller['file']);
+        return $caller["file"] . ":" . $caller["line"] . ' ' . $message;
     }
 
     /**
@@ -61,12 +64,7 @@ class CoreLogger extends Parser {
      * @param type $message
      */
     public function debug($message) {
-        $this->preProcessMessage($message);
-        $bt = debug_backtrace(1);
-        $caller = array_shift($bt);
-        $caller["file"] = $this->sanitize($caller['file']);
-        $logMessage = $caller["file"] . ":" . $caller["line"] . ' ' . $message;
-        $this->debugLog[] = $logMessage;
+        $this->debugLog[] = $this->preProcessMessage($message);
     }
 
     /**
@@ -74,12 +72,7 @@ class CoreLogger extends Parser {
      * @param type $message
      */
     public function warning($message) {
-        $this->preProcessMessage($message);
-        $bt = debug_backtrace(1);
-        $caller = array_shift($bt);
-        $caller["file"] = $this->sanitize($caller['file']);
-        $logMessage = $caller["file"] . ":" . $caller["line"] . ' ' . $message;
-        $this->warningLog[] = $logMessage;
+        $this->warningLog[] = $this->preProcessMessage($message);
     }
 
     /**
@@ -87,13 +80,7 @@ class CoreLogger extends Parser {
      * @param type $message
      */
     public function error($message) {
-        $this->preProcessMessage($message);
-        $bt = debug_backtrace(1);
-        $caller = array_shift($bt);
-
-        $caller["file"] = $this->sanitize($caller['file']);
-        $logMessage = $caller["file"] . ":" . $caller["line"] . ' ' . $message;
-        $this->errorLog[] = $logMessage;
+        $this->errorLog[] = $this->preProcessMessage($message);
     }
 
     /**
@@ -101,13 +88,7 @@ class CoreLogger extends Parser {
      * @param type $message
      */
     public function info($message) {
-        $this->preProcessMessage($message);
-        $bt = debug_backtrace(1);
-        $caller = array_shift($bt);
-
-        $caller["file"] = $this->sanitize($caller['file']);
-        $logMessage = $caller["file"] . ":" . $caller["line"] . ' ' . $message;
-        $this->infoLog[] = $logMessage;
+        $this->infoLog[] = $this->preProcessMessage($message);
     }
 
     /**

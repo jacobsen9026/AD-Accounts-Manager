@@ -1,8 +1,4 @@
-<style>
-<?php
-include(ROOTPATH . DIRECTORY_SEPARATOR . "system" . DIRECTORY_SEPARATOR . "system.css");
-?>
-</style>
+
 <?php
 $error = $this->core->logger->getLogs()['error'];
 $warning = $this->core->logger->getLogs()['warning'];
@@ -29,8 +25,9 @@ function printDebugArray($array) {
 
 
 
-<div class="systemDebugToolBar">
-    <button id="systemDebugButton" onclick="document.getElementsByClassName('systemDebugToolBar')[0].classList.toggle('shown');">System</button>
+
+
+<div class="systemTab tab">
     <div class="scroll">
         <?php
         if (isset($error) and sizeof($error) > 0) {

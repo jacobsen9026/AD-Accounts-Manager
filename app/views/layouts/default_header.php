@@ -146,7 +146,7 @@
 
         <title>
             <?php
-            echo $appConfig["webAppName"];
+            //echo $appConfig["webAppName"];
             ?>
         </title>
 
@@ -205,14 +205,14 @@
             function startSessionTimeoutTimer() {
                 timer = setTimeout(function () {
                     showSessionTimeoutWarningMessege();
-                }, <?php //echo (($appConfig["sessionTimeout"] * 1000) - (($appConfig["sessionTimeout"] * 1000) * .2));      ?>);
+                }, <?php //echo (($appConfig["sessionTimeout"] * 1000) - (($appConfig["sessionTimeout"] * 1000) * .2));       ?>);
             }
             function showSessionTimeoutWarningMessege() {
                 blurPage();
                 document.getElementById("sessionTimeoutWarningContainer").style = "visibility:visible";
                 timeoutTimer = setTimeout(function () {
                     showSessionTimedOutMessege();
-                },<?php //echo (($appConfig["sessionTimeout"] * 1000) * .2);      ?>);
+                },<?php //echo (($appConfig["sessionTimeout"] * 1000) * .2);       ?>);
             }
         </script>
 

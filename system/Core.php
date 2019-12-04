@@ -28,7 +28,8 @@ class Core {
     public $auth;
     public $router;
     public $renderer;
-    public $output;
+    public $appOutput;
+    public $appDebugger;
     public $debugLog;
     private $app;
     public static $instance;
@@ -50,6 +51,7 @@ class Core {
 
     public function run() {
         /**
+         * BEGIN
          * Declare ROOTPATH constant which is used for all file interactions
          */
         define('ROOTPATH', getcwd());
@@ -76,6 +78,11 @@ class Core {
         } catch (CoreException $ex) {
             var_dump($ex);
         }
+        /*
+         * The request has been completed and the response is being delivered.
+         * The app and core, along with all children, are kill.
+         * EXIT
+         */
     }
 
     private function initializeApp() {
@@ -83,49 +90,107 @@ class Core {
          * Initialize all core systems
          */
         Autoloader::run($this);
-
+        /*
+         * Load the parser in the core since it cannot
+         * extend the parser.
+         */
         $this->parser = new Parser();
+        /*
+         * Load the system logger
+         */
         $this->logger = new SystemLogger();
         $this->logger->info("Logger started");
+        /*
+         * The following statement must not ever be removed.
+         * Everything depends on the system config being
+         * loaded.
+         */
         $this->parser->include("system/Config");
         $this->logger->info("Core config loaded");
-        var_dump(DEBUG_MODE);
-
-        $this->setErrorMode();
+        /*
+         * Set PHP error mode to reflect setting in system config
+         * for DEBUG_MODE
+         */
+        //$this->setErrorMode();
+        /*
+         * Generate a new request to lay the foundation of the
+         * routing to come.
+         */
         $this->request = new Request($this);
-
         $this->logger->info("Request created");
+        /*
+         * Initialization complete return to run()
+         */
     }
 
     private function execute() {
-
         $this->logger->info("App starting");
-        disablePHPErrors();
-        ob_start();
-        $this->app = new App($this->request);
-        $this->output = $this->app->start();
-        ob_get_clean();
-        $this->setErrorMode();
+        /*
+         * If system debug is enabled, do not buffer
+         * the output of the app to prevent it from echoing
+         */
+
+
+        $this->appOutput = $this->runApp();
+        $this->appDebugger = $this->appOutput[1];
+        $this->appOutput = $this->appOutput[0];
+
+        /*
+         * Check if the system is in debug and if so set
+         * php error settings appropriatly
+         */
+        //$this->setErrorMode();
         $this->logger->info("App execution completed");
+    }
+
+    private function runApp() {
+
+        /*
+         * Check that the defined primary app class in the
+         * config actual loaded and then launch it if it is.
+         */
+        if (class_exists(APPCLASS)) {
+            $class = APPCLASS;
+            $this->app = new $class($this->request, $this->logger);
+            return $this->app->start();
+        } else {
+            $this->logger->error("The app\App class was not found");
+        }
+
+        /*
+         * If we were not in debug mode we can flush the output
+         * buffer to prepare for the render.
+         */
     }
 
     private function render() {
         /**
          * Draw the request and deliver back to user
          *
-         *
          * Create instance of renderer
          * Render the body into the full response
          */
+        $this->logger->info("Creating renderer");
         $this->renderer = new Renderer($this);
+        $this->logger->info("Renderer created");
+        $this->logger->info("Call renderer to draw");
         $this->renderer->draw($this);
     }
 
     private function setErrorMode() {
-        if (defined('DEBUG_MODE')and DEBUG_MODE) {
+        if ($this->inDebugMode()) {
             enablePHPErrors();
         } else {
+
             disablePHPErrors();
+        }
+    }
+
+    public function inDebugMode() {
+        if (defined('DEBUG_MODE')and DEBUG_MODE) {
+            return true;
+        } else {
+            return false;
         }
     }
 

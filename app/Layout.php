@@ -16,11 +16,6 @@ namespace app;
 use system\CoreLayout;
 
 class Layout extends CoreLayout {
-
-    function __construct(\app\App $app) {
-        parent::__construct($app);
-    }
-
     //put your code here
 }
 

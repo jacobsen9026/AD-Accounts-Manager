@@ -21,9 +21,13 @@ class Parser {
         $path = VIEWPATH . DIRECTORY_SEPARATOR . $view . ".php";
         //echo $path;
         if (file_exists($path)) {
+
+
             ob_start();
-            include $path;
-            return ob_get_clean();
+            if (include $path) {
+                return ob_get_clean();
+            }
+            ob_get_clean();
         }
         return false;
     }
