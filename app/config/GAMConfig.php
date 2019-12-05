@@ -13,9 +13,9 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-use system\CoreConfig;
+use system\app\CoreConfig;
 
-class GoogleConfig extends CoreConfig {
+class GAMConfig extends CoreConfig {
 
     //put your code here
     private $studentGroupMappings;
