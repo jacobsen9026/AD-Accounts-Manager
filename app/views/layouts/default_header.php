@@ -141,7 +141,9 @@
  *
  */
 ?>
-<html>
+<!DOCTYPE html>
+
+<html lang="en">
     <head>
 
         <title>
@@ -149,6 +151,19 @@
             //echo $appConfig["webAppName"];
             ?>
         </title>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+        <!-- Popper JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+        <link rel="stylesheet" href="/css/style2.css">
 
         <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
@@ -156,7 +171,7 @@
         <link rel="manifest" href="/manifest.json">
         <link rel="mask-icon" href="/img/favicon/safari-pinned-tab.svg" color="#5bbad5">
         <meta name="theme-color" content="#ffffff">
-
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <?php
         /*
@@ -175,28 +190,21 @@
           }
          * */
         ?>
-        <link rel="stylesheet" type="text/css" href="/style/lightTheme.css">
-
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" media="screen and (max-width: 719px)" type="text/css" href="/style/style.css">
-
-        <link rel="stylesheet" media="screen and (max-width: 719px)" type="text/css" href="/style/mobilestyle.css">
-
-        <link rel="stylesheet" media="screen and (min-width: 720px)" type="text/css" href="/style/style.css">
 
 
 
 
-        <script src="/scripts/navigationScripts.js"></script>
-        <script src="/scripts/otherScripts.js"></script>
-        <script src="/scripts/auth.js"></script>
+        <!--
+                <script src="/scripts/navigationScripts.js"></script>
+                <script src="/scripts/otherScripts.js"></script>
+                <script src="/scripts/auth.js"></script>
 
-        <script src="/scripts/lib/js-toast-master/toast.js"></script>
-        <script src="/scripts/lib/jquery.min.js"></script>
-        <script src="/scripts/lib/jquery.plugin.js"></script>
+                <script src="/scripts/lib/js-toast-master/toast.js"></script>
+                <script src="/scripts/lib/jquery.min.js"></script>
+                <script src="/scripts/lib/jquery.plugin.js"></script>
 
 
-
+        -->
 
 
 
@@ -205,14 +213,14 @@
             function startSessionTimeoutTimer() {
                 timer = setTimeout(function () {
                     showSessionTimeoutWarningMessege();
-                }, <?php //echo (($appConfig["sessionTimeout"] * 1000) - (($appConfig["sessionTimeout"] * 1000) * .2));       ?>);
+                }, <?php //echo (($appConfig["sessionTimeout"] * 1000) - (($appConfig["sessionTimeout"] * 1000) * .2));                   ?>);
             }
             function showSessionTimeoutWarningMessege() {
                 blurPage();
                 document.getElementById("sessionTimeoutWarningContainer").style = "visibility:visible";
                 timeoutTimer = setTimeout(function () {
                     showSessionTimedOutMessege();
-                },<?php //echo (($appConfig["sessionTimeout"] * 1000) * .2);       ?>);
+                },<?php //echo (($appConfig["sessionTimeout"] * 1000) * .2);                   ?>);
             }
         </script>
 
@@ -222,7 +230,7 @@
     </head>
 
 
-    <body <?php if (isset($_SESSION["authenticated_basic"]) && $_SESSION["authenticated_basic"] == "true") { ?> onload="startSessionTimeoutTimer();"<?php } ?> >
+    <body>
         <?php
         /*
           if ($_SESSION["authenticated_basic"] == "true" and!isset($grab)) {
@@ -278,7 +286,7 @@
 
 
 
-        <div id="wrapper" class=''>
+        <div class='container-fluid p-0'>
 
 
 
