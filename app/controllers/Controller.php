@@ -13,7 +13,7 @@ namespace app\controllers;
  *
  * @author cjacobsen
  */
-use system\CoreController;
+use system\app\CoreController;
 
 class Controller extends CoreController {
     //put your code here

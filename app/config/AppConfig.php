@@ -13,7 +13,9 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-class AppConfig {
+use system\app\CoreConfig;
+
+class AppConfig extends CoreConfig {
 
     //put your code here
     private $name;

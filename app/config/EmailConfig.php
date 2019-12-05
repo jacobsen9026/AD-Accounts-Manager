@@ -13,7 +13,9 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-class EmailConfig {
+use system\app\CoreConfig;
+
+class EmailConfig extends CoreConfig {
 
     //put your code here
     private $fromAdd;

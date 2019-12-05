@@ -13,7 +13,7 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-use system\CoreRouter;
+use system\app\CoreRouter;
 
 class Router extends CoreRouter {
 

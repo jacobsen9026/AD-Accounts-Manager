@@ -13,7 +13,7 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-use system\CoreConfig;
+use system\app\CoreConfig;
 
 class ADConfig extends CoreConfig {
 
