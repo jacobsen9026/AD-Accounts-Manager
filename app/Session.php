@@ -18,8 +18,8 @@ use system\CoreSession;
 class Session extends CoreSession {
 
     //put your code here
-    public $theme;
-    public $privilege;
+    public $user;
     public $authenticated;
+    private $config;
 
 }
