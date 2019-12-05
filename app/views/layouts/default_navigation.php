@@ -1,89 +1,27 @@
-<table id="navigation" class="navigation">
-    <tr>
-        <?php echo $this->view("navigation/userButton"); ?>
-        <?php echo $this->view("navigation/studentButton"); ?>
-        <?php echo $this->view("navigation/staffButton"); ?>
-        <?php echo $this->view("navigation/parentButton"); ?>
-        <?php echo $this->view("navigation/techButton"); ?>
+<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <!-- Brand -->
+    <a class="navbar-brand" href="#">Navbar</a>
 
+    <!-- Toggler/collapsibe Button -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <?php
-        $numberOfButtons = 2;
-
-        //include("./app/views/navigation/userButton.php");
-        //include("./app/views/navigation/studentButton.php");
-        /*
-          if(isset($_SESSION['authenticated_admin'])){
-          if($_SESSION['authenticated_admin']=="true"){
-          include("./app/views/navigation/staffButton.php");
-          $numberOfButtons++;
-          include("./app/views/navigation/parentButton.php");
-          $numberOfButtons++;
-          }
-          }
-         */
-        //include("./app/views/navigation/staffButton.php");
-        //include("./app/views/navigation/parentButton.php");
-        /*
-          if(isset($_SESSION['authenticated_tech'])){
-          if($_SESSION["authenticated_tech"]=="true"){
-          include("./app/views/navigation/techButton.php");
-          $numberOfButtons++;
-          }
-          }
-         */
-        //include("./app/views/navigation/techButton.php");
-        ?>
-    </tr>
-</table>
-
-
-
-
-
-<?php
-/*
-  switch ($numberOfButtons){
-  case 2:
-  echo "<style>
-  .navigation td, .subnavigation{
-  width: 50%;
-  }
-  </style>";
-  break;
-  case 3:
-  echo "<style>
-  .navigation td, .subnavigation{
-  width: 33%;
-  }
-  </style>";
-  break;
-  case 4:
-  echo "<style>
-  .navigation td, .subnavigation{
-  width: 25%;
-  }
-  </style>";
-  break;
-  case 5:
-  echo "<style>
-  .navigation td, .subnavigation{
-  width: 20%;
-  }
-  </style>";
-  break;
-
-
-
-  }
- */
-?>
-
-
-
-
-
-
+    <!-- Navbar links -->
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+        </ul>
+    </div>
+</nav>
 
 
 
