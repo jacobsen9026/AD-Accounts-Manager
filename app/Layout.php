@@ -13,7 +13,7 @@ namespace app;
  *
  * @author cjacobsen
  */
-use system\CoreLayout;
+use system\app\CoreLayout;
 
 class Layout extends CoreLayout {
     //put your code here
