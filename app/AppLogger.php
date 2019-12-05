@@ -13,7 +13,7 @@ namespace app;
  *
  * @author cjacobsen
  */
-use system\CoreLogger;
+use system\app\CoreLogger;
 
 class AppLogger extends CoreLogger {
 
