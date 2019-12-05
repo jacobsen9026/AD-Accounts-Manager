@@ -6,17 +6,18 @@
  * and open the template in the editor.
  */
 
-namespace system;
+namespace system\app\auth;
 
 /**
- * Description of Session
+ * Description of LDAP
  *
  * @author cjacobsen
  */
-class CoreSession extends CoreConfig {
+abstract class LDAP {
 
     //put your code here
-    public $username;
-    public $token;
+    public function authenticate($username, $password, $domain, $domainController) {
+        
+    }
 
 }

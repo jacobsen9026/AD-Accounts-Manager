@@ -22,21 +22,45 @@ use app\config\MasterConfig;
 use app\Layout;
 
 class CoreApp extends Parser {
-
 //put your code here
 
+    /** @var MasterConfig|null The system logger */
     public $config;
+
+    /** @var Request|null The system logger */
     public $request;
+
+    /** @var Session|null The system logger */
     public $session;
+
+    /** @var Router|null The system logger */
     public $router;
+
+    /** @var SystemLogger|null The system logger */
     private $coreLogger;
+
+    /** @var Controller|null The system logger */
     public $controller;
+
+    /** @var string|null The system logger */
     public $debugLog;
+
+    /** @var AppLogger|null The system logger */
     public $logger;
+
+    /** @var string|null The system logger */
     public $output;
+
+    /** @var Array|null The system logger */
     public $route;
+
+    /** @var string|null The system logger */
     public $outputBody;
+
+    /** @var Layout|null The system logger */
     public $layout;
+
+    /** @var User|null The system logger */
     public $user;
     public static $instance;
 
@@ -51,20 +75,27 @@ class CoreApp extends Parser {
      *
      * @param Core $core
      */
-    function __construct(Request $req, CoreLogger $cLogger) {
+    function __construct(Request $req, SystemLogger $cLogger) {
 
         $this->user = "this";
         self::$instance = $this;
         /*
-         * Start up the app logger
+         * Start up the coreLogger to be used only by the config
          */
         $this->coreLogger = $cLogger;
-        $this->logger = new AppLogger;
-        $this->logger->info("The app logger has been created");
         /*
          * Load the app configuration
          */
         $this->config = new MasterConfig($this);
+
+        $this->coreLogger->info("The app config has been loaded");
+        /*
+         * Set up the appLogger
+         */
+        if ($this->inDebugMode()) {
+            $this->logger = new AppLogger;
+            $this->coreLogger->info("The app logger has been created");
+        }
         /*
          * Set the php errror mode repective of the setting
          * in the webConfig.
@@ -80,10 +111,13 @@ class CoreApp extends Parser {
      * @return App
      */
     public function run() {
-        echo "test";
         try {
             $this->route();
-            $this->control();
+            try {
+                $this->control();
+            } catch (Exception $ex) {
+                $this->logger->error($ex);
+            }
         } catch (\Exception $ex) {
             $this->logger->error($ex);
         }
@@ -95,24 +129,6 @@ class CoreApp extends Parser {
         }
 
         return array($this->output, $this->logger);
-    }
-
-    /**
-     *
-     * @param type $string
-     */
-    public function debug($string) {
-        if (is_array($string)) {
-            $string = $this->debugArray($string);
-        }
-        $string = str_replace("\n", "", $string);
-        $bt = debug_backtrace(1);
-        $caller = array_shift($bt);
-        $caller["file"] = str_replace("\\", "/", $caller['file']);
-        $consoleMessage = $caller["file"] . ":" . $caller["line"] . ' ' . $string;
-        $htmlMessage = $caller["file"] . ":" . $caller["line"] . "<br/>" . $string;
-        $this->debugLog[] = $consoleMessage;
-        //var_dump($this->debugLog);
     }
 
     /**
@@ -137,7 +153,7 @@ class CoreApp extends Parser {
 
     public function control() {
 
-        if ($this->controller = Factory::createController($this)) {
+        if ($this->controller = Factory::buildController($this)) {
             $method = $this->route[1];
             if (method_exists($this->controller, $method)) {
                 $this->outputBody .= $this->controller->$method();

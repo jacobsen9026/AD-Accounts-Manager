@@ -6,23 +6,26 @@
  * and open the template in the editor.
  */
 
-namespace system;
+namespace system\app;
 
 /**
  * Description of Controller
  *
  * @author cjacobsen
  */
+use system\Parser;
 use app\App;
+use system\CoreApp;
 
 class CoreController extends Parser {
 
+    /** @var App|null The view parser */
     public $app;
     public $content;
     public $layout;
 
     //put your code here
-    function __construct(App $app) {
+    function __construct($app) {
         $this->app = $app;
     }
 

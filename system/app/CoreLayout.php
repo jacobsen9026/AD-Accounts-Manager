@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace system;
+namespace system\app;
 
 /**
  * Description of CoreLayout
@@ -14,21 +14,29 @@ namespace system;
  * @author cjacobsen
  */
 use app\App;
+use system\Parser;
 
 class CoreLayout extends Parser {
 
+    const DEFAULT_LAYOUT_NAME = 'default';
+
+    /** @var string|null The view parser */
     public $layoutName;
+
+    /** @var App|null The view parser */
     public $app;
+
+    /** @var string|null The view parser */
     private $appOutput;
 
 //put your code here
-    function __construct(App $app) {
+    function __construct($app) {
         $this->app = $app;
         if (isset($app->controller)) {
             if (isset($app->controller->layout)) {
                 $this->layoutName = $app->controller->layout;
             } else {
-                $this->layoutName = 'default';
+                $this->layoutName = $this::DEFAULT_LAYOUT_NAME;
             }
         }
 //$this->app->debug($app->outputBody);

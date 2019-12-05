@@ -18,7 +18,7 @@ use app\App;
 abstract class Factory {
 
     //put your code here
-    public static function createController(App $app) {
+    public static function buildController(App $app) {
         //var_dump($app);
         $controllerPath = '\\app\\controllers\\';
         //echo $app->route[0];

@@ -6,14 +6,14 @@
  * and open the template in the editor.
  */
 
-namespace system;
+namespace system\app;
 
 /**
  * Description of Get
  *
  * @author cjacobsen
  */
-class CoreGet {
+class CorePost {
 
     //put your code here
     public $uri;
@@ -23,8 +23,8 @@ class CoreGet {
     }
 
     public function getGet($key) {
-        if (isset($_GET[$key]) and $_GET[$key] != NULL) {
-            return $_GET[$key];
+        if (isset($_POST[$key]) and $_POST[$key] != NULL) {
+            return $_POST[$key];
         }
     }
 

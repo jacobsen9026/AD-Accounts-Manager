@@ -6,26 +6,34 @@
  * and open the template in the editor.
  */
 
-namespace system;
+namespace system\app;
 
 /**
  * Description of Get
  *
  * @author cjacobsen
  */
-class CorePost {
+class CoreGet {
 
     //put your code here
-    public $uri;
+    private $uri;
 
     public function __construct(Request $request) {
         $this->uri = $request->uri;
     }
 
-    public function getGet($key) {
-        if (isset($_POST[$key]) and $_POST[$key] != NULL) {
-            return $_POST[$key];
+    public function get($key) {
+        if (isset($_GET[$key]) and $_GET[$key] != NULL) {
+            return $_GET[$key];
         }
+    }
+
+    public function set($key) {
+
+    }
+
+    public function remove($key) {
+
     }
 
 }

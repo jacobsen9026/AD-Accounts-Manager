@@ -6,13 +6,15 @@
  * and open the template in the editor.
  */
 
-namespace system;
+namespace system\app;
 
 /**
  * Description of CoreLogger
  *
  * @author cjacobsen
  */
+use system\Parser;
+
 class CoreLogger extends Parser {
 
     private $debugLog;

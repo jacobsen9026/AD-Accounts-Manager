@@ -21,16 +21,25 @@ use system\SystemLogger;
 
 class Core {
 
+    /** @var Parser|null The view parser */
     private $parser;
+
+    /** @var SystemLogger|null The system logger */
     public $logger;
+
+    /** @var Request|null The Request */
     private $request;
-    private $session;
-    public $auth;
-    public $router;
+
+    /** @var Renderer|null The output renderer */
     public $renderer;
+
+    /** @var string|null The application output */
     public $appOutput;
-    public $appDebugger;
-    public $debugLog;
+
+    /** @var AppLogger|null The application logger */
+    public $appLogger;
+
+    /** @var App|null The App */
     private $app;
     public static $instance;
 
@@ -98,6 +107,7 @@ class Core {
         /*
          * Load the system logger
          */
+
         $this->logger = new SystemLogger();
         $this->logger->info("Logger started");
         /*
@@ -111,7 +121,7 @@ class Core {
          * Set PHP error mode to reflect setting in system config
          * for DEBUG_MODE
          */
-        //$this->setErrorMode();
+        $this->setErrorMode();
         /*
          * Generate a new request to lay the foundation of the
          * routing to come.
@@ -132,8 +142,9 @@ class Core {
 
 
         $this->appOutput = $this->runApp();
-        $this->appDebugger = $this->appOutput[1];
+        $this->appLogger = $this->appOutput[1];
         $this->appOutput = $this->appOutput[0];
+
 
         /*
          * Check if the system is in debug and if so set

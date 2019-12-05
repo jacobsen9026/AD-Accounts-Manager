@@ -6,15 +6,26 @@
  * and open the template in the editor.
  */
 
-namespace system;
+namespace system\app;
 
 /**
- * Description of Authorization
+ * Description of Config
  *
  * @author cjacobsen
  */
-class Authorization {
-    //put your code here
-}
+use system\Parser;
 
+class CoreConfig extends Parser {
+
+    //put your code here
+
+
+
+
+    function __construct() {
+
+    }
+
+}
 ?>
+
