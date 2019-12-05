@@ -19,11 +19,12 @@ class Renderer extends Parser {
     public $output;
     public $core;
     private $logger;
+    public $appLogger = null;
 
     function __construct(Core $core) {
         $this->core = $core;
         $this->logger = $core->logger;
-        $this->appLogger = $core->appDebugger;
+        $this->appLogger = $core->appLogger;
     }
 
     public function draw() {
@@ -32,15 +33,16 @@ class Renderer extends Parser {
         if (isset($this->core->appOutput) and $this->core->appOutput != '') {
             echo $this->core->appOutput;
         } else {
-            echo $this->getNoAppOutputWarning();
+            $this->showNoAppOutputWarning();
         }
         $this->logger->info("Drawing of app finished");
-        echo $this->view('layouts/debugToolbar');
+        $this->include('system/views/debugToolbar');
     }
 
-    private function getNoAppOutputWarning() {
+    private function showNoAppOutputWarning() {
         $this->include('system/views/noAppOutput');
     }
 
 }
+
 ?>
