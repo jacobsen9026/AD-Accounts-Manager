@@ -13,6 +13,8 @@ namespace system;
  *
  * @author cjacobsen
  */
+use system\app\CoreLogger;
+
 class SystemLogger extends CoreLogger {
 
 }
