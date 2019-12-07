@@ -1,6 +1,7 @@
 <nav class="navbar navbar-expand-md bg-primary navbar-dark">
     <!-- Brand -->
-    <a class="navbar-brand" href="/">School Accounts Manager</a>
+    <a class="navbar-brand" href="/"><?php echo $this->config->app->getName();
+?></a>
 
     <!-- Toggler/collapsibe Button -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
