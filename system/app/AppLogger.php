@@ -24,26 +24,35 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\auth;
+namespace system\app;
 
 /**
- * Description of Local
+ * Description of AppLogger
  *
  * @author cjacobsen
  */
-use system\app\auth\AuthException;
+use system\app\CoreLogger;
 
-abstract class Local {
+class AppLogger extends CoreLogger {
 
-    //put your code here
-    public function authenticate($username, $password) {
-        if (strtolower($username) == "admin") {
-            if ($password == "test") {
-                return true;
-            }
-            throw new AuthException(AuthException::BAD_PASSWORD);
+    /** @var AppLogger|null */
+    public static $instance;
+
+    function __construct() {
+
+        self::$instance = $this;
+        ;
+    }
+
+    /**
+     *
+     * @return type
+     */
+    public static function get() {
+        if (self::$instance === null) {
+            self::$instance = new self();
         }
-        throw new AuthException(AuthException::BAD_USER);
+        return self::$instance;
     }
 
 }

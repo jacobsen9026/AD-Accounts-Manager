@@ -24,26 +24,13 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\auth;
+namespace app\auth;
 
 /**
- * Description of Local
+ * Description of Authorization
  *
  * @author cjacobsen
  */
-use system\app\auth\AuthException;
-
-abstract class Local {
-
+class Authorization {
     //put your code here
-    public function authenticate($username, $password) {
-        if (strtolower($username) == "admin") {
-            if ($password == "test") {
-                return true;
-            }
-            throw new AuthException(AuthException::BAD_PASSWORD);
-        }
-        throw new AuthException(AuthException::BAD_USER);
-    }
-
 }

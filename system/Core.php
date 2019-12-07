@@ -1,9 +1,27 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The MIT License
+ *
+ * Copyright 2019 cjacobsen.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 namespace system;
@@ -16,6 +34,7 @@ namespace system;
 require './system/Autoloader.php';
 
 use app\App;
+use system\app\CoreApp;
 use system\CoreException;
 use system\SystemLogger;
 
@@ -41,6 +60,8 @@ class Core {
 
     /** @var App|null The App */
     private $app;
+
+    /** @var Core|null */
     public static $instance;
 
     function __construct() {
@@ -102,10 +123,11 @@ class Core {
          */
     }
 
+    /**
+     * Initialize all core systems
+     */
     private function initializeApp() {
-        /**
-         * Initialize all core systems
-         */
+
         Autoloader::run($this);
         /*
          * Load the parser in the core since it cannot
@@ -139,7 +161,7 @@ class Core {
          * Generate a new request to lay the foundation of the
          * routing to come.
          */
-        $this->request = new Request($this);
+        $this->request = new Request();
         $this->logger->info("Request created");
         /*
          * Initialization complete return to run()
@@ -187,10 +209,12 @@ class Core {
          */
     }
 
+    /**
+     * Draw the request and deliver back to user
+     *
+     */
     private function render() {
-        /**
-         * Draw the request and deliver back to user
-         *
+        /*
          * Create instance of renderer
          * Render the body into the full response
          */
@@ -210,6 +234,10 @@ class Core {
         }
     }
 
+    /**
+     *
+     * @return boolean
+     */
     public function inDebugMode() {
         if (defined('DEBUG_MODE')and DEBUG_MODE) {
             return true;

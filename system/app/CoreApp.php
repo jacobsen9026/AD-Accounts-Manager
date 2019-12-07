@@ -1,12 +1,30 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The MIT License
+ *
+ * Copyright 2019 cjacobsen.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
-namespace system;
+namespace system\app;
 
 /**
  * Description of App
@@ -15,12 +33,13 @@ namespace system;
  */
 use system\Core;
 use system\CoreException;
-use app\AppLogger;
 use system\Request;
+use system\Parser;
+use system\SystemLogger;
+use system\Factory;
 use app\config\Router;
 use app\config\MasterConfig;
 use app\Layout;
-use app\AppErrorHandler;
 
 class CoreApp extends Parser {
 //put your code here
@@ -81,9 +100,9 @@ class CoreApp extends Parser {
         $this->user = "this";
         self::$instance = $this;
         /*
+         * Trigger the appErrorHandler to begin until we load the config
          * Start up the coreLogger to be used only by the config
          */
-
         new AppErrorHandler();
         $this->coreLogger = $cLogger;
         /*
@@ -91,14 +110,10 @@ class CoreApp extends Parser {
          */
         $this->logger = new AppLogger;
         $this->coreLogger->info("The app logger has been created");
-
-
-
-
-
         /*
          * Load the request into the app
          */
+        $this->loadConfig();
         $this->request = $req;
     }
 
@@ -140,14 +155,6 @@ class CoreApp extends Parser {
         $this->config->saveConfig();
     }
 
-    /**
-     *
-     * @param type $string
-     */
-    public function show($string) {
-        $this->outputBody .= $string;
-    }
-
     public function route() {
         /*
          * Build a router based on the current app state
@@ -179,6 +186,11 @@ class CoreApp extends Parser {
         $this->output = $this->layout->apply();
         //var_dump($this->output);
     }
+
+    /*
+     * Set the php errror mode repective of the setting
+     * in the webConfig.
+     */
 
     private function setErrorMode() {
         if ($this->inDebugMode()) {

@@ -24,26 +24,47 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\auth;
+namespace system\app;
 
 /**
- * Description of Local
+ * Description of ErrorHandler
  *
  * @author cjacobsen
  */
-use system\app\auth\AuthException;
+use app\App;
+use system\SystemLogger;
 
-abstract class Local {
+class AppErrorHandler {
+
+    public static $instance;
+
+    function __construct() {
+        if (isset(self::$instance)) {
+            return self::$instance;
+        } else {
+            self::$instance = $this;
+        }
+    }
+
+    /**
+     *
+     * @return type
+     */
+    public static function get() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
     //put your code here
-    public function authenticate($username, $password) {
-        if (strtolower($username) == "admin") {
-            if ($password == "test") {
-                return true;
-            }
-            throw new AuthException(AuthException::BAD_PASSWORD);
+
+    public function handleError($code, $description, $file = null, $line = null, $context = null) {
+        $output = "Error: [$code] $description";
+        if ($file != null and $line != null) {
+            $output = "Error: $file:$line [$code] $description";
         }
-        throw new AuthException(AuthException::BAD_USER);
+        AppLogger::get()->error($output);
     }
 
 }
