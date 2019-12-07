@@ -20,11 +20,12 @@
                 <!-- Dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                        <img style="height:2em;" class="mr-1" src="/img/user_avatar.png"/>Username
+                        <i class="fas fa-user-circle"></i>
+                        Username
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" href="#">Profile</a>
-                        <a class="dropdown-item" href="#">Settings</a>
+                        <a class="dropdown-item" href="/profile">Profile</a>
+                        <a class="dropdown-item" href="/settings">Settings</a>
                         <?php if (app\App::get()->inDebugMode() and $this->userPrivs == \app\models\user\Privilege::TECH) {
                             ?>
                             <a class="dropdown-item" href="#"><text data-toggle="modal" data-target="#debugConfigModal">View Config</text></a>
