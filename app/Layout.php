@@ -32,12 +32,18 @@ namespace app;
  * @author cjacobsen
  */
 use system\app\CoreLayout;
+use app\config\MasterConfig;
 
 class Layout extends CoreLayout {
+
+    /** @var MasterConfig|null The master config */
+    public $config;
 
     //put your code here
     function __construct($app) {
         parent::__construct($app);
+        $this->config = config\MasterConfig::get();
+        $this->title = $this->config->app->getName();
     }
 
 }
