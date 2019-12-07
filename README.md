@@ -2,7 +2,7 @@
 # Classify
 This is a dev branch that is the current active branch.
 
-I am building a complete portable(programatically) webapp framework for this project.
+I've decided to build a complete portable(programatically) webapp framework for this project.
 
 <img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/classify/.github/images/1.png?raw=true" width=800/>
 <img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/classify/.github/images/2.png?raw=true" width=800/>
