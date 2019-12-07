@@ -24,23 +24,20 @@
  * THE SOFTWARE.
  */
 
-namespace app\Controllers;
+namespace app\controllers;
 
 /**
  * Description of Home
  *
  * @author cjacobsen
  */
-class Home extends Controller {
+class Settings extends Controller {
 
     //put your code here
     public function index() {
-        $this->layout = "default";
-        //echo "test";
 
-        return $this->view('homepage');
-        //var_dump($this->content);
-        //$this->app->addToBody("test");
+        $this->config = \app\config\MasterConfig::get();
+        return $this->view('settings/index');
     }
 
 }
