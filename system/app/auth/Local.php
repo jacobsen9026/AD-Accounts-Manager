@@ -32,16 +32,28 @@ namespace system\app\auth;
  * @author cjacobsen
  */
 use system\app\auth\AuthException;
+use app\config\MasterConfig;
 
 abstract class Local {
+//put your code here
 
-    //put your code here
-    public function authenticate($username, $password) {
+    /** @var MasterConfig|null The app logger */
+    private $config;
+
+    public function authenticate($username = null, $password = null) {
+        $this->config = \app\config\MasterConfig::get();
         if (strtolower($username) == "admin") {
-            if ($password == "test") {
-                return true;
+            if (isset($this->config->admin->adminPasswordHash) and $this->config->admin->adminPasswordHash != '') {
+                if ($password == $this->config->admin->adminPasswordHash) {
+                    return true;
+                }
+                throw new AuthException(AuthException::BAD_PASSWORD);
+            } else {
+                if ($password == "test") {
+                    return true;
+                }
+                throw new AuthException(AuthException::BAD_PASSWORD);
             }
-            throw new AuthException(AuthException::BAD_PASSWORD);
         }
         throw new AuthException(AuthException::BAD_USER);
     }
