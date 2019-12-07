@@ -66,6 +66,12 @@ class MasterConfig extends CoreConfig {
     /** @var DistrictConfig|null */
     public $district;
 
+    /** @var AdminConfig|null */
+    public $admin;
+
+    /** @var NotificationConfig|null */
+    public $notification;
+
     /** @var string|null */
     public $configFilePath;
 
