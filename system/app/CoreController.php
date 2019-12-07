@@ -34,13 +34,20 @@ namespace system\app;
 use system\Parser;
 use app\App;
 use system\CoreApp;
+use app\config\MasterConfig;
 
 class CoreController extends Parser {
 
     /** @var App|null The view parser */
     public $app;
+
+    /** @var MasterConfig|null The view parser */
     public $config;
+
+    /** @var string|null The view parser */
     public $content;
+
+    /** @var string|null The view parser */
     public $layout;
 
     //put your code here
@@ -49,8 +56,8 @@ class CoreController extends Parser {
         $this->config = $app->config;
     }
 
-    private function add($string) {
-        $this->content .= $string;
+    public function unauthorized() {
+        return $this->view('errors/403');
     }
 
 }
