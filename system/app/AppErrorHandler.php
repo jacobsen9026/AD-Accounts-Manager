@@ -39,6 +39,8 @@ class AppErrorHandler {
     public static $instance;
 
     function __construct() {
+
+        set_error_handler(array($this, 'handleError'));
         if (isset(self::$instance)) {
             return self::$instance;
         } else {
