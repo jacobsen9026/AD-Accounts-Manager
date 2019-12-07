@@ -36,7 +36,6 @@ class Renderer extends Parser {
         } else {
             $this->showNoAppOutputWarning();
         }
-        echo $this->sadlkjsad;
         $this->logger->info("Drawing of app finished");
         $this->include('system/views/debugToolbar');
         $this->include('system/views/HTML_end');
