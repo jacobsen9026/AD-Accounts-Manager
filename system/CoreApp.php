@@ -63,7 +63,6 @@ class CoreApp extends Parser {
 
     /** @var User|null The system logger */
     public $user;
-    public $configFilePath;
     public static $instance;
 
     public static function get() {
@@ -128,16 +127,7 @@ class CoreApp extends Parser {
     }
 
     public function loadConfig() {
-
-        if (file_exists($this->configFilePath)) {
-
-            $this->logger->info('Loading App Config at ' . $this->configFilePath);
-            $this->config = unserialize(file_get_contents($this->configFilePath));
-        } else {
-
-            $this->config = new MasterConfig();
-        }
-
+        $this->config = new MasterConfig();
         $this->coreLogger->info("The app config has been loaded");
         /*
          * Set the php errror mode repective of the setting
@@ -147,11 +137,7 @@ class CoreApp extends Parser {
     }
 
     public function saveConfig() {
-        $this->logger->info("Saving Config at " . $this->configFilePath);
-
-        //$this->app->logger = null;
-        file_put_contents($this->configFilePath, serialize($this->config));
-        //$this->app->logger = $tempLogger;
+        $this->config->saveConfig();
     }
 
     /**
@@ -171,7 +157,7 @@ class CoreApp extends Parser {
          * Route the app state and store the route
          */
         $this->route = $this->router->route();
-        //var_dump($this->route);
+        $this->logger->info($this->route);
     }
 
     public function control() {
@@ -203,7 +189,7 @@ class CoreApp extends Parser {
     }
 
     public function inDebugMode() {
-        if ($this->config->webConfig->getDebug()) {
+        if ($this->config->web->getDebug()) {
             return true;
         } else {
             return false;
