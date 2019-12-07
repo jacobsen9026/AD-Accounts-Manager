@@ -85,7 +85,7 @@ class Request {
             //var_export($exploded);
             if (sizeof($exploded) > 0) {
                 if (isset($exploded[1]) and $exploded[1] != '') {
-                    $this->module = $exploded[1];
+                    $this->module = ucfirst(strtolower($exploded[1]));
                     //echo "module";
                 }
                 //echo $this->module;
