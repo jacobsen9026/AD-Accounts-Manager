@@ -24,7 +24,7 @@ if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != n
                 <div class = "modal-content">
                     <div class = "modal-header  bg-primary text-light">
                         <h4 class = "modal-title">Logs</h4>
-                        <button type = "button" class = "close" data-dismiss = "modal">&times;
+                        <button type = "button" class = "close text-light" data-dismiss = "modal">&times;
                         </button>
 
                     </div>
