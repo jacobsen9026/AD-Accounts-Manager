@@ -176,6 +176,7 @@ class Core {
          */
 
 
+
         $this->appOutput = $this->runApp();
         $this->appLogger = $this->appOutput[1];
         $this->appOutput = $this->appOutput[0];
