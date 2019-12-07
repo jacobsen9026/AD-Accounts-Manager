@@ -34,7 +34,16 @@ namespace app\controllers;
 use system\app\CoreController;
 
 class Controller extends CoreController {
+
     //put your code here
+
+    function __construct($app) {
+
+        parent::__construct($app);
+
+        $this->layout = "default";
+    }
+
 }
 
 ?>
