@@ -61,7 +61,7 @@ class CoreLayout extends Parser {
     }
 
     public function apply() {
-        $this->appOutput = $this->getHeader() . $this->getNavigation() . $this->app->outputBody . $this->getFooter();
+        $this->appOutput = $this->getNavigation() . $this->getHeader() . $this->app->outputBody . $this->getFooter();
         if ($this->app->logger != null) {
             // $this->appOutput .= $this->renderDebug($this->app->debugLog);
         }
