@@ -5,7 +5,7 @@ namespace system;
 chdir("../");
 
 require('./system/Core.php');
-$app = new Core();
+$core = new Core();
 
-$app->run();
+$core->run();
 ?>

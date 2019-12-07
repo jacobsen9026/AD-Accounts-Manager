@@ -23,4 +23,11 @@ class AppConfig extends CoreConfig {
     private $timeout;
     private $admins;
 
+    function __construct() {
+        parent::__construct();
+        $this->name = "School Accounts Manager";
+        $this->forceHTTPS = false;
+        $this->timeout = 1200;
+    }
+
 }

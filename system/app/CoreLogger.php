@@ -21,28 +21,13 @@ class CoreLogger extends Parser {
     private $errorLog;
     private $infoLog;
     private $warningLog;
-    public static $instance;
-
-    function __construct() {
-        self::$instance = $this;
-    }
-
-    /**
-     *
-     * @return type
-     */
-    public static function get() {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
 
     /**
      *
      * @return type
      */
     public function getLogs() {
+
         return array('debug' => $this->debugLog, 'error' => $this->errorLog, 'warning' => $this->warningLog, 'info' => $this->infoLog);
     }
 
@@ -52,6 +37,9 @@ class CoreLogger extends Parser {
      * @return type
      */
     private function preProcessMessage($message) {
+        if (is_array($message)) {
+            $message = var_export($message, true);
+        }
         if (is_object($message)) {
             $message = $this->debugObject($message);
         }

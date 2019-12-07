@@ -58,7 +58,7 @@ class Parser {
         return $path;
     }
 
-    public function bufferVarDump($object) {
+    public function varDump($object) {
         ob_start();
         var_dump($object);
         return ob_get_clean();

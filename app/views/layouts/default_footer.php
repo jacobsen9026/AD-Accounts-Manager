@@ -6,9 +6,6 @@
     onLoad();
 </script>
 
-
-
-
 </div>
 
 
@@ -22,4 +19,3 @@ Updated: October 2019
 
 </body>
 
-</html>

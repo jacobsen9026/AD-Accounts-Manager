@@ -2,36 +2,42 @@
 .systemDebugToolBar{
     position: fixed;
     width:100%;
+    
     height:10%;
     bottom:-10%;
     left:0px;
     transition: all 0.5s;
-    transition-property: box-shadow, bottom, position;
+    transition-property: box-shadow, bottom, position, height;
     border: none;
     z-index: 1000;
 }
 
 
-
-
 .systemDebugToolBar.shown{
     
     position: absolute;
-    bottom:40%;
+    height:auto;
     box-shadow: 0em -2em 30em #000;
 }
-.systemDebugToolBar.shown .content{
-    height:auto;
-}
 
-.systemDebugToolBar .content{
-     position:relative;
-    bottom:3em;
+.systemDebugToolBar .tab-content{
+    height:100%;
 }
 
 
 #showDebugButton{
+     position:relative;
+     display:block;
+   bottom:3em;
+   
+}
+
+
+#showDebugButton{
+    position:fixed;
     height:3em;
+    bottom:0px;
+    left:0px;
     min-width:100px;
     max-width: 20%
    
@@ -46,7 +52,6 @@
     
 }
 .log-tab-content{
-    position:relative;
     padding-top:1em;
 }
 

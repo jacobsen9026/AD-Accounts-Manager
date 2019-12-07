@@ -44,10 +44,20 @@ class Core {
     public static $instance;
 
     function __construct() {
+        /*
+         * Create
+         * Start Session
+         * Declare ROOTPATH constant which is used for all file interactions
+         */
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
+        define('ROOTPATH', getcwd());
+        //Enable Error Reporting for core until the system config is loaded
         error_reporting(E_ALL);
         ini_set('display_errors', TRUE);
         ini_set('display_startup_errors', TRUE);
-        session_start();
         self::$instance = $this;
     }
 
@@ -61,10 +71,8 @@ class Core {
     public function run() {
         /**
          * BEGIN
-         * Declare ROOTPATH constant which is used for all file interactions
+         *
          */
-        define('ROOTPATH', getcwd());
-
         /**
          * Auto-load all classes in directories specified within class
          */
@@ -103,6 +111,9 @@ class Core {
          * Load the parser in the core since it cannot
          * extend the parser.
          */
+        new CoreErrorHandler();
+
+        trigger_error("Value must be 1 or below");
         $this->parser = new Parser();
         /*
          * Load the system logger
@@ -110,6 +121,8 @@ class Core {
 
         $this->logger = new SystemLogger();
         $this->logger->info("Logger started");
+        $this->logger->info("Session Export Below:");
+        $this->logger->info($_SESSION);
         /*
          * The following statement must not ever be removed.
          * Everything depends on the system config being
@@ -145,7 +158,7 @@ class Core {
         $this->appLogger = $this->appOutput[1];
         $this->appOutput = $this->appOutput[0];
 
-
+        new CoreErrorHandler();
         /*
          * Check if the system is in debug and if so set
          * php error settings appropriatly

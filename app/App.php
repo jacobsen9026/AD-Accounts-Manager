@@ -18,11 +18,32 @@ use system\CoreApp;
 
 class App extends CoreApp {
 
-    public function start() {
-        return $this->run();
+    function __construct(\system\Request $req, \system\SystemLogger $cLogger) {
+
+        parent::__construct($req, $cLogger);
+        $this->configFilePath = APPPATH . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "config.json";
     }
 
-    //put your code here
+    public function start() {
+        /*
+         * Load the app configuration
+         */
+        $this->loadConfig();
+        $this->saveConfig();
+        /*
+         * Place any prep processing required before running the app here.
+         * No application resources are available at this point.
+         */
+
+
+
+        $output = $this->run();
+        /*
+         * Place any post processing required after running the app here.
+         */
+        return $output;
+    }
+
 }
 
 ?>

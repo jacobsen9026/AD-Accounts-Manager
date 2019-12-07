@@ -27,6 +27,8 @@ function printAppDebugArray($array) {
 
 
 <div class="scroll">
+
+
     <?php
     if (isset($error) and sizeof($error) > 0) {
         ?>

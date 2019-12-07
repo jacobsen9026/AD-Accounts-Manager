@@ -20,6 +20,7 @@ use system\Request;
 use app\config\Router;
 use app\config\MasterConfig;
 use app\Layout;
+use app\AppErrorHandler;
 
 class CoreApp extends Parser {
 //put your code here
@@ -62,6 +63,7 @@ class CoreApp extends Parser {
 
     /** @var User|null The system logger */
     public $user;
+    public $configFilePath;
     public static $instance;
 
     public static function get() {
@@ -82,25 +84,19 @@ class CoreApp extends Parser {
         /*
          * Start up the coreLogger to be used only by the config
          */
-        $this->coreLogger = $cLogger;
-        /*
-         * Load the app configuration
-         */
-        $this->config = new MasterConfig($this);
 
-        $this->coreLogger->info("The app config has been loaded");
+        new AppErrorHandler();
+        $this->coreLogger = $cLogger;
         /*
          * Set up the appLogger
          */
-        if ($this->inDebugMode()) {
-            $this->logger = new AppLogger;
-            $this->coreLogger->info("The app logger has been created");
-        }
-        /*
-         * Set the php errror mode repective of the setting
-         * in the webConfig.
-         */
-        $this->setErrorMode();
+        $this->logger = new AppLogger;
+        $this->coreLogger->info("The app logger has been created");
+
+
+
+
+
         /*
          * Load the request into the app
          */
@@ -129,6 +125,33 @@ class CoreApp extends Parser {
         }
 
         return array($this->output, $this->logger);
+    }
+
+    public function loadConfig() {
+
+        if (file_exists($this->configFilePath)) {
+
+            $this->logger->info('Loading App Config at ' . $this->configFilePath);
+            $this->config = unserialize(file_get_contents($this->configFilePath));
+        } else {
+
+            $this->config = new MasterConfig();
+        }
+
+        $this->coreLogger->info("The app config has been loaded");
+        /*
+         * Set the php errror mode repective of the setting
+         * in the webConfig.
+         */
+        $this->setErrorMode();
+    }
+
+    public function saveConfig() {
+        $this->logger->info("Saving Config at " . $this->configFilePath);
+
+        //$this->app->logger = null;
+        file_put_contents($this->configFilePath, serialize($this->config));
+        //$this->app->logger = $tempLogger;
     }
 
     /**
@@ -160,8 +183,8 @@ class CoreApp extends Parser {
                 //var_dump($this->outputBody);
             }
         } else {
-            echo "No Controller found by name of " . $this->router->module;
-            //return false;
+            $this->logger->warning("No Controller found by name of " . $this->router->module);
+            $this->outputBody .= $this->view('errors/404');
         }
     }
 
@@ -179,7 +202,7 @@ class CoreApp extends Parser {
         }
     }
 
-    private function inDebugMode() {
+    public function inDebugMode() {
         if ($this->config->webConfig->getDebug()) {
             return true;
         } else {

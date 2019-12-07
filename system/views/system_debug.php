@@ -43,8 +43,8 @@ if (!function_exists('printDebugArray')) {
     if (isset($error) and sizeof($error) > 0) {
         ?>
 
-        <div class="alert alert-error dark-shadow m-3">
-            <?php drawLogButton('System Error', 'systemError', 'error'); ?>
+        <div class="alert alert-danger dark-shadow m-3">
+            <?php drawLogButton('System Error', 'systemError', 'danger'); ?>
             <div id='systemError' class='collapse '>
                 <?php
                 printDebugArray($error);

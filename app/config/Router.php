@@ -16,10 +16,21 @@ namespace app\config;
 use system\app\CoreRouter;
 
 class Router extends CoreRouter {
+    /*
+     * Add custom routes with the following sytax
+     * array ("requestedModule"
+     */
+
+    private $customRoutes;
 
     //put your code here
     function __construct(\app\App $app) {
         parent::__construct($app);
+        $this->includeCustomRoutes();
+    }
+
+    private function includeCustomRoutes() {
+        $this->customRoutes[] = array("install", "index", "home", "index");
     }
 
 }

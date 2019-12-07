@@ -18,10 +18,18 @@ use system\app\CoreConfig;
 class EmailConfig extends CoreConfig {
 
     //put your code here
-    private $fromAdd;
+    private $fromAddress;
     private $fromName;
     private $admins;
     private $welcomeBCC;
     private $welcomeEmail;
+    private $smtpServer;
+    private $smtpPort;
+    private $useSMTPAuth;
+    private $useSMTPSSL;
+    private $smtpUsername;
+    private $smtpPassword;
+    private $replyToAddress;
+    private $replyToName;
 
 }

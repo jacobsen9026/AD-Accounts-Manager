@@ -24,6 +24,7 @@ class Request {
     public $uri = null;
     public $module = null;
     public $page = null;
+    public $referer = null;
     public $action = null;
     public $core;
 
@@ -44,6 +45,12 @@ class Request {
          */
         if (isset($_POST)) {
             $this->post = $_POST;
+        }
+        /*
+         * Store the referer
+         */
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            $this->referer = $_SERVER['HTTP_REFERER'];
         }
         /*
          * Check that URI is set
@@ -87,34 +94,6 @@ class Request {
 
     public function uri() {
         return $this->uri;
-    }
-
-    public function module() {
-        return $this->module;
-    }
-
-    public function page() {
-        return $this->page;
-    }
-
-    public function action() {
-        return $this->action;
-    }
-
-    public function setPost(string $post) {
-        $this->post = $post;
-    }
-
-    public function setModule($module) {
-        $this->module = $module;
-    }
-
-    public function setPage($page) {
-        $this->page = $page;
-    }
-
-    public function setAction($action) {
-        $this->action = $action;
     }
 
 }

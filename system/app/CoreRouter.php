@@ -29,7 +29,6 @@ class CoreRouter {
     public $page = null;
     public $action = null;
     public $data = null;
-    private $usingAuth = false;
 
     public function __construct(App $app) {
         $this->app = $app;
@@ -85,18 +84,51 @@ class CoreRouter {
         if (!isset($this->request->module)) {
             $this->module = $this->getDefaultModule();
         } else {
-            $this->module = $this->request->module;
+            $this->module = $this->preProcess($this->request->module);
         }
         if (!isset($this->request->page)) {
             $this->page = $this->getDefaultPage();
         } else {
-            $this->page = $this->request->page;
+
+            $this->page = $this->preProcess($this->request->page);
         }
         if (isset($this->request->action)) {
             $this->action = $this->request->action;
         }
         //var_dump($this);
         $this->logger->info("Route taken: " . $this->module . "->" . $this->page . "->" . $this->action);
+    }
+
+    private function preProcess($string) {
+        /*
+         * Break down a request like /students-cms/account-status
+         * and convert it to a call to the method accountStatus
+         * on an object of the class StudentsCms
+         */
+        //$this->app->logger->debug($string . '  ' . strpos($string, '-'));
+        if (strpos($string, '-')) {
+
+            //$this->app->logger->debug('- found');
+            $brokenString = explode("-", $string);
+            $first = true;
+            foreach ($brokenString as $piece) {
+                if ($first) {
+
+                    //$this->app->logger->debug('first piece ' . $piece);
+                    $processedString = $piece;
+                    $first = false;
+                    continue;
+                }
+                $processedString .= ucfirst($piece);
+
+                //$this->app->logger->debug($processedString);
+                return $processedString;
+            }
+
+            //$this->app->logger->debug($piece);
+            return $piece;
+        }
+        return $string;
     }
 
 }

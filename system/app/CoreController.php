@@ -21,12 +21,14 @@ class CoreController extends Parser {
 
     /** @var App|null The view parser */
     public $app;
+    public $config;
     public $content;
     public $layout;
 
     //put your code here
     function __construct($app) {
         $this->app = $app;
+        $this->config = $app->config;
     }
 
     private function add($string) {

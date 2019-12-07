@@ -60,6 +60,8 @@ class CoreLayout extends Parser {
     }
 
     public function getNavigation() {
+        $menu = new \app\controllers\Menu(\app\models\user\Privilege::TECH);
+        return $menu->getMenu();
         return $this->view('layouts/' . $this->layoutName . '_navigation');
     }
 

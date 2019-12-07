@@ -11,3 +11,7 @@ and open the template in the editor.
 .dark-shadow{
     box-shadow: 0.1em 0.2em 1em #000;
 }
+.align-right{
+    position: absolute;
+    right:0px;
+}

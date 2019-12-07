@@ -14,22 +14,29 @@ namespace app\config;
  * @author cjacobsen
  */
 use system\app\CoreConfig;
+use app\App;
+use app\AppLogger;
 
 class MasterConfig extends CoreConfig {
 
     //put your code here
+
     public $appConfig;
     public $emailConfig;
     public $webConfig;
     public $authConfig;
+    public $logger;
 
     function __construct() {
         parent::__construct();
+
         $this->appConfig = new AppConfig();
         $this->emailConfig = new EmailConfig();
         $this->webConfig = new WebConfig();
-
         $this->authConfig = new AuthConfig();
+
+        //$this->logger = $logger;
+        //$this->load($this->app->logger);
     }
 
 }

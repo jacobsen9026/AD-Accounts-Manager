@@ -1,7 +1,6 @@
 <?php
 /*
-  //Start the PHP session
-  session_start();
+
 
   //Load all major functions of the webapp
   include("./app/includes/backendIncludes.php");
@@ -143,150 +142,138 @@
 ?>
 <!DOCTYPE html>
 
-<html lang="en">
-    <head>
 
-        <title>
-            <?php
-            //echo $appConfig["webAppName"];
-            ?>
-        </title>
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
 
-        <!-- jQuery library -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<title>
+    <?php
+    //echo $appConfig["webAppName"];
+    ?>
+    School Accounts Manager
+</title>
 
-        <!-- Popper JS -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 
-        <!-- Latest compiled JavaScript -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<link rel="stylesheet"  media="screen and (min-width: 768px)" href="/css/style2.css">
 
-        <link rel="stylesheet" href="/css/style2.css">
+<link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/img/favicon/safari-pinned-tab.svg" color="#5bbad5">
 
-        <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
-        <link rel="manifest" href="/manifest.json">
-        <link rel="mask-icon" href="/img/favicon/safari-pinned-tab.svg" color="#5bbad5">
-        <meta name="theme-color" content="#ffffff">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<?php
+/*
+  if (isset($_COOKIE["theme"])) {
+  if ($_COOKIE["theme"] == "light") {
+  echo '<link rel="stylesheet" type="text/css" href="/style/lightTheme.css">';
+  } elseif ($_COOKIE["theme"] == "dark") {
 
-        <?php
-        /*
-          if (isset($_COOKIE["theme"])) {
-          if ($_COOKIE["theme"] == "light") {
-          echo '<link rel="stylesheet" type="text/css" href="/style/lightTheme.css">';
-          } elseif ($_COOKIE["theme"] == "dark") {
-
-          echo '<link rel="stylesheet" type="text/css" href="/style/darkTheme.css">';
-          }
-          } else {
-          echo '<link rel="stylesheet" type="text/css" href="/style/lightTheme.css">';
-          }
-          if (isset($_SESSION["authenticated_tech"]) and $appConfig["debugMode"] and $_SESSION["authenticated_tech"]) {
-          echo '<link rel="stylesheet" type="text/css" href="/style/sandbox.css">';
-          }
-         * */
-        ?>
+  echo '<link rel="stylesheet" type="text/css" href="/style/darkTheme.css">';
+  }
+  } else {
+  echo '<link rel="stylesheet" type="text/css" href="/style/lightTheme.css">';
+  }
+  if (isset($_SESSION["authenticated_tech"]) and $appConfig["debugMode"] and $_SESSION["authenticated_tech"]) {
+  echo '<link rel="stylesheet" type="text/css" href="/style/sandbox.css">';
+  }
+ * */
+?>
 
 
 
 
-        <!--
-                <script src="/scripts/navigationScripts.js"></script>
-                <script src="/scripts/otherScripts.js"></script>
-                <script src="/scripts/auth.js"></script>
+<!--
+        <script src="/scripts/navigationScripts.js"></script>
+        <script src="/scripts/otherScripts.js"></script>
+        <script src="/scripts/auth.js"></script>
 
-                <script src="/scripts/lib/js-toast-master/toast.js"></script>
-                <script src="/scripts/lib/jquery.min.js"></script>
-                <script src="/scripts/lib/jquery.plugin.js"></script>
-
-
-        -->
+        <script src="/scripts/lib/js-toast-master/toast.js"></script>
+        <script src="/scripts/lib/jquery.min.js"></script>
+        <script src="/scripts/lib/jquery.plugin.js"></script>
 
 
-
-        <script type="text/javascript">
-            var timeoutTimer;
-            function startSessionTimeoutTimer() {
-                timer = setTimeout(function () {
-                    showSessionTimeoutWarningMessege();
-                }, <?php //echo (($appConfig["sessionTimeout"] * 1000) - (($appConfig["sessionTimeout"] * 1000) * .2));                   ?>);
-            }
-            function showSessionTimeoutWarningMessege() {
-                blurPage();
-                document.getElementById("sessionTimeoutWarningContainer").style = "visibility:visible";
-                timeoutTimer = setTimeout(function () {
-                    showSessionTimedOutMessege();
-                },<?php //echo (($appConfig["sessionTimeout"] * 1000) * .2);                   ?>);
-            }
-        </script>
+-->
 
 
 
-
-    </head>
-
-
-    <body>
-        <?php
-        /*
-          if ($_SESSION["authenticated_basic"] == "true" and!isset($grab)) {
-          //Load waiting animation that consumes the screen during operations and debug console.
-          include("./app/includes/pageLoader.php");
-          include("./app/includes/sessionTimeoutWarning.php");
-          //echo "./app/views".$grab;
-          }
-
-
-
-          if (isset($_SESSION['authenticated_tech']) and!isset($grab)) {
-          if ($_SESSION["authenticated_tech"] == "true") {
-          if ($appConfig["debugMode"]) {
-          include("./app/includes/debugConsole.php");
-          include("./app/includes/debugConfig.php");
-          include("./app/includes/debugConsole.php");
-          include("./app/includes/debugInclude.php");
-          ?>
-
-          <div class="debugFloatingToolsContainer">
-          <div title="Debug Mode is On" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick="window.open('/?goto=/config/index.php#dm_input');" class="floatingButton">
-          <img src="/img/warning2.png"/>
-          </div>
-          <div title="Open Debug Console" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugConsoleContainer").style = "visibility:visible";' class="floatingButton">
-          <img src="/img/console.png"/>
-          </div>
-          <div title="Open Config Debug" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugConfigContainer").style = "visibility:visible";' class="floatingButton">
-          <img src="/img/config.png"/>
-          </div>
-          <div title="Open Config Includes" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugIncludeContainer").style = "visibility:visible";' class="floatingButton">
-          <img src="/img/console.png"/>
-          </div>
-          </div>
-          <?php
-          }
-          }
-          }
-         *
-         */
-        ?>
-
-
-        <?php
-        /*
-          if ($appConfig["installComplete"] and!isset($grab)) {
-          //Load the top menu navigation
-          include("./app/includes/navigation.php");
-          }
-         *
-         */
-        ?>
+<script type="text/javascript">
+    var timeoutTimer;
+    function startSessionTimeoutTimer() {
+        timer = setTimeout(function () {
+            showSessionTimeoutWarningMessege();
+        }, <?php //echo (($appConfig["sessionTimeout"] * 1000) - (($appConfig["sessionTimeout"] * 1000) * .2));                                      ?>);
+    }
+    function showSessionTimeoutWarningMessege() {
+        blurPage();
+        document.getElementById("sessionTimeoutWarningContainer").style = "visibility:visible";
+        timeoutTimer = setTimeout(function () {
+            showSessionTimedOutMessege();
+        },<?php //echo (($appConfig["sessionTimeout"] * 1000) * .2);                                      ?>);
+    }
+</script>
 
 
 
-        <div class='container-fluid p-0'>
+
+</head>
+
+
+<body>
+    <?php
+    /*
+      if ($_SESSION["authenticated_basic"] == "true" and!isset($grab)) {
+      //Load waiting animation that consumes the screen during operations and debug console.
+      include("./app/includes/pageLoader.php");
+      include("./app/includes/sessionTimeoutWarning.php");
+      //echo "./app/views".$grab;
+      }
+
+
+
+      if (isset($_SESSION['authenticated_tech']) and!isset($grab)) {
+      if ($_SESSION["authenticated_tech"] == "true") {
+      if ($appConfig["debugMode"]) {
+      include("./app/includes/debugConsole.php");
+      include("./app/includes/debugConfig.php");
+      include("./app/includes/debugConsole.php");
+      include("./app/includes/debugInclude.php");
+      ?>
+
+      <div class="debugFloatingToolsContainer">
+      <div title="Debug Mode is On" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick="window.open('/?goto=/config/index.php#dm_input');" class="floatingButton">
+      <img src="/img/warning2.png"/>
+      </div>
+      <div title="Open Debug Console" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugConsoleContainer").style = "visibility:visible";' class="floatingButton">
+      <img src="/img/console.png"/>
+      </div>
+      <div title="Open Config Debug" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugConfigContainer").style = "visibility:visible";' class="floatingButton">
+      <img src="/img/config.png"/>
+      </div>
+      <div title="Open Config Includes" onmouseover="hoverOverEditButton(this);" onmouseleave="revertEditButton(this);" onclick='document.getElementById("debugIncludeContainer").style = "visibility:visible";' class="floatingButton">
+      <img src="/img/console.png"/>
+      </div>
+      </div>
+      <?php
+      }
+      }
+      }
+     *
+     */
+    ?>
+
+
+    <?php
+    /*
+      if ($appConfig["installComplete"] and!isset($grab)) {
+      //Load the top menu navigation
+      include("./app/includes/navigation.php");
+      }
+     *
+     */
+    ?>
+
+
+
+    <div class='centered text-center text_centered container-fluid p-0'>
 
 
 

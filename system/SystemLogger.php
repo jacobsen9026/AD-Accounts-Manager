@@ -17,4 +17,23 @@ use system\app\CoreLogger;
 
 class SystemLogger extends CoreLogger {
 
+    public static $instance;
+
+    function __construct() {
+
+        self::$instance = $this;
+        ;
+    }
+
+    /**
+     *
+     * @return type
+     */
+    public static function get() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
 }
