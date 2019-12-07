@@ -21,7 +21,6 @@ class App extends CoreApp {
     function __construct(\system\Request $req, \system\SystemLogger $cLogger) {
 
         parent::__construct($req, $cLogger);
-        $this->configFilePath = APPPATH . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR . "config.json";
     }
 
     public function start() {
@@ -29,7 +28,7 @@ class App extends CoreApp {
          * Load the app configuration
          */
         $this->loadConfig();
-        $this->saveConfig();
+        //$this->saveConfig();
         /*
          * Place any prep processing required before running the app here.
          * No application resources are available at this point.
