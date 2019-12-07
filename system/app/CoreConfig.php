@@ -22,8 +22,16 @@ class CoreConfig extends Parser {
 
 
 
-    function __construct() {
+    function __construct(array $keyValuePairs = null) {
+        if ($keyValuePairs != null) {
+            foreach ($keyValuePairs as $key => $value) {
+                $this->$key = $value;
+            }
+        }
+    }
 
+    public function getSettings() {
+        return get_object_vars($this);
     }
 
 }
