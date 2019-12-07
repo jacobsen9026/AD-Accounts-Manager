@@ -26,12 +26,15 @@ class Menu extends Parser {
 //put your code here
     public $items;
     public $layout;
+    public $config;
 
     /** @var AppLogger|null The app logger */
     public $logger;
     public $userPrivs;
 
     function __construct($userPrivs, $layout = 'default') {
+        $app = App::get();
+        $this->config = $app->config;
         $this->layout = $layout;
         $this->logger = \app\AppLogger::get();
         $this->userPrivs = $userPrivs;
@@ -115,7 +118,7 @@ class Menu extends Parser {
 
     public function getMenu() {
         $this->app = App::get();
-        $this->logger->debug($this->items);
+        //$this->logger->debug($this->items);
         return $this->view('/layouts/' . $this->layout . '_navbar');
     }
 
