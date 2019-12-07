@@ -66,6 +66,7 @@ class Menu extends Parser {
                 $this->logger->debug("Building Parent and Staff Menus");
                 $this->items[] = $this->buildParentMenu();
                 $this->items[] = $this->buildStaffMenu();
+                // Test of privilege
                 if ($this->userPrivs > \app\models\user\Privilege::TECH - 1) {
                     $this->items[] = $this->buildTechMenu();
                 }
