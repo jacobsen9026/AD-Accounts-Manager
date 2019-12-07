@@ -34,8 +34,8 @@ abstract class LDAP {
 
     //put your code here
     public function authenticate($username, $password, $domain, $domainController) {
-        $adServer = "ldap://bdc01";
-        $domainArray = explode(".", 'branchburg.k12.nj.us');
+        $adServer = "adserver";
+        $domainArray = explode(".", 'domain name');
         $distinguishedName = '';
         foreach ($domainArray as $domain) {
             $distinguishedName = strval($distinguishedName . "DC=" . $domain . ",");
@@ -46,7 +46,7 @@ abstract class LDAP {
         $username = strtolower($username);
 
 
-        $ldaprdn = 'BRANCHBURG' . "\\" . $username;
+        $ldaprdn = 'netbios' . "\\" . $username;
 
         ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
