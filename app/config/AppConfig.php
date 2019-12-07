@@ -18,16 +18,30 @@ use system\app\CoreConfig;
 class AppConfig extends CoreConfig {
 
     //put your code here
-    private $name;
-    private $forceHTTPS;
-    private $timeout;
-    private $admins;
 
-    function __construct() {
-        parent::__construct();
-        $this->name = "School Accounts Manager";
-        $this->forceHTTPS = false;
-        $this->timeout = 1200;
+    protected $name = "School Accounts Manager";
+    protected $forceHTTPS = false;
+    protected $timeout = 1200;
+    protected $admins;
+
+    function __construct(array $keyValuePairs = null) {
+        parent::__construct($keyValuePairs);
+    }
+
+    function getName() {
+        return $this->name;
+    }
+
+    function getForceHTTPS() {
+        return $this->forceHTTPS;
+    }
+
+    function getTimeout() {
+        return $this->timeout;
+    }
+
+    function getAdmins() {
+        return $this->admins;
     }
 
 }
