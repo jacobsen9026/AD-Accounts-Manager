@@ -32,6 +32,7 @@ namespace system\app;
  * @author cjacobsen
  */
 use app\App;
+use system\CoreException;
 
 /**
  * @name CoreRouter
@@ -51,11 +52,7 @@ class CoreRouter {
     public function __construct(App $app) {
         $this->app = $app;
         $this->logger = $app->logger;
-        if ($this->app->user != null) {
-            //$this->userPrivilege = $app->user->privilege;
-        } else {
-            throw new CoreException('The user privilege object was not found');
-        }
+
         $this->request = $app->request;
     }
 
