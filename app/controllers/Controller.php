@@ -32,10 +32,13 @@ namespace app\controllers;
  * @author cjacobsen
  */
 use system\app\CoreController;
+use app\models\user\User;
 
 class Controller extends CoreController {
-
     //put your code here
+
+    /** @var User|null The system logger */
+    public $user;
 
     function __construct($app) {
 
