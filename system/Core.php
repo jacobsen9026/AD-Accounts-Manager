@@ -199,9 +199,13 @@ class Core {
         if (class_exists(APPCLASS)) {
             $class = APPCLASS;
             $this->app = new $class($this->request, $this->logger);
-            return $this->app->start();
+            if (method_exists($this->app, 'run')) {
+                return $this->app->run();
+            } else {
+                $this->logger->error("The " . APPCLASS . " does not have a run() method");
+            }
         } else {
-            $this->logger->error("The app\App class was not found");
+            $this->logger->error("The " . APPCLASS . " class was not found");
         }
 
         /*
