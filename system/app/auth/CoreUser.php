@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace system\app\auth;
 
 /**
  * Description of CoreUser
