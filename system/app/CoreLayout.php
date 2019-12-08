@@ -33,6 +33,8 @@ namespace system\app;
  */
 use app\App;
 use system\Parser;
+use app\models\user\User;
+use app\controllers\Menu;
 
 class CoreLayout extends Parser {
 
@@ -44,18 +46,24 @@ class CoreLayout extends Parser {
     /** @var App|null The view parser */
     public $app;
 
+    /** @var User|null The view parser */
+    public $user;
+
     /** @var string|null The view parser */
     private $appOutput;
 
 //put your code here
     function __construct($app) {
         $this->app = $app;
-        if (isset($app->controller)) {
+        $this->user = $app->user;
+        if (isset($app->controller) and $app->controller != null) {
             if (isset($app->controller->layout)) {
                 $this->layoutName = $app->controller->layout;
             } else {
                 $this->layoutName = $this::DEFAULT_LAYOUT_NAME;
             }
+        } else {
+            $this->layoutName = $this::DEFAULT_LAYOUT_NAME;
         }
 //$this->app->debug($app->outputBody);
     }
@@ -70,6 +78,7 @@ class CoreLayout extends Parser {
     }
 
     public function getHeader() {
+        $this->app->logger->debug('getting header');
         return $this->view('layouts/' . $this->layoutName . '_header');
     }
 
@@ -78,13 +87,9 @@ class CoreLayout extends Parser {
     }
 
     public function getNavigation() {
-        $menu = new \app\controllers\Menu(\app\models\user\Privilege::TECH);
+        $menu = new Menu($this->user);
         return $menu->getMenu();
         return $this->view('layouts/' . $this->layoutName . '_navigation');
-    }
-
-    private function renderDebug($log) {
-        $this->appOutput .= $this->view('layouts/app_debug');
     }
 
 }
