@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace app;
 
 /**
  * Description of AppLogger
