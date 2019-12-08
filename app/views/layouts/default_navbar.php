@@ -3,10 +3,12 @@
     <a class="navbar-brand" href="/"><?php echo $this->config->app->getName();
 ?></a>
 
-    <!-- Toggler/collapsibe Button -->
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+    <?php if ($this->userPrivs > \app\models\user\Privilege::UNAUTHENTICATED) { ?>
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    <?php } ?>
 
     <!-- Navbar links -->
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
