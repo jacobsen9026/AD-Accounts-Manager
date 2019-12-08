@@ -33,6 +33,7 @@ namespace system\app;
  */
 use app\App;
 use system\SystemLogger;
+use app\AppLogger;
 
 class AppErrorHandler {
 
