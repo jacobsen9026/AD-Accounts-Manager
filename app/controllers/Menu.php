@@ -34,10 +34,12 @@ namespace app\controllers;
 
 use app\controllers\menu\TopMenuItem;
 use app\controllers\menu\SubMenuItem;
-use system\app\AppLogger;
+use app\AppLogger;
 use system\Parser;
 use app\models\user\Privilege;
+use app\models\user\User;
 use app\App;
+use app\config\MasterConfig;
 
 class Menu extends Parser {
 
@@ -46,20 +48,27 @@ class Menu extends Parser {
     public $layout;
     public $config;
 
+    /** @var User|null The view parser */
+    public $user;
+
     /** @var AppLogger|null The app logger */
     public $logger;
     public $userPrivs;
 
-    function __construct($userPrivs, $layout = 'default') {
-        $app = App::get();
-        $this->config = $app->config;
+    function __construct(User $user, $layout = 'default') {
+
+        $this->user = $user;
+        $this->config = MasterConfig::get();
         $this->layout = $layout;
         $this->logger = AppLogger::get();
-        $this->userPrivs = $userPrivs;
-        $this->logger->info('Menu Creation Started UserPrivilege:' . $userPrivs);
+
+        $this->userPrivs = $this->user->privilege;
+
+        $this->logger->info('Menu Creation Started UserPrivilege:' . $this->userPrivs);
         /*
          * Create top level items
          */
+
         if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
             $this->items[] = $this->buildStudentMenu();
             if ($this->userPrivs > Privilege::POWER) {
