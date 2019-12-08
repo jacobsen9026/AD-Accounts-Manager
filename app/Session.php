@@ -31,7 +31,9 @@ namespace app;
  *
  * @author cjacobsen
  */
-use system\CoreSession;
+use system\app\CoreSession;
+use app\models\user\User;
+use app\AppLogger;
 
 class Session extends CoreSession {
     //put your code here
@@ -40,16 +42,24 @@ class Session extends CoreSession {
     public $user;
     public $authenticated;
 
+    /** @var AppLogger|null */
+    public $logger;
+
     /** @var MasterConfig|null */
     private $config;
 
     /** @var Session|null */
     public static $instance;
 
+    const TIMEOUT = 'timeout';
+
     function __construct() {
 
         self::$instance = $this;
-        ;
+
+
+        $this->logger = AppLogger::get();
+        $this->logger->debug('Logger loaded into session');
     }
 
     /**
@@ -61,6 +71,22 @@ class Session extends CoreSession {
             self::$instance = new self();
         }
         return self::$instance;
+    }
+
+    public function buildSession() {
+        $this->logger->debug("Building Session Object");
+        if (!isset($_SESSION[Session::TIMEOUT]) or $_SESSION[Session::TIMEOUT] > time()) {
+            $this->authenticated = false;
+            $this->user = new User();
+        }
+        $this->getUser();
+    }
+
+    public function getUser() {
+        if (isset($_SESSION['user']) and $_SESSION['user'] != '') {
+            return unserialize($_SESSION['user']);
+        }
+        return new User();
     }
 
 }
