@@ -49,11 +49,20 @@ class CoreController extends Parser {
 
     /** @var string|null The view parser */
     public $layout;
+    public $postSet = false;
+    public $getSet = false;
 
     //put your code here
     function __construct($app) {
         $this->app = $app;
         $this->config = $app->config;
+        if (isset($_POST) and $_POST != null) {
+            $postSet = true;
+        }
+
+        if (isset($_GET) and $_GET != null) {
+            $getSet = true;
+        }
     }
 
     public function unauthorized() {
