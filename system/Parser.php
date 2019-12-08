@@ -31,9 +31,13 @@ namespace system;
  *
  * @author cjacobsen
  */
+use system\SystemLogger;
+
 class Parser {
 
     public function view($view) {
+
+        //var_dump($view);
         $view = $this->sanitize($view);
 
         $path = VIEWPATH . DIRECTORY_SEPARATOR . $view . ".php";
