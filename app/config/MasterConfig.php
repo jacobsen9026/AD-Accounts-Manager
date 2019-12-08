@@ -33,14 +33,14 @@ namespace app\config;
  */
 use system\app\CoreConfig;
 use app\App;
-use system\app\AppLogger;
+use app\AppLogger;
 
 class MasterConfig extends CoreConfig {
 
     //put your code here
 
 
-    public $savedConfigs = array('app', 'msad', 'gam', 'email', 'web', 'auth', 'district');
+    public $savedConfigs = array('app', 'msad', 'gam', 'email', 'web', 'auth', 'district', 'admin', 'notification');
 
     /** @var AppConfig|null */
     public $app;
