@@ -31,10 +31,16 @@ namespace app\models\user;
  *
  * @author cjacobsen
  */
-class User {
+use system\app\auth\CoreUser;
+
+class User extends CoreUser {
 
     public $theme;
     public $fullName;
+
+    function __construct() {
+        $this->privilege = Privilege::UNAUTHENTICATED;
+    }
 
     //put your code here
 }
