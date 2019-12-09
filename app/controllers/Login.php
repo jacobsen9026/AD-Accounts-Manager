@@ -13,14 +13,38 @@ namespace app\controllers;
  *
  * @author cjacobsen
  */
+use system\app\auth\Local;
+use app\App;
+use app\Session;
+use system\app\auth\AuthException;
+
 class Login extends Controller {
 
     //put your code here
 
-
     public function index() {
+
+        //session_destroy();
         if ($this->postSet) {
-            var_dump($_POST);
+            try {
+                $user = Local::authenticate($_POST['username'], $_POST['password']);
+                /* @var $ex AuthException */
+
+                /** @var App|null The system logger */
+                $app = App::get();
+                $config = \app\config\MasterConfig::get();
+
+                $app->user = $user;
+
+
+                Session::setUser($user);
+                Session::updateTimeout();
+
+                header("Location: /");
+            } catch (AuthException $ex) {
+                session_destroy();
+                return $ex->getMessage();
+            }
         } else {
             return $this->view('login/index');
         }
