@@ -1,7 +1,7 @@
 
 
 <form method="post" action="/?goto=/students/classroom/getGoogleClassroom.php">
-	<table class="container">
+	<table id="container">
 	
 		<tr>
 			<th>
@@ -35,7 +35,7 @@
 
 
 <form method="post" action="/?goto=/students/classroom/manageGoogleClassroom.php">
-<table class="container">
+<table id="container">
 
 <tr>
 <th>

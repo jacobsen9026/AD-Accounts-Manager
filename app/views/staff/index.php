@@ -1,5 +1,5 @@
 
-<table class="container">
+<table id="container">
 <tr>
 <th>
 Staff Account Manager

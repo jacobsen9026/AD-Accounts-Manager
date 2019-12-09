@@ -75,7 +75,7 @@ if ($username!=""){
 				if($GAExist){
 					$GAresult = resetGAUserPassword($username,$password,$resetOnNextLogon);
 					if($GAresult==false){
-							echo "There was an error setting the ."$appConfig['domainNetBIOS']." password.<br />";
+							echo "There was an error setting the ".$appConfig['domainNetBIOS']." password.<br />";
 							
 						}
 					//echo $cmd;

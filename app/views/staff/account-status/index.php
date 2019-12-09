@@ -1,6 +1,6 @@
 
 <form method="post" action="/?goto=/staff/account-status/accountStatus.php">
-	<table class="container">
+	<table id="container">
 	
 	<tr>
 	<th>

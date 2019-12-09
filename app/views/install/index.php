@@ -1,26 +1,33 @@
 <?php
+
 //Redirect to login page after completing install.
-if(isset($_POST["complete_install"])){   
-    $appConfig["installComplete"]=true;
+if (isset($_POST["complete_install"])) {
+    $appConfig["installComplete"] = true;
     saveConfig();
-?>
-<script>
-    window.location="/";
-</script>
-<?php
+    ?>
+    <script>
+        window.location = "/";
+    </script>
+    <?php
+
+}
+
+if (!file_exists("./app/config/config.json")) {
+    //exit();
+    initializeConfig();
 }
 
 
 
 
-if (isset($_GET["advancedConfig"])){
+
+if (isset($_GET["advancedConfig"])) {
     //include("./config/includes/configController.php");
     include("./app/views/config/index.php");
     //phpinfo();
-
-}
+} else {
     include ("./app/views/install/welcome.php");
-
+}
 ?>
 
 

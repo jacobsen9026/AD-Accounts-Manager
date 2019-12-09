@@ -1,7 +1,7 @@
 
 
 <form method="post" action="/?goto=/students/google-groups/getGoogleGroups.php">
-	<table class="container">
+	<table id="container">
 	
 		<tr>
 			<th>
@@ -31,7 +31,7 @@
 
 
 <form method="post" action="/?goto=/students/google-groups/getGoogleGroupMembers.php">
-<table class="container">
+<table id="container">
 
 <tr>
 <th>
@@ -74,7 +74,7 @@ Group<br/>
 
 
 <form method="post" action="/?goto=/students/google-groups/manageGoogleGroups.php">
-<table class="container">
+<table id="container">
 
 <tr>
 <th>

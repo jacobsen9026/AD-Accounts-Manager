@@ -1,9 +1,5 @@
 <?php
 
-$year = date('Y');
-if (date('m')<7){
-$year--;
-}
 ?>
 <div class="settingsContainer">
     <div class="yogList settingsList tableList">
@@ -24,7 +20,7 @@ $year--;
                 8
             </div>
             <div>
-                <input type="text" name="yog8" value="<?php echo $appConfig["gradeMappings"]["8"];?>" placeholder="<?php echo $year+5;?>">
+                <input type="text" name="yog8" value="<?php echo $appConfig["gradeMappings"]["8"];?>">
             </div>
         </div>
         <div>
@@ -32,7 +28,7 @@ $year--;
                 7
             </div>
             <div>
-                <input type="text" name="yog7" value="<?php echo $appConfig["gradeMappings"]["7"];?>" placeholder="<?php echo $year+6;?>">
+                <input type="text" name="yog7" value="<?php echo $appConfig["gradeMappings"]["7"];?>">
             </div>
         </div>
         <div>
@@ -40,7 +36,7 @@ $year--;
                 6
             </div>
             <div>
-                <input type="text" name="yog6" value="<?php echo $appConfig["gradeMappings"]["6"];?>" placeholder="<?php echo $year+7?>">
+                <input type="text" name="yog6" value="<?php echo $appConfig["gradeMappings"]["6"];?>">
             </div>
         </div>
         <div>
@@ -48,7 +44,7 @@ $year--;
                 5
             </div>
             <div>
-                <input type="text" name="yog5" value="<?php echo $appConfig["gradeMappings"]["5"];?>" placeholder="<?php echo $year+8;?>">
+                <input type="text" name="yog5" value="<?php echo $appConfig["gradeMappings"]["5"];?>">
             </div>
         </div>
         <div>
@@ -56,7 +52,7 @@ $year--;
                 4
             </div>
             <div>
-                <input type="text" name="yog4" value="<?php echo $appConfig["gradeMappings"]["4"];?>" placeholder="<?php echo $year+9;?>">
+                <input type="text" name="yog4" value="<?php echo $appConfig["gradeMappings"]["4"];?>">
             </div>
         </div>
         <div>
@@ -64,7 +60,7 @@ $year--;
                 3
             </div>
             <div>
-                <input type="text" name="yog3" value="<?php echo $appConfig["gradeMappings"]["3"];?>" placeholder="<?php echo $year+10?>">
+                <input type="text" name="yog3" value="<?php echo $appConfig["gradeMappings"]["3"];?>">
             </div>
         </div>
         <div>
@@ -72,7 +68,7 @@ $year--;
                 2
             </div>
             <div>
-                <input type="text" name="yog2" value="<?php echo $appConfig["gradeMappings"]["2"];?>" placeholder="<?php echo $year+11;?>">
+                <input type="text" name="yog2" value="<?php echo $appConfig["gradeMappings"]["2"];?>">
             </div>
         </div>
         <div>
@@ -80,7 +76,7 @@ $year--;
                 1
             </div>
             <div>
-                <input type="text" name="yog1" value="<?php echo $appConfig["gradeMappings"]["1"];?>" placeholder="<?php echo $year+12;?>">
+                <input type="text" name="yog1" value="<?php echo $appConfig["gradeMappings"]["1"];?>">
             </div>
         </div>
         <div>
@@ -88,7 +84,7 @@ $year--;
                 K
             </div>
             <div>
-                <input type="text" name="yogk" value="<?php echo $appConfig["gradeMappings"]["K"];?>" placeholder="<?php echo $year+13;?>">
+                <input type="text" name="yogk" value="<?php echo $appConfig["gradeMappings"]["K"];?>">
             </div>
         </div>
         <div>
@@ -96,7 +92,7 @@ $year--;
                 PK4
             </div>
             <div>
-                <input type="text" name="yogpk4" value="<?php echo $appConfig["gradeMappings"]["PK4"];?>" placeholder="<?php echo $year+14;?>">
+                <input type="text" name="yogpk4" value="<?php echo $appConfig["gradeMappings"]["PK4"];?>">
             </div>
         </div>
         <div>
@@ -104,7 +100,7 @@ $year--;
                 PK3
             </div>
             <div>
-                <input type="text" name="yogpk3" value="<?php echo $appConfig["gradeMappings"]["PK3"];?>" placeholder="<?php echo $year+15;?>">
+                <input type="text" name="yogpk3" value="<?php echo $appConfig["gradeMappings"]["PK3"];?>">
 
             </div>
         </div>

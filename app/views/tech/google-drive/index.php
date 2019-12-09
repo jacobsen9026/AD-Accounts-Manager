@@ -1,5 +1,5 @@
 <form action="/?goto=/tech/google-drive/addTechPermission.php" method="post"> 
-<table class="container">
+<table id="container">
 <tr>
 <th>
 Google Drive Manager
@@ -41,7 +41,7 @@ $size= sizeof($fileList);
 if($size>2){
 ?>
 	
-	<table class="container">
+	<table id="container">
 	
 	<tr>
 	<th>

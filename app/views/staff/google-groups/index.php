@@ -1,7 +1,7 @@
 
 
 <form method="post" action="/?goto=/staff/google-groups/getGoogleGroups.php">
-<table class="container">
+<table id="container">
 
 <tr>
 <th>

@@ -1,7 +1,7 @@
 
 
 <form method="post" action="/?goto=/students/account-status-change/accountStatusChange.php">
-    <table class="container">
+    <table id="container">
 
         <tr>
             <th>

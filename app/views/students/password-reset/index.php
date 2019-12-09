@@ -1,6 +1,6 @@
 
 <form id="formID" method="post" action="/?goto=/students/password-reset/resetPassword.php">
-	<table class="container">
+	<table id="container">
 	
 		<tr>
 		<th>

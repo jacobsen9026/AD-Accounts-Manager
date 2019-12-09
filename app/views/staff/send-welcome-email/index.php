@@ -1,6 +1,6 @@
 
 <form method="post" action="/?goto=/staff/send-welcome-email/sendWelcomeEmail.php">
-<table class="container">
+<table id="container">
 
 <tr>
 <th>

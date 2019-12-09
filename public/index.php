@@ -1,10 +1,11 @@
-
 <?php
+
+namespace system;
+
 chdir("../");
-//Show header
-include("./app/header.php");
-//Show content
-include("./app/viewController.php");
-//Show footer
-include("./app/footer.php");
+
+require('./system/Core.php');
+$core = new Core();
+
+$core->run();
 ?>

@@ -1,5 +1,5 @@
 
-<table class="container" id="installChecklist">
+<table id="container">
     <tr>
         <th>
             Installation
@@ -9,18 +9,93 @@
 
 
             <br/>
-            <table class="settingsList" style="background-color:unset;">
+            <table class="settingsList">
                
                 <tr>
+                    <td>LDAP Extension Enabled</td>
                     <td>
-					<div style = "width:100%;height:100%; text-align:center;">
-						<div style="margin-left:auto; margin-right:auto; width:150px;height:150px;" class="loader">
-						</div>
-					</div>
-					
-						Checking Install
-					</td>
-                    
+                        <?php
+                        if(extension_loaded("ldap")){
+                            $ldapChecked=true;
+                            echo "Yes";
+                        }else{
+                            echo "No";
+                        }
+                        ?>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>Administrator Privelege</td>
+                    <td>
+                        <?php
+                        if(testAdministrator()){
+                            $adminChecked=true;
+                            echo "Yes";
+                        }else{
+                            echo "<text class='red'>No</text>";
+                        }
+                        ?>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>GAM Configured</td>
+                    <td>
+                        <?php
+                        if(isGAMConfigured()){
+                            $gamChecked=true;
+                            echo "Yes";
+                        }else{
+                            echo "<text class='red'>No</text>";
+                        }
+                        ?>
+                    </td>
+
+                </tr>
+                <tr>
+
+                    <td>Admin Password</td>
+                    <td>
+                        <?php
+                        if(isset($appConfig["adminPassword"]) and $appConfig["adminPassword"] !=''){
+                            $passwordChecked=true;
+                            echo "Yes";
+                        }else{
+                            echo "<text class='red'>No</text>";
+                        }
+                        ?>
+                    </td>
+
+                </tr>
+                <tr>
+
+                    <td>Domain Name</td>
+                    <td>
+                        <?php
+                        if(isset($appConfig["domainName"]) and $appConfig["domainName"]!=''){
+                            $domainNameChecked=true;
+                            echo "Yes";
+                        }else{
+                            echo "<text class='red'>No</text>";
+                        }
+                        ?>
+                    </td>
+
+                </tr>
+                <tr>
+
+                    <td>Web App Name</td>
+                    <td>
+                        <?php
+                        if(isset($appConfig["webAppName"]) and $appConfig["webAppName"]!=''){
+                            $webAppNameChecked=true;
+                            echo "Yes";
+                        }else{
+                            echo "<text class='red'>No</text>";
+                        }
+                        ?>
+                    </td>
 
                 </tr>
 
@@ -29,24 +104,43 @@
             <br/><br/>
         </td>
     </tr>
-    
+    <form action="/?goto=/config/index.php&advancedConfig=true" method="post">
         <tr>
 
-           <td>
-			
-<form action="/?goto=/config/index.php&advancedConfig=true" method="post">
+            <td>
                 <input type="text" name="advancedConfig" value="true" hidden />
                 <button type="submit">
                     Initial Config
                 </button>
                 <br/><br/>
-				
- 
             </td>
 
         </tr>
     </form>
-    <script>
-	fillWithHTTPResponse('installChecklist','/install/runChecks.php');
-	</script>
+    <?php
+
+    if($webAppNameChecked and $domainNameChecked and $passwordChecked and $adminChecked and $gamChecked and !$appConfig["installComplete"]){
+    ?>
+
+    <tr>
+        <td>
+            <?php 
+
+
+        if(!$ldapChecked){
+            echo "<strong>You won't be able to log in via<br/>Active Directory/LDAP credentials.<br/><br/>Only the admin user will work.</strong><br/><br/><br/>";
+        }
+
+            ?>
+            <form action="<?php echo $pageURL;?>" method="post">
+
+                All Checks Passed<br/><br/>
+                <input name="complete_install" value="yes" hidden/>
+                <button  type="submit" value="Complet Install">Finish</button>
+            </form>
+        </td>
+    </tr>
+    <?php
+    }
+    ?>
 </table>

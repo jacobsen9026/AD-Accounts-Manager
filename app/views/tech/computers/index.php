@@ -1,5 +1,5 @@
 <form action="/?goto=/tech/computers/rebootPC.php" method="post">
-    <table class="container">
+    <table id="container">
         <tr>
             <th>
                 Reboot Workstation
@@ -33,7 +33,7 @@
 
 
 <form action="/?goto=/tech/computers/renamePC.php" method="post">
-    <table class="container">
+    <table id="container">
         <tr>
             <th>
                 Rename Workstation
@@ -69,7 +69,7 @@
 
 
 <form action="/?goto=/tech/computers/termsrvHack.php" method="post">
-    <table class="container">
+    <table id="container">
         <tr>
             <th>
                 Install RDP Multi-User Patch
@@ -116,7 +116,7 @@
 
 
 <form action="/?goto=/tech/computers/termsrvHack.php" method="post">
-    <table class="container">
+    <table id="container">
         <tr>
             <th>
                 Flush the DNS?
