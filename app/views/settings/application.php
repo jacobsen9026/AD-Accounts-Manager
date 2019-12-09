@@ -25,7 +25,7 @@
 ?>
 
 
-<div class ="table-hover">
+<form method="post" class ="table-hover">
     <div  class="row">
         <div class="col-5">
             <h3>
@@ -139,4 +139,4 @@
     </div>
 
     <div  class="container pt-5"><button type="submit" class="mx-auth btn btn-primary mb-2">Save Settings</button></div>
-</div>
+</form>
