@@ -35,11 +35,17 @@ use system\app\auth\CoreUser;
 
 class User extends CoreUser {
 
-    public $theme;
+    public $theme = 'default';
     public $fullName;
 
-    function __construct() {
-        $this->privilege = Privilege::UNAUTHENTICATED;
+    function __construct($string = null) {
+        if ($string == CoreUser::ADMINISTRATOR) {
+            $this->privilege = Privilege::TECH;
+            $this->fullName = \system\Lang::get('Administrator Full Name');
+            $this->username = "admin";
+        } else {
+            $this->privilege = Privilege::UNAUTHENTICATED;
+        }
     }
 
     //put your code here
