@@ -44,9 +44,8 @@ class CoreRouter {
     private $app = null;
     private $userPrivilege = null;
     private $request = null;
-    public $module = null;
-    public $page = null;
-    public $action = null;
+    public $controller = null;
+    public $method = null;
     public $data = null;
 
     public function __construct(App $app) {
@@ -72,46 +71,53 @@ class CoreRouter {
         return "index";
     }
 
+    /**
+     *
+     * @return array
+     */
     public function route() {
         /**
          * Route the request
-         *
-         * Call the router and the appropriate class and method to execute
-         *
-         * Create instance of this class
-         *
-         * Execute method
-         *
-         * Pass parameter if set
          */
-        $this->getRoute();
-        $route = array($this->module, $this->page);
-        if (isset($this->action) and $this->action != '') {
-            $route[] = $this->action;
+        $this->setRoute();
+        /*
+         * Prepare the response
+         */
+        $route = array($this->controller, $this->method);
+        if (isset($this->data) and $this->data != '') {
+            $route[] = $this->data;
         }
         if (isset($this->data)) {
             $route[] = $this->data;
         }
+        /*
+         * return the response
+         */
         return $route;
     }
 
-    private function getRoute() {
+    private function setRoute() {
         if (!isset($this->request->module)) {
-            $this->module = $this->getDefaultModule();
+            $this->controller = $this->getDefaultModule();
         } else {
-            $this->module = $this->preProcess($this->request->module);
+            $this->controller = $this->preProcess($this->request->module);
         }
         if (!isset($this->request->page)) {
-            $this->page = $this->getDefaultPage();
+            $this->method = $this->getDefaultPage();
         } else {
 
-            $this->page = $this->preProcess($this->request->page);
+            $this->method = $this->preProcess($this->request->page);
         }
         if (isset($this->request->action)) {
-            $this->action = $this->request->action;
+            $this->data = $this->request->action;
+        }
+        if (isset($_POST) and $_POST != null) {
+            $this->method = $this->method . 'Post';
+        } elseif (isset($_GET) and $_GET != null) {
+            $this->method = $this->method . 'Get';
         }
         //var_dump($this);
-        $this->logger->info("Route taken: " . $this->module . "->" . $this->page . "->" . $this->action);
+        $this->logger->info("Route taken: " . $this->controller . "->" . $this->method . "->" . $this->data);
     }
 
     private function preProcess($string) {
