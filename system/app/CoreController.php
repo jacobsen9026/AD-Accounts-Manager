@@ -45,9 +45,6 @@ class CoreController extends Parser {
     public $config;
 
     /** @var string|null The view parser */
-    public $content;
-
-    /** @var string|null The view parser */
     public $layout;
     public $postSet = false;
     public $getSet = false;
@@ -56,12 +53,15 @@ class CoreController extends Parser {
     function __construct($app) {
         $this->app = $app;
         $this->config = $app->config;
+
+
         if (isset($_POST) and $_POST != null) {
-            $postSet = true;
+
+            $this->postSet = true;
         }
 
         if (isset($_GET) and $_GET != null) {
-            $getSet = true;
+            $this->getSet = true;
         }
     }
 
