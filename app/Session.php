@@ -34,33 +34,13 @@ namespace app;
 use system\app\CoreSession;
 use app\models\user\User;
 use app\AppLogger;
+use app\config\MasterConfig;
 
-class Session extends CoreSession {
+abstract class Session extends CoreSession {
     //put your code here
 
     /** @var User|null */
-    public $user;
-    public $authenticated;
-
-    /** @var AppLogger|null */
-    public $logger;
-
-    /** @var MasterConfig|null */
-    private $config;
-
-    /** @var Session|null */
-    public static $instance;
-
     const TIMEOUT = 'timeout';
-
-    function __construct() {
-
-        self::$instance = $this;
-
-
-        $this->logger = AppLogger::get();
-        $this->logger->debug('Logger loaded into session');
-    }
 
     /**
      *
@@ -73,20 +53,39 @@ class Session extends CoreSession {
         return self::$instance;
     }
 
-    public function buildSession() {
-        $this->logger->debug("Building Session Object");
-        if (!isset($_SESSION[Session::TIMEOUT]) or $_SESSION[Session::TIMEOUT] > time()) {
-            $this->authenticated = false;
-            $this->user = new User();
-        }
-        $this->getUser();
-    }
-
-    public function getUser() {
+    public static function getUser() {
         if (isset($_SESSION['user']) and $_SESSION['user'] != '') {
-            return unserialize($_SESSION['user']);
+            if (Session::getTimeoutStatus()) {
+                session_destroy();
+                return new User();
+            } else {
+                return unserialize($_SESSION['user']);
+            }
         }
         return new User();
+    }
+
+    public static function setUser($user) {
+        var_dump($user);
+        if ($_SESSION['user'] = serialize($user)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function updateTimeout() {
+        /* @var $config MasterConfig */
+        $config = config\MasterConfig::get();
+        $nextTimeout = $config->app->getTimeout() + time();
+        //$nextTimeout = 1;
+        $_SESSION['timeout'] = $nextTimeout;
+    }
+
+    public static function getTimeoutStatus() {
+        if (time() > $_SESSION['timeout']) {
+            return true;
+        }
+        return false;
     }
 
 }
