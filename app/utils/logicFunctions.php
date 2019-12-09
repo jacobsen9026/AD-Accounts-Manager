@@ -300,7 +300,7 @@ function sendWelcomeEmail($to){
     $headers[] = $bcc;
 
     // Mail it
-    return mail($to, $subject, $message, implode("\r\n", $headers));
+    echo mail($to, $subject, $message, implode("\r\n", $headers));
 
 }
 
