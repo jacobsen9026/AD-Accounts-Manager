@@ -1,48 +1,52 @@
-<div class="container-sm">
+
+<form method="post" action ="/" class="container-sm">
     <?php
 //echo $appConfig["webAppName"];
     ?>
 
     <div style="width:100%;text-align:center;">
         <?php
-        if (isset($_POST['badpass'])) {
-            ?>
-            <script>var toast = new iqwerty.toast.Toast('Bad Username/Password');</script>
-            <span style="color:red;font-size:0.6em;">Bad Username/Password</span><br/>
+        /*
+          if (isset($_POST['badpass'])) {
+          ?>
+          <script>var toast = new iqwerty.toast.Toast('Bad Username/Password');</script>
+          <span style="color:red;font-size:0.6em;">Bad Username/Password</span><br/>
 
-            <?php
-        }
-        if (isset($_POST['notauthorized'])) {
-            ?>
-            <script>var toast = new iqwerty.toast.Toast('Not Authorized');</script>
-            <span style="color:red;font-size:0.6em;">Not Authorized</span><br/>
+          <?php
+          }
+          if (isset($_POST['notauthorized'])) {
+          ?>
+          <script>var toast = new iqwerty.toast.Toast('Not Authorized');</script>
+          <span style="color:red;font-size:0.6em;">Not Authorized</span><br/>
 
-            <?php
-        }
-        if (isset($_SESSION)) {
-            if (isset($timedOut)) {
-                if ($timedOut == "true") {
-                    $timedOut = "";
-                    session_unset();
-                    ?>
+          <?php
+          }
+          if (isset($_SESSION)) {
+          if (isset($timedOut)) {
+          if ($timedOut == "true") {
+          $timedOut = "";
+          session_unset();
+          ?>
 
-                    <span style="color:black;font-size:0.6em;">Your session has timed out. Please log in again.</span><br/>
+          <span style="color:black;font-size:0.6em;">Your session has timed out. Please log in again.</span><br/>
 
-                    <?php
-                }
-            }
-        }
+          <?php
+          }
+          }
+          }
+         *
+         */
+        echo system\Lang::get('Username');
         ?>
 
-        Username
-        <input name="intent" value="<?php //echo $goto;  ?>" hidden>
+
     </div>
     <input <?php if (!isset($_COOKIE["username"])) { ?>autofocus<?php } ?> type="text" name="username" value="<?php
     if (isset($_COOKIE["username"])) {
         echo $_COOKIE["username"];
     }
     ?>" autocomplet /><br/>
-    Password
+                                                       <?php echo system\Lang::get('Password'); ?>
     <input <?php if (isset($_COOKIE["username"])) { ?>autofocus<?php } ?> type="password" name="password" value="<?php
     if (isset($_COOKIE["token"])) {
         echo json_decode($_COOKIE["token"], true)[0];
@@ -69,5 +73,5 @@
                ?>/>
                <?php //print_r($_COOKIE);  ?>
     </div><br/>
-    <button type="submit">Login</button>
-</div>
+    <button type="submit"><?php echo system\Lang::get('Login'); ?></button>
+</form>
