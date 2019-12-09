@@ -32,10 +32,14 @@ namespace app\config;
  * @author cjacobsen
  */
 use system\app\CoreConfig;
+use app\models\district\District;
 
 class DistrictSettings extends CoreConfig {
 
-    //put your code here
+//put your code here
     private $yogMappings;
+
+    /** @var District The district object holding the school configuration * */
+    private $district;
 
 }
