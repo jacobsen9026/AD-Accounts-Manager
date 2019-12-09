@@ -24,6 +24,7 @@
  * THE SOFTWARE.
  */
 //echo "loaded";
+define('LANG', 'en');
 define('APPPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app");
 define('VIEWPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "views");
 
