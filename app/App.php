@@ -87,7 +87,7 @@ class App extends CoreApp {
     public static $instance;
 
     function __construct(\system\Request $req, \system\SystemLogger $cLogger) {
-
+        //session_destroy();
         //$this->user = "this";
         self::$instance = $this;
         /*
@@ -137,9 +137,8 @@ class App extends CoreApp {
      */
     public function run() {
         $this->logger->debug("Creating Session");
-        $this->session = new Session();
-        $this->session->buildSession();
-        $this->user = $this->session->getUser();
+
+        $this->user = Session::getUser();
         try {
             $this->route();
             try {
@@ -173,19 +172,34 @@ class App extends CoreApp {
     }
 
     public function control() {
+        /*
+         * Check that the user is logged on and if not, set the route to the login screen
+         */
+        var_dump($_SESSION);
         if (!isset($this->user) or $this->user == null or $this->user->privilege <= Privilege::UNAUTHENTICATED) {
-
             $this->logger->warning('user not logged in');
             $this->route = array('Login', 'index');
+        } else {
+            Session::updateTimeout();
         }
+        /*
+         * Build the controller based on the previously computed settings
+         */
         if ($this->controller = Factory::buildController($this)) {
             $method = $this->route[1];
             if (method_exists($this->controller, $method)) {
                 $this->outputBody .= $this->controller->$method();
                 //var_dump($this->outputBody);
+            } else {
+                $this->logger->warning("No method found by name of " . $this->router->method . ' in the controller ' . $this->router->controller);
+                $this->outputBody .= $this->view('errors/405');
             }
+            /*
+             * If no controller could be created, it's because the class doesnt exists or is setup wrong
+             * Show 404
+             */
         } else {
-            $this->logger->warning("No Controller found by name of " . $this->router->module);
+            $this->logger->warning("No Controller found by name of " . $this->router->controller);
             $this->outputBody .= $this->view('errors/404');
         }
     }
