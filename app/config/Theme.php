@@ -39,8 +39,8 @@ class Theme {
     const RED_THEME = "red_theme";
     const GREEN_THEME = "green_theme";
 
-    public function getThemes() {
-        $rc = new \ReflectionClass($this);
+    public static function getThemes() {
+        $rc = new \ReflectionClass(new Theme);
         return $rc->getConstants();
     }
 

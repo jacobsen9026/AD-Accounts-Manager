@@ -24,51 +24,13 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace system\common;
 
 /**
- * Description of Controller
+ * Description of Session
  *
  * @author cjacobsen
  */
-use system\Parser;
-use app\App;
-use system\CoreApp;
-use app\config\MasterConfig;
-
-class CoreController extends Parser {
-
-    /** @var App|null The view parser */
-    public $app;
-
-    /** @var MasterConfig|null The view parser */
-    public $config;
-
-    /** @var string|null The view parser */
-    public $layout;
-    public $postSet = false;
-    public $getSet = false;
-
+class CoreSession {
     //put your code here
-    function __construct($app) {
-        $this->app = $app;
-        $this->config = $app->config;
-
-
-        if (isset($_POST) and $_POST != null) {
-
-            $this->postSet = true;
-        }
-
-        if (isset($_GET) and $_GET != null) {
-            $this->getSet = true;
-        }
-    }
-
-    public function unauthorized() {
-        return $this->view('errors/403');
-    }
-
 }
-
-?>

@@ -24,16 +24,15 @@
  * THE SOFTWARE.
  */
 
-namespace app;
+namespace system\app;
 
 /**
  * Description of Session
  *
  * @author cjacobsen
  */
-use system\app\CoreSession;
+use system\common\CoreSession;
 use app\models\user\User;
-use app\AppLogger;
 use app\config\MasterConfig;
 
 abstract class Session extends CoreSession {
@@ -75,7 +74,7 @@ abstract class Session extends CoreSession {
 
     public static function updateTimeout() {
         /* @var $config MasterConfig */
-        $config = config\MasterConfig::get();
+        $config = MasterConfig::get();
         $nextTimeout = $config->app->getTimeout() + time();
         //$nextTimeout = 1;
         $_SESSION['timeout'] = $nextTimeout;

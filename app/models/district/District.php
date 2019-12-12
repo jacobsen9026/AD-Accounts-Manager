@@ -16,11 +16,25 @@ namespace app\models\district;
 class District {
 
 //put your code here
+
+
+
     public $name;
     public $gradeSpan;
     public $abbreviation;
 
+    /** @var array The last day of school. [month][day] * */
+    public $lastDay;
+
     /** @var School The schools contained within this district */
-    public $schools;
+    public $schools = null;
+
+    function __construct($name = null) {
+        $this->name = $name;
+    }
+
+    public function createSchool($name) {
+        $this->schools[] = new School($name);
+    }
 
 }

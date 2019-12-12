@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace system\common;
 
 /**
  * Description of CoreLayout
@@ -89,7 +89,6 @@ class CoreLayout extends Parser {
     public function getNavigation() {
         $menu = new Menu($this->user);
         return $menu->getMenu();
-        return $this->view('layouts/' . $this->layoutName . '_navigation');
     }
 
 }

@@ -22,46 +22,53 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- *
- *
- * This class is not yet utilized and may never be.
  */
 
-namespace system\app;
+namespace system\common;
 
 /**
- * Description of CoreForm
+ * Description of Controller
  *
  * @author cjacobsen
  */
-class CoreForm {
+use system\Parser;
+use app\App;
+use system\CoreApp;
+use app\config\MasterConfig;
+
+class CoreController extends Parser {
+
+    /** @var App|null The view parser */
+    public $app;
+
+    /** @var MasterConfig|null The view parser */
+    public $config;
+
+    /** @var string|null The view parser */
+    public $layout;
+    public $postSet = false;
+    public $getSet = false;
 
     //put your code here
+    function __construct($app) {
+        $this->app = $app;
+        $this->config = $app->config;
 
-    private $action;
-    private $name;
-    private $method;
-    private $target;
-    private $autoComplete;
 
-    function __construct($name, $action, $method = 'post', $target = '_self', $autoComplete = 'on') {
-        $this->action = $action;
-        $this->name = $name;
-        $this->method = $method;
-        $this->target = $target;
-        $this->autoComplete = $autoComplete;
+        if (isset($_POST) and $_POST != null) {
+
+            $this->postSet = true;
+        }
+
+        if (isset($_GET) and $_GET != null) {
+            $this->getSet = true;
+        }
     }
 
-    public function addInput() {
-
-    }
-
-    public function addTextArea() {
-
-    }
-
-    public function addCheckbox() {
-
+    public function unauthorized() {
+        return $this->view('errors/403');
     }
 
 }
+
+?>

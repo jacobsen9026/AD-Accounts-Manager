@@ -24,13 +24,30 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace app\config;
 
 /**
- * Description of CoreInstaller
+ * Description of DistrictSettings
  *
  * @author cjacobsen
  */
-class CoreInstaller {
-    //put your code here
+use system\common\CoreConfig;
+use app\models\district\District;
+
+class DistrictConfig extends CoreConfig {
+
+//put your code here
+    protected $yogMappings = null;
+
+    /** @var District The district object holding the school configuration * */
+    protected $district = null;
+
+    public function getDistrict() {
+        return $this->district;
+    }
+
+    public function createDistrict($name) {
+        $this->district = new District($name);
+    }
+
 }

@@ -31,11 +31,14 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-class NotificationConfig {
+use system\common\CoreConfig;
+
+class NotificationConfig extends CoreConfig {
 
     //put your code here
-    public $adminEmailAddresses;
-    public $welcomeEmailBCC;
-    public $welcomeEmailHTML;
+    protected $adminEmailAddresses = null;
+    protected $welcomeEmailBCC = null;
+    protected $welcomeEmailHTML = null;
+    protected $sendWelcomeEmail = false;
 
 }

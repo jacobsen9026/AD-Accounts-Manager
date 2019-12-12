@@ -34,8 +34,8 @@
 
         </div>
         <div class="col-7">
-            <textarea placeholder="Enter list of usernames, one per line." class="container container-lg" name="adminUsernames" rows="5" spellcheck="false"><?php
-                foreach ($appConfig["adminUsernames"] as $admin) {
+            <textarea placeholder="Enter list of usernames, one per line." class="container container-lg" name="app-admins" rows="5" spellcheck="false"><?php
+                foreach ($this->config->app->getAdmins() as $admin) {
 
                     echo $admin . "\n";
                 }
@@ -90,15 +90,15 @@
             </small>
         </div>
         <div class="col-7">
-            <input type="text" name="redirectHTTP" hidden/>
-            <input type="checkbox" class="form-check-input" name="redirectHTTPCheck" value="true" <?php
-            //echo  $appConfig["redirectHTTP"];
-            if (isset($appConfig["redirectHTTP"])) {
-                if ($appConfig["redirectHTTP"]) {
-                    echo "checked";
+            <input type="text" name="app-forceHTTPS" value="checkbox"hidden/>
+            <input type="checkbox" class="form-check-input" name="app-forceHTTPS-checkbox" value="true" <?php
+                //echo  $appConfig["redirectHTTP"];
+                if (isset($appConfig["app-forceHTTPS"])) {
+                    if ($appConfig["redirectHTTP"]) {
+                        echo "checked";
+                    }
                 }
-            }
-            ?>>
+                ?>>
         </div>
 
 
@@ -115,7 +115,7 @@
             </h3>
         </div>
         <div class="col-7">
-            <input  placeholder="Time in seconds (eg:1200)" type="text" style="width:25%" name="sessionTimeout" value="<?php echo $appConfig["sessionTimeout"]; ?>"> Seconds
+            <input  placeholder="Time in seconds (eg:1200)" type="text" style="width:25%" name="app-timeout" value="<?php echo $this->config->app->getTimeout(); ?>"> Seconds
         </div>
 
 
@@ -132,7 +132,7 @@
             </h3>
         </div>
         <div class="col-7">
-            <input placeholder="Enter Name" type="text" name="webAppName" value="<?php echo $appConfig["webAppName"]; ?>">
+            <input placeholder="Enter Name" type="text" name="app-name" value="<?php echo $this->config->app->getName(); ?>">
         </div>
 
 

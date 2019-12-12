@@ -24,28 +24,35 @@
  * THE SOFTWARE.
  */
 
-namespace app;
+namespace system\app;
 
 /**
- * Description of Layout
+ * Description of AppLogger
  *
  * @author cjacobsen
  */
-use system\app\CoreLayout;
-use app\config\MasterConfig;
+use system\common\CoreLogger;
 
-class Layout extends CoreLayout {
+class AppLogger extends CoreLogger {
 
-    /** @var MasterConfig|null The master config */
-    public $config;
+    /** @var AppLogger|null */
+    public static $instance;
 
-    //put your code here
-    function __construct($app) {
-        parent::__construct($app);
-        $this->config = config\MasterConfig::get();
-        $this->title = $this->config->app->getName();
+    function __construct() {
+        parent::__construct();
+        self::$instance = $this;
+        ;
+    }
+
+    /**
+     *
+     * @return type
+     */
+    public static function get() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
 }
-
-?>

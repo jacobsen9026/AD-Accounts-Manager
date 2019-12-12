@@ -31,7 +31,7 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-use system\app\CoreConfig;
+use system\common\CoreConfig;
 
 class AuthConfig extends CoreConfig {
     //put your code here

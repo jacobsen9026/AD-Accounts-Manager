@@ -14,25 +14,27 @@ namespace app\controllers;
  * @author cjacobsen
  */
 use system\app\auth\Local;
-use app\App;
-use app\Session;
+use system\app\App;
+use app\models\user\User;
+use system\app\Session;
 use system\app\auth\AuthException;
+use system\Post;
+use app\config\MasterConfig;
 
 class Login extends Controller {
 
     //put your code here
 
     public function index() {
-
-        //session_destroy();
-        if ($this->postSet) {
+        if (Post::isSet()) {
             try {
-                $user = Local::authenticate($_POST['username'], $_POST['password']);
-                /* @var $ex AuthException */
+                /* @var $user User */
+                $user = Local::authenticate(Post::get('username'), Post::get('password'));
+
 
                 /** @var App|null The system logger */
                 $app = App::get();
-                $config = \app\config\MasterConfig::get();
+                $config = MasterConfig::get();
 
                 $app->user = $user;
 
@@ -43,6 +45,7 @@ class Login extends Controller {
                 header("Location: /");
             } catch (AuthException $ex) {
                 session_destroy();
+                /* @var $ex AuthException */
                 return $ex->getMessage();
             }
         } else {

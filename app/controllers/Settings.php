@@ -31,13 +31,89 @@ namespace app\controllers;
  *
  * @author cjacobsen
  */
+use system\Post;
+use app\config\MasterConfig;
+use app\models\district\District;
+
 class Settings extends Controller {
+
+    public $postables;
+
+    function __construct($app) {
+        parent::__construct($app);
+
+        foreach ($this->config->getObjects() as $configObject) {
+            if ($configObject != null) {
+                $this->app->logger->debug($configObject);
+                $object = $configObject[1];
+                if ($object != null) {
+                    $this->app->logger->debug($object);
+                    foreach ($object->getSettings() as $name => $var) {
+                        $this->app->logger->debug('Adding config postable ' . $configObject[0] . "-" . $name);
+                        $this->postables[] = $configObject[0] . "-" . $name;
+                    }
+                }
+            }
+        }
+        $this->app->logger->info("Available config options ID's");
+        $this->app->logger->info($this->postables);
+    }
 
     //put your code here
     public function index() {
 
-        $this->config = \app\config\MasterConfig::get();
+        $this->config = MasterConfig::get();
         return $this->view('settings/index');
+    }
+
+    public function indexPost() {
+        foreach (Post::getAll() as $key => $value) {
+
+            //var_dump($this->postables);
+            if (in_array($key, $this->postables)) {
+                var_dump($key);
+                if ($value == "checkbox") {
+                    $value = null;
+                    $value = Post::get($key . '-checkbox');
+                }
+                $brokenKey = explode("-", $key);
+                $config = $brokenKey[0];
+                $configOption = ucfirst(strtolower($brokenKey[1]));
+                $this->app->logger->debug($config);
+                $this->app->logger->debug($configOption);
+                $method = 'set' . $configOption;
+                $this->app->logger->debug($method);
+                if (!is_null($value)) {
+                    $this->config->$config->$method($value);
+                    $this->config->saveConfig();
+                    return $this->view('settings/index');
+                }
+            }
+            //var_dump($key);
+            //var_dump(strpos($key, "rict-district"));
+            //var_dump($_REQUEST);
+            if (strpos($key, "istrict-")) {
+                District::post(str_replace("district-", "", $key), $value);
+            }
+        }
+    }
+
+    public function createDistrictPost() {
+        $post = Post::getAll();
+        if (isset($post['name'])) {
+            $this->config->district->createDistrict($post['name']);
+            $this->config->saveConfig();
+        }
+        return $this->index();
+    }
+
+    public function addSchoolPost() {
+
+        $post = Post::getAll();
+        if (isset($post['name'])) {
+            $this->config->district->getDistrict()->createSchool($post['name']);
+            $this->config->saveConfig();
+        }
     }
 
 }

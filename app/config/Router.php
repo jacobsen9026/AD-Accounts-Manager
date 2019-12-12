@@ -31,7 +31,8 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-use system\app\CoreRouter;
+use system\common\CoreRouter;
+use system\app\App;
 
 class Router extends CoreRouter {
     /*
@@ -40,10 +41,10 @@ class Router extends CoreRouter {
      */
 
     /** @var array|null */
-    private $customRoutes;
+    private $customRoutes = null;
 
     //put your code here
-    function __construct(\app\App $app) {
+    function __construct(App $app) {
         parent::__construct($app);
         $this->includeCustomRoutes();
     }

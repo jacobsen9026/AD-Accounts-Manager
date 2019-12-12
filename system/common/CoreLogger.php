@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace system\common;
 
 /**
  * Description of CoreLogger
@@ -39,14 +39,25 @@ class CoreLogger extends Parser {
     private $errorLog;
     private $infoLog;
     private $warningLog;
+    private $startTime;
+    private $log;
+
+    function __construct() {
+        $this->startTime = floatval(microtime());
+    }
 
     /**
      *
      * @return type
      */
     public function getLogs() {
-
+        //var_dump($this->log);
         return array('debug' => $this->debugLog, 'error' => $this->errorLog, 'warning' => $this->warningLog, 'info' => $this->infoLog);
+    }
+
+    public function getLog() {
+        //var_dump($this->log);
+        return $this->log;
     }
 
     /**
@@ -73,6 +84,7 @@ class CoreLogger extends Parser {
      */
     public function debug($message) {
         $this->debugLog[] = $this->preProcessMessage($message);
+        $this->log[] = $this->packageMessage('debug', $message);
     }
 
     /**
@@ -81,6 +93,7 @@ class CoreLogger extends Parser {
      */
     public function warning($message) {
         $this->warningLog[] = $this->preProcessMessage($message);
+        $this->log[] = $this->packageMessage('warning', $message);
     }
 
     /**
@@ -89,6 +102,7 @@ class CoreLogger extends Parser {
      */
     public function error($message) {
         $this->errorLog[] = $this->preProcessMessage($message);
+        $this->log[] = $this->packageMessage('error', $message);
     }
 
     /**
@@ -97,6 +111,7 @@ class CoreLogger extends Parser {
      */
     public function info($message) {
         $this->infoLog[] = $this->preProcessMessage($message);
+        $this->log[] = $this->packageMessage('info', $message);
     }
 
     /**
@@ -131,6 +146,11 @@ class CoreLogger extends Parser {
      */
     public function debugObject($object) {
         return htmlspecialchars(print_r($object, true));
+    }
+
+    private function packageMessage($level, $message) {
+        $et = floatval(microtime()) - $this->startTime;
+        return array($et, $level, $this->preProcessMessage($message));
     }
 
 }

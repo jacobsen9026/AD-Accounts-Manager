@@ -31,7 +31,7 @@ namespace system;
  *
  * @author cjacobsen
  */
-use system\app\CoreLogger;
+use system\common\CoreLogger;
 
 class SystemLogger extends CoreLogger {
 
@@ -40,6 +40,7 @@ class SystemLogger extends CoreLogger {
 
     function __construct() {
 
+        parent::__construct();
         self::$instance = $this;
         ;
     }

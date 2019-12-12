@@ -31,14 +31,14 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-use system\app\CoreConfig;
+use system\common\CoreConfig;
 
 class GAMConfig extends CoreConfig {
 
     //put your code here
-    private $studentGroupMappings;
-    private $staffGroups;
-    private $parentGroups;
-    private $domainName;
+    protected $studentGroupMappings = null;
+    protected $staffGroups = null;
+    protected $parentGroups = null;
+    protected $domainName = null;
 
 }

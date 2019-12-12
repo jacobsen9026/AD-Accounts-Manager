@@ -39,6 +39,9 @@ if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != n
                             <li class = "nav-item col">
                                 <a class = "nav-link btn-primary rounded-0 text-center" data-toggle = "pill" href = "#menu1">App</a>
                             </li>
+                            <li class = "nav-item col">
+                                <a class = "nav-link btn-primary rounded-0 text-center" data-toggle = "pill" href = "#menu2">Session</a>
+                            </li>
 
                         </ul>
 
@@ -48,7 +51,7 @@ if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != n
                             if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != null))) {
                                 ?>
                                 <div class = "tab-pane   container-fluid active p-0" id = "home">
-                                    <?php $this->include('system/views/system_debug'); ?>
+                                    <?php $this->include('system/views/debugToolbar/system_debug'); ?>
                                 </div>
                                 <?php
                             }
@@ -56,7 +59,17 @@ if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != n
                                 ?>
                                 <div class = "tab-pane  container-fluid fade p-0" id = "menu1">
                                     <?php
-                                    $this->include('system/views/app_debug');
+                                    $this->include('system/views/debugToolbar/app_debug');
+                                    ?>
+                                </div>
+
+                                <?php
+                            }
+                            if (isset($_SESSION)) {
+                                ?>
+                                <div class = "tab-pane  container-fluid fade p-0" id = "menu2">
+                                    <?php
+                                    $this->include('system/views/debugToolbar/session_debug');
                                     ?>
                                 </div>
 

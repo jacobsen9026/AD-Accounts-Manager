@@ -31,7 +31,7 @@ namespace system;
  *
  * @author cjacobsen
  */
-use app\App;
+use system\app\App;
 
 abstract class Factory {
 

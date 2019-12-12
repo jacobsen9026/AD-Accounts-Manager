@@ -42,8 +42,8 @@ abstract class Local {
     public static function authenticate($username = null, $password = null) {
         $config = \app\config\MasterConfig::get();
         if (strtolower($username) == "admin") {
-            if (isset($config->admin->adminPasswordHash) and $this->config->admin->adminPasswordHash != '') {
-                if ($password == $config->admin->adminPasswordHash) {
+            if (isset($config->admin->adminPassword) and $this->config->admin->adminPassword != '') {
+                if ($password == $config->admin->adminPassword) {
                     return new User(CoreUser::ADMINISTRATOR);
                     return true;
                 }

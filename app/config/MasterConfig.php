@@ -31,19 +31,22 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-use system\app\CoreConfig;
-use app\App;
-use app\AppLogger;
+use system\common\CoreConfig;
+use system\app\AppLogger;
+use system\Database;
 
 class MasterConfig extends CoreConfig {
-
     //put your code here
 
-
+    /** @var Database Description* */
+    private $db;
     public $savedConfigs = array('app', 'msad', 'gam', 'email', 'web', 'auth', 'district', 'admin', 'notification');
 
     /** @var AppConfig|null */
     public $app;
+
+    /** @var AdminConfig|null */
+    public $admin;
 
     /** @var ADConfig|null */
     public $msad;
@@ -65,9 +68,6 @@ class MasterConfig extends CoreConfig {
 
     /** @var DistrictConfig|null */
     public $district;
-
-    /** @var AdminConfig|null */
-    public $admin;
 
     /** @var NotificationConfig|null */
     public $notification;
@@ -92,6 +92,15 @@ class MasterConfig extends CoreConfig {
     function __construct() {
         parent::__construct();
         self::$instance = $this;
+
+        $this->db = new \system\Database();
+        /*
+          if (!file_exists($this->databaseFile)) {
+
+          $this->db->initializeSchema($this->handle);
+          }
+         * *
+         */
         //Set the config file path
         $this->configFilePath = CONFIGPATH . DIRECTORY_SEPARATOR . 'store' . DIRECTORY_SEPARATOR;
         //Grab the appLogger instance for logging
@@ -109,7 +118,9 @@ class MasterConfig extends CoreConfig {
         $this->web = new WebConfig();
         $this->gam = new GAMConfig();
         $this->auth = new AuthConfig();
-        $this->district = new DistrictSettings();
+        $this->district = new DistrictConfig();
+        $this->admin = new AdminConfig();
+        $this->notification = new NotificationConfig();
     }
 
     public function loadConfig() {
@@ -144,6 +155,18 @@ class MasterConfig extends CoreConfig {
         $this->logger->info("The app config has been saved");
     }
 
-}
+    /**
+     *
+     * @return array
+     */
+    public function getObjects() {
+        $objects = array();
+        foreach (get_object_vars($this) as $name => $var) {
+            if (in_array($name, $this->savedConfigs)) {
+                $objects[] = array($name, $var);
+            }
+        }
+        return $objects;
+    }
 
-?>
+}

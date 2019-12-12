@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app;
+namespace system\app;
 
 /**
  * Description of App
@@ -32,7 +32,7 @@ namespace app;
  * @author cjacobsen
  */
 use system\Core;
-use system\app\CoreApp;
+use system\common\CoreApp;
 use system\app\AppErrorHandler;
 use system\CoreException;
 use system\Request;
@@ -40,7 +40,6 @@ use system\SystemLogger;
 use system\Factory;
 use app\config\Router;
 use app\config\MasterConfig;
-use app\Layout;
 use app\models\user\User;
 use app\models\user\Privilege;
 
@@ -175,7 +174,7 @@ class App extends CoreApp {
         /*
          * Check that the user is logged on and if not, set the route to the login screen
          */
-        var_dump($_SESSION);
+        //var_dump($_SESSION);
         if (!isset($this->user) or $this->user == null or $this->user->privilege <= Privilege::UNAUTHENTICATED) {
             $this->logger->warning('user not logged in');
             $this->route = array('Login', 'index');
@@ -224,7 +223,7 @@ class App extends CoreApp {
     }
 
     public function inDebugMode() {
-        if ($this->config->web->getDebug()) {
+        if ($this->config->admin->getDebug()) {
             return true;
         } else {
             return false;

@@ -14,6 +14,20 @@
 
         <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
 
+        <script>
+            //Custom JQuery to enable data-text-alt tag on btn class objects
+            jQuery(function ($) {
+                $('.btn[data-toggle="collapse"]').on('click', function () {
+                    $(this)
+                            .data('text-original', $(this).text())
+                            .text($(this).data('text-alt'))
+                            .data('text-alt', $(this).data('text-original'));
+                });
+            });
+
+
+        </script>
+
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>

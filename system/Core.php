@@ -33,8 +33,8 @@ namespace system;
  */
 require './system/Autoloader.php';
 
-use app\App;
-use system\app\CoreApp;
+use system\app\App;
+use system\common\CoreApp;
 use system\CoreException;
 use system\SystemLogger;
 
@@ -135,7 +135,6 @@ class Core {
          */
         new CoreErrorHandler();
 
-        trigger_error("Value must be 1 or below");
         $this->parser = new Parser();
         /*
          * Load the system logger
@@ -202,10 +201,12 @@ class Core {
             if (method_exists($this->app, 'run')) {
                 return $this->app->run();
             } else {
-                $this->logger->error("The " . APPCLASS . " does not have a run() method");
+                echo("The " . APPCLASS . " does not have a run() method");
+                exit;
             }
         } else {
-            $this->logger->error("The " . APPCLASS . " class was not found");
+            echo("The " . APPCLASS . " class was not found");
+            exit;
         }
 
         /*
@@ -232,9 +233,11 @@ class Core {
 
     private function setErrorMode() {
         if ($this->inDebugMode()) {
+            $this->logger->info("Enabling PHP Errors");
             enablePHPErrors();
         } else {
 
+            $this->logger->info("Disabling PHP Errors");
             disablePHPErrors();
         }
     }

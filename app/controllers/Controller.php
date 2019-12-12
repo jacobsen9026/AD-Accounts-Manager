@@ -31,7 +31,7 @@ namespace app\controllers;
  *
  * @author cjacobsen
  */
-use system\app\CoreController;
+use system\common\CoreController;
 use app\models\user\User;
 
 class Controller extends CoreController {

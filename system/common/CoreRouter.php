@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace system\common;
 
 /**
  * Description of Router
  *
  * @author cjacobsen
  */
-use app\App;
+use system\app\App;
 use system\CoreException;
 
 /**

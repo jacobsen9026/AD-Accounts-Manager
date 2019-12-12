@@ -40,6 +40,7 @@ class CoreErrorHandler {
 
     function __construct() {
         set_error_handler(array($this, 'handleError'));
+        set_exception_handler(array($this, 'handleError'));
         if (isset(self::$instance)) {
             return self::$instance;
         } else {
@@ -60,7 +61,7 @@ class CoreErrorHandler {
 
     //put your code here
 
-    public function handleError($code, $description, $file = null, $line = null, $context = null) {
+    public function handleError($code, $description = null, $file = null, $line = null, $context = null) {
         $output = "Error: [$code] $description";
         if ($file != null and $line != null) {
             $output = "Error: $file:$line [$code] $description";

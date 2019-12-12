@@ -3,7 +3,13 @@
     <a class="navbar-brand" href="/"><?php echo $this->config->app->getName();
 ?></a>
 
-    <?php if ($this->userPrivs > \app\models\user\Privilege::UNAUTHENTICATED) { ?>
+    <?php
+
+    use system\app\App;
+    use app\models\user\Privilege;
+
+if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
+        ?>
         <!-- Toggler/collapsibe Button -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
             <span class="navbar-toggler-icon"></span>
@@ -16,19 +22,19 @@
 
 
 
-        <?php if ($this->userPrivs > \app\models\user\Privilege::UNAUTHENTICATED) {
+        <?php if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
             ?>
             <ul class="navbar-nav  align-right">
                 <!-- Dropdown -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
                         <i class="fas fa-user-circle"></i>
-                        Username
+                        <?php echo $this->user->username; ?>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <a class="dropdown-item" href="/profile">Profile</a>
                         <a class="dropdown-item" href="/settings">Settings</a>
-                        <?php if (app\App::get()->inDebugMode() and $this->userPrivs == \app\models\user\Privilege::TECH) {
+                        <?php if (App::get()->inDebugMode() and $this->userPrivs == Privilege::TECH) {
                             ?>
                             <a class="dropdown-item" href="#"><text data-toggle="modal" data-target="#debugConfigModal">View Config</text></a>
                             <?php
@@ -61,8 +67,6 @@
                                 ?>
                                 <a class="dropdown-item" href="<?php echo $subItem->targetURL; ?>"><?php echo $subItem->displayText; ?></a>
 
-
-
                                 <?php
                             }
                             ?>
@@ -82,7 +86,7 @@
     </div>
 </nav>
 <?php
-if (app\App::get()->inDebugMode() and $this->userPrivs == \app\models\user\Privilege::TECH) {
+if (App::get()->inDebugMode() and $this->userPrivs == Privilege::TECH) {
     echo $this->view('modals/debugConfigModal');
 }
 ?>

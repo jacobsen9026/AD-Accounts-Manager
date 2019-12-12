@@ -24,13 +24,24 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace system\common;
 
 /**
- * Description of Session
+ * Description of Authorization
  *
  * @author cjacobsen
  */
-class CoreSession {
-    //put your code here
+use system\app\auth\AuthException;
+
+class CoreAuthorization {
+
+    private $config;
+
+    function __construct($config) {
+        $this->config = $config;
+    }
+
+//put your code here
 }
+
+?>

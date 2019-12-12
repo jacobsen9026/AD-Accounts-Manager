@@ -29,7 +29,7 @@ define('APPPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app");
 define('VIEWPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "views");
 
 define('CONFIGPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "config");
-define('APPCLASS', "app\App");
+define('APPCLASS', "system\app\App");
 define('DEBUG_MODE', TRUE);
 
 /*

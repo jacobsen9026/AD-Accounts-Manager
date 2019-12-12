@@ -6,20 +6,13 @@
  * and open the template in the editor.
  */
 
-namespace app\config;
+namespace app\controllers\settings;
 
 /**
- * Description of ADConfig
+ * Description of District
  *
  * @author cjacobsen
  */
-use system\common\CoreConfig;
-
-class ADConfig extends CoreConfig {
-
+class District {
     //put your code here
-    protected $priviledgeMappings = null;
-    protected $domainController = null;
-    protected $domainNetBIOS = null;
-
 }

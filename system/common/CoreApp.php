@@ -24,35 +24,24 @@
  * THE SOFTWARE.
  */
 
-namespace app;
+namespace system\common;
 
 /**
- * Description of AppLogger
+ * Description of App
  *
  * @author cjacobsen
  */
-use system\app\CoreLogger;
+use system\Parser;
 
-class AppLogger extends CoreLogger {
+class CoreApp extends Parser {
+//put your code here
 
-    /** @var AppLogger|null */
-    public static $instance;
 
-    function __construct() {
-
-        self::$instance = $this;
-        ;
-    }
 
     /**
      *
-     * @return type
+     * @param Core $core
      */
-    public static function get() {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
 }
+
+?>

@@ -32,6 +32,8 @@ namespace system;
  * @author cjacobsen
  */
 use system\SystemLogger;
+use system\app\App;
+use app\models\user\Privilege;
 
 class Parser {
 
@@ -43,7 +45,6 @@ class Parser {
         $path = VIEWPATH . DIRECTORY_SEPARATOR . $view . ".php";
         //echo $path;
         if (file_exists($path)) {
-
 
             ob_start();
             if (include $path) {

@@ -31,7 +31,7 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-use system\app\CoreConfig;
+use system\common\CoreConfig;
 
 class AppConfig extends CoreConfig {
 
@@ -40,26 +40,49 @@ class AppConfig extends CoreConfig {
     protected $name = "School Accounts Manager";
     protected $forceHTTPS = false;
     protected $timeout = 1200;
-    protected $admins;
+    protected $admins = null;
+    protected $motd = null;
 
     function __construct(array $keyValuePairs = null) {
         parent::__construct($keyValuePairs);
     }
 
-    function getName() {
+    public function getName() {
         return $this->name;
     }
 
-    function getForceHTTPS() {
+    public function getForceHTTPS() {
         return $this->forceHTTPS;
     }
 
-    function getTimeout() {
+    public function getTimeout() {
         return $this->timeout;
     }
 
-    function getAdmins() {
+    public function getAdmins() {
         return $this->admins;
+    }
+
+    public function setName($name) {
+        $this->name = $name;
+    }
+
+    public function setForceHTTPS($forceHTTPS) {
+        $this->forceHTTPS = $forceHTTPS;
+    }
+
+    public function setTimeout($timeout) {
+        $this->timeout = $timeout;
+    }
+
+    public function setAdmins($admins) {
+        $admins = trim($admins);
+        if (empty($this->admins)) {
+            $this->admins[] = $admins;
+        } else {
+            var_dump($admins);
+            $this->admins = explode("\n", $admins);
+        }
     }
 
 }

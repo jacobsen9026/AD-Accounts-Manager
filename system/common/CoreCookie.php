@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace system\common;
 
 /**
  * Description of CoreCookie

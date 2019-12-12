@@ -6,20 +6,18 @@
  * and open the template in the editor.
  */
 
-namespace app\config;
+namespace app\controllers;
 
 /**
- * Description of ADConfig
+ * Description of User
  *
  * @author cjacobsen
  */
-use system\common\CoreConfig;
-
-class ADConfig extends CoreConfig {
+class Profile extends Controller {
 
     //put your code here
-    protected $priviledgeMappings = null;
-    protected $domainController = null;
-    protected $domainNetBIOS = null;
+    public function index() {
+        return $this->view('profile');
+    }
 
 }

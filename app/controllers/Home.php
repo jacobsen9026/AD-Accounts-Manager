@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\Controllers;
+namespace app\controllers;
 
 /**
  * Description of Home

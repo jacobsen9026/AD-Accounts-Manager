@@ -31,12 +31,28 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-class AdminConfig {
+use system\common\CoreConfig;
 
-    public $websiteFQDN;
-    public $adminPasswordHash;
-    public $appVersion;
-    public $availableVersion;
+class AdminConfig extends CoreConfig {
+
+    protected $debug = true;
+    protected $adminPassword = null;
+
+    function getDebug() {
+        return $this->debug;
+    }
+
+    function getAdminPassword() {
+        return $this->adminPassword;
+    }
+
+    function setDebug($debug) {
+        $this->debug = $debug;
+    }
+
+    function setAdminPassword($adminPassword) {
+        $this->adminPassword = $adminPassword;
+    }
 
     //put your code here
 }

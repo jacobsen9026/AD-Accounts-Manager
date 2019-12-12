@@ -34,11 +34,11 @@ namespace app\controllers;
 
 use app\controllers\menu\TopMenuItem;
 use app\controllers\menu\SubMenuItem;
-use app\AppLogger;
+use system\app\AppLogger;
 use system\Parser;
 use app\models\user\Privilege;
 use app\models\user\User;
-use app\App;
+use system\app\App;
 use app\config\MasterConfig;
 
 class Menu extends Parser {

@@ -31,23 +31,23 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-use system\app\CoreConfig;
+use system\common\CoreConfig;
 
 class EmailConfig extends CoreConfig {
 
     //put your code here
-    private $fromAddress;
-    private $fromName;
-    private $admins;
-    private $welcomeBCC;
-    private $welcomeEmail;
-    private $smtpServer;
-    private $smtpPort;
-    private $useSMTPAuth;
-    private $useSMTPSSL;
-    private $smtpUsername;
-    private $smtpPassword;
-    private $replyToAddress;
-    private $replyToName;
+    protected $fromAddress = null;
+    protected $fromName = null;
+    protected $admins = null;
+    protected $welcomeBCC = null;
+    protected $welcomeEmail = null;
+    protected $smtpServer = null;
+    protected $smtpPort = null;
+    protected $useSMTPAuth = null;
+    protected $useSMTPSSL = null;
+    protected $smtpUsername = null;
+    protected $smtpPassword = null;
+    protected $replyToAddress = null;
+    protected $replyToName = null;
 
 }

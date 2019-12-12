@@ -39,4 +39,8 @@ class School {
     /** @var Grade The grades contained within this school */
     public $grades;
 
+    function __construct($name) {
+        $this->name = $name;
+    }
+
 }

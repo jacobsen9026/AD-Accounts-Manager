@@ -24,24 +24,32 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace system\common;
 
 /**
- * Description of App
+ * Description of Config
  *
  * @author cjacobsen
  */
 use system\Parser;
 
-class CoreApp extends Parser {
-//put your code here
+class CoreConfig extends Parser {
+
+    //put your code here
 
 
 
-    /**
-     *
-     * @param Core $core
-     */
+
+    function __construct(array $keyValuePairs = null) {
+        if ($keyValuePairs != null) {
+            foreach ($keyValuePairs as $key => $value) {
+                $this->$key = $value;
+            }
+        }
+    }
+
+    public function getSettings() {
+        return get_object_vars($this);
+    }
+
 }
-
-?>

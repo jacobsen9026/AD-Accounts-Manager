@@ -31,28 +31,14 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-use system\app\CoreConfig;
+use system\common\CoreConfig;
 
 class WebConfig extends CoreConfig {
 
+    protected $websiteFQDN = null;
+    protected $adminPasswordHash = null;
+    protected $appVersion = null;
+    protected $availableVersion = null;
+
     //put your code here
-    private $debug = true;
-    private $adminPassword;
-
-    function getDebug() {
-        return $this->debug;
-    }
-
-    function getAdminPassword() {
-        return $this->adminPassword;
-    }
-
-    function setDebug($debug) {
-        $this->debug = $debug;
-    }
-
-    function setAdminPassword($adminPassword) {
-        $this->adminPassword = $adminPassword;
-    }
-
 }

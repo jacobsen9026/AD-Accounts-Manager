@@ -35,6 +35,6 @@
 </nav>
 <div class="tab-content pt-5" id="nav-tabContent">
     <div class="tab-pane fade show active" id="nav-app" role="tabpanel" aria-labelledby="nav-home-tab"><?php echo $this->view('settings/application'); ?></div>
-    <div class="tab-pane fade" id="nav-auth" role="tabpanel" aria-labelledby="nav-profile-tab">...</div>
+    <div class="tab-pane fade" id="nav-auth" role="tabpanel" aria-labelledby="nav-profile-tab"><?php echo $this->view('settings/district'); ?></div>
     <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
 </div>

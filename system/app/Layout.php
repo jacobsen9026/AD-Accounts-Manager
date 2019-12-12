@@ -27,31 +27,25 @@
 namespace system\app;
 
 /**
- * Description of Config
+ * Description of Layout
  *
  * @author cjacobsen
  */
-use system\Parser;
+use system\common\CoreLayout;
+use app\config\MasterConfig;
 
-class CoreConfig extends Parser {
+class Layout extends CoreLayout {
+
+    /** @var MasterConfig|null The master config */
+    public $config;
 
     //put your code here
-
-
-
-
-    function __construct(array $keyValuePairs = null) {
-        if ($keyValuePairs != null) {
-            foreach ($keyValuePairs as $key => $value) {
-                $this->$key = $value;
-            }
-        }
-    }
-
-    public function getSettings() {
-        return get_object_vars($this);
+    function __construct($app) {
+        parent::__construct($app);
+        $this->config = MasterConfig::get();
+        $this->title = $this->config->app->getName();
     }
 
 }
-?>
 
+?>

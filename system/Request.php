@@ -37,7 +37,6 @@ class Request {
      *
      * @var string
      */
-    public $post = null;
     public $get = null;
     public $uri = null;
     public $module = null;
@@ -57,12 +56,6 @@ class Request {
          */
         if (isset($_GET)) {
             $this->get = $_GET;
-        }
-        /*
-         * Store POST
-         */
-        if (isset($_POST)) {
-            $this->post = $_POST;
         }
         /*
          * Store the referer
