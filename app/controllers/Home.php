@@ -37,7 +37,6 @@ class Home extends Controller {
     public function index() {
         $this->layout = "default";
         //echo "test";
-
         return $this->view('homepage');
         //var_dump($this->content);
         //$this->app->addToBody("test");

@@ -27,7 +27,8 @@
 namespace system;
 
 /**
- * Description of CoreParser
+ * Description of Parser
+ * A collection of functions to control app output buffering
  *
  * @author cjacobsen
  */
@@ -37,13 +38,18 @@ use app\models\user\Privilege;
 
 class Parser {
 
+    /**
+     *
+     * @param string $view
+     * @return boolean
+     */
     public function view($view) {
 
         //var_dump($view);
         $view = $this->sanitize($view);
 
         $path = VIEWPATH . DIRECTORY_SEPARATOR . $view . ".php";
-        //echo $path;
+        //var_dump($path);
         if (file_exists($path)) {
 
             ob_start();
@@ -55,6 +61,36 @@ class Parser {
         return false;
     }
 
+    /**
+     *
+     * @param stirng $modal
+     * @return boolean
+     */
+    public function modal($modal) {
+
+        //var_dump($modal);
+        $modal = $this->sanitize($modal);
+
+        $path = VIEWPATH . DIRECTORY_SEPARATOR . "modals" . DIRECTORY_SEPARATOR . $modal . ".php";
+
+        //var_dump($path);
+        if (file_exists($path)) {
+            // echo "test";
+            //var_dump($path);
+            ob_start();
+            if (include $path) {
+                return ob_get_clean();
+            }
+            ob_get_clean();
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param string $file
+     * @return boolean
+     */
     public function include($file) {
 
         $file = $this->sanitize($file);
@@ -73,6 +109,11 @@ class Parser {
         }
     }
 
+    /**
+     *
+     * @param string $path
+     * @return string
+     */
     public function sanitize($path) {
         if ($path[0] == "/" or $path[0] == "\\") {
             $path = substr($path, 1);
@@ -81,6 +122,11 @@ class Parser {
         return $path;
     }
 
+    /**
+     *
+     * @param array $object
+     * @return string
+     */
     public function varDump($object) {
         ob_start();
         var_dump($object);

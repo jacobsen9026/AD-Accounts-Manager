@@ -14,99 +14,112 @@ namespace system;
  * @author cjacobsen
  */
 use SQLite3;
+use PDO;
 
-class Database {
+class Database extends Parser {
+    /*
+     * Database Scheme as Contansts
+     */
 
-    //put your code here
-    public $databaseFile;
+    /** @var PDO Description */
+    private $db;
 
-    /** @var SQLite3 Description */
-    private $handle;
+    /** @var Database|null */
+    public static $instance;
+
+    /**
+     *
+     * @return Database
+     */
+    public static function get() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
     function __construct() {
-        $this->databaseFile = CONFIGPATH . DIRECTORY_SEPARATOR . "config.db";
-        var_dump($this->databaseFile);
-
-
-        // Set default timezone
-        date_default_timezone_set('UTC');
-
-
-        /*         * ************************************
-         * Create databases and                *
-         * open connections                    *
-         * ************************************ */
-
-        // Create (connect to) SQLite database in file
-        $file_db = new PDO('sqlite:messaging.sqlite3');
-        // Set errormode to exceptions
-        $file_db->setAttribute(PDO::ATTR_ERRMODE,
-                PDO::ERRMODE_EXCEPTION);
-
-        // Create new database in memory
-        $memory_db = new PDO('sqlite::memory:');
-        // Set errormode to exceptions
-        $memory_db->setAttribute(PDO::ATTR_ERRMODE,
-                PDO::ERRMODE_EXCEPTION);
-
-
-        /*         * ************************************
-         * Create tables                       *
-         * ************************************ */
-
-        // Create table messages
-        $file_db->exec("CREATE TABLE IF NOT EXISTS messages (
-                    id INTEGER PRIMARY KEY,
-                    title TEXT,
-                    message TEXT,
-                    time INTEGER)");
-
-        // Create table messages with different time format
-        $memory_db->exec("CREATE TABLE messages (
-                      id INTEGER PRIMARY KEY,
-                      title TEXT,
-                      message TEXT,
-                      time TEXT)");
-
-
-        /*         * ************************************
-         * Set initial data                    *
-         * ************************************ */
-
-        // Array with some test data to insert to database
-        $messages = array(
-            array('title' => 'Hello!',
-                'message' => 'Just testing...',
-                'time' => 1327301464),
-            array('title' => 'Hello again!',
-                'message' => 'More testing...',
-                'time' => 1339428612),
-            array('title' => 'Hi!',
-                'message' => 'SQLite3 is cool...',
-                'time' => 1327214268)
-        );
+        self::$instance = $this;
+        $this->connect();
     }
 
-    public function initializeSchema() {
-        $this->handle = new \SQLite3($this->databaseFile);
-        var_dump($this->createTable("test"));
-        var_dump($this->get("test"));
+    public function connect() {
+        SystemLogger::get()->info("connecting " . DBPATH);
+        $this->db = new \PDO("sqlite:" . DBPATH, null, null, array(
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false
+        ));
+        // activate use of foreign key constraints
+        $this->db->exec('PRAGMA foreign_keys = ON;');
     }
 
-    public function createDB($name) {
-        return $this->handle->query("CREATE TABLE $tableName");
+    public function query($query) {
+        /* @var $db PDO */
+        app\AppLogger::get()->info("Query: " . $query);
+        try {
+            $result = $this->db->query($query);
+            if ($this->db->errorCode()[0] != '00000') {
+                app\AppLogger::get()->error($this->db->errorInfo());
+                return false;
+            }
+            //Convert PDO response into a regular array
+            $return = false;
+            if (isset($result) and $result != false) {
+                foreach ($result as $row) {
+                    //Add row response to return array
+                    $return[] = $row;
+                }
+            }
+            //Return Array
+            app\AppLogger::get()->info("Response: " . var_export($return, true));
+            return $return;
+        } catch (Exception $ex) {
+            app\AppLogger::get()->error($ex);
+            return false;
+        }
     }
 
-    public function createTable($tableName) {
-        return $this->handle->query("CREATE TABLE Product (p_id INTEGER PRIMARY KEY AUTOINCREMENT,p_name TEXT NOT NULL,price REAL,quantity INTEGER);");
+    /**
+     *
+     * @return array
+     */
+    public function getAllTables() {
+        $query = "SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%';";
+        $result = $this->query($query);
+        foreach ($result as $field => $tableName) {
+            $tables[] = $tableName["name"];
+        }
+        return $tables;
     }
 
-    public function dropTable($tableName) {
-
+    /**
+     *
+     * @param string $table
+     * @return array
+     */
+    public function getAllColumns($table) {
+        $query = "PRAGMA table_info(" . $table . ");";
+        $result = $this->query($query);
+        foreach ($result as $field => $tableName) {
+            $tables[] = $tableName["name"];
+        }
+        return $tables;
     }
 
-    public function get($tableName) {
-
+    /**
+     *
+     * @return array
+     */
+    public function getConstants() {
+        $tables = $this->getAllTables();
+        foreach ($tables as $table) {
+            $columns = $this->getAllColumns($table);
+            foreach ($columns as $column) {
+                $constants[$table . '_' . $column] = $column;
+            }
+        }
+        return $constants;
     }
 
 }

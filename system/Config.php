@@ -23,17 +23,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-//echo "loaded";
-define('LANG', 'en');
-define('APPPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app");
-define('VIEWPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "views");
 
+
+
+
+/*
+ * The Language of the app. The value must be a valid folder with contents in the lang directory of the app.
+ */
+define('LANG', 'en');
+/*
+ * The Application directory
+ */
+define('APPPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app");
+/*
+ * The View directory under the application directory
+ */
+define('VIEWPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "views");
+/*
+ * The Config directory under the application directory
+ */
 define('CONFIGPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "config");
+/*
+ * The Database fie path under the application directory
+ */
+define('DBPATH', APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "config.db");
+/*
+ * The Class name with namespace to launch
+ */
 define('APPCLASS', "system\app\App");
+/*
+ * Toggle for core debug mode. Has no effect on app debug, but does allow App output directly.
+ */
 define('DEBUG_MODE', TRUE);
+
+$this->include('system/schema.php');
 
 /*
  * Include other config files like the example below
- * $this->include('system/example');
+ * $this->include('system/example.php');
  */
 ?>

@@ -41,6 +41,9 @@ use system\CoreException;
 class CoreRouter {
 
     private $logger;
+
+    /** @var array|null */
+    public $customRoutes = null;
     private $app = null;
     private $userPrivilege = null;
     private $request = null;
@@ -93,10 +96,32 @@ class CoreRouter {
         /*
          * return the response
          */
+        $route = $this->replaceCustomRoutes($route);
+        return $route;
+    }
+
+    private function replaceCustomRoutes($route) {
+        //Inset custom routes over computed route
+        //var_dump($route);
+        $controller = $route[0];
+        $method = $route[1];
+        foreach ($this->customRoutes as $customRoute) {
+            if ($customRoute[0] == $controller) {
+                $route[0] = $customRoute[2];
+                /*
+                  if ($customRoute[1] != '*') {
+                  $route[1] = $customRoute[3];
+                  }
+                 */
+            }
+        }
+        //var_dump($route);
         return $route;
     }
 
     private function setRoute() {
+        //Set the route to take based on the request
+        //This is prior to custom route insertion
         if (!isset($this->request->module)) {
             $this->controller = $this->getDefaultModule();
         } else {

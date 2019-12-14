@@ -43,4 +43,33 @@ class School {
         $this->name = $name;
     }
 
+    public static function createSchool($name, $districtID) {
+        \system\app\AppLogger::get()->debug("Creating new district named: " . $name);
+        return \system\Database::get()->query('INSERT INTO Schools (Name,DistrictID) VALUES ("' . $name . '", "' . $districtID . '")');
+    }
+
+    public static function getDistrictID($schoolID) {
+        return(\system\Database::get()->query('SELECT DistrictID From Schools Where ID=' . $schoolID)[0]["DistrictID"]);
+    }
+
+    public static function getSchool($schoolID) {
+        \system\app\AppLogger::get()->debug("Get school by id: " . $schoolID);
+        return(\system\Database::get()->query('SELECT * From Schools Where ID=' . $schoolID)[0]);
+    }
+
+    public static function deleteSchool($schoolID) {
+        \system\app\AppLogger::get()->debug("Delete school id: " . $schoolID);
+        return \system\Database::get()->query('DELETE FROM Schools WHERE ID=' . $schoolID);
+    }
+
+    public static function editSchool($schoolID, $post) {
+
+        \system\app\AppLogger::get()->debug("Modifying school id: " . $schoolID);
+        $name = $post['name'];
+        $staffGAOU = $post['staffGAOU'];
+        $staffADOU = $post['staffADOU'];
+
+        return \system\Database::get()->query('UPDATE Schools SET Name = "' . $name . '", StaffGAOU = "' . $staffGAOU . '", StaffADOU = "' . $staffADOU . '" WHERE ID = ' . $schoolID);
+    }
+
 }

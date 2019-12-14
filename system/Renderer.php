@@ -71,12 +71,13 @@ class Renderer extends Parser {
 
     public function errors_exists() {
 
-        if ($this->appLogger->getLogs()['error'] !== null and sizeof($this->appLogger->getLogs()['error']) > 0) {
+        if (!empty($this->appLogger) and $this->appLogger->getLogs()['error'] !== null and sizeof($this->appLogger->getLogs()['error']) > 0) {
             return true;
         }
-        if ($this->logger->getLogs()['error'] !== null and sizeof($this->logger->getLogs()['error']) > 0) {
+        if (!empty($this->logger) and $this->logger->getLogs()['error'] !== null and sizeof($this->logger->getLogs()['error']) > 0) {
             return true;
         }
+
         return false;
     }
 

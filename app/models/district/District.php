@@ -13,28 +13,43 @@ namespace app\models\district;
  *
  * @author cjacobsen
  */
+use system\Database;
+
 class District {
 
 //put your code here
 
 
 
-    public $name;
-    public $gradeSpan;
-    public $abbreviation;
 
-    /** @var array The last day of school. [month][day] * */
-    public $lastDay;
-
-    /** @var School The schools contained within this district */
-    public $schools = null;
-
-    function __construct($name = null) {
-        $this->name = $name;
+    public static function createDistrict($name) {
+        \system\app\AppLogger::get()->debug("Creating new district named: " . $name);
+        return Database::get()->query('INSERT INTO District (Name) VALUES ("' . $name . '")');
     }
 
-    public function createSchool($name) {
-        $this->schools[] = new School($name);
+    public static function getDistricts() {
+        return Database::get()->query('SELECT * FROM District');
+    }
+
+    public static function getDistrict($districtID) {
+
+        return Database::get()->query('SELECT * FROM District WHERE ID = ' . $districtID)[0];
+    }
+
+    public static function deleteDistrict($districtID) {
+        return Database::get()->query('DELETE FROM District WHERE ID = ' . $districtID);
+    }
+
+    public static function getSchools($districtID) {
+        return Database::get()->query('SELECT * FROM Schools WHERE DistrictID = ' . $districtID);
+    }
+
+    public static function editDistrict($districtID, $post) {
+        $abbr = $post['abbreviation'];
+        $gradeSpanFrom = $post['gradeSpanFrom'];
+        $gradeSpanTo = $post['gradeSpanTo'];
+
+        return Database::get()->query('UPDATE District SET Abbreviation = "' . $abbr . '", GradeSpanFrom = "' . $gradeSpanFrom . '", GradeSpanTo = "' . $gradeSpanTo . '" WHERE ID = ' . $districtID);
     }
 
 }

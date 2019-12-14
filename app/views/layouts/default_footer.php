@@ -1,10 +1,4 @@
-<?php
-//include ("./app/views/hoveringHelpButton.php");
-?>
 
-<script>
-    onLoad();
-</script>
 
 </div>
 

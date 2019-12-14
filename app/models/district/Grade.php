@@ -37,4 +37,26 @@ class Grade {
     public $gradeLevel;
     public $name;
 
+    public static function getGrades($schoolID) {
+        return(\system\Database::get()->query('SELECT * From Grades Where SchoolID=' . $schoolID));
+    }
+
+    public static function getGrade($gradeID) {
+        return(\system\Database::get()->query('SELECT * From Grades Where ID=' . $gradeID)[0]);
+    }
+
+    public static function getSchoolID($gradeID) {
+        return(\system\Database::get()->query('SELECT SchoolID From Grades Where ID=' . $gradeID)[0]["SchoolID"]);
+    }
+
+    public static function createGrade($schoolID, $post) {
+        \system\app\AppLogger::get()->debug("Creating new grade for school: " . $schoolID);
+        return \system\Database::get()->query('INSERT INTO Grades (Level,SchoolID) VALUES ("' . $post["level"] . '", "' . $schoolID . '")');
+    }
+
+    public static function deleteGrade($gradeID) {
+        \system\app\AppLogger::get()->debug("Delete grade id: " . $gradeID);
+        return \system\Database::get()->query('DELETE FROM Grades WHERE ID=' . $gradeID);
+    }
+
 }

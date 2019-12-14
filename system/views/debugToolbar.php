@@ -22,23 +22,33 @@ if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != n
 
                 <!--Modal content-->
                 <div class = "modal-content">
-                    <div class = "modal-header  bg-primary text-light">
+                    <div class = "modal-header border-0 bg-primary text-light">
                         <h4 class = "modal-title">Logs</h4>
                         <button type = "button" class = "close text-light" data-dismiss = "modal">&times;
                         </button>
 
                     </div>
-                    <div class = "modal-body pt-0">
+                    <div class = "modal-body p-0">
 
 
                         <!--Nav tabs-->
-                        <ul class = "nav nav-pills bg-primary row">
-                            <li class = "nav-item col">
-                                <a class = "nav-link btn-primary active rounded-0 text-center " data-toggle = "pill" href = "#home">System</a>
-                            </li>
-                            <li class = "nav-item col">
-                                <a class = "nav-link btn-primary rounded-0 text-center" data-toggle = "pill" href = "#menu1">App</a>
-                            </li>
+                        <ul class = "sticky-top nav nav-pills bg-primary row">
+                            <?php
+                            if ($this->core->inDebugMode()) {
+                                ?>
+
+                                <li class = "nav-item col">
+                                    <a class = "nav-link btn-primary active rounded-0 text-center " data-toggle = "pill" href = "#home">System</a>
+                                </li>
+                                <?php
+                            }if (!empty($this->core->app) and $this->core->app->inDebugMode()) {
+                                ?>
+                                <li class = "nav-item col">
+                                    <a class = "nav-link btn-primary rounded-0 text-center" data-toggle = "pill" href = "#menu1">App</a>
+                                </li>
+                                <?php
+                            }
+                            ?>
                             <li class = "nav-item col">
                                 <a class = "nav-link btn-primary rounded-0 text-center" data-toggle = "pill" href = "#menu2">Session</a>
                             </li>
@@ -46,7 +56,7 @@ if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != n
                         </ul>
 
                         <!--Tab panes-->
-                        <div class = "tab-content log-tab-content">
+                        <div class = "pt-0 tab-content log-tab-content">
                             <?php
                             if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != null))) {
                                 ?>

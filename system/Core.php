@@ -59,7 +59,7 @@ class Core {
     public $appLogger;
 
     /** @var App|null The App */
-    private $app;
+    public $app;
 
     /** @var Core|null */
     public static $instance;
@@ -108,7 +108,7 @@ class Core {
         try {
             $this->execute();
         } catch (CoreException $ex) {
-            $this->error($ex);
+            $this->logger->error($ex);
         }
 
         try {

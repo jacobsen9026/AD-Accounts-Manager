@@ -43,7 +43,7 @@ abstract class Session extends CoreSession {
 
     /**
      *
-     * @return type
+     * @return Session
      */
     public static function get() {
         if (self::$instance === null) {

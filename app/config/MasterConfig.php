@@ -66,9 +66,6 @@ class MasterConfig extends CoreConfig {
     /** @var AppLogger|null */
     public $logger;
 
-    /** @var DistrictConfig|null */
-    public $district;
-
     /** @var NotificationConfig|null */
     public $notification;
 
@@ -93,7 +90,7 @@ class MasterConfig extends CoreConfig {
         parent::__construct();
         self::$instance = $this;
 
-        $this->db = new \system\Database();
+
         /*
           if (!file_exists($this->databaseFile)) {
 
@@ -118,7 +115,6 @@ class MasterConfig extends CoreConfig {
         $this->web = new WebConfig();
         $this->gam = new GAMConfig();
         $this->auth = new AuthConfig();
-        $this->district = new DistrictConfig();
         $this->admin = new AdminConfig();
         $this->notification = new NotificationConfig();
     }
@@ -147,9 +143,11 @@ class MasterConfig extends CoreConfig {
     public function saveConfig() {
         $this->logger->info("Saving App Config");
         foreach (get_object_vars($this) as $name => $var) {
-            if (in_array($name, $this->savedConfigs)) {
-                file_put_contents($this->configFilePath . $name . '.cfg', serialize($var->getSettings()));
-                $this->logger->info('Saved ' . $name . '.cfg to store directory');
+            if (!is_null($var)) {
+                if (in_array($name, $this->savedConfigs)) {
+                    file_put_contents($this->configFilePath . $name . '.cfg', serialize($var->getSettings()));
+                    $this->logger->info('Saved ' . $name . '.cfg to store directory');
+                }
             }
         }
         $this->logger->info("The app config has been saved");

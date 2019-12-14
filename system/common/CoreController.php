@@ -65,8 +65,16 @@ class CoreController extends Parser {
         }
     }
 
+    /**
+     *
+     * @return string
+     */
     public function unauthorized() {
         return $this->view('errors/403');
+    }
+
+    public function redirect($url) {
+        header('Location: ' . $url);
     }
 
 }

@@ -46,7 +46,7 @@ class AppLogger extends CoreLogger {
 
     /**
      *
-     * @return type
+     * @return AppLogger
      */
     public static function get() {
         if (self::$instance === null) {

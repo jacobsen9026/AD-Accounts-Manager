@@ -106,10 +106,15 @@ class App extends CoreApp {
         $this->loadConfig();
         $this->request = $req;
         /*
-         * Load the session
+         * Define the Grade Codes
          */
+        define('GRADE_CODES', array('PK3', 'PK4', 'K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'));
     }
 
+    /**
+     *
+     * @return App
+     */
     public static function get() {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -135,6 +140,7 @@ class App extends CoreApp {
      * @return App
      */
     public function run() {
+
         $this->logger->debug("Creating Session");
 
         $this->user = Session::getUser();
@@ -187,7 +193,12 @@ class App extends CoreApp {
         if ($this->controller = Factory::buildController($this)) {
             $method = $this->route[1];
             if (method_exists($this->controller, $method)) {
-                $this->outputBody .= $this->controller->$method();
+                if (empty($this->route[2])) {
+                    $this->outputBody .= $this->controller->$method();
+                } else {
+
+                    $this->outputBody .= $this->controller->$method($this->route[2]);
+                }
                 //var_dump($this->outputBody);
             } else {
                 $this->logger->warning("No method found by name of " . $this->router->method . ' in the controller ' . $this->router->controller);

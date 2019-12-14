@@ -40,6 +40,8 @@ abstract class File {
      * @param Core $app
      * @return File $files
      */
+    const SCHEMA_FILE_PATH = \APPPATH . \DIRECTORY_SEPARATOR . "database" . \DIRECTORY_SEPARATOR . "Schema.php";
+
     public static function getFiles($dir) {
         $files = null;
         //echo 'Dir';
@@ -85,6 +87,35 @@ abstract class File {
         }
         //var_dump($files);
         return $files;
+    }
+
+    public static function refreshSchemaDefinitions($constantsTable) {
+        $writeFooter = false;
+        if (!file_exists(self::SCHEMA_FILE_PATH)) {
+            touch(self::SCHEMA_FILE_PATH);
+            $output = "<?php \n"
+                    . " namespace app\database; \n"
+                    . " class Schema { \n"
+                    . "\n Pop This"
+                    . "\n Pop This";
+            file_put_contents(self::SCHEMA_FILE_PATH, $output, FILE_APPEND);
+            $writeFooter = true;
+        }
+        $contents = file(File::SCHEMA_FILE_PATH);
+        array_pop($contents);
+        array_pop($contents);
+        file_put_contents(File::SCHEMA_FILE_PATH, $contents);
+
+        foreach ($constantsTable as $title => $value) {
+            //var_dump($title);
+
+            $output = "    const " . strtoupper($title) . " = '" . $value . "';\n";
+            if (!in_array($output, $contents)) {
+                file_put_contents(self::SCHEMA_FILE_PATH, $output, FILE_APPEND);
+            }
+        }
+        file_put_contents(self::SCHEMA_FILE_PATH, "\n }", FILE_APPEND);
+        //$this->redirect('/settings');
     }
 
 }

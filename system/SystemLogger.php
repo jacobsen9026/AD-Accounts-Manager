@@ -42,7 +42,7 @@ class SystemLogger extends CoreLogger {
 
         parent::__construct();
         self::$instance = $this;
-        ;
+        $this->info('Rootpath: ' . ROOTPATH);
     }
 
     /**

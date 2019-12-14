@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md bg-primary navbar-dark">
+<nav class="navbar fixed-top navbar-expand-md bg-primary navbar-dark">
     <!-- Brand -->
     <a class="navbar-brand" href="/"><?php echo $this->config->app->getName();
 ?></a>
@@ -33,11 +33,16 @@ if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <a class="dropdown-item" href="/profile">Profile</a>
-                        <a class="dropdown-item" href="/settings">Settings</a>
-                        <?php if (App::get()->inDebugMode() and $this->userPrivs == Privilege::TECH) {
+                        <?php if ($this->userPrivs >= Privilege::TECH) {
                             ?>
-                            <a class="dropdown-item" href="#"><text data-toggle="modal" data-target="#debugConfigModal">View Config</text></a>
-                            <?php
+                            <a class="dropdown-item" href="/settings">Settings</a>
+                            <a class="dropdown-item" href="/districts">District Setup</a>
+
+                            <?php if (App::get()->inDebugMode()) {
+                                ?>
+                                <a class="dropdown-item" href="#"><text data-toggle="modal" data-target="#debugConfigModal">View Config</text></a>
+                                <?php
+                            }
                         }
                         ?>
                         <a class="dropdown-item" href="/logout">Logout</a>

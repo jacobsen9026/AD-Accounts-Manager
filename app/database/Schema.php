@@ -1,0 +1,66 @@
+<?php 
+ namespace app\database; 
+ class Schema { 
+
+    const SCHOOLS_ID = 'ID';
+    const SCHOOLS_DISTRICTID = 'DistrictID';
+    const SCHOOLS_NAME = 'Name';
+    const SCHOOLS_STAFFGAOU = 'StaffGAOU';
+    const SCHOOLS_STAFFADOU = 'StaffADOU';
+    const EMAIL_FROMADDRESS = 'FromAddress';
+    const EMAIL_FROMNAME = 'FromName';
+    const EMAIL_ADMINS = 'Admins';
+    const EMAIL_WELCOMEBCC = 'WelcomeBCC';
+    const EMAIL_WELCOMEEMAIL = 'WelcomeEmail';
+    const EMAIL_REPLYTOADDRESS = 'ReplyToAddress';
+    const EMAIL_REPLYTONAME = 'ReplyToName';
+    const EMAIL_USESMTPSSL = 'UseSMTPSSL';
+    const EMAIL_SMTPSERVER = 'SMTPServer';
+    const EMAIL_SMTPPORT = 'SMTPPort';
+    const EMAIL_USESMTPAUTH = 'UseSMTPAuth';
+    const EMAIL_SMTPUSERNAME = 'SMTPUsername';
+    const EMAIL_SMTPPASSWORD = 'SMTPPassword';
+    const APP_NAME = 'Name';
+    const APP_FORCEHTTPS = 'ForceHTTPS';
+    const APP_MOTD = 'MOTD';
+    const APP_DEBUGMODE = 'DebugMode';
+    const APP_ADMINPASSWORD = 'AdminPassword';
+    const APP_ADMINUSERNAMES = 'AdminUsernames';
+    const APP_WEBSITIEFQDN = 'WebsitieFQDN';
+    const APP_APPVERSION = 'AppVersion';
+    const APP_DATABASEVERSION = 'DatabaseVersion';
+    const DISTRICT_ID = 'ID';
+    const DISTRICT_NAME = 'Name';
+    const DISTRICT_GRADESPANFROM = 'GradeSpanFrom';
+    const DISTRICT_GRADESPANTO = 'GradeSpanTo';
+    const DISTRICT_ABBREVIATION = 'Abbreviation';
+    const DISTRICT_ADFQDN = 'ADFQDN';
+    const DISTRICT_GAFQDN = 'GAFQDN';
+    const TEAMS_ID = 'ID';
+    const TEAMS_GRADEID = 'GradeID';
+    const TEAMS_NAME = 'Name';
+    const TEAMS_STUDENTGAOU = 'StudentGAOU';
+    const TEAMS_STUDENTADOU = 'StudentADOU';
+    const TEAMS_STUDENTGAGROUP = 'StudentGAGroup';
+    const TEAMS_STUDENTADGROUP = 'StudentADGroup';
+    const TEAMS_PARENTGROUP = 'ParentGroup';
+    const TEAMS_STAFFGAOU = 'StaffGAOU';
+    const TEAMS_STAFFADOU = 'StaffADOU';
+    const TEAMS_STAFFGAGROUP = 'StaffGAGroup';
+    const TEAMS_STAFFADGROUP = 'StaffADGroup';
+    const GRADES_ID = 'ID';
+    const GRADES_SCHOOLID = 'SchoolID';
+    const GRADES_NAME = 'Name';
+    const GRADES_LEVEL = 'Level';
+    const GRADES_STUDENTGAOU = 'StudentGAOU';
+    const GRADES_STUDENTADOU = 'StudentADOU';
+    const GRADES_STUDENTGAGROUP = 'StudentGAGroup';
+    const GRADES_STUDENTADGROUP = 'StudentADGroup';
+    const GRADES_PARENTGROUP = 'ParentGroup';
+    const GRADES_FORCESTUDENTPASSWORDCHANGE = 'ForceStudentPasswordChange';
+    const GRADES_STAFFADOU = 'StaffADOU';
+    const GRADES_STAFFGAOU = 'StaffGAOU';
+    const GRADES_STAFFADGROUP = 'StaffADGroup';
+    const GRADES_STAFFGAGROUP = 'StaffGAGroup';
+
+ }

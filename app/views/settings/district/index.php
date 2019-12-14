@@ -1,5 +1,4 @@
 <?php
-
 /*
  * The MIT License
  *
@@ -23,31 +22,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+?>
 
-namespace app\config;
 
-/**
- * Description of DistrictSettings
- *
- * @author cjacobsen
- */
-use system\common\CoreConfig;
+
+
+<?php
+
 use app\models\district\District;
 
-class DistrictConfig extends CoreConfig {
-
-//put your code here
-    protected $yogMappings = null;
-
-    /** @var District The district object holding the school configuration * */
-    protected $district = null;
-
-    public function getDistrict() {
-        return $this->district;
-    }
-
-    public function createDistrict($name) {
-        $this->district = new District($name);
-    }
-
+if ($this->districts == false) {
+    echo $this->view('settings/district/create');
+} else {
+    ?>
+    <div class = "row">
+        <?php
+        foreach ($this->districts as $this->district) {
+            echo $this->view('settings/district/show');
+        }
+        ?>
+    </div>
+    <?php
 }
+?>
+
+
+

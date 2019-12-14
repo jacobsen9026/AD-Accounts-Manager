@@ -50,7 +50,7 @@ class AppErrorHandler {
 
     /**
      *
-     * @return type
+     * @return AppErrorHandler
      */
     public static function get() {
         if (self::$instance === null) {

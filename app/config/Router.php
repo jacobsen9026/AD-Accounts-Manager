@@ -40,9 +40,6 @@ class Router extends CoreRouter {
      * array ("requestedModule"
      */
 
-    /** @var array|null */
-    private $customRoutes = null;
-
     //put your code here
     function __construct(App $app) {
         parent::__construct($app);
@@ -51,6 +48,12 @@ class Router extends CoreRouter {
 
     private function includeCustomRoutes() {
         $this->customRoutes[] = array("install", "index", "home", "index");
+
+        $this->customRoutes[] = array("Districts", "*", "settings\Districts", "*");
+
+        $this->customRoutes[] = array("Schools", "*", "settings\Schools", "*");
+        $this->customRoutes[] = array("Grades", "*", "settings\Grades", "*");
+        //var_dump($this->customRoutes);
     }
 
 }

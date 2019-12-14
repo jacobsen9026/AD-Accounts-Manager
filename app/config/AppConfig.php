@@ -37,7 +37,6 @@ class AppConfig extends CoreConfig {
 
     //put your code here
 
-    protected $name = "School Accounts Manager";
     protected $forceHTTPS = false;
     protected $timeout = 1200;
     protected $admins = null;
