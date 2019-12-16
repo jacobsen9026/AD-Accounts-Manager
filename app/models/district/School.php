@@ -31,6 +31,8 @@ namespace app\models\district;
  *
  * @author cjacobsen
  */
+use app\database\Schema;
+
 class School {
 
     //put your code here
@@ -45,21 +47,21 @@ class School {
 
     public static function createSchool($name, $districtID) {
         \system\app\AppLogger::get()->debug("Creating new district named: " . $name);
-        return \system\Database::get()->query('INSERT INTO Schools (Name,DistrictID) VALUES ("' . $name . '", "' . $districtID . '")');
+        return \system\Database::get()->query('INSERT INTO Schools (' . Schema::SCHOOLS_NAME . ',' . Schema::SCHOOLS_DISTRICT_ID . ') VALUES ("' . $name . '", "' . $districtID . '")');
     }
 
     public static function getDistrictID($schoolID) {
-        return(\system\Database::get()->query('SELECT DistrictID From Schools Where ID=' . $schoolID)[0]["DistrictID"]);
+        return(\system\Database::get()->query('SELECT ' . Schema::SCHOOLS_DISTRICT_ID . ' From Schools Where ID=' . $schoolID)[0][Schema::SCHOOLS_DISTRICT_ID]);
     }
 
     public static function getSchool($schoolID) {
         \system\app\AppLogger::get()->debug("Get school by id: " . $schoolID);
-        return(\system\Database::get()->query('SELECT * From Schools Where ID=' . $schoolID)[0]);
+        return(\system\Database::get()->query('SELECT * From Schools Where ' . Schema::SCHOOLS_ID . '=' . $schoolID)[0]);
     }
 
     public static function deleteSchool($schoolID) {
         \system\app\AppLogger::get()->debug("Delete school id: " . $schoolID);
-        return \system\Database::get()->query('DELETE FROM Schools WHERE ID=' . $schoolID);
+        return \system\Database::get()->query('DELETE FROM Schools WHERE ' . Schema::SCHOOLS_ID . '=' . $schoolID);
     }
 
     public static function editSchool($schoolID, $post) {
@@ -69,7 +71,7 @@ class School {
         $staffGAOU = $post['staffGAOU'];
         $staffADOU = $post['staffADOU'];
 
-        return \system\Database::get()->query('UPDATE Schools SET Name = "' . $name . '", StaffGAOU = "' . $staffGAOU . '", StaffADOU = "' . $staffADOU . '" WHERE ID = ' . $schoolID);
+        return \system\Database::get()->query('UPDATE Schools SET ' . Schema::SCHOOLS_NAME . ' = "' . $name . '", StaffGAOU = "' . $staffGAOU . '", StaffADOU = "' . $staffADOU . '" WHERE ID = ' . $schoolID);
     }
 
 }
