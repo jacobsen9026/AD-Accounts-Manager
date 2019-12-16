@@ -26,11 +26,11 @@ if (!function_exists('printLog')) {
                     break;
             }
             ?>
-            <div class=' collapse show container mx-auto my-0 py-1  row alert alert-<?php echo $alertLevel; ?> <?php echo $level; ?>SystemLogEntry'>
+            <div class=' collapse show container mx-auto my-0 py-1 rounded-0 row alert alert-<?php echo $alertLevel; ?> <?php echo $level; ?>SystemLogEntry'>
                 <div class='col-1'>
                     <?= htmlspecialchars($et); ?>
                 </div>
-                <div class='col-11'>
+                <div class='col-11 text-break'>
                     <?= htmlspecialchars($message); ?>
                 </div>
             </div>
@@ -52,11 +52,11 @@ if (!function_exists('printLog')) {
     if (isset($log) and sizeof($log) > 0) {
         ?>
 
-        <div class ="row p-0 container text-center mx-auto mb-0">
-            <button class = 'col btn btn-info' data-toggle = "collapse" data-target = '.infoSystemLogEntry' data-text-alt="Show Info">Hide Info</button>
-            <button class = 'col btn btn-success' data-toggle = "collapse" data-target = '.debugSystemLogEntry' data-text-alt="Show Debug">Hide Debug</button>
-            <button class = 'col btn btn-warning' data-toggle = "collapse" data-target = '.warningSystemLogEntry' data-text-alt="Show Warning">Hide Warning</button>
-            <button class = 'col btn btn-danger' data-toggle = "collapse" data-target = '.errorSystemLogEntry' data-text-alt="Show Error">Hide Error</button>
+        <div class ="sticky-top log-nav row p-0 container text-center mx-auto mb-0">
+            <button class = 'col rounded-0 btn btn-info' data-toggle = "collapse" data-target = '.infoSystemLogEntry' data-text-alt="Show Info">Hide Info</button>
+            <button class = 'col rounded-0 btn btn-success' data-toggle = "collapse" data-target = '.debugSystemLogEntry' data-text-alt="Show Debug">Hide Debug</button>
+            <button class = 'col rounded-0 btn btn-warning' data-toggle = "collapse" data-target = '.warningSystemLogEntry' data-text-alt="Show Warning">Hide Warning</button>
+            <button class = 'col rounded-0 btn btn-danger' data-toggle = "collapse" data-target = '.errorSystemLogEntry' data-text-alt="Show Error">Hide Error</button>
         </div>
         <div id='systemLog'>
             <?php
