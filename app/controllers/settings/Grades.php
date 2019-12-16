@@ -26,7 +26,10 @@ class Grades extends Controller {
       }
      *
      */
-
+    function __construct(\system\app\App $app) {
+        parent::__construct($app);
+        $this->layout = 'setup';
+    }
 
     public function show($schoolID = null) {
         $this->preProcessSchoolID($schoolID);
@@ -40,7 +43,6 @@ class Grades extends Controller {
 
     public function edit($gradeID) {
         $this->preProcessGradeID($gradeID);
-
         //var_dump($this->school);
         if ($this->school != false) {
             return $this->view('settings/district/schools/grades/edit');
