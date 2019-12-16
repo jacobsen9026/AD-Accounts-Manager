@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -34,15 +35,9 @@ use app\models\district\District;
 if ($this->districts == false) {
     echo $this->view('settings/district/create');
 } else {
-    ?>
-    <div class = "row">
-        <?php
-        foreach ($this->districts as $this->district) {
-            echo $this->view('settings/district/show');
-        }
-        ?>
-    </div>
-    <?php
+    foreach ($this->districts as $this->district) {
+        echo $this->view('settings/district/show');
+    }
 }
 ?>
 
