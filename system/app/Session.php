@@ -33,7 +33,6 @@ namespace system\app;
  */
 use system\common\CoreSession;
 use app\models\user\User;
-use app\config\MasterConfig;
 
 abstract class Session extends CoreSession {
     //put your code here
@@ -74,8 +73,8 @@ abstract class Session extends CoreSession {
 
     public static function updateTimeout() {
         /* @var $config MasterConfig */
-        $config = MasterConfig::get();
-        $nextTimeout = $config->app->getTimeout() + time();
+
+        $nextTimeout = \app\models\Auth::getSessionTimeout() + time();
         //$nextTimeout = 1;
         $_SESSION['timeout'] = $nextTimeout;
     }
