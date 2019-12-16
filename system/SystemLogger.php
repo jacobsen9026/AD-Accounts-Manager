@@ -47,7 +47,7 @@ class SystemLogger extends CoreLogger {
 
     /**
      *
-     * @return type
+     * @return SystemLogger
      */
     public static function get() {
         if (self::$instance === null) {
