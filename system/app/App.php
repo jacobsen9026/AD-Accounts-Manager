@@ -86,6 +86,7 @@ class App extends CoreApp {
     public static $instance;
 
     function __construct(\system\Request $req, \system\SystemLogger $cLogger) {
+
         //session_destroy();
         //$this->user = "this";
         self::$instance = $this;
@@ -123,17 +124,13 @@ class App extends CoreApp {
     }
 
     public function loadConfig() {
-        $this->config = new MasterConfig();
+        //$this->config = new MasterConfig();
         $this->coreLogger->info("The app config has been loaded");
         /*
          * Set the php errror mode repective of the setting
          * in the webConfig.
          */
         $this->setErrorMode();
-    }
-
-    public function saveConfig() {
-        $this->config->saveConfig();
     }
 
     /**
@@ -173,7 +170,7 @@ class App extends CoreApp {
          * Route the app state and store the route
          */
         $this->route = $this->router->route();
-        $this->logger->info($this->route);
+        $this->logger->debug($this->route);
     }
 
     public function control() {
@@ -234,11 +231,16 @@ class App extends CoreApp {
     }
 
     public function inDebugMode() {
-        if ($this->config->admin->getDebug()) {
+
+        if (\app\models\AppConfig::getDebugMode()) {
             return true;
         } else {
             return false;
         }
+    }
+
+    public static function getID() {
+        return '1';
     }
 
 }
