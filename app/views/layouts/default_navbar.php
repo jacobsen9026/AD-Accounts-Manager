@@ -1,7 +1,6 @@
 <nav class="navbar fixed-top navbar-expand-md bg-primary navbar-dark">
     <!-- Brand -->
-    <a class="navbar-brand" href="/"><?php echo $this->config->app->getName();
-?></a>
+    <a class="navbar-brand" href="/"><?php echo \app\models\AppConfig::getAppName(); ?></a>
 
     <?php
 
@@ -22,36 +21,7 @@ if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
 
 
 
-        <?php if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
-            ?>
-            <ul class="navbar-nav  align-right">
-                <!-- Dropdown -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                        <i class="fas fa-user-circle"></i>
-                        <?php echo $this->user->username; ?>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" href="/profile">Profile</a>
-                        <?php if ($this->userPrivs >= Privilege::TECH) {
-                            ?>
-                            <a class="dropdown-item" href="/settings">Settings</a>
-                            <a class="dropdown-item" href="/districts">District Setup</a>
 
-                            <?php if (App::get()->inDebugMode()) {
-                                ?>
-                                <a class="dropdown-item" href="#"><text data-toggle="modal" data-target="#debugConfigModal">View Config</text></a>
-                                <?php
-                            }
-                        }
-                        ?>
-                        <a class="dropdown-item" href="/logout">Logout</a>
-                    </div>
-                </li>
-            </ul>
-            <?php
-        }
-        ?>
 
         <ul class="navbar-nav">
 
@@ -85,8 +55,58 @@ if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
                 }
             }
             ?>
-
         </ul>
+        <?php if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
+            ?>
+            <div class="d-md-flex text-center flex-md-row-reverse w-100">
+                <?php if ($this->userPrivs >= Privilege::TECH) {
+                    ?>
+                    <ul class="order-md-1 navbar-nav">
+                        <!-- Settings Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                                <i class="fas fa-tools"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right pt-0">
+                                <div class="dropdown-header bg-light">Settings</div>
+
+
+
+                                <a class="dropdown-item" href="/settings">Application</a>
+                                <a class="dropdown-item" href="/districts">District Setup</a>
+
+                                <?php if (App::get()->inDebugMode()) {
+                                    ?>
+                                    <a class="dropdown-item" href="#"><text data-toggle="modal" data-target="#debugConfigModal">View Config</text></a>
+                                    <?php
+                                }
+                                ?>
+                            </div>
+                        </li>
+                    </ul>
+                    <?php
+                }
+                ?>
+                <ul class="order-md-0 navbar-nav">
+                    <!-- User Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i>
+
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right pt-0">
+                            <div class="dropdown-header bg-light"> <?php echo $this->user->username; ?></div>
+
+                            <a class="dropdown-item" href="/profile">Profile</a>
+
+                            <a class="dropdown-item" href="/logout">Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <?php
+        }
+        ?>
 
     </div>
 </nav>
