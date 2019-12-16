@@ -33,6 +33,7 @@ namespace system;
  */
 use system\Core;
 use system\SystemLogger;
+use Error;
 
 class CoreErrorHandler {
 
@@ -40,7 +41,7 @@ class CoreErrorHandler {
 
     function __construct() {
         set_error_handler(array($this, 'handleError'));
-        //set_exception_handler(array($this, 'handleError'));
+        //set_exception_handler(array($this, 'handleException'));
         if (isset(self::$instance)) {
             return self::$instance;
         } else {
@@ -67,6 +68,44 @@ class CoreErrorHandler {
             $output = "Error: $file:$line [$code] $description";
         }
         SystemLogger::get()->error($output);
+    }
+
+    /* @var $exception Error */
+
+    function handleException($exception) {
+        /* @var $file string */
+        ob_flush();
+        $file = $exception->getFile();
+        //echo "<br/><br/><br/><br/>";
+
+        if (isset($exception->xdebug_message)) {
+            $xdebugMessage = $exception->xdebug_message;
+            SystemLogger::get()->error($xdebugMessage);
+        }
+        /* @var $lineNumber int */
+        $lineNumber = $exception->getLine();
+
+        /* @var $message string */
+        $message = $exception->getMessage();
+
+        /* @var $trace array */
+        $trace = $exception->getTrace();
+        $line = file($file)[$lineNumber];
+        //var_dump($exception);
+        //var_dump(file($file));
+        //Log the exception to our server's error logs.
+        //SystemLogger::get()->error($exception);
+        //Send a 500 internal server error to the browser.
+        header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+        //Display our custom error page.
+        //var_dump($exception);
+        $logMessage = $file . ':' . $lineNumber . ' ' . $message;
+        $errorMessage = '<div class="alert alert-danger">Fatal Errror <br/><br/>' . $message . '<br/><br/>' . $file
+                . ':' . $lineNumber . '<br/><pre>'
+                . $line . '</pre></div>';
+        //Kill the script.
+        echo $errorMessage;
+        Core::get()->abort($logMessage);
     }
 
 }
