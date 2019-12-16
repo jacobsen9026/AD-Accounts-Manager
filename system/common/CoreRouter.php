@@ -90,9 +90,7 @@ class CoreRouter {
         if (isset($this->data) and $this->data != '') {
             $route[] = $this->data;
         }
-        if (isset($this->data)) {
-            $route[] = $this->data;
-        }
+
         /*
          * return the response
          */
