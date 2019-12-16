@@ -18,6 +18,11 @@ use app\models\district\District;
 
 class Districts extends Controller {
 
+    function __construct(\system\app\App $app) {
+        parent::__construct($app);
+        $this->layout = 'setup';
+    }
+
     //put your code here
     public function index() {
 
@@ -41,8 +46,10 @@ class Districts extends Controller {
 
     public function editPost() {
         $post = \system\Post::getAll();
-        $districtID = $post['districtID'];
-        District::editDistrict($districtID, $post);
+        $districtID = $post[\app\database\Schema::DISTRICT_ID];
+        $this->preProcessDistrictID($districtID);
+        \app\models\DatabasePost::setPost(basename(get_class()), $districtID, $post);
+        //District::editDistrict($districtID, $post);
         $this->redirect('/districts');
     }
 
