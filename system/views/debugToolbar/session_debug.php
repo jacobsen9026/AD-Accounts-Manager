@@ -26,7 +26,7 @@ function printSessionArray($array) {
         <div class="alert alert-info dark-shadow m-3">
 
 
-            <div id='sessionContents' class='text-wrap'>
+            <div id='sessionContents' class='text-break'>
                 <?php
                 printSessionArray($_SESSION);
                 ?>
