@@ -82,6 +82,10 @@ class Core {
         self::$instance = $this;
     }
 
+    /**
+     *
+     * @return Core
+     */
     public static function get() {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -123,6 +127,19 @@ class Core {
          */
     }
 
+    public function abort($message = null) {
+        $this->logger->error("Aborting App Execution!");
+        $this->logger->error($message);
+        $this->appLogger = $this->app->logger;
+        $this->appOutput = null;
+        $this->app = null;
+        try {
+            $this->render();
+        } catch (CoreException $ex) {
+            var_dump($ex);
+        }
+    }
+
     /**
      * Initialize all core systems
      */
@@ -142,8 +159,8 @@ class Core {
 
         $this->logger = new SystemLogger();
         $this->logger->info("Logger started");
-        $this->logger->info("Session Export Below:");
-        $this->logger->info($_SESSION);
+        $this->logger->debug("Session Export Below:");
+        $this->logger->debug($_SESSION);
         /*
          * The following statement must not ever be removed.
          * Everything depends on the system config being
@@ -175,11 +192,11 @@ class Core {
          */
 
 
-
+        ob_start();
         $this->appOutput = $this->runApp();
         $this->appLogger = $this->appOutput[1];
         $this->appOutput = $this->appOutput[0];
-
+        ob_flush();
         new CoreErrorHandler();
         /*
          * Check if the system is in debug and if so set
@@ -199,6 +216,7 @@ class Core {
             $class = APPCLASS;
             $this->app = new $class($this->request, $this->logger);
             if (method_exists($this->app, 'run')) {
+
                 return $this->app->run();
             } else {
                 echo("The " . APPCLASS . " does not have a run() method");
