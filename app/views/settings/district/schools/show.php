@@ -7,43 +7,28 @@ echo $this->view('settings/district/schools/nav');
 ?>
 
 
-<script type="text/javascript">
+
+
+<script>
     $(function () {
-        $("tbody").sortable();
-
+        $("table").tablesorter({sortList: [[0, 0]]});
+        $(".sorter-true").on("click", function () {
+            $('.sorter-true i').toggleClass("fa-caret-up fa-caret-down");
+        });
     });
-    function saveOrder() {
-        var schoolOrder = $("tbody").sortable('toArray', {
-            attribute: 'data-id',
-        });
-
-
-        console.log('Manipulated Order:' + schoolOrder);
-        schoolOrder.forEach(function (item, index, array) {
-            array[index] = item * 10;
-        });
-        console.log('IntermediateOrder' + schoolOrder);
-        // var xhr = new XMLHttpRequest();
-        // xhr.open("POST", yourUrl, true);
-        // xhr.setRequestHeader('Content-Type', 'application/json');
-        // xhr.send(JSON.stringify({
-        //     value: value
-        // }));
-    }
 </script>
+<div class="p-5">
+    <h4>Schools in <?= $this->district[Schema::DISTRICTS_NAME]; ?></h4>
 
-<div class="">
-    <h4>Schools in <?php $this->district[Schema::DISTRICT_NAME]; ?></h4>
+    <div class="table-responsive-sm shadow-sm">
 
-    <div class="table-responsive-sm">
-
-        <table class="mx-auto table table-hover">
+        <table class="mx-auto table table-hover tablesorter">
             <thead class="bg-primary text-white">
                 <tr>
-                    <th>School Name</th>
+                    <th class="sorter-true">School Name <i class="float-right fas fa-caret-up"></i></th>
 
-                    <th>Edit</th>
-                    <th>Remove</th>
+                    <th class="sorter-false">Edit</th>
+                    <th class="sorter-false">Remove</th>
                 </tr>
             </thead>
             <tbody>
@@ -53,6 +38,8 @@ echo $this->view('settings/district/schools/nav');
                     ?>
                     <tr data-id="<?php echo $this->school[Schema::SCHOOLS_ID]; ?>">
                         <td>
+                            <i class="fas fa-school"></i>
+                            <i class="fas fa-building"></i>
                             <?php echo $this->school[Schema::SCHOOLS_NAME]; ?>
                         </td>
 
@@ -75,8 +62,10 @@ echo $this->view('settings/district/schools/nav');
 
         </table>
     </div>
+    <!--
     <button class = "btn btn-info" type = "button" onclick="saveOrder()">Update Order</button>
-    <form method = "post" name = "test" class = "table-hover" action = "/schools/create/<?php echo $this->districtID; ?>"><input name = "name" type = "text"/>
-        <button class = "btn btn-info" type = "submit">Add School</button>
-    </form>
+    -->
+    <?php
+    echo $this->view('settings/district/schools/create');
+    ?>
 </div>
