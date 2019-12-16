@@ -34,6 +34,7 @@ namespace system;
  */
 use system\SystemLogger;
 use system\app\App;
+use system\app\AppLogger;
 use app\models\user\Privilege;
 
 class Parser {
@@ -53,7 +54,9 @@ class Parser {
         if (file_exists($path)) {
 
             ob_start();
+
             if (include $path) {
+                AppLogger::get()->info("Rendering view file: " . $path);
                 return ob_get_clean();
             }
             ob_get_clean();
