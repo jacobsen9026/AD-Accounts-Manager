@@ -22,121 +22,71 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+use app\database\Schema;
+use app\models\AppConfig;
+use app\models\Auth;
 ?>
 
 
 <form method="post" class ="table-hover">
-    <div  class="row">
-        <div class="col-5">
-            <h3>
-                Admin Usernames</h3>
-            <small>Users in this list will not be able to<br/>be modified via the tools on this site.<br/></small>
-
-        </div>
-        <div class="col-7">
-            <textarea placeholder="Enter list of usernames, one per line." class="container container-lg" name="app-admins" rows="5" spellcheck="false"><?php
-                foreach ($this->config->app->getAdmins() as $admin) {
-
-                    echo $admin . "\n";
+    <?php
+    $function = function() {
+        if (isset($appConfig["redirectHTTP"])) {
+            if ($appConfig["redirectHTTP"]) {
+                if (strtolower(explode("=", $_SERVER['HTTPS_SERVER_ISSUER'])[1]) == strtolower($_SERVER['SERVER_NAME'])) {
+                    echo "You are using a self-signed certificate.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
                 }
-                ?></textarea>
+            } else {
+                echo "You are not using HTTPS.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
+            }
+        } else {
+            echo "You are not using HTTPS.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
+        }
+    };
+
+    formTextInput('Web App Name', Schema::APP_NAME, AppConfig::getAppName());
+    formTextArea('Admin Usernames', Schema::APP_PROTECTED_ADMIN_USERNAMES, AppConfig::getAdminUsernames(),
+            'Users in this list will not be able to be modified via the tools on this site.', 'Enter one username per line');
+
+    formTextArea('Homepage Message', Schema::APP_MOTD, AppConfig::getMOTD(),
+            'Accepts HTML and inline style', 'Enter list of emails, one per line.');
+    ?>
+    <div class="row">
+        <div class="col-md">
+            <?php formBinaryInput('Redirect to HTTPS', Schema::APP_FORCE_HTTPS, AppConfig::getForceHTTPS(), null, $function); ?>
+        </div>
+        <div class="col-md">
+            <?php
+            formBinaryInput('App Debug Mode', Schema::APP_DEBUG_MODE, AppConfig::getDebugMode(),
+                    'Only for developement or error reporting');
+            ?>
         </div>
     </div>
-
-
-    <div  class="row">
-        <div class="col-5">
-            <h3>
-                Homepage Message</h3>
-            <small>Accepts HTML and inline style</small>
-
+    <div class="row">
+        <div class="col-md">
+            <?php
+            formTextInput('Session Timeout', Schema::AUTH_SESSION_TIMEOUT, Auth::getSessionTimeout(),
+                    'Time in seconds');
+            ?>
         </div>
-        <div class="col-7">
-
-
-            <textarea placeholder="Enter list of emails, one per line." class="container container-lg" name="homepageMessage" rows="5" spellcheck="false"><?php
-                foreach ($appConfig["homepageMessage"] as $admin) {
-
-                    echo $admin . "\n";
-                }
-                ?></textarea>
+        <div class="col-md">
+            <?php
+            formTextInput('Website Public FQDN', Schema::APP_WEBSITIE_FQDN, AppConfig::getWebsiteFQDN(),
+                    'All requests will be redirected to this address. Ensure it is accurate.');
+            ?>
         </div>
     </div>
-
-
-
-    <div  class="row">
-        <div class="col-5">
-            <h3>
-                Redirect to HTTPS
-            </h3>
-            <small>
-                <?php
-                //echo  $appConfig["redirectHTTP"];
-                //echo $_POST["redirectHTTPCheck"];
-
-                if (isset($appConfig["redirectHTTP"])) {
-                    if ($appConfig["redirectHTTP"]) {
-                        if (strtolower(explode("=", $_SERVER['HTTPS_SERVER_ISSUER'])[1]) == strtolower($_SERVER['SERVER_NAME'])) {
-                            echo "You are using a self-signed certificate.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
-                        }
-                    } else {
-                        echo "You are not using HTTPS.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
-                    }
-                } else {
-                    echo "You are not using HTTPS.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
-                }
-                ?>
-            </small>
-        </div>
-        <div class="col-7">
-            <input type="text" name="app-forceHTTPS" value="checkbox"hidden/>
-            <input type="checkbox" class="form-check-input" name="app-forceHTTPS-checkbox" value="true" <?php
-                //echo  $appConfig["redirectHTTP"];
-                if (isset($appConfig["app-forceHTTPS"])) {
-                    if ($appConfig["redirectHTTP"]) {
-                        echo "checked";
-                    }
-                }
-                ?>>
-        </div>
-
-
-
-    </div>
-
-
-
-
-    <div  class="row">
-        <div class="col-5">
-            <h3>
-                Session Timeout
-            </h3>
-        </div>
-        <div class="col-7">
-            <input  placeholder="Time in seconds (eg:1200)" type="text" style="width:25%" name="app-timeout" value="<?php echo $this->config->app->getTimeout(); ?>"> Seconds
-        </div>
-
-
-    </div>
+    <?php
+    formTextInput('User Helpdesk URL', Schema::APP_USER_HELPDESK_URL, AppConfig::getUserHelpdeskURL(),
+            'Provide your users with a link to your support portal for when they need assistance.');
+    ?>
 
 
 
 
 
-    <div  class="row">
-        <div class="col-5">
-            <h3>
-                Web App Name
-            </h3>
-        </div>
-        <div class="col-7">
-            <input placeholder="Enter Name" type="text" name="app-name" value="<?php echo $this->config->app->getName(); ?>">
-        </div>
 
-
-    </div>
 
     <div  class="container pt-5"><button type="submit" class="mx-auth btn btn-primary mb-2">Save Settings</button></div>
 </form>
