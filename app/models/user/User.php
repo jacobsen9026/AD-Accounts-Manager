@@ -35,6 +35,9 @@ use system\app\auth\CoreUser;
 
 class User extends CoreUser {
 
+    const THEME = "theme";
+    const FULL_NAME = "fullName";
+
     public $theme = 'default';
     public $fullName;
 
