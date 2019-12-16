@@ -50,7 +50,8 @@ class Settings extends Controller {
     }
 
     public function indexPost() {
-        foreach (Post::getAll() as $key => $value) {
+        $post = Post::getAll();
+        foreach ($post as $key => $value) {
 
             //var_dump($this->postables);
             if (in_array($key, $this->postables)) {
