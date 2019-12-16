@@ -32,3 +32,4 @@ nbproject/project.properties
 nbproject/private/private.xml
 nbproject/project.xml
 app/database/config.db
+app/database/config.db.bak
