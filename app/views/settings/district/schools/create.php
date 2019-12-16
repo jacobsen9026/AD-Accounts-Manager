@@ -4,11 +4,13 @@ use app\database\Schema;
 ?>
 
 <form method = "post" class = "table-hover" action = "/schools/create/<?php echo $this->districtID; ?>">
-    <div class = "container container-lg">
-        <div>
+    <div class = "border mt-3 container container-lg py-3 bg-light shadow-sm">
+        <h5>
             Create School
-        </div>
-        <div>Name:<input type = "text" name = "<?= Schema::SCHOOLS_NAME ?>"/></div>
+        </h5>
+        <?php formTextInput('Name', Schema::SCHOOLS_NAME, null);
+        ?>
+
         <button class = "btn btn-primary" type = "submit">Submit</button>
     </div>
 </form>
