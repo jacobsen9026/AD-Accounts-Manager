@@ -74,8 +74,11 @@ class CoreLogger extends Parser {
         }
         $message = str_replace("\n", "", $message);
         $caller = backTrace();
-        $caller["file"] = $this->sanitize($caller['file']);
-        return $caller["file"] . ":" . $caller["line"] . ' ' . $message;
+        if (isset($caller["file"])and isset($caller["file"])) {
+            $caller["file"] = $this->sanitize($caller['file']);
+            return $caller["file"] . ":" . $caller["line"] . ' ' . $message;
+        }
+        return 'Unable to back trace: ' . $message;
     }
 
     /**
