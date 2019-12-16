@@ -5,8 +5,15 @@ use app\database\Schema;
 
 echo $this->view('settings/district/schools/nav');
 ?>
-
-<div class="">
+<script>
+    $(function () {
+        $("table").tablesorter({sortList: [[0, 0]]});
+        $(".sorter-true").on("click", function () {
+            $('.sorter-true i').toggleClass("fa-caret-up fa-caret-down");
+        });
+    });
+</script>
+<div class="p-5">
     <h4>Grades at <?php echo $this->school[Schema::SCHOOLS_NAME]; ?></h4>
 
     <div class="table-responsive-sm">
@@ -14,9 +21,9 @@ echo $this->view('settings/district/schools/nav');
         <table class="mx-auto table table-hover">
             <thead class="bg-primary text-white">
                 <tr>
-                    <th>Grade Level</th>
-                    <th>Edit</th>
-                    <th>Remove</th>
+                    <th class="sorter-true">Grade Level <i class="float-right fas fa-caret-up"></i></th>
+                    <th class="sorter-false">Edit</th>
+                    <th class="sorter-false">Remove</th>
                 </tr>
             </thead>
             <tbody>
