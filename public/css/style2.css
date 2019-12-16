@@ -11,11 +11,14 @@ and open the template in the editor.
 .dark-shadow{
     box-shadow: 0.1em 0.2em 1em #000;
 }
-.align-right{
-    position: absolute;
-    right:0px;
-}
+
 
 .mt-8 {
   margin-top: 6rem!important;
+}
+.district-nav{
+    top:3.5rem!important;
+}
+.log-nav{
+    top:2.5rem!important;
 }
