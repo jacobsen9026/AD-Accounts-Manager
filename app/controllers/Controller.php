@@ -38,6 +38,8 @@ use app\database\Schema;
 use app\models\district\Grade;
 use app\models\district\School;
 use app\models\district\District;
+use app\models\district\Team;
+use system\app\App;
 
 class Controller extends CoreController {
     //put your code here
@@ -48,33 +50,53 @@ class Controller extends CoreController {
     /** @var MasterConfig Description */
     public $config;
 
-    function __construct($app) {
+    /** @var string The controller string from the requested URL */
+    public $controller;
+
+    /* @var $app App */
+
+    function __construct(App $app) {
 
         parent::__construct($app);
-        $this->config = MasterConfig::get();
+        //$this->config = MasterConfig::get();
+        $this->controller = $app->request->module;
         $this->layout = "default";
     }
 
     public function preProcessSchoolID($schoolID) {
-
         $this->schoolID = $schoolID;
         $this->school = School::getSchool($this->schoolID);
         $this->schoolName = School::getSchool($this->schoolID)[Schema::SCHOOLS_NAME];
         $this->grades = Grade::getGrades($this->schoolID);
-
-        $this->districtID = $this->school[Schema::SCHOOLS_DISTRICTID];
+        $this->districtID = $this->school[Schema::SCHOOLS_DISTRICT_ID];
         $this->preProcessDistrictID($this->districtID);
+    }
+
+    public function preProcessTeamID($teamID) {
+        $this->teamID = $teamID;
+        $this->team = Team::getTeam($this->teamID);
+        $this->preProcessGradeID($this->team[Schema::TEAMS_GRADE_ID]);
     }
 
     public function preProcessGradeID($gradeID) {
         $this->gradeID = $gradeID;
         $this->grade = Grade::getGrade($this->gradeID);
-        $this->preProcessSchoolID($this->grade[Schema::GRADES_SCHOOLID]);
+        $this->teams = Team::getTeams($this->gradeID);
+        $this->preProcessSchoolID($this->grade[Schema::GRADES_SCHOOL_ID]);
     }
 
     public function preProcessDistrictID($districtID) {
         $this->districtID = $districtID;
         $this->district = District::getDistrict($this->districtID);
+    }
+
+    public function redirect($url) {
+        if ($this->app->inDebugMode()) {
+            $this->app->outputBody .= "In Debug Mode<br/>Would have redirected<br/>"
+                    . "<a href='" . $url . "'>here</a>";
+        } else {
+            header('Location: ' . $url);
+        }
     }
 
 }
