@@ -9,7 +9,12 @@
 
             </div>
             <div class="modal-body">
-                <p><?php echo $this->varDump($this->app->config); ?>
+                <p class="text-break "><?php
+                    foreach (\system\Database::get()->getAllTables()as $table) {
+                        echo $table;
+                        var_dump(\system\Database::get()->query('SELECT * FROM ' . $table)[0]);
+                    }
+                    ?>
                 </p>
             </div>
 
