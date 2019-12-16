@@ -28,6 +28,10 @@ class Schools extends Controller {
       }
      *
      */
+    function __construct(\system\app\App $app) {
+        parent::__construct($app);
+        $this->layout = 'setup';
+    }
 
     public function show($districtID = null) {
         $this->preProcessDistrictID($districtID);
@@ -41,9 +45,7 @@ class Schools extends Controller {
     }
 
     public function edit($schoolID) {
-        $this->schoolID = $schoolID;
-        $this->school = School::getSchool($schoolID);
-        $this->districtID = $this->school[Schema::SCHOOLS_DISTRICTID];
+        $this->preProcessSchoolID($schoolID);
         //var_dump($this->school);
         if ($this->school != false) {
             return $this->view('settings/district/schools/edit');
@@ -51,16 +53,16 @@ class Schools extends Controller {
     }
 
     public function editPost($schoolID) {
-
+        \system\app\AppLogger::get()->debug('Edit Post');
         $post = \system\Post::getAll();
-        $this->school = \app\models\district\School::editSchool($schoolID, $post);
-        var_dump($post);
+        \app\models\DatabasePost::setPost(basename(get_class()), $schoolID, $post);
+        //var_dump($post);
         $this->redirect('/schools/edit/' . $schoolID);
     }
 
     public function createPost($districtID = null) {
         $post = \system\Post::getAll();
-        \app\models\district\School::createSchool($post['name'], $districtID);
+        \app\models\district\School::createSchool($post[Schema::SCHOOLS_NAME], $districtID);
         $this->redirect('/schools/show/' . $districtID);
         //return $this->index();
     }
