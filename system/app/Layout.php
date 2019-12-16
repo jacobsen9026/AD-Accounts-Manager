@@ -42,8 +42,9 @@ class Layout extends CoreLayout {
     //put your code here
     function __construct($app) {
         parent::__construct($app);
-        $this->config = MasterConfig::get();
-        $this->title = $this->config->app->getName();
+        //$this->config = MasterConfig::get();
+        $this->title = \app\models\AppConfig::getAppName();
+        AppLogger::get()->debug("Active Layout: " . $this->layoutName);
     }
 
 }
