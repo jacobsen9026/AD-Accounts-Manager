@@ -32,7 +32,7 @@ namespace system\common;
  * @author cjacobsen
  */
 use system\Parser;
-use app\App;
+use system\app\App;
 use system\CoreApp;
 use app\config\MasterConfig;
 
