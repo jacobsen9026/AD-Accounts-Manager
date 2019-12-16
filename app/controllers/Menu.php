@@ -58,7 +58,7 @@ class Menu extends Parser {
     function __construct(User $user, $layout = 'default') {
 
         $this->user = $user;
-        $this->config = MasterConfig::get();
+        //$this->config = MasterConfig::get();
         $this->layout = $layout;
         $this->logger = AppLogger::get();
 
