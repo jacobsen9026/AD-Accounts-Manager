@@ -40,16 +40,19 @@ abstract class Local {
 
     /** @var MasterConfig|null The app logger */
     public static function authenticate($username = null, $password = null) {
-        $config = \app\config\MasterConfig::get();
+        $password = hash('sha256', $password);
+        //$config = \app\config\MasterConfig::get();
+        $adminPassword = \app\models\AppConfig::getAdminPassword();
+
         if (strtolower($username) == "admin") {
-            if (isset($config->admin->adminPassword) and $this->config->admin->adminPassword != '') {
-                if ($password == $config->admin->adminPassword) {
+            if (isset($adminPassword) and $adminPassword != '') {
+                if ($password == $adminPassword) {
                     return new User(CoreUser::ADMINISTRATOR);
                     return true;
                 }
                 throw new AuthException(AuthException::BAD_PASSWORD);
             } else {
-                if ($password == "test") {
+                if ($password == "751a67d13e8d8e42354db7e1eca69300208cefe3e32dd7c492f150f8698973da") {
                     return new User(CoreUser::ADMINISTRATOR);
                     return true;
                 }
