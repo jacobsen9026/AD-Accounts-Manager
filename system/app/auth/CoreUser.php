@@ -34,6 +34,8 @@ namespace system\app\auth;
 class CoreUser {
 
     const ADMINISTRATOR = "ADMIN";
+    const USERNAME = "username";
+    const PRIVILEGE = "privilege";
 
     //put your code here
     public $username;
