@@ -34,7 +34,7 @@ class Login extends Controller {
 
                 /** @var App|null The system logger */
                 $app = App::get();
-                $config = MasterConfig::get();
+                //$config = MasterConfig::get();
 
                 $app->user = $user;
 
