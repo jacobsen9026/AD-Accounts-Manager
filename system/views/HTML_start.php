@@ -14,10 +14,12 @@
 
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 
+        <!-- Additional JQuery Dependencies -->
         <link href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
         <script src="//code.jquery.com/jquery-1.11.1.js"></script>
         <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.30.7/js/jquery.tablesorter.js"></script>
 
         <script>
             //Custom JQuery to enable data-text-alt tag on btn class objects
