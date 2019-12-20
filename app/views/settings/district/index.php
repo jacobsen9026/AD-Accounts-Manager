@@ -36,7 +36,7 @@ if ($this->districts == false) {
     echo $this->view('settings/district/create');
 } else {
     foreach ($this->districts as $this->district) {
-        echo $this->view('settings/district/show');
+        echo 'test';
     }
 }
 ?>
