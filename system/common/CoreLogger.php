@@ -148,12 +148,32 @@ class CoreLogger extends Parser {
      * @return type
      */
     public function debugObject($object) {
-        return htmlspecialchars(print_r($object, true));
+        ob_start();
+        if (isset($object->xdebug_message)) {
+            ob_clean();
+            return "<div class='jumbotron'>" . $object->xdebug_message . "</div>";
+        }
+        var_dump($object);
+        return ob_get_clean();
+        //return htmlspecialchars(print_r($object, true));
     }
 
     private function packageMessage($level, $message) {
         $et = floatval(microtime()) - $this->startTime;
-        return array($et, $level, $this->preProcessMessage($message));
+        $x = 2;
+
+        while (backTrace($x)) {
+            $caller = backTrace($x);
+            if (key_exists('file', $caller)) {
+                $backTrace[$x - 1] = $caller["file"] . ":" . $caller["line"] . "<br/>";
+            }
+            $x++;
+        }
+        //ksort($backTrace, SORT_ASC);
+        krsort($backTrace);
+        //var_dump($backTrace);
+
+        return array($et, $level, $this->preProcessMessage($message), $backTrace);
     }
 
 }
