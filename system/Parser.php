@@ -58,8 +58,14 @@ class Parser {
             if (include $path) {
                 AppLogger::get()->info("Rendering view file: " . $path);
                 return ob_get_clean();
+            } else {
+
+                AppLogger::get()->warning("Could not include view file: " . $path);
             }
             ob_get_clean();
+        } else {
+
+            AppLogger::get()->warning("Could not find view file: " . $path);
         }
         return false;
     }
