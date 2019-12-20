@@ -96,7 +96,14 @@ abstract class File {
             $output = "<?php \n"
                     . " namespace app\database; \n"
                     . " class Schema { \n"
-                    . "\n Pop This"
+                    . "\n"
+                    . "    const NAME = 'name';\n"
+                    . "    const TABLE = 'table';\n"
+                    . "    const COLUMN = 'column';\n";
+            foreach (Database::get()->getAllTables() as $table) {
+                $output .= "    const " . strtoupper($table) . " = '$table';\n";
+            }
+            $output .= "Pop This"
                     . "\n Pop This";
             file_put_contents(self::SCHEMA_FILE_PATH, $output, FILE_APPEND);
             $writeFooter = true;
@@ -105,11 +112,13 @@ abstract class File {
         array_pop($contents);
         array_pop($contents);
         file_put_contents(File::SCHEMA_FILE_PATH, $contents);
-
+        // $output = file_put_contents(self::SCHEMA_FILE_PATH, $output, FILE_APPEND);
         foreach ($constantsTable as $title => $value) {
             //var_dump($title);
 
-            $output = "    const " . strtoupper($title) . " = '" . $value . "';\n";
+            $output = "    const " . strtoupper($title) . " = ";
+            $output .= "array('table'=>'" . explode("_", $title)[0] . "','column'=>'" . $value . "','name'=>'" . $title . "');\n";
+
             if (!in_array($output, $contents)) {
                 file_put_contents(self::SCHEMA_FILE_PATH, $output, FILE_APPEND);
             }
