@@ -192,11 +192,11 @@ class Core {
          */
 
 
-        ob_start();
+        //ob_start();
         $this->appOutput = $this->runApp();
         $this->appLogger = $this->appOutput[1];
         $this->appOutput = $this->appOutput[0];
-        ob_flush();
+        //ob_flush();
         new CoreErrorHandler();
         /*
          * Check if the system is in debug and if so set
