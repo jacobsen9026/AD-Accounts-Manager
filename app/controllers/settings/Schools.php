@@ -46,6 +46,9 @@ class Schools extends Controller {
 
     public function edit($schoolID) {
         $this->preProcessSchoolID($schoolID);
+
+        $this->staffADSettings = School::getADSettings($schoolID, 'Staff');
+        $this->staffGASettings = School::getGASettings($schoolID, 'Staff');
         //var_dump($this->school);
         if ($this->school != false) {
             return $this->view('settings/district/schools/edit');
@@ -55,14 +58,15 @@ class Schools extends Controller {
     public function editPost($schoolID) {
         \system\app\AppLogger::get()->debug('Edit Post');
         $post = \system\Post::getAll();
-        \app\models\DatabasePost::setPost(basename(get_class()), $schoolID, $post);
+        var_dump($post);
+        \app\models\DatabasePost::setPost(Schema::SCHOOL, $schoolID, $post);
         //var_dump($post);
         $this->redirect('/schools/edit/' . $schoolID);
     }
 
     public function createPost($districtID = null) {
         $post = \system\Post::getAll();
-        \app\models\district\School::createSchool($post[Schema::SCHOOLS_NAME], $districtID);
+        \app\models\district\School::createSchool($post[Schema::SCHOOL_NAME[Schema::NAME]], $districtID);
         $this->redirect('/schools/show/' . $districtID);
         //return $this->index();
     }
