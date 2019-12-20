@@ -6,7 +6,7 @@
             <div>
                 Add Team
             </div>
-            <?php formTextInput('Team Name', \app\database\Schema::TEAMS_NAME, ''); ?>
+            <?php formTextInput('Team Name', \app\database\Schema::TEAM_NAME, ''); ?>
 
             <button class="btn btn-primary" type="submit">Submit</button>
         </div>
