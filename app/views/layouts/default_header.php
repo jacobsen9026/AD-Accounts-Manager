@@ -27,7 +27,7 @@
     <div class=" container-fluid centered">
 
 
-        <div class=' centered text-center text_centered container container-sm p-5 mt-8 mb-3 mx-auto shadow-lg'>
+        <div class=' centered text-center text_centered container container-sm py-5 px-0 px-md-5 mt-8 mb-3 mx-auto shadow-lg'>
 
 
 
