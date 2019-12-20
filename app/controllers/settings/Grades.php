@@ -16,6 +16,10 @@ namespace app\controllers\settings;
 use app\controllers\Controller;
 use app\models\district\District;
 use app\models\district\Grade;
+use system\Post;
+use app\database\Schema;
+use system\app\AppLogger;
+use app\models\DatabasePost;
 
 class Grades extends Controller {
 
@@ -33,8 +37,8 @@ class Grades extends Controller {
 
     public function show($schoolID = null) {
         $this->preProcessSchoolID($schoolID);
-        //var_dump($this->schools);
-        if ($this->grades != false) {
+
+        if (isset($this->grades) and $this->grades != false) {
             return $this->view('settings/district/schools/grades/show');
         } else {
             return $this->view('settings/district/schools/grades/create');
@@ -44,14 +48,42 @@ class Grades extends Controller {
     public function edit($gradeID) {
         $this->preProcessGradeID($gradeID);
         //var_dump($this->school);
+        $this->staffADSettings = Grade::getADSettings($gradeID, 'Staff');
+        $this->staffGASettings = Grade::getGASettings($gradeID, 'Staff');
+
+        $this->studentADSettings = Grade::getADSettings($gradeID, 'Student');
+        $this->studentGASettings = Grade::getGASettings($gradeID, 'Student');
         if ($this->school != false) {
             return $this->view('settings/district/schools/grades/edit');
         }
     }
 
     public function editPost($gradeID) {
-        $post = \system\Post::getAll();
-        \app\models\DatabasePost::setPost(basename(get_class()), $gradeID, $post);
+        AppLogger::get()->debug('Edit Post');
+        $post = Post::getAll();
+        var_dump($post);
+        DatabasePost::setPost(Schema::GRADE, $gradeID, $post);
+        //var_dump($post);
+        //var_dump($post);
+        $this->redirect('/grades/edit/' . $gradeID);
+    }
+
+    public function editStaffPost($gradeID) {
+        AppLogger::get()->debug('Edit Post');
+        $post = Post::getAll();
+        var_dump($post);
+        DatabasePost::setPost(Schema::GRADE, $gradeID, $post, 'Staff');
+        //var_dump($post);
+        //var_dump($post);
+        $this->redirect('/grades/edit/' . $gradeID);
+    }
+
+    public function editStudentsPost($gradeID) {
+        AppLogger::get()->debug('Edit Post');
+        $post = Post::getAll();
+        var_dump($post);
+        DatabasePost::setPost(Schema::GRADE, $gradeID, $post, 'Student');
+        //var_dump($post);
         //var_dump($post);
         $this->redirect('/grades/edit/' . $gradeID);
     }
