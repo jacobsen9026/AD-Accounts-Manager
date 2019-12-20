@@ -32,8 +32,11 @@ namespace app\models\district;
  * @author cjacobsen
  */
 use app\database\Schema;
+use app\models\Query;
 
 class School {
+
+    const TABLE_NAME = 'School';
 
     //put your code here
     public $name;
@@ -47,21 +50,23 @@ class School {
 
     public static function createSchool($name, $districtID) {
         \system\app\AppLogger::get()->debug("Creating new district named: " . $name);
-        return \system\Database::get()->query('INSERT INTO Schools (' . Schema::SCHOOLS_NAME . ',' . Schema::SCHOOLS_DISTRICT_ID . ') VALUES ("' . $name . '", "' . $districtID . '")');
+        return \system\Database::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (' . Schema::SCHOOL_NAME[Schema::COLUMN] . ',' . Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN] . ') VALUES ("' . $name . '", "' . $districtID . '")');
     }
 
     public static function getDistrictID($schoolID) {
-        return(\system\Database::get()->query('SELECT ' . Schema::SCHOOLS_DISTRICT_ID . ' From Schools Where ID=' . $schoolID)[0][Schema::SCHOOLS_DISTRICT_ID]);
+        $query = new Query(self::TABLE_NAME, Query::SELECT, Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN]);
+        $query->where(Schema::SCHOOL_ID, $schoolID);
+        return $query->run();
     }
 
     public static function getSchool($schoolID) {
         \system\app\AppLogger::get()->debug("Get school by id: " . $schoolID);
-        return(\system\Database::get()->query('SELECT * From Schools Where ' . Schema::SCHOOLS_ID . '=' . $schoolID)[0]);
+        return(\system\Database::get()->query('SELECT * From ' . self::TABLE_NAME . ' Where ' . Schema::SCHOOL_ID[Schema::COLUMN] . '=' . $schoolID)[0]);
     }
 
     public static function deleteSchool($schoolID) {
         \system\app\AppLogger::get()->debug("Delete school id: " . $schoolID);
-        return \system\Database::get()->query('DELETE FROM Schools WHERE ' . Schema::SCHOOLS_ID . '=' . $schoolID);
+        return \system\Database::get()->query('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::SCHOOL_ID[Schema::COLUMN] . '=' . $schoolID);
     }
 
     public static function editSchool($schoolID, $post) {
@@ -71,7 +76,22 @@ class School {
         $staffGAOU = $post['staffGAOU'];
         $staffADOU = $post['staffADOU'];
 
-        return \system\Database::get()->query('UPDATE Schools SET ' . Schema::SCHOOLS_NAME . ' = "' . $name . '", StaffGAOU = "' . $staffGAOU . '", StaffADOU = "' . $staffADOU . '" WHERE ID = ' . $schoolID);
+        return \system\Database::get()->query('UPDATE ' . self::TABLE_NAME . ' SET ' . Schema::SCHOOL_NAME[Schema::COLUMN] . ' = "' . $name . '", StaffGAOU = "' . $staffGAOU . '", StaffADOU = "' . $staffADOU . '" WHERE ID = ' . $schoolID);
+    }
+
+    public static function getADSettings($schoolID, $type) {
+        $query = new Query(Schema::ACTIVEDIRECTORY);
+        $query->where(Schema::ACTIVEDIRECTORY_SCHOOL_ID, $schoolID)
+                ->where(Schema::ACTIVEDIRECTORY_TYPE, $type);
+
+        return $query->run()[0];
+    }
+
+    public static function getGASettings($schoolID, $type) {
+        $query = new Query(Schema::GOOGLEAPPS);
+        $query->where(Schema::GOOGLEAPPS_SCHOOL_ID, $schoolID)
+                ->where(Schema::GOOGLEAPPS_TYPE, $type);
+        return $query->run()[0];
     }
 
 }
