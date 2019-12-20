@@ -35,25 +35,30 @@ use app\database\Schema;
 
 class Team {
 
+    const TABLE_NAME = 'Team';
+
     //put your code here
     public $gradeLevel;
     public $name;
 
     public static function getTeams($gradeID) {
-        return(\system\Database::get()->query('SELECT * From Teams Where ' . Schema::TEAMS_GRADE_ID . ' = ' . $gradeID));
+
+        return(\system\Database::get()->query('SELECT * From Team Where ' . Schema::TEAM_GRADE_ID[Schema::COLUMN] . ' = ' . $gradeID));
     }
 
     public static function getTeam($teamID) {
-        return(\system\Database::get()->query('SELECT * From Teams Where ' . Schema::TEAMS_ID . ' = ' . $teamID)[0]);
+        return(\system\Database::get()->query('SELECT * From Team Where ' . Schema::TEAM_ID[Schema::COLUMN] . ' = ' . $teamID)[0]);
     }
 
     public static function getGradeID($teamID) {
-        return(\system\Database::get()->query('SELECT ' . Schema::TEAMS_GRADE_ID . ' From Teams Where ' . Schema::TEAMS_ID . ' = ' . $teamID)[0]["SchoolID"]);
+        $query = new Query(self::TABLE_NAME, Query::SELECT, Schema::TEAM_GRADE_ID[Schema::COLUMN]);
+        $query->where(Schema::TEAM_ID, $teamID);
+        return $query->run();
     }
 
     public static function createTeam($gradeID, $post) {
         \system\app\AppLogger::get()->debug("Creating new team for grade: " . $gradeID);
-        return \system\Database::get()->query('INSERT INTO Teams (' . Schema::TEAMS_NAME . ',' . Schema::TEAMS_GRADE_ID . ') VALUES ("' . $post[Schema::TEAMS_NAME] . '", "' . $gradeID . '")');
+        return \system\Database::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (' . Schema::TEAM_NAME[Schema::COLUMN] . ',' . Schema::TEAM_GRADE_ID[Schema::COLUMN] . ') VALUES ("' . $post[Schema::TEAM_NAME[Schema::COLUMN]] . '", "' . $gradeID . '")');
     }
 
     public static function deleteTeam($teamID) {
