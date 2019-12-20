@@ -2,19 +2,20 @@
 <?php
 
 use app\database\Schema;
-
-echo $this->view('settings/district/schools/nav');
 ?>
+
+<?= $this->view('layouts/setup_navbar'); ?>
 <script>
     $(function () {
-        $("table").tablesorter({sortList: [[0, 0]]});
+        $("table").tablesorter({sortList: [[0, 0], [1, 0]]});
         $(".sorter-true").on("click", function () {
             $('.sorter-true i').toggleClass("fa-caret-up fa-caret-down");
         });
     });
 </script>
+
 <div class="p-5">
-    <h4>Grades at <?php echo $this->school[Schema::SCHOOLS_NAME]; ?></h4>
+    <h4>Grades at <?php echo $this->school[Schema::SCHOOL_NAME[Schema::COLUMN]]; ?></h4>
 
     <div class="table-responsive-sm">
 
@@ -33,7 +34,7 @@ echo $this->view('settings/district/schools/nav');
                     ?>
                     <tr>
                         <td>
-                            <?php echo $this->grade["Level"]; ?>
+                            <?php echo $this->grade[Schema::GRADEDEFINITION_DISPLAY_CODE[Schema::COLUMN]]; ?>
                         </td>
 
 
