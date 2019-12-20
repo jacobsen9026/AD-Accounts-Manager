@@ -15,6 +15,8 @@ namespace app\controllers\settings;
  */
 use app\controllers\Controller;
 use app\models\district\District;
+use app\database\Schema;
+use app\models\DatabasePost;
 
 class Districts extends Controller {
 
@@ -26,8 +28,26 @@ class Districts extends Controller {
     //put your code here
     public function index() {
 
-        $this->districts = \app\models\district\District::getDistricts();
-        return $this->view('settings/district/index');
+        $this->districts = District::getDistricts();
+        //var_dump($this->districts);
+
+        if ($this->districts == false) {
+            return $this->view('settings/district/create');
+        } else {
+            foreach ($this->districts as $this->district) {
+                $this->districID = $this->district[Schema::DISTRICT_ID[Schema::COLUMN]];
+                return $this->show($this->district[Schema::DISTRICT_ID[Schema::COLUMN]]);
+            }
+        }
+
+        //return $this->view('settings/district/index');
+    }
+
+    public function show($districtID) {
+        $this->staffADSettings = District::getADSettings($districtID, 'Staff');
+        $this->staffGASettings = District::getGASettings($districtID, 'Staff');
+        $this->districtID = $districtID;
+        return $this->view('settings/district/show');
     }
 
     public function createPost() {
@@ -46,10 +66,10 @@ class Districts extends Controller {
 
     public function editPost() {
         $post = \system\Post::getAll();
-        $districtID = $post[\app\database\Schema::DISTRICT_ID];
+        //var_dump($post);
+        $districtID = $post[Schema::DISTRICT_ID[Schema::NAME]];
         $this->preProcessDistrictID($districtID);
-        \app\models\DatabasePost::setPost(basename(get_class()), $districtID, $post);
-        //District::editDistrict($districtID, $post);
+        DatabasePost::setPost(Schema::DISTRICT, $districtID, $post);
         $this->redirect('/districts');
     }
 
