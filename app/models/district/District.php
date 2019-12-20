@@ -15,8 +15,11 @@ namespace app\models\district;
  */
 use system\Database;
 use app\database\Schema;
+use app\models\Query;
 
 class District {
+
+    const TABLE_NAME = "District";
 
 //put your code here
 
@@ -25,33 +28,43 @@ class District {
 
     public static function createDistrict($name) {
         \system\app\AppLogger::get()->debug("Creating new district named: " . $name);
-        return Database::get()->query('INSERT INTO Districts (Name) VALUES ("' . $name . '")');
+        return Database::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (Name,App_ID) VALUES ("' . $name . '","' . \system\app\App::getID() . '")');
     }
 
     public static function getDistricts() {
-        return Database::get()->query('SELECT * FROM Districts');
+        $appID = \system\app\App::get()->getID();
+        $query = new Query(self::TABLE_NAME);
+        $query->where(Schema::DISTRICT_ID, $appID);
+
+        return $query->run();
+    }
+
+    public static function getADSettings($districtID, $type) {
+        $query = new Query(Schema::ACTIVEDIRECTORY);
+        $query->where(Schema::ACTIVEDIRECTORY_DISTRICT_ID, $districtID)
+                ->where(Schema::ACTIVEDIRECTORY_TYPE, $type);
+
+        return $query->run()[0];
+    }
+
+    public static function getGASettings($districtID, $type) {
+        $query = new Query(Schema::GOOGLEAPPS);
+        $query->where(Schema::GOOGLEAPPS_DISTRICT_ID, $districtID);
+
+        return $query->run()[0];
     }
 
     public static function getDistrict($districtID) {
 
-        return Database::get()->query('SELECT * FROM Districts WHERE ID = ' . $districtID)[0];
+        return Database::get()->query('SELECT * FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::DISTRICT_ID[Schema::COLUMN] . ' = ' . $districtID)[0];
     }
 
     public static function deleteDistrict($districtID) {
-        return Database::get()->query('DELETE FROM Districts WHERE ID = ' . $districtID);
+        return Database::get()->query('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::DISTRICT_ID[Schema::COLUMN] . ' = ' . $districtID);
     }
 
     public static function getSchools($districtID) {
-        return Database::get()->query('SELECT * FROM Schools WHERE ' . Schema::SCHOOLS_DISTRICT_ID . ' = ' . $districtID);
-    }
-
-    public static function editDistrict($districtID, $post) {
-
-        $abbr = $post['abbreviation'];
-        $gradeSpanFrom = $post[$this->district[Schema::DISTRICT_GRADE_SPAN_TO]];
-        $gradeSpanTo = $post['gradeSpanTo'];
-
-        return Database::get()->query('UPDATE Districts SET ' . Schema::DISTRICT_ABBREVIATION . ' = "' . $abbr . '", GradeSpanFrom = "' . $gradeSpanFrom . '", GradeSpanTo = "' . $gradeSpanTo . '" WHERE ID = ' . $districtID);
+        return Database::get()->query('SELECT * FROM ' . School::TABLE_NAME . ' WHERE ' . Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN] . ' = ' . $districtID);
     }
 
 }
