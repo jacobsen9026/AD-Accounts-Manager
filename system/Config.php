@@ -30,7 +30,7 @@
 /*
  * The Language of the app. The value must be a valid folder with contents in the lang directory of the app.
  */
-define('LANG', 'en');
+define('DEFAULT_LANG', 'en');
 /*
  * The Application directory
  */
