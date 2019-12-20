@@ -1,124 +1,86 @@
-<nav class="navbar fixed-top navbar-expand-md bg-primary navbar-dark">
+<?php
+
+use app\database\Schema;
+?>
+<script>
+    $(function () {
+        $(".navbar-toggler").on("click", function () {
+            $('.navbar-toggler i').toggleClass("fa-chevron-down fa-chevron-up");
+        });
+    });
+</script>
+
+
+<nav class="navbar navbar-expand-md navbar-dark sticky-top district-nav bg-success shadow-sm w-100">
     <!-- Brand -->
-    <a class="navbar-brand" href="/"><?php echo $this->config->app->getName(); ?></a>
-
+    <a class="nav-link text-weight-bold text-light" href="/districts">District Setup</a>
     <?php
-
-    use system\app\App;
-    use app\models\user\Privilege;
-
-if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
+    if (isset($this->schoolID)) {
         ?>
+
         <!-- Toggler/collapsibe Button -->
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-            <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler " type="button" data-toggle="collapse" data-target="#collapsibleNavbar2">
+            <i class="fas fa-chevron-down"></i>
+
         </button>
-    <?php } ?>
-
-    <!-- Navbar links -->
-    <div class="collapse navbar-collapse" id="collapsibleNavbar">
 
 
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse" id="collapsibleNavbar2">
 
 
 
 
-        <ul class="navbar-nav">
 
-            <?php
-            //var_dump($this);
-            if (isset($this->items) and $this->items != null) {
-                foreach ($this->items as $topItem) {
+
+            <ul class="navbar-nav">
+                <?php
+                if (isset($this->schoolID)) {
                     ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                            <?php echo $topItem->displayText; ?>
-                        </a>
-                        <div class="dropdown-menu">
-
-
-                            <?php
-                            foreach ($topItem->subItems as $subItem) {
-                                ?>
-                                <a class="dropdown-item" href="<?php echo $subItem->targetURL; ?>"><?php echo $subItem->displayText; ?></a>
-
-                                <?php
-                            }
-                            ?>
-
-                        </div>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/schools/show/<?php echo $this->districtID; ?>">Schools</a>
                     </li>
-
-
-
                     <?php
                 }
-            }
-            ?>
-        </ul>
-        <?php if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
-            ?>
-            <div class="d-md-flex text-center flex-md-row-reverse w-100">
-                <?php if ($this->userPrivs >= Privilege::TECH) {
+                if (isset($this->schoolID) and isset($this->controller) and $this->controller != 'Schools') {
                     ?>
-                    <ul class="order-md-1 navbar-nav">
-                        <!-- Settings Dropdown -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                                <i class="fas fa-tools"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right pt-0">
-                                <div class="dropdown-header bg-light">Settings</div>
-
-
-
-                                <a class="dropdown-item" href="/settings">Application</a>
-                                <a class="dropdown-item" href="/districts">District Setup</a>
-
-                                <?php if (App::get()->inDebugMode()) {
-                                    ?>
-                                    <a class="dropdown-item" href="#"><text data-toggle="modal" data-target="#debugConfigModal">View Config</text></a>
-                                    <?php
-                                }
-                                ?>
-                            </div>
-                        </li>
-                    </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/schools/edit/<?php echo $this->schoolID; ?>"><?= $this->schoolName; ?></a>
+                    </li>
+                    <?php
+                }
+                if (isset($this->gradeID)) {
+                    ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/grades/show/<?php echo $this->schoolID; ?>">Grades</a>
+                    </li>
+                    <?php
+                }
+                if (isset($this->teams) and isset($this->controller) and $this->controller != 'Grades') {
+                    ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/grades/edit/<?php echo $this->gradeID; ?>">Grade <?= $this->grade[Schema::GRADEDEFINITION_DISPLAY_CODE[app\database\Schema::COLUMN]]; ?></a>
+                    </li>
+                    <?php
+                }
+                if (isset($this->teamID)) {
+                    ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/teams/show/<?php echo $this->gradeID; ?>">Teams</a>
+                    </li>
                     <?php
                 }
                 ?>
-                <ul class="order-md-0 navbar-nav">
-                    <!-- User Dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                            <i class="fas fa-user-circle"></i>
 
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right pt-0">
-                            <div class="dropdown-header bg-light"> <?php echo $this->user->username; ?></div>
 
-                            <a class="dropdown-item" href="/profile">Profile</a>
+            </ul>
 
-                            <a class="dropdown-item" href="/logout">Logout</a>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <?php
-        }
-        ?>
+        </div>
 
-    </div>
+        <?php
+    }
+    ?>
 </nav>
-<?php
-if (App::get()->inDebugMode() and $this->userPrivs == Privilege::TECH) {
-    echo $this->view('modals/debugConfigModal');
-}
-?>
-
-
-
-
 
 
 
