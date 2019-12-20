@@ -53,6 +53,7 @@ if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != n
                                 <a class = "nav-link btn-primary rounded-0 text-center" data-toggle = "pill" href = "#menu2">Session</a>
                             </li>
 
+
                         </ul>
 
                         <!--Tab panes-->
@@ -86,6 +87,7 @@ if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != n
                                 <?php
                             }
                             ?>
+
                         </div>
                         <br/><br/>
 
