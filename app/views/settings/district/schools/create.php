@@ -8,7 +8,7 @@ use app\database\Schema;
         <h5>
             Create School
         </h5>
-        <?php formTextInput('Name', Schema::SCHOOLS_NAME, null);
+        <?php formTextInput('Name', Schema::SCHOOL_NAME[Schema::NAME], null);
         ?>
 
         <button class = "btn btn-primary" type = "submit">Submit</button>
