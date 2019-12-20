@@ -5,9 +5,13 @@ $log = $this->appLogger->getLog();
 if (!function_exists('printLog')) {
 
     function printAppLog($array) {
+        $logIndex = 0;
         foreach ($array as $entry) {
+
+            $logIndex++;
             //var_dump($entry);
             $message = $entry[2];
+            $backTrace = $entry[3];
             $et = substr(strval($entry[0]), 0, 5);
             $level = $entry[1];
             switch ($level) {
@@ -31,7 +35,17 @@ if (!function_exists('printLog')) {
                     <?= htmlspecialchars($et); ?>
                 </div>
                 <div class='col-11 text-break'>
-                    <?= htmlspecialchars($message); ?>
+                    <?php //htmlspecialchars($message);     ?>
+                    <p data-toggle="collapse" data-target="#appLogBacktrace<?= $logIndex ?>" aria-expanded="false" aria-controls="appLogBacktrace<?= $logIndex ?>">
+                        <?= $message; ?>
+                    </p>
+                    <div class="collapse" id="appLogBacktrace<?= $logIndex ?>">
+                        <?php
+                        foreach ($backTrace as $line) {
+                            echo $line;
+                        }
+                        ?>
+                    </div>
                 </div>
             </div>
             <?php
