@@ -2,29 +2,29 @@
 <?php
 
 use app\database\Schema;
-
-echo $this->view('settings/district/schools/nav');
+use app\models\district\Grade;
 ?>
 
 
-
-
-<script>
-    $(function () {
-        $("table").tablesorter({sortList: [[0, 0]]});
-        $(".sorter-true").on("click", function () {
-            $('.sorter-true i').toggleClass("fa-caret-up fa-caret-down");
+<?= $this->view('layouts/setup_navbar'); ?>
+<div class = "container  px-md-5">
+    <script>
+        $(function () {
+            $("table").tablesorter({sortList: [[0, 0]]});
+            $(".sorter-true").on("click", function () {
+                $('.sorter-true i').toggleClass("fa-caret-up fa-caret-down");
+            });
         });
-    });
-</script>
-<div class="p-5">
-    <h4>Schools in <?= $this->district[Schema::DISTRICTS_NAME]; ?></h4>
+    </script>
+    <h4>Schools in <?= $this->district[Schema::DISTRICT_NAME[Schema::COLUMN]]; ?></h4>
 
     <div class="table-responsive-sm shadow-sm">
 
         <table class="mx-auto table table-hover tablesorter">
             <thead class="bg-primary text-white">
                 <tr>
+                    <th class="sorter-false">Type</th>
+
                     <th class="sorter-true">School Name <i class="float-right fas fa-caret-up"></i></th>
 
                     <th class="sorter-false">Edit</th>
@@ -35,21 +35,37 @@ echo $this->view('settings/district/schools/nav');
                 <?php
                 foreach ($this->schools as $this->school) {
                     //var_dump($school);
+                    $schoolID = $this->school[Schema::SCHOOL_ID[Schema::COLUMN]];
                     ?>
-                    <tr data-id="<?php echo $this->school[Schema::SCHOOLS_ID]; ?>">
+
+                    <tr data-id="<?php echo $schoolID; ?>">
                         <td>
-                            <i class="fas fa-school"></i>
-                            <i class="fas fa-building"></i>
-                            <?php echo $this->school[Schema::SCHOOLS_NAME]; ?>
+                            <?php
+                            $grades = Grade::getGrades($schoolID);
+                            //var_dump($grades);
+                            if (isset($grades) and $grades != false and count($grades) > 0) {
+                                //var_dump("TRUE");
+                                echo '<i class="fas fa-school"></i>';
+                            } else {
+                                //var_dump("FALSE");
+                                echo '<i class="fas fa-building"></i>';
+                            }
+                            ?>
+
+                        </td>
+                        <td>
+
+
+                            <?php echo $this->school[Schema::SCHOOL_NAME[Schema::COLUMN]]; ?>
                         </td>
 
 
                         <td>
-                            <a href="/schools/edit/<?php echo $this->school[Schema::SCHOOLS_ID]; ?>"  class = "btn btn-warning">Edit School</a>
+                            <a href="/schools/edit/<?php echo $this->school[Schema::SCHOOL_ID[Schema::COLUMN]]; ?>"  class = "btn btn-warning">Edit School</a>
                         </td>
                         <td>
                             <?php echo $this->view('modals/deleteSchool'); ?>
-                            <button type="button" class = "btn btn-danger" data-toggle="modal" data-target="#deleteSchool<?php echo $this->school[Schema::SCHOOLS_ID]; ?>Modal">Remove School</button>
+                            <button type="button" class = "btn btn-danger" data-toggle="modal" data-target="#deleteSchool<?php echo $this->school[Schema::SCHOOL_ID[Schema::COLUMN]]; ?>Modal">Remove School</button>
 
                         </td>
                     </tr>
