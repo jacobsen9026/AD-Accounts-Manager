@@ -13,7 +13,11 @@ namespace app\lang\en;
  *
  * @author cjacobsen
  */
+use app\lang\Language;
+
 abstract class ENCommon {
+
+    use Language;
 
     //put your code here
 
@@ -25,12 +29,5 @@ abstract class ENCommon {
         'Username' => 'Username',
         'Password' => 'Password'
     );
-
-    public static function get($name) {
-        if (isset(Self::$strings[$name]) and Self::$strings[$name] != null) {
-            return Self::$strings[$name];
-        }
-        return 'No language reference found for ' . $name;
-    }
 
 }
