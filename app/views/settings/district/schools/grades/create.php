@@ -1,22 +1,32 @@
 
 <?php
+
+use app\database\Schema;
+
 if (empty($this->grades)) {
-    echo $this->view('settings/district/schools/nav');
+
+    echo $this->view('layouts/setup_navbar');
 }
 ?>
 <div class="p-5">
     <form method="post" name="test" class ="table-hover" action="/grades/create/<?php echo $this->schoolID; ?>">
         <div class="container container-lg">
+
             <div>
                 Add Grade
             </div>
             <div>Grade Level:
-                <select name="<?= \app\database\Schema::GRADES_VALUE ?>">
+
+                <select name="<?= Schema::GRADEDEFINITION_VALUE[Schema::NAME]; ?>">
+
 
                     <?php
-                    foreach (GRADE_CODES as $grade) {
+                    foreach ($this->gradeDefinitions as $this->gradeDefinition) {
+                        //var_dump($this->gradeDefinition);
                         ?>
-                        <option value ="<?php echo $grade; ?>"><?php echo $grade; ?></option>
+                        <option value="<?= $this->gradeDefinition[Schema::GRADEDEFINITION_VALUE[Schema::COLUMN]] ?> ">
+                            <?= $this->gradeDefinition[Schema::GRADEDEFINITION_DISPLAY_CODE[Schema::COLUMN]] ?>
+                        </option>
                         <?php
                     }
                     ?>
