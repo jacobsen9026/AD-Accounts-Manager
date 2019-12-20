@@ -40,7 +40,7 @@ class CoreErrorHandler {
     public static $instance;
 
     function __construct() {
-        set_error_handler(array($this, 'handleError'));
+        //set_error_handler(array($this, 'handleError'));
         //set_exception_handler(array($this, 'handleException'));
         if (isset(self::$instance)) {
             return self::$instance;
