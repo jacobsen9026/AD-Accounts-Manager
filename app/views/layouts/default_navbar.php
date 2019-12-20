@@ -1,13 +1,30 @@
-<nav class="navbar fixed-top navbar-expand-md bg-primary navbar-dark">
-    <!-- Brand -->
-    <a class="navbar-brand" href="/"><?php echo \app\models\AppConfig::getAppName(); ?></a>
+<?php
 
+use system\app\App;
+use app\models\user\Privilege;
+use app\models\AppConfig;
+?>
+
+<nav class="shadow navbar fixed-top navbar-expand-md bg-primary navbar-dark">
+    <div>
+
+
+        <div class="collapse navbar-collapse" id="navbarBrandText">
+            <!-- Brand -->
+            <a class="navbar-brand" href="/"> <i class="text-light fas fa-graduation-cap mr-1"></i><?php echo AppConfig::getAppName(); ?></a>
+        </div>
+
+        <div  data-toggle="collapse" data-target="#collapseAbbreviation">
+
+        </div>
+        <div class="" >
+
+            <!-- Brand -->
+            <a class="navbar-brand d-md-none" href="/"> <i class="text-light fas fa-graduation-cap mr-1"></i><?php echo AppConfig::getAppAbbreviation(); ?></a>
+        </div>
+    </div>
     <?php
-
-    use system\app\App;
-    use app\models\user\Privilege;
-
-if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
+    if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
         ?>
         <!-- Toggler/collapsibe Button -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
@@ -26,7 +43,7 @@ if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
         <ul class="navbar-nav">
 
             <?php
-            //var_dump($this);
+//var_dump($this);
             if (isset($this->items) and $this->items != null) {
                 foreach ($this->items as $topItem) {
                     ?>
@@ -34,7 +51,7 @@ if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
                         <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
                             <?php echo $topItem->displayText; ?>
                         </a>
-                        <div class="dropdown-menu">
+                        <div class="shadow dropdown-menu">
 
 
                             <?php
@@ -65,9 +82,10 @@ if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
                         <!-- Settings Dropdown -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                                <i class="fas fa-tools"></i>
+                                <i class="fas fa-tools d-none d-md-inline"></i>
+                                <p class="d-inline d-md-none">Settings</p>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-right pt-0">
+                            <div class="shadow dropdown-menu dropdown-menu-right pt-0">
                                 <div class="dropdown-header bg-light">Settings</div>
 
 
@@ -91,10 +109,11 @@ if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
                     <!-- User Dropdown -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                            <i class="fas fa-user-circle"></i>
+                            <i class="fas fa-user-circle d-none d-md-inline"></i>
+                            <p class="d-inline d-md-none">User</p>
 
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right pt-0">
+                        <div class="shadow dropdown-menu dropdown-menu-right pt-0">
                             <div class="dropdown-header bg-light"> <?php echo $this->user->username; ?></div>
 
                             <a class="dropdown-item" href="/profile">Profile</a>
