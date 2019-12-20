@@ -74,6 +74,11 @@ class Database extends Parser {
         $query = file_get_contents(APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "seeds" . DIRECTORY_SEPARATOR . "0-1-0.sql");
         $this->db->exec($query);
         /*
+         * Seed the Grade Definitions Table
+         */
+        $query = file_get_contents(APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "seeds" . DIRECTORY_SEPARATOR . "GradeDefinitions.sql");
+        $this->db->exec($query);
+        /*
          * Seed Tables
          */
         $query = 'INSERT INTO App DEFAULT VALUES';
@@ -81,8 +86,11 @@ class Database extends Parser {
     }
 
     public function query($query) {
+
+        //var_dump($query);
         /* @var $db PDO */
         app\AppLogger::get()->debug("Query: " . $query);
+        //var_dump($query);
         try {
             $result = $this->db->query($query);
             /*
@@ -95,10 +103,13 @@ class Database extends Parser {
             /*
              * Convert PDO response into a regular array
              */
+            //var_dump($result);
             $return = false;
             if (isset($result) and $result != false) {
                 foreach ($result as $row) {
                     //Add row response to return array
+                    //var_dump($query);
+                    //var_dump($row);
                     $return[] = $row;
                 }
             }
@@ -113,6 +124,8 @@ class Database extends Parser {
 
             //Return Array
             app\AppLogger::get()->debug("Response: " . var_export($return, true));
+
+            //var_dump($return);
             return $return;
         } catch (Exception $ex) {
             app\AppLogger::get()->error($ex);
