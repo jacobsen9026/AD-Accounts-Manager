@@ -51,9 +51,11 @@ if (!function_exists('backTrace')) {
     function backTrace($startOffset = null) {
         $bt = debug_backtrace(1);
         //var_dump($bt);
+        $caller = null;
         if ($startOffset == null) {
             $caller = $bt[3];
-        } else {
+        } elseif (array_key_exists($startOffset, $bt)) {
+
 
             $caller = $bt[$startOffset];
         }
@@ -67,6 +69,16 @@ if (!function_exists('backTrace')) {
 if (!function_exists('formTextInput')) {
 
     function formTextInput($label, $name, $value, $helpText = null, $placeholde = null) {
+        //var_dump($name);
+        if (is_array($name)) {
+            if (key_exists(app\database\Schema::NAME, $name)) {
+                $name = $name[app\database\Schema::COLUMN];
+            } else {
+                $caller = backTrace();
+                \system\app\AppLogger::get()->error("<br/>" . $caller["file"] . ":" . $caller["line"] . "<br/>" . 'Attempt to use an array as a form object name. ' . var_export($name, true));
+                $name = 'App_Error_Occured_Check_Logs';
+            }
+        }
         ?>
         <div class="form-group p-3 mb-2">
             <label class="font-weight-bold" for="<?= $name; ?>"><?= $label; ?></label>
@@ -90,6 +102,11 @@ if (!function_exists('formBinaryInput')) {
 
     function formBinaryInput($label, $name, $state, $helpText = null, $helpFunction = null) {
         //var_dump(boolval($state));
+        if (is_array($name)) {
+            $caller = backTrace();
+            \system\app\AppLogger::get()->error("<br/>" . $caller["file"] . ":" . $caller["line"] . "<br/>" . 'Attempt to use an array as a form object name. ' . var_export($name, true));
+            $name = 'App_Error_Occured_Check_Logs';
+        }
         ?>
 
         <div class="form-group p-3 mb-2">
@@ -152,6 +169,11 @@ if (!function_exists('formTextArea')) {
 
     function formTextArea($label, $name, $contents = null, $helpText = null, $placeholder = null) {
         //var_dump(boolval($state));
+        if (is_array($name)) {
+            $caller = backTrace();
+            \system\app\AppLogger::get()->error("<br/>" . $caller["file"] . ":" . $caller["line"] . "<br/>" . 'Attempt to use an array as a form object name. ' . var_export($name, true));
+            $name = 'App_Error_Occured_Check_Logs';
+        }
         ?>
 
         <div  class="row">
@@ -192,6 +214,11 @@ if (!function_exists('formCheckBox')) {
 
     function formCheckBox($label = null, $name = null, $state = false, $helpText = null, $helpFunction = null) {
         //var_dump(boolval($state));
+        if (is_array($name)) {
+            $caller = backTrace();
+            \system\app\AppLogger::get()->error("<br/>" . $caller["file"] . ":" . $caller["line"] . "<br/>" . 'Attempt to use an array as a form object name. ' . var_export($name, true));
+            $name = 'App_Error_Occured_Check_Logs';
+        }
         ?>
 
         <div class = "row">
