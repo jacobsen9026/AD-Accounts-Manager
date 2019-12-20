@@ -40,6 +40,7 @@ use app\models\district\School;
 use app\models\district\District;
 use app\models\district\Team;
 use system\app\App;
+use app\models\Query;
 
 class Controller extends CoreController {
     //put your code here
@@ -64,25 +65,36 @@ class Controller extends CoreController {
     }
 
     public function preProcessSchoolID($schoolID) {
+        $query = new Query(Schema::GRADEDEFINITION);
+
+        $this->gradeDefinitions = $query->run();
+        //var_dump($this->gradeDefinitions);
         $this->schoolID = $schoolID;
         $this->school = School::getSchool($this->schoolID);
-        $this->schoolName = School::getSchool($this->schoolID)[Schema::SCHOOLS_NAME];
-        $this->grades = Grade::getGrades($this->schoolID);
-        $this->districtID = $this->school[Schema::SCHOOLS_DISTRICT_ID];
+
+        $this->schoolName = School::getSchool($this->schoolID)[Schema::SCHOOL_NAME[Schema::COLUMN]];
+        $grades = Grade::getGrades($this->schoolID);
+        if (isset($grades) and $grades != false) {
+            $this->grades = $grades;
+        }
+        $this->districtID = $this->school[Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN]];
         $this->preProcessDistrictID($this->districtID);
     }
 
     public function preProcessTeamID($teamID) {
         $this->teamID = $teamID;
         $this->team = Team::getTeam($this->teamID);
-        $this->preProcessGradeID($this->team[Schema::TEAMS_GRADE_ID]);
+        $this->preProcessGradeID($this->team[Schema::TEAM_GRADE_ID[Schema::COLUMN]]);
     }
 
     public function preProcessGradeID($gradeID) {
+
         $this->gradeID = $gradeID;
         $this->grade = Grade::getGrade($this->gradeID);
+
+        $schoolID = $this->grade[Schema::GRADE_SCHOOL_ID[Schema::COLUMN]];
         $this->teams = Team::getTeams($this->gradeID);
-        $this->preProcessSchoolID($this->grade[Schema::GRADES_SCHOOL_ID]);
+        $this->preProcessSchoolID($schoolID);
     }
 
     public function preProcessDistrictID($districtID) {
