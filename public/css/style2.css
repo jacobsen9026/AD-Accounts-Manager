@@ -16,9 +16,23 @@ and open the template in the editor.
 .mt-8 {
   margin-top: 6rem!important;
 }
-.district-nav{
-    top:3.5rem!important;
+.mt-md-8 {
+    }
+
+@media all and (min-width:768px) {
+    .mt-md-8 {
+      margin-top: 6rem!important;
+    }
 }
+.district-nav{
+   
+    top:3.5rem!important;
+    }
+
+
+
+
 .log-nav{
     top:2.5rem!important;
 }
+
