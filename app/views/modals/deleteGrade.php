@@ -1,4 +1,9 @@
-<div id="deleteGrade<?php echo $this->grade["ID"]; ?>Modal" class="modal fade" role="dialog">
+<?php
+
+use app\database\Schema;
+?>
+
+<div id="deleteGrade<?php echo $this->grade[Schema::GRADE_ID[Schema::COLUMN]]; ?>Modal" class="modal fade" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
 
         <!-- Modal content-->
@@ -9,7 +14,7 @@
 
             </div>
             <div class="modal-body">
-                <p class="px-5 pb-2">Are you sure you want to delete Grade <?php echo $this->grade["Level"]; ?>?<br/>
+                <p class="px-5 pb-2">Are you sure you want to delete Grade <?php echo $this->grade[Schema::GRADE_ID[Schema::COLUMN]]; ?>?<br/>
                     All grade configuration including OU mappings,
                     and any other grade specific data will be erased.
                     Please ensure you have a recent backup of the application configuration.
