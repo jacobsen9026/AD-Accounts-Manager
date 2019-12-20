@@ -54,7 +54,8 @@ class Teams extends Controller {
 
     public function editPost($teamId) {
         $post = \system\Post::getAll();
-        \app\models\DatabasePost::setPost(basename(get_class()), $teamID, $post);
+        var_dump($post);
+        \app\models\DatabasePost::setPost($teamID, $post);
         //var_dump($post);
         $this->redirect('/teams/edit/' . $teamID);
     }
