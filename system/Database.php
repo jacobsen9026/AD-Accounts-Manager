@@ -89,7 +89,7 @@ class Database extends Parser {
 
         //var_dump($query);
         /* @var $db PDO */
-        app\AppLogger::get()->debug("Query: " . $query);
+        app\AppLogger::get()->query("Query: " . $query);
         //var_dump($query);
         try {
             $result = $this->db->query($query);
@@ -123,7 +123,7 @@ class Database extends Parser {
             }
 
             //Return Array
-            app\AppLogger::get()->debug("Response: " . var_export($return, true));
+            app\AppLogger::get()->query("Response: " . var_export($return, true));
 
             //var_dump($return);
             return $return;
