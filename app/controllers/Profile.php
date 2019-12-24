@@ -17,6 +17,13 @@ class Profile extends Controller {
 
     //put your code here
     public function index() {
+        echo "test";
+        return $this->view('profile');
+    }
+
+    public function indexPost() {
+        $post = \system\Post::getAll();
+        setcookie("theme", $post["theme"]);
         return $this->view('profile');
     }
 
