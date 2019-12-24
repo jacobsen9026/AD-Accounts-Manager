@@ -31,7 +31,7 @@ abstract class Lang {
     }
 
     private static function langExists($lang) {
-        if (file_exists(APPPATH . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . strtoupper($lang) . 'Common.php')) {
+        if (file_exists(APPPATH . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . strtoupper($lang) . 'Common.php') and class_exists($lang . "Common")) {
 
             return true;
         }
