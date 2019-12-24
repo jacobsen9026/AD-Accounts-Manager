@@ -53,28 +53,34 @@ class Renderer extends Parser {
 
     public function draw() {
 //var_dump($this->core->appOutput);
-        $this->include('system/views/HTML_start');
-        $this->logger->info("Drawing of app started");
+        if ($this->core->request->type == 'http') {
+            $this->include('system/views/HTML_start');
+            $this->logger->info("Drawing of app started");
+        }
         if (isset($this->core->appOutput) and $this->core->appOutput != '') {
+            //var_dump('output');
             echo $this->core->appOutput;
-        } else {
+        } elseif ($this->core->request->type == 'http') {
             $this->showNoAppOutputWarning();
         }
-        $this->logger->info("Drawing of app finished");
-        $this->include('system/views/debugToolbar');
-        $this->include('system/views/HTML_end');
+
+        if ($this->core->request->type == 'http') {
+            $this->logger->info("Drawing of app finished");
+            $this->include('system/views/debugToolbar');
+            $this->include('system/views/HTML_end');
+        }
     }
 
     private function showNoAppOutputWarning() {
         $this->include('system/views/noAppOutput');
     }
 
-    public function errors_exists() {
+    public function errors_exist() {
 
-        if (!empty($this->appLogger) and $this->appLogger->getLogs()['error'] !== null and sizeof($this->appLogger->getLogs()['error']) > 0) {
+        if ($this->appLogger->getLog('error') !== null and sizeof($this->appLogger->getLog('error')) > 0) {
             return true;
         }
-        if (!empty($this->logger) and $this->logger->getLogs()['error'] !== null and sizeof($this->logger->getLogs()['error']) > 0) {
+        if ($this->logger->getLog('error') !== null and sizeof($this->logger->getLog('error')) > 0) {
             return true;
         }
 
