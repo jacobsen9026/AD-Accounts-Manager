@@ -89,8 +89,14 @@ class Parser {
             ob_start();
             if (include $path) {
                 return ob_get_clean();
+            } else {
+                AppLogger::get()->info("Rendering include file: " . $path);
+                AppLogger::get()->warning("Could not include file: " . $path);
             }
             ob_get_clean();
+        } else {
+
+            AppLogger::get()->warning("Could not find include file: " . $path);
         }
         return false;
     }
