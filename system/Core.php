@@ -34,7 +34,7 @@ namespace system;
 require './system/Autoloader.php';
 
 use system\app\App;
-use system\common\CoreApp;
+use system\common\CommonApp;
 use system\CoreException;
 use system\SystemLogger;
 
@@ -47,7 +47,7 @@ class Core {
     public $logger;
 
     /** @var Request|null The Request */
-    private $request;
+    public $request;
 
     /** @var Renderer|null The output renderer */
     public $renderer;

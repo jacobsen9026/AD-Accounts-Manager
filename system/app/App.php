@@ -32,7 +32,7 @@ namespace system\app;
  * @author cjacobsen
  */
 use system\Core;
-use system\common\CoreApp;
+use system\common\CommonApp;
 use system\app\AppErrorHandler;
 use system\CoreException;
 use system\Request;
@@ -43,7 +43,7 @@ use app\config\MasterConfig;
 use app\models\user\User;
 use app\models\user\Privilege;
 
-class App extends CoreApp {
+class App extends CommonApp {
 
     /** @var MasterConfig|null The system logger */
     public $config;
