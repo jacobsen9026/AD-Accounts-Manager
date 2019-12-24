@@ -31,9 +31,9 @@ namespace system\app;
  *
  * @author cjacobsen
  */
-use system\common\CoreLogger;
+use system\common\CommonLogger;
 
-class AppLogger extends CoreLogger {
+class AppLogger extends CommonLogger {
 
     /** @var AppLogger|null */
     public static $instance;
