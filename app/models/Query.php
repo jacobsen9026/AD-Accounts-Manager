@@ -36,13 +36,35 @@ class Query {
 
     /**
      *
-     * @param type $table
-     * @param type $type
      * @param type $columns
+     * @return string|array
+     */
+    private function preProcessColumns($columns) {
+        if (is_array($columns)) {
+            if (key_exists(Schema::COLUMN, $columns)) {
+                return $columns[Schema::COLUMN];
+            }
+            foreach ($columns as $column) {
+                if (is_array($column) and key_exists(Schema::COLUMN, $column)) {
+                    $return[] = $column[Schema::COLUMN];
+                }
+            }
+            if (isset($return)) {
+                return $return;
+            }
+        }
+        return $columns;
+    }
+
+    /**
+     *
+     * @param const $table
+     * @param const $type
+     * @param stirng $columns
      */
     function __construct($table, $type = self::SELECT, $columns = '*') {
         $this->targetTable = $table;
-        $this->targetColumns = $columns;
+        $this->targetColumns = $this->preProcessColumns($columns);
         $this->queryType = $type;
     }
 
@@ -55,7 +77,7 @@ class Query {
         if (!is_int($value) and is_string($value)) {
             $value = "'" . $value . "'";
         }
-        \system\app\AppLogger::get()->debug($column);
+        //\system\app\AppLogger::get()->debug($column);
         if (is_array($column)) {
             $where = $column[Schema::TABLE] . '.' . $column[Schema::COLUMN] . ' = ' . $value;
         } elseif (is_string($column)) {
@@ -101,8 +123,26 @@ class Query {
 
         switch ($this->queryType) {
             case self::SELECT:
+                if (is_array($this->targetColumns)) {
+                    $targetColumns = "";
+                    $firstColumn = true;
+                    foreach ($this->targetColumns as $column) {
+                        if ($firstColumn) {
+                            $firstColumn = false;
+                            $targetColumns .= $column;
+                        } else {
+
+                            $targetColumns .= ', ' . $column;
+                        }
+                    }
+                    $this->targetColumns = $targetColumns;
+                }
                 //var_dump($this->targetColumns);
-                $this->query = $this->queryType . ' ' . $this->targetColumns . ' FROM ' . $this->targetTable;
+                $this->query = $this->queryType .
+                        ' ' .
+                        $this->targetColumns .
+                        ' FROM ' .
+                        $this->targetTable;
 
                 break;
             case self::INSERT:
@@ -145,7 +185,7 @@ class Query {
         $this->query = $this->queryType . ' INTO ' . $this->targetTable . ' (';
         foreach ($this->targetInserts as $insert) {
             if (!$firstAction) {
-                $this->query .= ',';
+                $this->query .= ', ';
             }
             $this->query .= $insert[0];
             $firstAction = false;
@@ -154,7 +194,7 @@ class Query {
         $this->query .= ') VALUES (';
         foreach ($this->targetInserts as $insert) {
             if (!$firstAction) {
-                $this->query .= ',';
+                $this->query .= ', ';
             }
             $this->query .= $insert[1];
 
@@ -172,7 +212,7 @@ class Query {
         $this->query = $this->queryType . ' ' . $this->targetTable . ' SET ';
         foreach ($this->targetSets as $set) {
             if (!$firstAction) {
-                $this->query .= ',';
+                $this->query .= ', ';
             }
             $this->query .= $set[0];
             $firstAction = false;
@@ -181,7 +221,7 @@ class Query {
         $this->query .= ' = ';
         foreach ($this->targetSets as $set) {
             if (!$firstAction) {
-                $this->query .= ',';
+                $this->query .= ', ';
             }
             $this->query .= $set[1];
 
