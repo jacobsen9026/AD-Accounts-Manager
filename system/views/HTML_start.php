@@ -37,14 +37,16 @@
 
                 // remove active class from all
                 var location = window.location.pathname.split('/')[1];
-
-
 // remove active class from all
                 $(".nav .nav-item").removeClass('active');
                 console.log('.nav-item a[href=' + location + '*]');
 // add active class to div that matches active url
                 $(".nav-item a[href='/" + location + "']").addClass('active');
             });
+
+
+
+
         </script>
 
         <meta name="theme-color" content="#ffffff">
