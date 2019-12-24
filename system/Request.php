@@ -43,6 +43,7 @@ class Request {
     public $page = null;
     public $referer = null;
     public $action = null;
+    public $type = null;
     private $logger;
 
     /**
@@ -90,6 +91,11 @@ class Request {
                 }
             }
             $this->logger->debug("Request made: " . $this->module . "->" . $this->page . "->" . $this->action);
+        }
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            $this->type = 'ajax';
+        } else {
+            $this->type = 'http';
         }
         //var_export($this);
         //return $this;
