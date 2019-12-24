@@ -14,7 +14,6 @@ namespace app\controllers\settings;
  * @author cjacobsen
  */
 use app\controllers\Controller;
-use app\models\district\District;
 use app\models\district\Grade;
 use system\Post;
 use app\database\Schema;
