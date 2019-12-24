@@ -24,10 +24,9 @@
 
 
 <body>
-    <div class=" container-fluid centered">
+    <div class=" container-fluid centered px-0 px-md-5">
 
-
-        <div class=' centered text-center text_centered container container-sm py-5 px-0 px-md-5 mt-8 mb-3 mx-auto shadow-lg'>
+        <div class=' centered text-center text_centered container container-fluid py-5 px-0 px-md-5 mt-5 mt-md-8 mb-5 mx-auto shadow-lg'>
 
 
 
