@@ -16,7 +16,23 @@
     <link rel="mask-icon" href="/img/favicon/safari-pinned-tab.svg" color="#5bbad5">
 
 
+    <script>
+        //Highlight changed items on all forms
+        $(document).ready(function () {
 
+            $('input').keyup(function () {
+                $(this).addClass('text-danger border-danger');
+
+            });
+
+            $('select').change(function () {
+                console.log("wpsdafdsa");
+                $(this).addClass('border-danger text-danger');
+
+            });
+
+        });
+    </script>
 
 
 
