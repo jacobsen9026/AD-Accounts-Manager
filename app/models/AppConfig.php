@@ -19,11 +19,14 @@ use system\app\App;
 
 abstract class AppConfig extends Model {
 
-//put your code here
     const TABLE_NAME = 'App';
 
     public static function getDebugMode() {
-        return true;
+        $query = 'SELECT ' . self::getColumnFromSchema(Schema::APP_DEBUG_MODE) . ' FROM ' . self::TABLE_NAME . ' WHERE ' . self::getColumnFromSchema(Schema::APP_ID) . ' = ' . App::getID();
+        //var_dump($query);
+        $result = Database::get()->query($query);
+        //var_dump($result);
+        return $result;
     }
 
     public static function getAppName() {
@@ -68,9 +71,9 @@ abstract class AppConfig extends Model {
     public static function getAdminUsernames() {
         $query = 'SELECT ' . self::getColumnFromSchema(Schema::APP_PROTECTED_ADMIN_USERNAMES) . ' FROM ' . self::TABLE_NAME . ' WHERE ' . self::getColumnFromSchema(Schema::APP_ID) . ' = ' . App::getID();
         $result = Database::get()->query($query);
-        $adminArray = unserialize($result);
+        //$adminArray = unserialize($result);
         //var_dump($result);
-        return $adminArray;
+        return $result;
     }
 
     public static function getWebsiteFQDN() {
