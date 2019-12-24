@@ -50,6 +50,7 @@ abstract class DatabasePost {
 
                 $schemaClass = new \ReflectionClass('app\database\Schema');
                 $schema = $schemaClass->getConstant($schemaID);
+
                 $query = new Query($table, Query::UPDATE, $column);
                 $query->where($schema, $id)
                         ->set($column, $value);
@@ -88,6 +89,15 @@ abstract class DatabasePost {
                 return strtoupper($value);
 
                 break;
+
+            case Schema::APP_ADMIN_PASSWORD[Schema::NAME]:
+
+                if (strlen($value) != 64) {
+                    return hash("sha256", $value);
+                } elseif (strlen($value) == 0) {
+                    return AppConfig::getAdminPassword();
+                }
+                return $value;
 
             default:
                 return $value;
