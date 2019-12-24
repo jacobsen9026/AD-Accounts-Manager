@@ -6,15 +6,16 @@ use app\database\Schema;
 use system\app\Form;
 
 echo $this->view('layouts/setup_navbar');
+$this->schoolName = $this->school[Schema::SCHOOL_NAME[Schema::COLUMN]];
 ?>
 <div class="p-5">
     <?php
     //var_dump($this->school);
     ?>
     <head>
-        <title>Editing <?php echo $this->school[Schema::SCHOOL_NAME[Schema::COLUMN]]; ?></title>
+        <title>Editing <?php echo $this->schoolName; ?></title>
     </head>
-    <h4>Editing <?php echo $this->school[Schema::SCHOOL_NAME[Schema::COLUMN]]; ?></h4>
+    <h4>Editing <?php echo $this->schoolName; ?></h4>
 
     <?php
     ob_start();
@@ -34,54 +35,17 @@ echo $this->view('layouts/setup_navbar');
                 <div class = "tab-pane fade show active" id = "nav-ad" role = "tabpanel" aria-labelledby = "nav-ad-tab">
                     <?php
                     $adForm = new Form('/schools/edit/' . $this->school[Schema::SCHOOL_ID[Schema::COLUMN]]);
-                    $adForm->subForm();
-                    $adForm->buildTextInput('Staff Active Directory OU',
-                                    Schema::ACTIVEDIRECTORY_OU,
-                                    $this->staffADSettings[Schema::ACTIVEDIRECTORY_OU[Schema::COLUMN]])
-                            ->addToRow(1)
-                            ->buildTextInput('Staff Active Directory User Description',
-                                    Schema::ACTIVEDIRECTORY_DESCRIPTION,
-                                    $this->staffADSettings[Schema::ACTIVEDIRECTORY_DESCRIPTION[Schema::COLUMN]])
-                            ->addToRow(2)
-                            ->buildTextInput('Staff Active Directory Group',
-                                    Schema::ACTIVEDIRECTORY_GROUP,
-                                    $this->staffADSettings[Schema::ACTIVEDIRECTORY_GROUP[Schema::COLUMN]])
-                            ->addToRow()
-                            ->buildTextInput('Staff Active Directory Home Path',
-                                    Schema::ACTIVEDIRECTORY_HOME_PATH,
-                                    $this->staffADSettings[Schema::ACTIVEDIRECTORY_HOME_PATH[Schema::COLUMN]])
-                            ->appendInput(DIRECTORY_SEPARATOR . 'username')
-                            ->addToRow(3)
-                            ->buildTextInput('Staff Active Directory Logon Script',
-                                    Schema::ACTIVEDIRECTORY_LOGON_SCRIPT,
-                                    $this->staffADSettings[Schema::ACTIVEDIRECTORY_LOGON_SCRIPT[Schema::COLUMN]])
-                            ->addToRow(4);
-
+                    $adForm->subForm()
+                            ->generateADForm($this->schoolID, $this->staffADSettings, Schema::SCHOOL);
                     echo $adForm->getFormHTML();
                     ?>
                 </div>
                 <div class="tab-pane fade pt-3" id="nav-ga" role="tabpanel" aria-labelledby="nav-ga-tab">
                     <?php
                     $gaForm = new Form('/schools/edit/' . $this->school[Schema::SCHOOL_ID[Schema::COLUMN]]);
-                    $gaForm->subForm();
-                    $gaForm->buildTextInput('Staff Google Apps OU',
-                                    Schema::GOOGLEAPPS_OU,
-                                    $this->staffGASettings[Schema::GOOGLEAPPS_OU[Schema::COLUMN]])
-                            ->addToRow(1);
+                    $gaForm->subForm()
+                            ->generateGAForm($this->schoolID, $this->staffGASettings, Schema::SCHOOL);
 
-                    $gaForm->buildTextInput('Staff Google Apps Group',
-                                    Schema::GOOGLEAPPS_GROUP,
-                                    $this->staffGASettings[Schema::GOOGLEAPPS_GROUP[Schema::COLUMN]])
-                            ->addToRow();
-
-                    $gaForm->buildTextInput('Staff Google Apps Username Format',
-                                    Schema::GOOGLEAPPS_OTHER_GROUPS,
-                                    $this->staffGASettings[Schema::GOOGLEAPPS_OTHER_GROUPS[Schema::COLUMN]])
-                            ->addToRow(2);
-                    $gaForm->buildTextInput('Staff Google Apps Username Format',
-                                    Schema::GOOGLEAPPS_USERNAME_FORMAT,
-                                    $this->staffGASettings[Schema::GOOGLEAPPS_USERNAME_FORMAT[Schema::COLUMN]])
-                            ->addToRow();
                     echo $gaForm->getFormHTML();
                     ?>
                 </div>
@@ -95,7 +59,7 @@ echo $this->view('layouts/setup_navbar');
 
     //var_dump($this->district);
     $form = new Form('/schools/edit/' . $this->school[Schema::SCHOOL_ID[Schema::COLUMN]]);
-    $form->buildTextInput('Name', Schema::SCHOOL_NAME[Schema::NAME], $this->school[Schema::SCHOOL_NAME[Schema::COLUMN]])
+    $form->buildTextInput('Name', Schema::SCHOOL_NAME[Schema::NAME], $this->schoolName)
             ->addToRow(1)
             ->buildTextInput('Abbreviation',
                     Schema::SCHOOL_ABBREVIATION,
@@ -109,7 +73,7 @@ echo $this->view('layouts/setup_navbar');
             ->buildCustomButton('Edit Grades', 'warning', '/grades/show/' . $this->school[Schema::SCHOOL_ID[Schema::COLUMN]])
             ->addToRow(99);
 
-    $form->buildUpdateButton()->addToRow(100);
+    $form->buildUpdateButton('Update ' . $this->schoolName)->addToRow(100);
 
     echo $form->getFormHTML();
     ?>
