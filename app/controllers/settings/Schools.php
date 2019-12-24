@@ -15,7 +15,6 @@ namespace app\controllers\settings;
  */
 use app\controllers\Controller;
 use app\models\district\District;
-use app\models\district\Grade;
 use app\models\district\School;
 use app\database\Schema;
 
@@ -58,7 +57,7 @@ class Schools extends Controller {
     public function editPost($schoolID) {
         \system\app\AppLogger::get()->debug('Edit Post');
         $post = \system\Post::getAll();
-        var_dump($post);
+        //var_dump($post);
         \app\models\DatabasePost::setPost(Schema::SCHOOL, $schoolID, $post);
         //var_dump($post);
         $this->redirect('/schools/edit/' . $schoolID);
@@ -66,14 +65,14 @@ class Schools extends Controller {
 
     public function createPost($districtID = null) {
         $post = \system\Post::getAll();
-        \app\models\district\School::createSchool($post[Schema::SCHOOL_NAME[Schema::NAME]], $districtID);
+        School::createSchool($post[Schema::SCHOOL_NAME[Schema::NAME]], $districtID);
         $this->redirect('/schools/show/' . $districtID);
         //return $this->index();
     }
 
     public function delete($schoolID) {
-        $this->districtID = \app\models\district\School::getDistrictID($schoolID);
-        \app\models\district\School::deleteSchool($schoolID);
+        $this->districtID = School::getDistrictID($schoolID);
+        School::deleteSchool($schoolID);
         $this->redirect('/schools/show/' . $this->districtID);
     }
 
