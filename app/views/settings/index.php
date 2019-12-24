@@ -23,6 +23,23 @@
  * THE SOFTWARE.
  */
 ?>
+<script>
+    //Highlight changed items on all forms
+    $(document).ready(function () {
+
+        $('input').keyup(function () {
+            $(this).addClass('text-danger border-danger');
+
+        });
+
+        $('select').change(function () {
+            console.log("wpsdafdsa");
+            $(this).addClass('border-danger text-danger');
+
+        });
+
+    });
+</script>
 <h4 class="centered text-center">
     Settings
 </h4>
@@ -30,11 +47,13 @@
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
         <a class="nav-item nav-link active" id="nav-app-tab" data-toggle="tab" href="#nav-app" role="tab" aria-controls="nav-app" aria-selected="true">Application</a>
         <a class="nav-item nav-link" id="nav-auth-tab" data-toggle="tab" href="#nav-auth" role="tab" aria-controls="nav-auth" aria-selected="false">Authentication</a>
-        <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Contact</a>
+        <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-email" role="tab" aria-controls="nav-email" aria-selected="false">Email</a>
+        <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-notification" role="tab" aria-controls="nav-notification" aria-selected="false">Notification</a>
     </div>
 </nav>
 <div class="tab-content pt-5" id="nav-tabContent">
     <div class="tab-pane fade show active" id="nav-app" role="tabpanel" aria-labelledby="nav-home-tab"><?php echo $this->view('settings/application'); ?></div>
-    <div class="tab-pane fade" id="nav-auth" role="tabpanel" aria-labelledby="nav-profile-tab"><?php echo $this->view('settings/district'); ?></div>
-    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
+    <div class="tab-pane fade" id="nav-auth" role="tabpanel" aria-labelledby="nav-auth-tab"><?php echo $this->view('settings/authentication'); ?></div>
+    <div class="tab-pane fade" id="nav-email" role="tabpanel" aria-labelledby="nav-email-tab"><?php echo $this->view('settings/email'); ?></div>
+    <div class="tab-pane fade" id="nav-notification" role="tabpanel" aria-labelledby="nav-notification-tab"><?php echo $this->view('settings/notification'); ?></div>
 </div>
