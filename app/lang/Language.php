@@ -24,4 +24,11 @@ trait Language {
         return 'No language reference found for ' . $name;
     }
 
+    public static function getHelp($name) {
+        if (isset(Self::$help[$name]) and Self::$help[$name] != null) {
+            return Self::$help[$name];
+        }
+        return 'No language reference found for ' . $name;
+    }
+
 }
