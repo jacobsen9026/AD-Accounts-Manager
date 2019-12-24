@@ -14,8 +14,6 @@ namespace app\controllers\settings;
  * @author cjacobsen
  */
 use app\controllers\Controller;
-use app\models\district\District;
-use app\models\district\Grade;
 use app\models\district\Team;
 
 class Teams extends Controller {
@@ -36,16 +34,16 @@ class Teams extends Controller {
     public function show($gradeId = null) {
         $this->preProcessGradeID($gradeId);
         //var_dump($this->schools);
-        if ($this->teams != false) {
-            return $this->view('settings/district/schools/grades/teams/show');
-        } else {
-            return $this->view('settings/district/schools/grades/teams/create');
-        }
+        return $this->view('settings/district/schools/grades/teams/show');
     }
 
     public function edit($teamID) {
         $this->preProcessTeamID($teamID);
+        $this->staffADSettings = Team::getADSettings($teamID, 'Staff');
+        $this->staffGASettings = Team::getGASettings($teamID, 'Staff');
 
+        $this->studentADSettings = Team::getADSettings($teamID, 'Student');
+        $this->studentGASettings = Team::getGASettings($teamID, 'Student');
         //var_dump($this->school);
         if ($this->grade != false) {
             return $this->view('settings/district/schools/grades/teams/edit');
