@@ -14,6 +14,8 @@ namespace system\app;
  * @author cjacobsen
  */
 use app\database\Schema;
+use app\models\district\ActiveDirectory;
+use app\models\district\GoogleApps;
 
 class Form {
 
@@ -24,38 +26,38 @@ class Form {
     private $currentRow;
     private $formEnd = '</div>';
     private $subForm = false;
+    private $logger;
 
     /**
-     * __construct
-     * Create a form builder object
      *
-     * @param string $action
-     * @param string $name
+     * @param string $action The action attribute of the form tag
+     * @param string $name The name attribute of the form tag
      * @param string $method
      */
     function __construct($action, $name = '', $method = 'post') {
         $this->formHTML = '<form name="' . $name . '" method="' . $method . '" action="' . $action . '">';
         $this->currentRow = 1;
+        $this->logger = AppLogger::get();
     }
 
     public function subForm() {
-        //var_dump($this->formHTML);
+//var_dump($this->formHTML);
         $this->formHTML = '';
-        //var_dump($this->formHTML);
+//var_dump($this->formHTML);
         $this->subForm = true;
         return $this;
     }
 
     public function getFormHTML() {
         $formBody = '';
-        //Create display tables for input groups
-        //var_dump($this->inputGroups);
+//Create display tables for input groups
+//var_dump($this->inputGroups);
         if (!empty($this->inputGroups)) {
 
-            //var_dump($this->inputGroups);
+//var_dump($this->inputGroups);
             ksort($this->inputGroups);
             foreach ($this->inputGroups as $group) {
-                $formBody .= '<div class="row">';
+                $formBody .= '<div class="row mb-2">';
                 foreach ($group as $input) {
                     $formBody .= '<div class="col-md">';
                     $formBody .= $input;
@@ -71,8 +73,8 @@ class Form {
         }
 
 
-        //var_dump($this->formHTML);
-        //echo "<script> console.log('" . $this->formHTML . "');</script>";
+//var_dump($this->formHTML);
+//echo "<script> console.log('" . $this->formHTML . "');</script>";
         return $this->formHTML;
     }
 
@@ -93,10 +95,22 @@ class Form {
         if (is_null($rowKey)) {
             $rowKey = $this->currentRow;
         }
-        //var_dump($formComponent);
-        //var_dump($rowKey);
+//var_dump($formComponent);
+//var_dump($rowKey);
 
         $this->inputGroups[$rowKey][] = $formComponent;
+        $this->currentRow = $rowKey;
+        return $this;
+    }
+
+    public function addToNewRow() {
+
+        $rowKey = $this->currentRow + 1;
+
+//var_dump($formComponent);
+//var_dump($rowKey);
+
+        $this->inputGroups[$rowKey][] = $this->lastComponentBuilt;
         $this->currentRow = $rowKey;
         return $this;
     }
@@ -135,10 +149,14 @@ class Form {
      *
      * @return Form
      */
-    public function buildUpdateButton() {
+    public function buildUpdateButton($text = null) {
+        if ($text == null) {
+            $text = 'Update';
+        }
         $this->lastComponentBuilt = '<div class="">
-            <button class="btn btn-primary" type="submit">Update</button>
+            <button class="btn btn-primary" type="submit">' . $text . '</button>
         </div>';
+
         return $this;
     }
 
@@ -149,7 +167,7 @@ class Form {
     public function small() {
         if (strpos($this->lastComponentBuilt, 'input-group')) {
             $this->lastComponentBuilt = str_replace('input-group', 'input-group col-md-3 mx-auto', $this->lastComponentBuilt);
-            //var_dump("form-control found");
+//var_dump("form-control found");
         }
         return $this;
     }
@@ -157,13 +175,13 @@ class Form {
     public function medium() {
         if (strpos($this->lastComponentBuilt, 'input-group')) {
             $this->lastComponentBuilt = str_replace('input-group', 'input-group col-md-5 mx-auto', $this->lastComponentBuilt);
-            //var_dump("form-control found");
+//var_dump("form-control found");
         }
         return $this;
     }
 
     public function insertObjectIDInput($schema, $value) {
-        //var_dump($schema);
+//var_dump($schema);
         $this->lastComponentBuilt = '<input hidden type="hidden"
             name="' . $schema[Schema::NAME] . '"
             value="' . $value . '"/>';
@@ -207,7 +225,7 @@ class Form {
                 $name = $name[Schema::NAME];
             } else {
                 $caller = backTrace();
-                \system\app\AppLogger::get()->error("<br/>" . $caller["file"] . ":" . $caller["line"] . "<br/>" . 'Attempt to use an array as a form object name. ' . var_export($name, true));
+                $this->logger->error("<br/>" . $caller["file"] . ":" . $caller["line"] . "<br/>" . 'Attempt to use an array as a form object name. ' . var_export($name, true));
                 $name = 'App_Error_Occured_Check_Logs';
             }
         }
@@ -216,21 +234,42 @@ class Form {
 
     /**
      *
-     * @param type $label
-     * @param string $name
-     * @param type $value
-     * @param type $helpText
-     * @param type $placeholder
+     * @param string $label
+     * @param const $name
+     * @param string $value
+     * @param string $helpText
+     * @param string $placeholder
      * @return Form
      */
     public function buildTextInput($label, $name, $value = null, $helpText = null, $placeholder = null) {
-        //var_dump($name);
+//var_dump($name);
         $name = $this->preProcessName($name);
         $formComponent = $this->startInput($name, $label, $helpText);
 
-        $formComponent .= '<input type="text" class="form-control text-center" name="' . $name . '" value="' . $value . '" placeholder="' . $placeholder . '"/>';
+        $formComponent .= '<input type="text" class="col form-control text-center" name="' . $name . '" value="' . $value . '" placeholder="' . $placeholder . '"/>';
         $formComponent .= $this->formEnd;
         $this->lastComponentBuilt = $formComponent;
+        return $this;
+    }
+
+    /**
+     *
+     * @param string $label
+     * @param const $name
+     * @param string $value
+     * @param string $helpText
+     * @param string $placeholder
+     * @return Form
+     */
+    public function buildTextAreaInput($label, $name, $value = null, $helpText = null, $placeholder = null) {
+//var_dump($name);
+        $name = $this->preProcessName($name);
+        $formComponent = $this->startInput($name, $label, $helpText);
+
+        $formComponent .= '<textarea type="text" class="h-100 form-control" name="' . $name . '" placeholder="' . $placeholder . '">' . $value . '</textarea>';
+        $formComponent .= $this->formEnd;
+        $this->lastComponentBuilt = $formComponent;
+        $this->inline();
         return $this;
     }
 
@@ -244,13 +283,22 @@ class Form {
      * @return Form
      */
     public function buildDropDownInput($label, $name, $array, $helpText = null) {
-        //var_dump($name);
+
         $name = $this->preProcessName($name);
         $formComponent = $this->startInput($name, $label, $helpText);
 
         $formComponent .= '<select type="text" class="form-control text-center" name="' . $name . '">';
         foreach ($array as $option) {
-            $formComponent .= '<option value="' . $option[1] . '">' . $option[0] . '</option>';
+            var_dump($option);
+            if (is_array($option)) {
+                $value = $option[1];
+                $text = $option[0];
+            } else {
+
+                $value = $option;
+                $text = $option;
+            }
+            $formComponent .= '<option value="' . $value . '">' . $text . '</option>';
         }
         $formComponent .= '</select>';
         $formComponent .= $this->formEnd;
@@ -261,7 +309,7 @@ class Form {
     public function center() {
         if (strpos($this->lastComponentBuilt, '<option')) {
             $this->lastComponentBuilt = str_replace('<option', '<option class="text-center"', $this->lastComponentBuilt);
-            //var_dump("form-control found");
+//var_dump("form-control found");
         }
         return $this;
     }
@@ -276,7 +324,7 @@ class Form {
      * @return Form
      */
     public function buildPasswordInput($label, $name, $value = null, $helpText = null, $placeholder = null) {
-        //var_dump($name);
+//var_dump($name);
         $name = $this->preProcessName($name);
         $formComponent = $this->startInput($name, $label, $helpText);
 
@@ -287,7 +335,7 @@ class Form {
     }
 
     public function appendInput($appendContent) {
-        $append = '<div class="input-group-append">
+        $append = '<div class="px-0 col-md-4 col-lg-3 col-xl-2">
     <span class="input-group-text">' . $appendContent . '</span>
   </div>';
         $this->lastComponentBuilt = substr($this->lastComponentBuilt, 0, strlen($this->lastComponentBuilt) - 6) . $append . $this->formEnd;
@@ -300,18 +348,26 @@ class Form {
 
             $startInput .= '<small id="' . $name . 'HelpBlock" class="form-text text-muted mt-0">' . $helpText . '</small>';
         }
-        $startInput .= '<div class="input-group input-group-sm p-3 mb-2">';
+        $startInput .= '<div class="row  p-3 h-100">';
         return $startInput;
     }
 
+    /**
+     *
+     * @param string $label
+     * @param string $name
+     * @param bool $state
+     * @param string $helpText
+     * @param function $helpFunction
+     * @return $this
+     */
     public function buildBinaryInput($label, $name, $state, $helpText = null, $helpFunction = null) {
         //var_dump(boolval($state));
-
+        $state = boolval($state);
         $name = $this->preProcessName($name);
         $formComponent = $this->startInput($name, $label);
-
         if (!empty($helpText)) {
-            $formComponent .= '<small id="' . $name . 'HelpBlock" class="form-text text-muted">';
+            $formComponent .= '<div class="col "><div><small id="' . $name . 'HelpBlock" class="form-text text-muted">';
             if (!is_null($helpText)) {
                 $formComponent .= $helpText;
                 if (!is_null($helpFunction)) {
@@ -320,8 +376,10 @@ class Form {
                     $formComponent .= ob_get_clean();
                 }
             }
-            $formComponent .= '</small>';
+            $formComponent .= '</small></div>';
         }
+
+
         $formComponent .= '<div class="row">';
         $formComponent .= ' <div class="col-md">';
         if (!$state) {
@@ -332,7 +390,7 @@ class Form {
         $formComponent .= '<label class="" for="' . $name . '">False</label>';
         $formComponent .= '</div>';
         $formComponent .= ' <div class="col-md">';
-        if (!$state) {
+        if ($state) {
             $formComponent .= ' <input class="form-control-input" type="radio" name="' . $name . '" value="1" checked/>';
         } else {
             $formComponent .= ' <input class="form-control-input" type="radio" name="' . $name . '" value="1" />';
@@ -340,7 +398,90 @@ class Form {
         $formComponent .= '<label class="" for="' . $name . '">True</label>';
         $formComponent .= '</div>';
         $formComponent .= '</div>';
+        $formComponent .= '</div>';
+
+
         $formComponent .= $this->formEnd;
+
+        $this->lastComponentBuilt = $formComponent;
+        //$this->inline();
+        return $this;
+    }
+
+    public function generateADForm($objectID, $staffADSettings, $schema, $type = 'Staff') {
+        $this->logger->info('Generating Staff AD Form for ' . $schema . ' ' . $objectID);
+        $this->buildTextInput($type . ' Active Directory OU',
+                        Schema::ACTIVEDIRECTORY_OU,
+                        $staffADSettings[Schema::ACTIVEDIRECTORY_OU[Schema::COLUMN]],
+                        'eg: /schools/school_name/',
+                        ActiveDirectory::getField($schema, $objectID, Schema::ACTIVEDIRECTORY_OU, $type))
+                ->addToRow(1)
+                ->buildTextInput($type . ' Active Directory User Description',
+                        Schema::ACTIVEDIRECTORY_DESCRIPTION,
+                        $staffADSettings[Schema::ACTIVEDIRECTORY_DESCRIPTION[Schema::COLUMN]],
+                        'eg: School_Name Staff',
+                        ActiveDirectory::getField($schema, $objectID, Schema::ACTIVEDIRECTORY_DESCRIPTION, $type))
+                ->addToRow(2)
+                ->buildTextInput($type . ' Active Directory Group',
+                        Schema::ACTIVEDIRECTORY_GROUP,
+                        $staffADSettings[Schema::ACTIVEDIRECTORY_GROUP[Schema::COLUMN]],
+                        'eg: School_NameStaff',
+                        ActiveDirectory::getField($schema, $objectID, Schema::ACTIVEDIRECTORY_GROUP, $type))
+                ->addToRow()
+                ->buildTextInput($type . ' Active Directory Home Path',
+                        Schema::ACTIVEDIRECTORY_HOME_PATH,
+                        $staffADSettings[Schema::ACTIVEDIRECTORY_HOME_PATH[Schema::COLUMN]],
+                        'eg: \\\\server\\share',
+                        ActiveDirectory::getField($schema, $objectID, Schema::ACTIVEDIRECTORY_HOME_PATH, $type))
+                ->appendInput(DIRECTORY_SEPARATOR . 'username')
+                ->addToRow(3)
+                ->buildTextInput($type . ' Active Directory Logon Script',
+                        Schema::ACTIVEDIRECTORY_LOGON_SCRIPT,
+                        $staffADSettings[Schema::ACTIVEDIRECTORY_LOGON_SCRIPT[Schema::COLUMN]],
+                        'eg: logon.bat',
+                        ActiveDirectory::getField($schema, $objectID, Schema::ACTIVEDIRECTORY_LOGON_SCRIPT, $type))
+                ->addToRow(4);
+        return $this;
+    }
+
+    public function inline() {
+
+        $this->lastComponentBuilt = str_replace('<label', '<div class="row"><div class="col-md-4"><label"', $this->lastComponentBuilt);
+//var_dump("form-control found");
+
+        if (strpos($this->lastComponentBuilt, '</small>')) {
+            $this->lastComponentBuilt = str_replace('</small>', '</small></div><div class="col-md-8">', $this->lastComponentBuilt);
+//var_dump("form-control found");
+        }
+        if (strpos($this->lastComponentBuilt, '</div>')) {
+            $this->lastComponentBuilt .= "</div></div>";
+//var_dump("form-control found");
+        }
+        return $this;
+    }
+
+    public function generateGAForm($objectID, $staffGASettings, $schema, $type = 'Staff') {
+        $this->logger->info('Generating Staff GA Form for ' . $schema . ' ' . $objectID);
+        $this->buildTextInput($type . ' Google Apps OU',
+                        Schema::GOOGLEAPPS_OU,
+                        $staffGASettings[Schema::GOOGLEAPPS_OU[Schema::COLUMN]],
+                        'eg: /schools/school_name/',
+                        GoogleApps::getField($schema, $objectID, Schema::GOOGLEAPPS_OU, $type))
+                ->addToRow(1)
+                ->buildTextInput($type . ' Google Apps Group',
+                        Schema::GOOGLEAPPS_GROUP,
+                        $staffGASettings[Schema::GOOGLEAPPS_GROUP[Schema::COLUMN]],
+                        'eg: School_NameStaff',
+                        GoogleApps::getField($schema, $objectID, Schema::GOOGLEAPPS_GROUP, $type))
+                ->addToRow(2)
+                ->buildTextInput($type . ' Google Apps Other Groups',
+                        Schema::GOOGLEAPPS_OTHER_GROUPS,
+                        $staffGASettings[Schema::GOOGLEAPPS_OTHER_GROUPS[Schema::COLUMN]],
+                        'eg: SpecialGroup',
+                        GoogleApps::getField($schema, $objectID, Schema::GOOGLEAPPS_OTHER_GROUPS, $type))
+                ->addToRow(2);
+
+        return $this;
     }
 
 }
