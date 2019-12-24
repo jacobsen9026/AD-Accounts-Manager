@@ -26,61 +26,103 @@
 use app\database\Schema;
 use app\models\AppConfig;
 use app\models\Auth;
+use system\app\Form;
+
+$form = new Form('/settings', 'authentication');
+$form->buildTextInput('Web App Name', Schema::APP_NAME, AppConfig::getAppName())
+        ->addToRow()
+        ->buildTextAreaInput('Admin Usernames',
+                Schema::APP_PROTECTED_ADMIN_USERNAMES,
+                AppConfig::getAdminUsernames(),
+                'Users in this list will not be able to be modified via the tools on this site.',
+                'Enter one username per line')
+        ->addToNewRow()
+        ->buildTextAreaInput('Homepage Message',
+                Schema::APP_MOTD,
+                AppConfig::getMOTD(),
+                'Accepts HTML and inline style',
+                'Enter a message to display to all users.')
+        ->addToNewRow()
+        ->buildTextInput('Website FQDN',
+                Schema::APP_WEBSITIE_FQDN,
+                AppConfig::getWebsiteFQDN(),
+                'If this is set all requests are redirected to this address. Be sure it is correct and stays available.',
+                'Enter the public FQDN that users use to access this application.')
+        ->addToNewRow()
+        ->buildBinaryInput('Force HTTPS',
+                Schema::APP_FORCE_HTTPS,
+                AppConfig::getForceHTTPS(),
+                'Reditect all HTTP requests to HTTPS')
+        ->addToNewRow()
+        ->buildBinaryInput('Debug Mode',
+                Schema::APP_DEBUG_MODE,
+                AppConfig::getDebugMode(),
+                'Caution: Enabling debug mode is a security risk and should only be used on development systems.')
+        ->addToRow()
+        ->buildTextInput('User Helpdesk URL',
+                Schema::APP_USER_HELPDESK_URL,
+                AppConfig::getUserHelpdeskURL(),
+                'The url that users should use to access your help portal.',
+                'https://helpdesk.com/')
+        ->addToNewRow()
+        ->buildUpdateButton('Save Settings')
+        ->addToNewRow();
+echo $form->getFormHTML();
 ?>
 
-
-<form method="post" class ="table-hover">
-    <?php
-    $function = function() {
-        if (isset($appConfig["redirectHTTP"])) {
-            if ($appConfig["redirectHTTP"]) {
-                if (strtolower(explode("=", $_SERVER['HTTPS_SERVER_ISSUER'])[1]) == strtolower($_SERVER['SERVER_NAME'])) {
-                    echo "You are using a self-signed certificate.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
-                }
-            } else {
-                echo "You are not using HTTPS.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
+<?php
+$function = function() {
+    if (isset($appConfig["redirectHTTP"])) {
+        if ($appConfig["redirectHTTP"]) {
+            if (strtolower(explode("=", $_SERVER['HTTPS_SERVER_ISSUER'])[1]) == strtolower($_SERVER['SERVER_NAME'])) {
+                echo "You are using a self-signed certificate.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
             }
         } else {
             echo "You are not using HTTPS.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
         }
-    };
+    } else {
+        echo "You are not using HTTPS.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
+    }
+};
+?>
 
-    formTextInput('Web App Name', Schema::APP_NAME, AppConfig::getAppName());
-    formTextArea('Admin Usernames', Schema::APP_PROTECTED_ADMIN_USERNAMES, AppConfig::getAdminUsernames(),
-            'Users in this list will not be able to be modified via the tools on this site.', 'Enter one username per line');
-
-    formTextArea('Homepage Message', Schema::APP_MOTD, AppConfig::getMOTD(),
-            'Accepts HTML and inline style', 'Enter list of emails, one per line.');
-    ?>
-    <div class="row">
-        <div class="col-md">
-            <?php formBinaryInput('Redirect to HTTPS', Schema::APP_FORCE_HTTPS, AppConfig::getForceHTTPS(), null, $function); ?>
-        </div>
-        <div class="col-md">
-            <?php
-            formBinaryInput('App Debug Mode', Schema::APP_DEBUG_MODE, AppConfig::getDebugMode(),
-                    'Only for developement or error reporting');
-            ?>
-        </div>
+<div class="row">
+    <div class="col-md">
+        <?php //formBinaryInput('Redirect to HTTPS', Schema::APP_FORCE_HTTPS, AppConfig::getForceHTTPS(), null, $function);    ?>
     </div>
-    <div class="row">
-        <div class="col-md">
-            <?php
-            formTextInput('Session Timeout', Schema::AUTH_SESSION_TIMEOUT, Auth::getSessionTimeout(),
-                    'Time in seconds');
-            ?>
-        </div>
-        <div class="col-md">
-            <?php
-            formTextInput('Website Public FQDN', Schema::APP_WEBSITIE_FQDN, AppConfig::getWebsiteFQDN(),
-                    'All requests will be redirected to this address. Ensure it is accurate.');
-            ?>
-        </div>
+    <div class="col-md">
+        <?php
+        /* formBinaryInput('App Debug Mode', Schema::APP_DEBUG_MODE, AppConfig::getDebugMode(),
+          'Only for developement or error reporting');
+         *
+         */
+        ?>
     </div>
-    <?php
-    formTextInput('User Helpdesk URL', Schema::APP_USER_HELPDESK_URL, AppConfig::getUserHelpdeskURL(),
-            'Provide your users with a link to your support portal for when they need assistance.');
-    ?>
+</div>
+<div class="row">
+    <div class="col-md">
+        <?php
+        /* formTextInput('Session Timeout', Schema::AUTH_SESSION_TIMEOUT, Auth::getSessionTimeout(),
+          'Time in seconds');
+         *
+         */
+        ?>
+    </div>
+    <div class="col-md">
+        <?php
+        /* formTextInput('Website Public FQDN', Schema::APP_WEBSITIE_FQDN, AppConfig::getWebsiteFQDN(),
+          'All requests will be redirected to this address. Ensure it is accurate.');
+         *
+         */
+        ?>
+    </div>
+</div>
+<?php
+/* formTextInput('User Helpdesk URL', Schema::APP_USER_HELPDESK_URL, AppConfig::getUserHelpdeskURL(),
+  'Provide your users with a link to your support portal for when they need assistance.');
+ *
+ */
+?>
 
 
 
@@ -88,5 +130,3 @@ use app\models\Auth;
 
 
 
-    <div  class="container pt-5"><button type="submit" class="mx-auth btn btn-primary mb-2">Save Settings</button></div>
-</form>
