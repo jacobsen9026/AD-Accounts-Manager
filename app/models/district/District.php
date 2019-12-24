@@ -34,8 +34,6 @@ class District {
     public static function getDistricts() {
         $appID = \system\app\App::get()->getID();
         $query = new Query(self::TABLE_NAME);
-        $query->where(Schema::DISTRICT_ID, $appID);
-
         return $query->run();
     }
 
@@ -49,14 +47,18 @@ class District {
 
     public static function getGASettings($districtID, $type) {
         $query = new Query(Schema::GOOGLEAPPS);
-        $query->where(Schema::GOOGLEAPPS_DISTRICT_ID, $districtID);
+        $query->where(Schema::GOOGLEAPPS_DISTRICT_ID, $districtID)
+                ->where(Schema::GOOGLEAPPS_TYPE, $type);
 
         return $query->run()[0];
     }
 
     public static function getDistrict($districtID) {
+        $query = new Query(self::TABLE_NAME);
+        $query->where(Schema::DISTRICT_ID, $districtID);
 
-        return Database::get()->query('SELECT * FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::DISTRICT_ID[Schema::COLUMN] . ' = ' . $districtID)[0];
+        return $query->run()[0];
+        //return Database::get()->query('SELECT * FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::DISTRICT_ID[Schema::COLUMN] . ' = ' . $districtID)[0];
     }
 
     public static function deleteDistrict($districtID) {
@@ -64,6 +66,10 @@ class District {
     }
 
     public static function getSchools($districtID) {
+        $query = new Query(School::TABLE_NAME);
+        $query->where(Schema::SCHOOL_DISTRICT_ID, $districtID);
+
+        return $query->run();
         return Database::get()->query('SELECT * FROM ' . School::TABLE_NAME . ' WHERE ' . Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN] . ' = ' . $districtID);
     }
 
