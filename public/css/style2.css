@@ -28,7 +28,10 @@ and open the template in the editor.
    
     top:3.5rem!important;
     }
-
+.district-settings-nav{
+    z-index:1019;
+    top:7rem!important;
+    }
 
 
 
@@ -36,3 +39,7 @@ and open the template in the editor.
     top:2.5rem!important;
 }
 
+
+.bg-primary,.btn-primary,.text-primary, .active{
+ #background-color: #a32430!important;
+}
