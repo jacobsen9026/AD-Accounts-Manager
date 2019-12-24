@@ -15,6 +15,7 @@ namespace app\models\district;
  */
 use app\database\Schema;
 use app\models\district\Table;
+use system\app\AppLogger;
 
 class ActiveDirectory {
 
@@ -23,9 +24,9 @@ class ActiveDirectory {
     //put your code here
 
     public static function getField($table, $id, $schema, $type) {
-        $column = $schema[Schema::COLUMN];
+        $column = strtoupper($schema[Schema::COLUMN]);
 
-        \system\app\AppLogger::get()->debug($table . ' ' . $id . ' ' . $column . ' ' . $type);
+        //AppLogger::get()->debug($table . ' ' . $id . ' ' . $column . ' ' . $type);
         switch ($table) {
             case Schema::DISTRICT:
                 return self::getDistrictField($id, $column, $type);
@@ -51,27 +52,27 @@ class ActiveDirectory {
 
     private static function getDistrictField($id, $column, $type) {
         $district = District::getADSettings($id, $type);
-        \system\app\AppLogger::get()->debug($district);
+        //\system\app\AppLogger::get()->debug($district);
         $schema = 'ACTIVEDIRECTORY_' . $column;
         $constant = self::getSchemaColumn($schema);
-        \system\app\AppLogger::get()->debug($constant);
+        //\system\app\AppLogger::get()->debug($constant);
         $return = $district[$constant];
         return $return;
     }
 
-    private static function getSchoolField($id, $colimn, $type) {
+    private static function getSchoolField($id, $column, $type) {
 
-        \system\app\AppLogger::get()->info('Getting School ' . $id . ' Field ' . $colimn);
+        //\system\app\AppLogger::get()->info('Getting School ' . $id . ' Field ' . $column);
         $school = School::getADSettings($id, $type);
         $districtID = School::getDistrictID($id);
-        \system\app\AppLogger::get()->debug($school);
-        $schema = 'ACTIVEDIRECTORY_' . $colimn;
+        //\system\app\AppLogger::get()->debug($school);
+        $schema = 'ACTIVEDIRECTORY_' . $column;
         $constant = self::getSchemaColumn($schema);
-        \system\app\AppLogger::get()->debug($constant);
+        // \system\app\AppLogger::get()->debug($constant);
         $return = $school[$constant];
         if ($return == false or $return == null or $return == '') {
-            \system\app\AppLogger::get()->warning('Couldn\'t find school ' . $constant);
-            $return = self::getDistrictField($districtID, $colimn, $type);
+            \system\app\AppLogger::get()->warning('Couldn\'t find school ' . $type . ' ' . $constant . ' will check district.');
+            $return = self::getDistrictField($districtID, $column, $type);
         }
         return $return;
     }
@@ -83,22 +84,33 @@ class ActiveDirectory {
         //var_dump($grade);
         $schema = 'ACTIVEDIRECTORY_' . $column;
         $constant = self::getSchemaColumn($schema);
-        \system\app\AppLogger::get()->debug($constant);
+        //\system\app\AppLogger::get()->debug($constant);
         $return = $grade[$constant];
         if ($return == false or $return == null or $return == '') {
-            \system\app\AppLogger::get()->warning('Couldn\'t find school ' . $constant);
-            $return = self::getSchoolField($schoolID, $column, $type);
+            if ($type == "Staff") {
+                \system\app\AppLogger::get()->warning('Couldn\'t find grade ' . $type . ' ' . $constant . ' will check school.');
+                $return = self::getSchoolField($schoolID, $column, $type);
+            }if ($type == "Student") {
+                \system\app\AppLogger::get()->warning('Couldn\'t find grade ' . $type . ' ' . $constant . ' will check staff grade settings.');
+                $return = self::getSchoolField($id, $column, "Staff");
+            }
         }
         return $return;
     }
 
     private static function getTeamField($id, $column, $type) {
-        $district = District::getADSettings($id, $type);
-        \system\app\AppLogger::get()->debug($district);
+        $team = Team::getADSettings($id, $type);
+
+        $gradeID = Team::getGradeID($id);
+        //var_dump($grade);
         $schema = 'ACTIVEDIRECTORY_' . $column;
         $constant = self::getSchemaColumn($schema);
-        \system\app\AppLogger::get()->debug($constant);
-        $return = $district[$constant];
+        //\system\app\AppLogger::get()->debug($constant);
+        $return = $team[$constant];
+        if ($return == false or $return == null or $return == '') {
+            \system\app\AppLogger::get()->warning('Couldn\'t find team ' . $type . ' ' . $constant . ' will check grade.');
+            $return = self::getGradeField($gradeID, $column, $type);
+        }
         return $return;
     }
 
