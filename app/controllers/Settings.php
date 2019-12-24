@@ -33,6 +33,7 @@ namespace app\controllers;
  */
 use system\Post;
 use app\models\district\District;
+use app\database\Schema;
 
 class Settings extends Controller {
 
@@ -50,36 +51,12 @@ class Settings extends Controller {
     }
 
     public function indexPost() {
-        $post = Post::getAll();
-        foreach ($post as $key => $value) {
-
-            //var_dump($this->postables);
-            if (in_array($key, $this->postables)) {
-                var_dump($key);
-                if ($value == "checkbox") {
-                    $value = null;
-                    $value = Post::get($key . '-checkbox');
-                }
-                $brokenKey = explode("-", $key);
-                $config = $brokenKey[0];
-                $configOption = ucfirst(strtolower($brokenKey[1]));
-                $this->app->logger->debug($config);
-                $this->app->logger->debug($configOption);
-                $method = 'set' . $configOption;
-                $this->app->logger->debug($method);
-                if (!is_null($value)) {
-                    $this->config->$config->$method($value);
-                    $this->config->saveConfig();
-                    return $this->view('settings/index');
-                }
-            }
-            //var_dump($key);
-            //var_dump(strpos($key, "rict-district"));
-            //var_dump($_REQUEST);
-            if (strpos($key, "istrict-")) {
-                District::post(str_replace("district-", "", $key), $value);
-            }
-        }
+        \system\app\AppLogger::get()->debug('Edit Post');
+        $post = \system\Post::getAll();
+        var_dump($post);
+        \app\models\DatabasePost::setPost(Schema::APP, \system\app\App::getID(), $post);
+        //var_dump($post);
+        $this->redirect('/settings');
     }
 
     /**
