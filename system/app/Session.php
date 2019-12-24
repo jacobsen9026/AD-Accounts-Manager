@@ -31,10 +31,10 @@ namespace system\app;
  *
  * @author cjacobsen
  */
-use system\common\CoreSession;
+use system\common\CommonSession;
 use app\models\user\User;
 
-abstract class Session extends CoreSession {
+abstract class Session extends CommonSession {
     //put your code here
 
     /** @var User|null */
