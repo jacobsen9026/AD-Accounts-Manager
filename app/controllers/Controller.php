@@ -31,7 +31,7 @@ namespace app\controllers;
  *
  * @author cjacobsen
  */
-use system\common\CoreController;
+use system\common\CommonController;
 use app\models\user\User;
 use app\config\MasterConfig;
 use app\database\Schema;
@@ -42,7 +42,7 @@ use app\models\district\Team;
 use system\app\App;
 use app\models\Query;
 
-class Controller extends CoreController {
+class Controller extends CommonController {
     //put your code here
 
     /** @var User|null The system logger */
@@ -72,7 +72,7 @@ class Controller extends CoreController {
         $this->schoolID = $schoolID;
         $this->school = School::getSchool($this->schoolID);
 
-        $this->schoolName = School::getSchool($this->schoolID)[Schema::SCHOOL_NAME[Schema::COLUMN]];
+        $this->schoolName = $this->school[Schema::SCHOOL_NAME[Schema::COLUMN]];
         $grades = Grade::getGrades($this->schoolID);
         if (isset($grades) and $grades != false) {
             $this->grades = $grades;
