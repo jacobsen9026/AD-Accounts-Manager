@@ -31,10 +31,10 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-use system\common\CoreRouter;
+use system\common\CommonRouter;
 use system\app\App;
 
-class Router extends CoreRouter {
+class Router extends CommonRouter {
     /*
      * Add custom routes with the following sytax
      * array ("requestedModule"
@@ -56,6 +56,7 @@ class Router extends CoreRouter {
         $this->customRoutes[] = array("Schools", "*", "settings\Schools", "*");
         $this->customRoutes[] = array("Grades", "*", "settings\Grades", "*");
         $this->customRoutes[] = array("Teams", "*", "settings\Teams", "*");
+        $this->customRoutes[] = array("Draw", "*", "api\Draw", "*");
 
 
 
