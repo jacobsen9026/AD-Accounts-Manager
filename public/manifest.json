@@ -1,5 +1,6 @@
 {
-    "name": "",
+    "short_name": "SAM",
+    "name": "School Accounts Manager",
     "icons": [
         {
             "src": "/img/favicon/android-chrome-192x192.png",
@@ -12,7 +13,7 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
+    "theme_color": "#007bff",
+    "background_color": "#007bff",
     "display": "standalone"
 }
