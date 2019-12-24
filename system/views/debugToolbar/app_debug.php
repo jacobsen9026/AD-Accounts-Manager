@@ -1,6 +1,6 @@
 
 <?php
-$log = $this->appLogger->getLog();
+$log = $this->appLogger->getLogs();
 
 if (!function_exists('printLog')) {
 
