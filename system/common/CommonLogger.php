@@ -33,37 +33,66 @@ namespace system\common;
  */
 use system\Parser;
 
-class CoreLogger extends Parser {
+class CommonLogger extends Parser {
 
-    private $debugLog;
-    private $errorLog;
-    private $infoLog;
-    private $warningLog;
     private $startTime;
-    private $log;
+    private $logs;
+    private $queries;
 
     function __construct() {
         $this->startTime = floatval(microtime());
     }
 
+    private function getErrorLogs() {
+        $errors = null;
+        foreach ($this->logs as $log) {
+            if ($log[1] == 'error') {
+                $errors[] = $log;
+            }
+        }
+
+
+        return $errors;
+    }
+
+    private function getQueryLogs() {
+
+        return $this->queries;
+    }
+
     /**
      *
-     * @return type
+     * @return array|null
+     */
+    public function getLog($logType) {
+        //var_dump($this->log);
+        switch ($logType) {
+            case 'error':
+
+                return $this->getErrorLogs();
+            case 'query':
+
+                return $this->getQueryLogs();
+
+            default:
+                break;
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @return string
      */
     public function getLogs() {
         //var_dump($this->log);
-        return array('debug' => $this->debugLog, 'error' => $this->errorLog, 'warning' => $this->warningLog, 'info' => $this->infoLog);
-    }
-
-    public function getLog() {
-        //var_dump($this->log);
-        return $this->log;
+        return $this->logs;
     }
 
     /**
      *
-     * @param type $message
-     * @return type
+     * @param mixed $message
+     * @return string
      */
     private function preProcessMessage($message) {
         if (is_array($message)) {
@@ -83,38 +112,46 @@ class CoreLogger extends Parser {
 
     /**
      *
-     * @param type $message
+     * @param mixed $message
      */
     public function debug($message) {
-        $this->debugLog[] = $this->preProcessMessage($message);
-        $this->log[] = $this->packageMessage('debug', $message);
+        // $this->debugLog[] = $this->preProcessMessage($message);
+        $this->logs[] = $this->packageMessage('debug', $message);
     }
 
     /**
      *
-     * @param type $message
+     * @param mixed $message
      */
     public function warning($message) {
-        $this->warningLog[] = $this->preProcessMessage($message);
-        $this->log[] = $this->packageMessage('warning', $message);
+        // $this->warningLog[] = $this->preProcessMessage($message);
+        $this->logs[] = $this->packageMessage('warning', $message);
     }
 
     /**
      *
-     * @param type $message
+     * @param mixed $message
      */
     public function error($message) {
-        $this->errorLog[] = $this->preProcessMessage($message);
-        $this->log[] = $this->packageMessage('error', $message);
+        // $this->errorLog[] = $this->preProcessMessage($message);
+        $this->logs[] = $this->packageMessage('error', $message);
     }
 
     /**
      *
-     * @param type $message
+     * @param mixed $message
      */
     public function info($message) {
-        $this->infoLog[] = $this->preProcessMessage($message);
-        $this->log[] = $this->packageMessage('info', $message);
+        //$this->infoLog[] = $this->preProcessMessage($message);
+        $this->logs[] = $this->packageMessage('info', $message);
+    }
+
+    /**
+     *
+     * @param mixed $message
+     */
+    public function query($message) {
+        $this->queries[] = $this->packageMessage('debug', $message);
     }
 
     /**

@@ -22,46 +22,34 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- *
- *
- * This class is not yet utilized and may never be.
  */
 
 namespace system\common;
 
 /**
- * Description of CoreForm
+ * Description of Config
  *
  * @author cjacobsen
  */
-class CoreForm {
+use system\Parser;
+
+class CommonConfig extends Parser {
 
     //put your code here
 
-    private $action;
-    private $name;
-    private $method;
-    private $target;
-    private $autoComplete;
 
-    function __construct($name, $action, $method = 'post', $target = '_self', $autoComplete = 'on') {
-        $this->action = $action;
-        $this->name = $name;
-        $this->method = $method;
-        $this->target = $target;
-        $this->autoComplete = $autoComplete;
+
+
+    function __construct(array $keyValuePairs = null) {
+        if ($keyValuePairs != null) {
+            foreach ($keyValuePairs as $key => $value) {
+                $this->$key = $value;
+            }
+        }
     }
 
-    public function addInput() {
-
-    }
-
-    public function addTextArea() {
-
-    }
-
-    public function addCheckbox() {
-
+    public function getSettings() {
+        return get_object_vars($this);
     }
 
 }

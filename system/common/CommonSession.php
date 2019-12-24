@@ -27,28 +27,10 @@
 namespace system\common;
 
 /**
- * Description of CoreCookie
+ * Description of Session
  *
  * @author cjacobsen
  */
-class CoreCookie {
-
+class CommonSession {
     //put your code here
-    private $config;
-
-    function __construct($config) {
-        $this->config = $config;
-    }
-
-    public function set($key, $value) {
-        if (setcookie($key, $value)) {
-            return true;
-        }
-        return false;
-    }
-
-    public function get($key) {
-        return $_COOKIE[$key];
-    }
-
 }

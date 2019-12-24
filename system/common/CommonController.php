@@ -27,29 +27,56 @@
 namespace system\common;
 
 /**
- * Description of Config
+ * Description of Controller
  *
  * @author cjacobsen
  */
 use system\Parser;
+use system\app\App;
+use system\CoreApp;
+use app\config\MasterConfig;
 
-class CoreConfig extends Parser {
+class CommonController extends Parser {
+
+    /** @var App|null The view parser */
+    public $app;
+
+    /** @var MasterConfig|null The view parser */
+    public $config;
+
+    /** @var string|null The view parser */
+    public $layout;
+    public $postSet = false;
+    public $getSet = false;
 
     //put your code here
+    function __construct($app) {
+        $this->app = $app;
+        $this->config = $app->config;
 
 
+        if (isset($_POST) and $_POST != null) {
 
+            $this->postSet = true;
+        }
 
-    function __construct(array $keyValuePairs = null) {
-        if ($keyValuePairs != null) {
-            foreach ($keyValuePairs as $key => $value) {
-                $this->$key = $value;
-            }
+        if (isset($_GET) and $_GET != null) {
+            $this->getSet = true;
         }
     }
 
-    public function getSettings() {
-        return get_object_vars($this);
+    /**
+     *
+     * @return string
+     */
+    public function unauthorized() {
+        return $this->view('errors/403');
+    }
+
+    public function redirect($url) {
+        header('Location: ' . $url);
     }
 
 }
+
+?>

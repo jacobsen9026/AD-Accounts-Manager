@@ -27,56 +27,28 @@
 namespace system\common;
 
 /**
- * Description of Controller
+ * Description of CoreCookie
  *
  * @author cjacobsen
  */
-use system\Parser;
-use system\app\App;
-use system\CoreApp;
-use app\config\MasterConfig;
-
-class CoreController extends Parser {
-
-    /** @var App|null The view parser */
-    public $app;
-
-    /** @var MasterConfig|null The view parser */
-    public $config;
-
-    /** @var string|null The view parser */
-    public $layout;
-    public $postSet = false;
-    public $getSet = false;
+class CommonCookie {
 
     //put your code here
-    function __construct($app) {
-        $this->app = $app;
-        $this->config = $app->config;
+    private $config;
 
-
-        if (isset($_POST) and $_POST != null) {
-
-            $this->postSet = true;
-        }
-
-        if (isset($_GET) and $_GET != null) {
-            $this->getSet = true;
-        }
+    function __construct($config) {
+        $this->config = $config;
     }
 
-    /**
-     *
-     * @return string
-     */
-    public function unauthorized() {
-        return $this->view('errors/403');
+    public function set($key, $value) {
+        if (setcookie($key, $value)) {
+            return true;
+        }
+        return false;
     }
 
-    public function redirect($url) {
-        header('Location: ' . $url);
+    public function get($key) {
+        return $_COOKIE[$key];
     }
 
 }
-
-?>

@@ -22,26 +22,46 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
+ *
+ *
+ * This class is not yet utilized and may never be.
  */
 
 namespace system\common;
 
 /**
- * Description of Authorization
+ * Description of CoreForm
  *
  * @author cjacobsen
  */
-use system\app\auth\AuthException;
+class CommonForm {
 
-class CoreAuthorization {
+    //put your code here
 
-    private $config;
+    private $action;
+    private $name;
+    private $method;
+    private $target;
+    private $autoComplete;
 
-    function __construct($config) {
-        $this->config = $config;
+    function __construct($name, $action, $method = 'post', $target = '_self', $autoComplete = 'on') {
+        $this->action = $action;
+        $this->name = $name;
+        $this->method = $method;
+        $this->target = $target;
+        $this->autoComplete = $autoComplete;
     }
 
-//put your code here
-}
+    public function addInput() {
 
-?>
+    }
+
+    public function addTextArea() {
+
+    }
+
+    public function addCheckbox() {
+
+    }
+
+}

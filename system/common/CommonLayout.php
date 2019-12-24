@@ -31,12 +31,12 @@ namespace system\common;
  *
  * @author cjacobsen
  */
-use app\App;
+use system\app\App;
 use system\Parser;
 use app\models\user\User;
 use app\controllers\Menu;
 
-class CoreLayout extends Parser {
+class CommonLayout extends Parser {
 
     const DEFAULT_LAYOUT_NAME = 'default';
 
@@ -69,10 +69,17 @@ class CoreLayout extends Parser {
     }
 
     public function apply() {
-        $this->appOutput = $this->getHeader() . $this->app->outputBody . $this->getNavigation() . $this->getFooter();
-        if ($this->app->logger != null) {
-            // $this->appOutput .= $this->renderDebug($this->app->debugLog);
+        //var_dump($this->app->request->type);
+        if ($this->app->request->type == 'http') {
+            $this->appOutput = $this->getHeader();
         }
+        $this->appOutput .= $this->app->outputBody;
+
+        if ($this->app->request->type == 'http') {
+            $this->appOutput .= $this->getNavigation();
+            $this->appOutput .= $this->getFooter();
+        }
+
         //var_dump($this->appOutput);
         return $this->appOutput;
     }

@@ -33,7 +33,7 @@ namespace system\common;
  */
 use system\Parser;
 
-class CoreApp extends Parser {
+class CommonApp extends Parser {
 //put your code here
 
 

@@ -38,7 +38,7 @@ use system\CoreException;
  * @name CoreRouter
  *
  */
-class CoreRouter {
+class CommonRouter {
 
     private $logger;
 
