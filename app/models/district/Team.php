@@ -32,6 +32,7 @@ namespace app\models\district;
  * @author cjacobsen
  */
 use app\database\Schema;
+use app\models\Query;
 
 class Team {
 
@@ -63,7 +64,23 @@ class Team {
 
     public static function deleteTeam($teamID) {
         \system\app\AppLogger::get()->debug("Delete grade id: " . $teamID);
-        return \system\Database::get()->query('DELETE FROM Grades WHERE ID=' . $teamID);
+        return \system\Database::get()->query('DELETE FROM  ' . self::TABLE_NAME . '  WHERE ID=' . $teamID);
+    }
+
+    public static function getADSettings($teamID, $type) {
+        $query = new Query(Schema::ACTIVEDIRECTORY);
+        $query->where(Schema::ACTIVEDIRECTORY_TEAM_ID, $teamID)
+                ->where(Schema::ACTIVEDIRECTORY_TYPE, $type);
+
+        return $query->run()[0];
+    }
+
+    public static function getGASettings($teamID, $type) {
+        $query = new Query(Schema::GOOGLEAPPS);
+        $query->where(Schema::GOOGLEAPPS_TEAM_ID, $teamID)
+                ->where(Schema::GOOGLEAPPS_TYPE, $type);
+
+        return $query->run()[0];
     }
 
 }
