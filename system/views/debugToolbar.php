@@ -12,13 +12,13 @@ if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != n
     <div class='content'>
 
         <button type="button" id = "showDebugButton" class="mx-auto btn btn-primary dark-shadow <?php
-        if ($this->errors_exists()) {
+        if ($this->errors_exist()) {
             echo 'btn-danger';
         }
         ?> " data-toggle="modal" data-target="#logsModal">Logs</button>
 
         <div id = "logsModal" class = "modal fade" role = "dialog">
-            <div class = "modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+            <div class = "modal-dialog modal-dialog-centered  modal-xl modal-dialog-scrollable">
 
                 <!--Modal content-->
                 <div class = "modal-content">
@@ -32,36 +32,40 @@ if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != n
 
 
                         <!--Nav tabs-->
-                        <ul class = "sticky-top nav nav-pills bg-primary row">
+                        <ul class = "sticky-top  nav nav-pills bg-primary row mx-0">
                             <?php
                             if ($this->core->inDebugMode()) {
                                 ?>
 
-                                <li class = "nav-item col">
+                                <li class = "nav-item col px-0">
                                     <a class = "nav-link btn-primary active rounded-0 text-center " data-toggle = "pill" href = "#home">System</a>
                                 </li>
                                 <?php
                             }if (!empty($this->core->app) and $this->core->app->inDebugMode()) {
                                 ?>
-                                <li class = "nav-item col">
+                                <li class = "nav-item col px-0">
                                     <a class = "nav-link btn-primary rounded-0 text-center" data-toggle = "pill" href = "#menu1">App</a>
                                 </li>
                                 <?php
                             }
                             ?>
-                            <li class = "nav-item col">
-                                <a class = "nav-link btn-primary rounded-0 text-center" data-toggle = "pill" href = "#menu2">Session</a>
+                            <li class = "nav-item col px-0">
+                                <a class = "nav-link btn-primary rounded-0 text-center" data-toggle = "pill" href = "#menu2">Queries</a>
+                            </li>
+
+                            <li class = "nav-item col px-0">
+                                <a class = "nav-link btn-primary rounded-0 text-center" data-toggle = "pill" href = "#menu3">Session</a>
                             </li>
 
 
                         </ul>
-
                         <!--Tab panes-->
                         <div class = "pt-0 tab-content log-tab-content">
                             <?php
                             if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != null))) {
                                 ?>
                                 <div class = "tab-pane   container-fluid active p-0" id = "home">
+
                                     <?php $this->include('system/views/debugToolbar/system_debug'); ?>
                                 </div>
                                 <?php
@@ -76,9 +80,16 @@ if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != n
 
                                 <?php
                             }
+                            ?>
+                            <div class = "tab-pane  container-fluid fade p-0" id = "menu2">
+                                <?php
+                                $this->include('system/views/debugToolbar/query_debug');
+                                ?>
+                            </div>
+                            <?php
                             if (isset($_SESSION)) {
                                 ?>
-                                <div class = "tab-pane  container-fluid fade p-0" id = "menu2">
+                                <div class = "tab-pane  container-fluid fade p-0" id = "menu3">
                                     <?php
                                     $this->include('system/views/debugToolbar/session_debug');
                                     ?>
