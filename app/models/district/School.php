@@ -60,6 +60,10 @@ class School {
     }
 
     public static function getSchool($schoolID) {
+        $query = new Query(self::TABLE_NAME);
+        $query->where(Schema::SCHOOL_ID, $schoolID);
+
+        return $query->run()[0];
         \system\app\AppLogger::get()->debug("Get school by id: " . $schoolID);
         return(\system\Database::get()->query('SELECT * From ' . self::TABLE_NAME . ' Where ' . Schema::SCHOOL_ID[Schema::COLUMN] . '=' . $schoolID)[0]);
     }
@@ -67,16 +71,6 @@ class School {
     public static function deleteSchool($schoolID) {
         \system\app\AppLogger::get()->debug("Delete school id: " . $schoolID);
         return \system\Database::get()->query('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::SCHOOL_ID[Schema::COLUMN] . '=' . $schoolID);
-    }
-
-    public static function editSchool($schoolID, $post) {
-
-        \system\app\AppLogger::get()->debug("Modifying school id: " . $schoolID);
-        $name = $post['name'];
-        $staffGAOU = $post['staffGAOU'];
-        $staffADOU = $post['staffADOU'];
-
-        return \system\Database::get()->query('UPDATE ' . self::TABLE_NAME . ' SET ' . Schema::SCHOOL_NAME[Schema::COLUMN] . ' = "' . $name . '", StaffGAOU = "' . $staffGAOU . '", StaffADOU = "' . $staffADOU . '" WHERE ID = ' . $schoolID);
     }
 
     public static function getADSettings($schoolID, $type) {
