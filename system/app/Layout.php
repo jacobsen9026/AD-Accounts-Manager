@@ -31,10 +31,10 @@ namespace system\app;
  *
  * @author cjacobsen
  */
-use system\common\CoreLayout;
+use system\common\CommonLayout;
 use app\config\MasterConfig;
 
-class Layout extends CoreLayout {
+class Layout extends CommonLayout {
 
     /** @var MasterConfig|null The master config */
     public $config;
