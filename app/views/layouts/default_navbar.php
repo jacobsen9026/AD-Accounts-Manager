@@ -95,7 +95,7 @@ use app\models\AppConfig;
 
                                 <?php if (App::get()->inDebugMode()) {
                                     ?>
-                                    <a class="dropdown-item" href="#"><text data-toggle="modal" data-target="#debugConfigModal">View Config</text></a>
+                                    <a id="debugConfigButton" class="dropdown-item" href="#"><text data-toggle="modal" data-target="#debugConfigModal">View Config</text></a>
                                     <?php
                                 }
                                 ?>
