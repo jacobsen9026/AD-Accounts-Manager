@@ -64,12 +64,9 @@ echo $this->modal('deleteDistrict');
                             ->buildTextInput('Staff Active Directory Logon Script',
                                     Schema::ACTIVEDIRECTORY_LOGON_SCRIPT,
                                     $this->staffADSettings[Schema::ACTIVEDIRECTORY_LOGON_SCRIPT[Schema::COLUMN]])
-                            ->addToRow(4)
-                            ->buildDropDownInput('Staff Active Directory Username Format',
-                                    Schema::ACTIVEDIRECTORY_USERNAME_FORMAT,
-                                    app\models\district\UsernameFormat::getUsernameFormats())
-                            ->center()
-                            ->addToRow(5);
+                            ->addToRow(4);
+
+
                     echo $adForm->getFormHTML();
                     ?>
                 </div>
@@ -87,14 +84,11 @@ echo $this->modal('deleteDistrict');
                                     $this->staffGASettings[Schema::GOOGLEAPPS_GROUP[Schema::COLUMN]])
                             ->addToRow();
 
-                    $gaForm->buildTextInput('Staff Google Apps Username Format',
+                    $gaForm->buildTextInput('Staff Google Apps Other Groups',
                                     Schema::GOOGLEAPPS_OTHER_GROUPS,
                                     $this->staffGASettings[Schema::GOOGLEAPPS_OTHER_GROUPS[Schema::COLUMN]])
                             ->addToRow(2);
-                    $gaForm->buildTextInput('Staff Google Apps Username Format',
-                                    Schema::GOOGLEAPPS_USERNAME_FORMAT,
-                                    $this->staffGASettings[Schema::GOOGLEAPPS_USERNAME_FORMAT[Schema::COLUMN]])
-                            ->addToRow();
+
                     echo $gaForm->getFormHTML();
                     ?>
                 </div>
@@ -140,7 +134,18 @@ echo $this->modal('deleteDistrict');
     $form->buildTextInput('Google Apps FQDN',
                     Schema::DISTRICT_GA_FQDN,
                     $this->district[Schema::DISTRICT_GA_FQDN[Schema::COLUMN]])
-            ->addToRow(3);
+            ->addToRow(3)
+            ->buildDropDownInput('Staff Username Format',
+                    Schema::DISTRICT_STAFF_USERNAME_FORMAT,
+                    app\models\district\UsernameFormat::getUsernameFormats())
+            ->center()
+            ->addToRow(5)
+            ->buildDropDownInput('Student Username Format',
+                    Schema::DISTRICT_STUDENT_USERNAME_FORMAT,
+                    app\models\district\UsernameFormat::getUsernameFormats())
+            ->center()
+            ->addToRow();
+
 
     $form->addToForm($tabs, 6);
     $form->insertObjectIDInput(Schema::DISTRICT_ID, $this->districtID);
