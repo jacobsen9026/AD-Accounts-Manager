@@ -1,0 +1,23 @@
+
+
+
+<h3>
+    Student Password Reset
+</h3>
+
+<?php
+
+use system\app\Form;
+
+$form = new Form();
+$form->buildTextInput('Username', 'username')
+        ->medium()
+        ->addToNewRow()
+        ->buildPasswordInput('Password', 'password', null, "Leave blank for a new random password")
+        ->medium()
+        ->addToNewRow()
+        ->buildSubmitButton('Submit')
+        ->addToNewRow();
+
+
+echo $form->getFormHTML();
