@@ -1,9 +1,15 @@
-<form method="post" name="test" class ="table-hover" action="/districts/create">
-    <div class="border mt-3 container container-lg py-3">
-        <div>
-            Create District
-        </div>
-        <div>Name:<input type="text" name="name"/></div>
-        <button class="btn btn-primary " type="submit">Submit</button>
-    </div>
-</form>
+
+<h3 class="pt-3">Create New District</h3>
+<?php
+
+use system\app\Form;
+
+$form = new Form('/settings/districts/create');
+$form->buildTextInput('District Name', 'name')
+        ->small()
+        ->addToNewRow()
+        ->buildSubmitButton('Submit')
+        ->addToNewRow();
+echo $form->getFormHTML();
+
+
