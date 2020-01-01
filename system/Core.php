@@ -144,7 +144,7 @@ class Core {
      * Initialize all core systems
      */
     private function initializeApp() {
-
+        ini_set('file_uploads', true);
         Autoloader::run($this);
         /*
          * Load the parser in the core since it cannot
