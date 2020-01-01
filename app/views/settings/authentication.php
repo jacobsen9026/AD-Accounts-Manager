@@ -33,8 +33,11 @@ $this->auth = Auth::get();
 //var_dump($this->auth);
 //var_dump($this->auth[Schema::AUTH_LDAP_ENABLED[Schema::COLUMN]]);
 
-
-
+$server = $this->auth[Schema::AUTH_LDAP_SERVER[Schema::COLUMN]];
+$username = $this->auth[Schema::AUTH_LDAP_USERNAME[Schema::COLUMN]];
+$password = $this->auth[Schema::AUTH_LDAP_PASSWORD[Schema::COLUMN]];
+$adTestResult = system\app\auth\LDAP::testConnection($server, $username, $password);
+//var_dump($adTestResult);
 $form = new Form(null, 'authentication');
 
 $form->buildTextInput('Session Timeout',
@@ -43,29 +46,45 @@ $form->buildTextInput('Session Timeout',
                 'Read only user for authentication',
                 'samAuthUser')
         ->small()
-        ->addToRow()
+        ->addToNewRow()
         ->buildPasswordInput('Admin Password',
                 Schema::APP_ADMIN_PASSWORD,
                 AppConfig::getAdminPassword(),
                 'Set a new admin password')
-        ->addToRow()
-        ->buildBinaryInput('LDAP Enabled',
+        ->addToRow();
+
+
+$form->addSeperator();
+
+$form->buildBinaryInput('LDAP Enabled',
                 Schema::AUTH_LDAP_ENABLED,
                 Auth::getLDAPEnabled(),
                 'Allow authentication by LDAP')
         ->center()
-        ->addToNewRow()
-        ->buildBinaryInput('Use SSL with LDAP',
+        ->addToNewRow();
+if (Auth::getLDAPEnabled()) {
+    $form->buildStatusCheck('LDAP Connection Test',
+                    $adTestResult)
+            ->addToRow();
+}
+$form->buildBinaryInput('Use SSL with LDAP',
                 Schema::AUTH_LDAP_USE_SSL,
-                $this->auth[Schema::AUTH_LDAP_SERVER[Schema::COLUMN]],
-                '')
+                $this->auth[Schema::AUTH_LDAP_USE_SSL[Schema::COLUMN]],
+                'Not Yet Implemented')
+        ->disable()
         ->addToRow()
-        ->buildTextInput('LDAP Server FQDN',
+        ->buildTextInput('LDAP Server',
                 Schema::AUTH_LDAP_SERVER,
                 $this->auth[Schema::AUTH_LDAP_SERVER[Schema::COLUMN]],
                 'Can also be the domain name in most environments.',
-                'ldap.constoso.com')
+                'ldap.constoso.com / ldap / contoso.com')
         ->addToNewRow()
+        ->buildTextInput('LDAP FQDN',
+                Schema::AUTH_LDAP_FQDN,
+                $this->auth[Schema::AUTH_LDAP_FQDN[Schema::COLUMN]],
+                'This will be appended to usenames on log on.',
+                'contoso.com')
+        ->addToRow()
         ->buildTextInput('LDAP Server Port',
                 Schema::AUTH_LDAP_PORT,
                 $this->auth[Schema::AUTH_LDAP_PORT[Schema::COLUMN]],
@@ -76,7 +95,7 @@ $form->buildTextInput('Session Timeout',
                 Schema::AUTH_LDAP_USERNAME,
                 $this->auth[Schema::AUTH_LDAP_USERNAME[Schema::COLUMN]],
                 'Read only user for authentication',
-                'samAuthUser')
+                'read-only')
         ->addToNewRow()
         ->buildPasswordInput('LDAP Password',
                 Schema::AUTH_LDAP_PASSWORD,
@@ -86,51 +105,57 @@ $form->buildTextInput('Session Timeout',
         ->buildTextInput('LDAP Basic User Permission Group',
                 Schema::AUTH_BASIC_AD_GROUP,
                 $this->auth[Schema::AUTH_BASIC_AD_GROUP[Schema::COLUMN]],
-                'Read only user for authentication',
-                'samAuthUser')
+                'Enter group name',
+                'SAM Basic Users')
         ->addToNewRow()
-        ->buildPasswordInput('LDAP Power User Permission Group',
+        ->buildTextInput('LDAP Power User Permission Group',
                 Schema::AUTH_POWER_AD_GROUP,
                 $this->auth[Schema::AUTH_POWER_AD_GROUP[Schema::COLUMN]],
-                'Read only user\'s password')
+                'Enter group name',
+                'SAM Power Users')
         ->addToRow()
         ->buildTextInput('LDAP Admin User Permission Group',
                 Schema::AUTH_ADMIN_AD_GROUP,
                 $this->auth[Schema::AUTH_ADMIN_AD_GROUP[Schema::COLUMN]],
-                'Read only user for authentication',
-                'samAuthUser')
+                'Enter group name',
+                'SAM Admin Users')
         ->addToNewRow()
-        ->buildPasswordInput('LDAP Tech User Permission Group',
+        ->buildTextInput('LDAP Tech User Permission Group',
                 Schema::AUTH_TECH_AD_GROUP,
                 $this->auth[Schema::AUTH_TECH_AD_GROUP[Schema::COLUMN]],
-                'Read only user\'s password')
+                'Enter group name',
+                'SAM Tech Users')
         ->addToRow()
+        ->addSeperator()
         ->buildBinaryInput('OAuth Enabled',
                 Schema::AUTH_OAUTH_ENABLED,
-                $this->auth[Schema::AUTH_LDAP_SERVER[Schema::COLUMN]],
+                $this->auth[Schema::AUTH_OAUTH_ENABLED[Schema::COLUMN]],
                 'Allow authentication by OAuth2')
+        ->disable()
         ->addToNewRow()
         ->buildTextInput('Google Apps Basic User Permission Group',
                 Schema::AUTH_BASIC_GA_GROUP,
                 $this->auth[Schema::AUTH_BASIC_GA_GROUP[Schema::COLUMN]],
-                'Read only user for authentication',
-                'samAuthUser')
+                'Enter group name',
+                'SAM Basic Users')
         ->addToNewRow()
-        ->buildPasswordInput('Google Apps Power User Permission Group',
+        ->buildTextInput('Google Apps Power User Permission Group',
                 Schema::AUTH_POWER_GA_GROUP,
                 $this->auth[Schema::AUTH_POWER_GA_GROUP[Schema::COLUMN]],
-                'Read only user\'s password')
+                'Enter group name',
+                'SAM Power Users')
         ->addToRow()
         ->buildTextInput('Google Apps Admin User Permission Group',
                 Schema::AUTH_ADMIN_GA_GROUP,
                 $this->auth[Schema::AUTH_ADMIN_GA_GROUP[Schema::COLUMN]],
-                'Read only user for authentication',
-                'samAuthUser')
+                'Enter group name',
+                'SAM Admin Users')
         ->addToNewRow()
-        ->buildPasswordInput('Google Apps Tech User Permission Group',
+        ->buildTextInput('Google Apps Tech User Permission Group',
                 Schema::AUTH_TECH_GA_GROUP,
                 $this->auth[Schema::AUTH_TECH_GA_GROUP[Schema::COLUMN]],
-                'Read only user\'s password')
+                'Enter group name',
+                'SAM Tech Users')
         ->addToRow()
         ->buildUpdateButton()
         ->addToNewRow();
