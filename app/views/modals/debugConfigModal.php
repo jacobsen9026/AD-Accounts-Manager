@@ -14,7 +14,7 @@
                     $('#debugConfigButton').on('click', function () {
                         var queryString = 'debugConfig';
                         //$('#ajaxOutput').hide();
-                        $.post('/draw', {query: queryString},
+                        $.post('/api/draw', {query: queryString},
                                 function (data) {
                                     //request completed
                                     //now update the div with the new data
