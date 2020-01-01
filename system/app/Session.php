@@ -54,7 +54,7 @@ abstract class Session extends CommonSession {
     public static function getUser() {
         if (isset($_SESSION['user']) and $_SESSION['user'] != '') {
             if (Session::getTimeoutStatus()) {
-                session_destroy();
+                //session_destroy();
                 return new User();
             } else {
                 return unserialize($_SESSION['user']);
