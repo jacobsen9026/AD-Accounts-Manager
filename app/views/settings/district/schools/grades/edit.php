@@ -19,11 +19,11 @@ echo $this->view('layouts/setup_navbar');
 
     <?php
 //var_dump($this->district);
-    $form = new Form('/grades/edit/' . $this->grade[Schema::GRADE_ID[Schema::COLUMN]]);
+    $form = new Form('/settings/grades/edit/' . $this->grade[Schema::GRADE_ID[Schema::COLUMN]]);
     $form->buildTextInput('Parent Email Group', Schema::GRADE_PARENT_EMAIL_GROUP[Schema::NAME], $this->grade[Schema::SCHOOL_PARENT_EMAIL_GROUP[Schema::COLUMN]])
             ->appendInput('@' . $this->district[Schema::DISTRICT_GA_FQDN[Schema::COLUMN]])
             ->addToRow(3)
-            ->buildCustomButton('Add/Manage Teams', 'warning', '/teams/show/' . $this->grade[Schema::GRADE_ID[Schema::COLUMN]])
+            ->buildCustomButton('Add/Manage Teams', 'warning', '/settings/teams/show/' . $this->grade[Schema::GRADE_ID[Schema::COLUMN]])
             ->addToRow(99);
 
     $form->buildUpdateButton()->addToRow(100);
@@ -38,17 +38,28 @@ echo $this->view('layouts/setup_navbar');
         <nav class="district-settings-nav sticky-top nav-fill nav-justified">
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                 <a class="rounded-0 shadow bg-primary text-light nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-staff-ad" role="tab" aria-controls="nav-home" aria-selected="true">Staff Active Directory</a>
-                <a class="rounded-0 shadow bg-primary text-light nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-staff-ga" role="tab" aria-controls="nav-profile" aria-selected="false">Staff Google Apps</a>
+                <?php
+                if (!$this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]]) {
+                    ?>
+                    <a class="rounded-0 shadow bg-primary text-light nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-staff-ga" role="tab" aria-controls="nav-profile" aria-selected="false">Staff Google Apps</a>
+                    <?php
+                }
+                ?>
                 <a class="rounded-0 shadow bg-primary text-light nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-student-ad" role="tab" aria-controls="nav-home" aria-selected="true">Student Active Directory</a>
-                <a class="rounded-0 shadow bg-primary text-light nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-student-ga" role="tab" aria-controls="nav-profile" aria-selected="false">Student Google Apps</a>
-
+                <?php
+                if (!$this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]]) {
+                    ?>
+                    <a class="rounded-0 shadow bg-primary text-light nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-student-ga" role="tab" aria-controls="nav-profile" aria-selected="false">Student Google Apps</a>
+                    <?php
+                }
+                ?>
             </div>
         </nav>
         <div class="shadow bg-light tab-content py-3 px-md-3" id="nav-tabContent">
             <div class="tab-pane fade show active" id="nav-staff-ad" role="tabpanel" aria-labelledby="nav-staff-tab">
                 <?php
                 //var_dump(ActiveDirectory::getField(Schema::GRADE, $this->gradeID, Schema::ACTIVEDIRECTORY_OU, 'Staff'));
-                $staffADForm = new Form('/grades/editStaff/' . $this->grade[Schema::GRADE_ID[Schema::COLUMN]]);
+                $staffADForm = new Form('/settings/grades/editStaff/' . $this->grade[Schema::GRADE_ID[Schema::COLUMN]]);
                 $staffADForm->generateADForm($this->gradeID, $this->staffADSettings, Schema::GRADE, 'Staff')
                         ->buildUpdateButton('Update AD')
                         ->addToNewRow();
@@ -57,19 +68,25 @@ echo $this->view('layouts/setup_navbar');
                 echo $staffADForm->getFormHTML();
                 ?>
             </div>
-            <div class="tab-pane fade" id="nav-staff-ga" role="tabpanel" aria-labelledby="nav-student-tab">
-                <?php
-                $staffGAForm = new Form('/grades/editStaff/' . $this->grade[Schema::GRADE_ID[Schema::COLUMN]]);
-                $staffGAForm->generateGAForm($this->gradeID, $this->staffGASettings, Schema::GRADE)
-                        ->buildUpdateButton('Update GA')
-                        ->addToNewRow();
-
-                echo $staffGAForm->getFormHTML();
+            <?php
+            if (!$this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]]) {
                 ?>
-            </div>
+                <div class="tab-pane fade" id="nav-staff-ga" role="tabpanel" aria-labelledby="nav-student-tab">
+                    <?php
+                    $staffGAForm = new Form('/settings/grades/editStaff/' . $this->grade[Schema::GRADE_ID[Schema::COLUMN]]);
+                    $staffGAForm->generateGAForm($this->gradeID, $this->staffGASettings, Schema::GRADE)
+                            ->buildUpdateButton('Update GA')
+                            ->addToNewRow();
+
+                    echo $staffGAForm->getFormHTML();
+                    ?>
+                </div>
+                <?php
+            }
+            ?>
             <div class="tab-pane fade" id="nav-student-ad" role="tabpanel" aria-labelledby="nav-staff-tab">
                 <?php
-                $studentADForm = new Form('/grades/editStudents/' . $this->grade[Schema::GRADE_ID[Schema::COLUMN]]);
+                $studentADForm = new Form('/settings/grades/editStudents/' . $this->grade[Schema::GRADE_ID[Schema::COLUMN]]);
                 $studentADForm->generateADForm($this->gradeID, $this->studentADSettings, Schema::GRADE, 'Student')
                         ->buildUpdateButton('Update AD')
                         ->addToNewRow();
@@ -79,18 +96,24 @@ echo $this->view('layouts/setup_navbar');
                 echo $studentADForm->getFormHTML();
                 ?>
             </div>
-            <div class="tab-pane fade" id="nav-student-ga" role="tabpanel" aria-labelledby="nav-student-tab">
-                <?php
-                $studentGAForm = new Form('/grades/editStudents/' . $this->grade[Schema::GRADE_ID[Schema::COLUMN]]);
-                $studentGAForm->generateGAForm($this->gradeID, $this->studentGASettings, Schema::GRADE, 'Student')
-                        ->buildUpdateButton('Update GA')
-                        ->addToNewRow();
-
-
-
-                echo $studentGAForm->getFormHTML();
+            <?php
+            if (!$this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]]) {
                 ?>
-            </div>
+                <div class="tab-pane fade" id="nav-student-ga" role="tabpanel" aria-labelledby="nav-student-tab">
+                    <?php
+                    $studentGAForm = new Form('/settings/grades/editStudents/' . $this->grade[Schema::GRADE_ID[Schema::COLUMN]]);
+                    $studentGAForm->generateGAForm($this->gradeID, $this->studentGASettings, Schema::GRADE, 'Student')
+                            ->buildUpdateButton('Update GA')
+                            ->addToNewRow();
+
+
+
+                    echo $studentGAForm->getFormHTML();
+                    ?>
+                </div>
+                <?php
+            }
+            ?>
         </div>
 
 
