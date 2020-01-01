@@ -7,16 +7,20 @@ use system\app\Form;
 echo $this->modal('deleteDistrict');
 //var_dump($this->staffADSettings);
 //var_dump($this->staffADSettings[Schema::ACTIVEDIRECTORY_OU[Schema::COLUMN]]);
+$ad = new app\api\AD($this->districtID);
+$adTestResult = $ad->getConnectionResult();
+//var_dump($adTestResult);
 ?>
 <?= $this->view('layouts/setup_navbar'); ?>
-<div class = "container-fluid px-md-5">
+
+<div  id="settings-content" class = "container-fluid px-md-5 pt-3">
 
     <div class = "mb-3">
         <strong>Editing
             <?php
-            //var_dump(Schema::DISTRICT_NAME);
+//var_dump(Schema::DISTRICT_NAME);
             echo $this->district[Schema::DISTRICT_NAME[Schema::COLUMN]];
-            //var_dump($this->district);
+//var_dump($this->district);
             ?>
         </strong>
         <button type="button" class="close text-danger" aria-label="Close" data-toggle="modal" data-target="#deleteDistrictModal">
@@ -36,13 +40,20 @@ echo $this->modal('deleteDistrict');
             <nav class="rounded-top nav-fill nav-justified">
                 <div class = "nav nav-tabs" id = "nav-tab" role = "tablist">
                     <a class = "shadow bg-primary text-light nav-item nav-link active" id = "nav-ad-tab" data-toggle = "tab" href = "#nav-ad" role = "tab" aria-controls = "nav-home" aria-selected = "true">Active Directory</a>
-                    <a class = "shadow bg-primary text-light nav-item nav-link" id = "nav-ga-tab" data-toggle = "tab" href = "#nav-ga" role = "tab" aria-controls = "nav-profile" aria-selected = "false">Google Apps</a>
+                    <?php
+                    if (!$this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]]) {
+                        ?>
+
+                        <a class = "shadow bg-primary text-light nav-item nav-link" id = "nav-ga-tab" data-toggle = "tab" href = "#nav-ga" role = "tab" aria-controls = "nav-profile" aria-selected = "false">Google Apps</a>
+                        <?php
+                    }
+                    ?>
                 </div>
             </nav>
             <div class = "shadow bg-light tab-content py-3 px-md-3" id = "nav-tabContent">
                 <div class = "tab-pane fade show active" id = "nav-ad" role = "tabpanel" aria-labelledby = "nav-ad-tab">
                     <?php
-                    $adForm = new Form('/districts/edit/' . $this->districtID);
+                    $adForm = new Form('/settings/districts/edit/' . $this->districtID);
                     $adForm->subForm();
                     $adForm->buildTextInput('Staff Active Directory OU',
                                     Schema::ACTIVEDIRECTORY_OU,
@@ -70,28 +81,35 @@ echo $this->modal('deleteDistrict');
                     echo $adForm->getFormHTML();
                     ?>
                 </div>
-                <div class="tab-pane fade pt-3" id="nav-ga" role="tabpanel" aria-labelledby="nav-ga-tab">
-                    <?php
-                    $gaForm = new Form('/districts/edit/' . $this->districtID);
-                    $gaForm->subForm();
-                    $gaForm->buildTextInput('Staff Google Apps OU',
-                                    Schema::GOOGLEAPPS_OU,
-                                    $this->staffGASettings[Schema::GOOGLEAPPS_OU[Schema::COLUMN]])
-                            ->addToRow(1);
-
-                    $gaForm->buildTextInput('Staff Google Apps Group',
-                                    Schema::GOOGLEAPPS_GROUP,
-                                    $this->staffGASettings[Schema::GOOGLEAPPS_GROUP[Schema::COLUMN]])
-                            ->addToRow();
-
-                    $gaForm->buildTextInput('Staff Google Apps Other Groups',
-                                    Schema::GOOGLEAPPS_OTHER_GROUPS,
-                                    $this->staffGASettings[Schema::GOOGLEAPPS_OTHER_GROUPS[Schema::COLUMN]])
-                            ->addToRow(2);
-
-                    echo $gaForm->getFormHTML();
+                <?php
+                if (!$this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]]) {
                     ?>
-                </div>
+
+                    <div class="tab-pane fade pt-3" id="nav-ga" role="tabpanel" aria-labelledby="nav-ga-tab">
+                        <?php
+                        $gaForm = new Form('/settings/districts/edit/' . $this->districtID);
+                        $gaForm->subForm();
+                        $gaForm->buildTextInput('Staff Google Apps OU',
+                                        Schema::GOOGLEAPPS_OU,
+                                        $this->staffGASettings[Schema::GOOGLEAPPS_OU[Schema::COLUMN]])
+                                ->addToRow(1);
+
+                        $gaForm->buildTextInput('Staff Google Apps Group',
+                                        Schema::GOOGLEAPPS_GROUP,
+                                        $this->staffGASettings[Schema::GOOGLEAPPS_GROUP[Schema::COLUMN]])
+                                ->addToRow();
+
+                        $gaForm->buildTextInput('Staff Google Apps Other Groups',
+                                        Schema::GOOGLEAPPS_OTHER_GROUPS,
+                                        $this->staffGASettings[Schema::GOOGLEAPPS_OTHER_GROUPS[Schema::COLUMN]])
+                                ->addToRow(2);
+
+                        echo $gaForm->getFormHTML();
+                        ?>
+                    </div>
+                    <?php
+                }
+                ?>
             </div>
         </div>
     </div>
@@ -106,55 +124,82 @@ echo $this->modal('deleteDistrict');
 
 
 
-    //var_dump(\app\models\district\GoogleApps::getField(Schema::GRADE, $this->districtID, Schema::GOOGLEAPPS_OU, 'Staff'));
-    $form = new Form('/districts/edit/' . $this->districtID);
+//var_dump(\app\models\district\GoogleApps::getField(Schema::GRADE, $this->districtID, Schema::GOOGLEAPPS_OU, 'Staff'));
+    $form = new Form('/settings/districts/edit/' . $this->districtID);
     $form->buildTextInput('Name',
-            Schema::DISTRICT_NAME,
-            $this->district[Schema::DISTRICT_NAME[Schema::COLUMN]])->addToRow(1);
-    $form->buildTextInput('Abbreviation',
+                    Schema::DISTRICT_NAME,
+                    $this->district[Schema::DISTRICT_NAME[Schema::COLUMN]])->addToRow(1)
+            ->buildTextInput('Abbreviation',
                     Schema::DISTRICT_ABBREVIATION,
                     $this->district[Schema::DISTRICT_ABBREVIATION[Schema::COLUMN]])
             ->medium()
-            ->addToRow(2);
-
-    $form->buildTextInput('Active Directory Domain NetBIOS',
+            ->addToNewRow()
+            ->buildTextInput('Active Directory Domain NetBIOS',
                     Schema::DISTRICT_AD_NETBIOS,
                     $this->district[Schema::DISTRICT_AD_NETBIOS[Schema::COLUMN]])
-            ->addToRow();
-    $form->buildTextInput('Active Directory FQDN',
+            ->addToRow()
+            ->buildTextInput('Active Directory FQDN',
                     Schema::DISTRICT_AD_FQDN,
                     $this->district[Schema::DISTRICT_AD_FQDN[Schema::COLUMN]])
-            ->addToRow(3);
-    $form->buildTextInput('District Parent Email Group',
+            ->addToNewRow()
+            ->buildTextInput('Google Apps FQDN',
+                    Schema::DISTRICT_GA_FQDN,
+                    $this->district[Schema::DISTRICT_GA_FQDN[Schema::COLUMN]])
+            ->addToRow()
+            ->buildTextInput('Active Directory Username',
+                    Schema::DISTRICT_AD_USERNAME,
+                    $this->district[Schema::DISTRICT_AD_USERNAME[Schema::COLUMN]],
+                    'Enter an account with admin privileges to the district OU\'s')
+            ->addToNewRow()
+            ->buildStatusCheck('LDAP Connection Test',
+                    $adTestResult)
+            ->addToRow();
+    if ($adTestResult == "true") {
+        $form->buildAJAXStatusCheck('LDAP Permission Test',
+                        '/api/ldap/testPerms',
+                        [['districtID', $this->districtID]])
+                ->addToRow();
+    }
+
+    $form->buildPasswordInput('Active Directory Password',
+                    Schema::DISTRICT_AD_PASSWORD,
+                    $this->district[Schema::DISTRICT_AD_PASSWORD[Schema::COLUMN]],
+                    'Enter password for admin user')
+            ->addToRow()
+            ->buildBinaryInput('Using GADS',
+                    Schema::DISTRICT_USING_GADS,
+                    $this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]],
+                    'Tells the application whether or not to perform directory changes on Google Apps')
+            ->addToNewRow()
+            ->buildBinaryInput('Using GAPS',
+                    Schema::DISTRICT_USING_GAPS,
+                    $this->district[Schema::DISTRICT_USING_GAPS[Schema::COLUMN]],
+                    'Tells the application whether or not to perform password changes on Google Apps')
+            ->addToRow()
+            ->buildTextInput('District Parent Email Group',
                     Schema::DISTRICT_PARENT_EMAIL_GROUP,
                     $this->district[Schema::DISTRICT_PARENT_EMAIL_GROUP[Schema::COLUMN]],
                     'Do not enter the domain name.')
             ->appendInput('@' . $this->district[Schema::DISTRICT_GA_FQDN[Schema::COLUMN]])
-            ->addToRow(4);
-    $form->buildTextInput('Google Apps FQDN',
-                    Schema::DISTRICT_GA_FQDN,
-                    $this->district[Schema::DISTRICT_GA_FQDN[Schema::COLUMN]])
-            ->addToRow(3)
+            ->addToNewRow()
             ->buildDropDownInput('Staff Username Format',
                     Schema::DISTRICT_STAFF_USERNAME_FORMAT,
                     app\models\district\UsernameFormat::getUsernameFormats())
             ->center()
-            ->addToRow(5)
+            ->addToNewRow()
             ->buildDropDownInput('Student Username Format',
                     Schema::DISTRICT_STUDENT_USERNAME_FORMAT,
                     app\models\district\UsernameFormat::getUsernameFormats())
             ->center()
-            ->addToRow();
-
-
-    $form->addToForm($tabs, 6);
-    $form->insertObjectIDInput(Schema::DISTRICT_ID, $this->districtID);
-    $form->buildCustomButton('Schools/Buildings',
+            ->addToRow()
+            ->addToForm($tabs, 20)
+            ->insertObjectIDInput(Schema::DISTRICT_ID, $this->districtID)
+            ->buildCustomButton('Schools/Buildings',
                     'warning',
-                    '/schools/show/' . $this->district[app\database\Schema::DISTRICT_ID[app\database\Schema::COLUMN]])
-            ->addToRow(99);
-
-    $form->buildUpdateButton()->addToRow(100);
+                    '/settings/schools/show/' . $this->district[app\database\Schema::DISTRICT_ID[app\database\Schema::COLUMN]])
+            ->addToRow(99)
+            ->buildUpdateButton()
+            ->addToRow(100);
     echo $form->getFormHTML();
     ?>
 
