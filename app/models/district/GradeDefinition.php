@@ -13,6 +13,8 @@ namespace app\models\district;
  *
  * @author cjacobsen
  */
+use app\models\Query;
+
 class GradeDefinition {
 
     //put your code here
@@ -21,6 +23,12 @@ class GradeDefinition {
 
     public static function getDistrictID($schoolID) {
         return(\system\Database::get()->query('SELECT ' . Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN] . ' From ' . self::TABLE_NAME . ' Where ID=' . $schoolID)[0][Schema::SCHOOL_DISTRICT_ID]);
+    }
+
+    public static function getDropdownArray() {
+        $query = new Query(self::TABLE_NAME);
+        $response = $query->run();
+        var_dump($response);
     }
 
 }
