@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers;
+namespace app\controllers\settings;
 
 /**
  * Description of Home
@@ -34,8 +34,9 @@ namespace app\controllers;
 use system\Post;
 use app\models\district\District;
 use app\database\Schema;
+use app\controllers\Controller;
 
-class Settings extends Controller {
+class Application extends Controller {
 
     public $postables;
 
@@ -56,7 +57,7 @@ class Settings extends Controller {
         var_dump($post);
         \app\models\DatabasePost::setPost(Schema::APP, \system\app\App::getID(), $post);
         //var_dump($post);
-        $this->redirect('/settings');
+        $this->redirect('/settings/application');
     }
 
     /**
