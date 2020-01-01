@@ -33,13 +33,12 @@ namespace app\controllers;
  */
 class Home extends Controller {
 
-    //put your code here
     public function index() {
+
+        $this->motd = \app\models\AppConfig::getMOTD();
+        $this->applicationName = \app\models\AppConfig::getAppName();
         $this->layout = "default";
-        //echo "test";
         return $this->view('homepage');
-        //var_dump($this->content);
-        //$this->app->addToBody("test");
     }
 
 }
