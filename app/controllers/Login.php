@@ -26,28 +26,37 @@ class Login extends Controller {
     //put your code here
 
     public function index() {
+        \system\app\AppLogger::get()->debug('logining in');
         if (Post::isSet()) {
             try {
                 /* @var $user User */
                 $user = Local::authenticate(Post::get('username'), Post::get('password'));
-
-
-                /** @var App|null The system logger */
-                $app = App::get();
-                //$config = MasterConfig::get();
-
-                $app->user = $user;
-
-
-                Session::setUser($user);
-                Session::updateTimeout();
-
-                header("Location: /");
             } catch (AuthException $ex) {
-                session_destroy();
-                /* @var $ex AuthException */
-                return $ex->getMessage();
+                if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
+                    session_destroy();
+                }
+
+                try {
+                    $user = \system\app\auth\LDAP::authenticate(Post::get('username'), Post::get('password'));
+                } catch (AuthException $ex) {
+                    if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
+                        session_destroy();
+                    }
+                    return $ex->getMessage();
+                }
             }
+
+            /** @var App|null The system logger */
+            $app = App::get();
+            //$config = MasterConfig::get();
+
+            $app->user = $user;
+
+
+            Session::setUser($user);
+            Session::updateTimeout();
+
+            header("Location: /");
         } else {
             return $this->view('login/index');
         }
