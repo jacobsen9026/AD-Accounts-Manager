@@ -39,6 +39,7 @@ use app\models\district\Grade;
 use app\models\district\School;
 use app\models\district\District;
 use app\models\district\Team;
+use app\models\district\Department;
 use system\app\App;
 use app\models\Query;
 
@@ -60,7 +61,8 @@ class Controller extends CommonController {
 
         parent::__construct($app);
         //$this->config = MasterConfig::get();
-        $this->controller = $app->request->module;
+        $this->controller = $app->request->controller;
+        $this->user = $app->user;
         $this->layout = "default";
     }
 
@@ -74,8 +76,13 @@ class Controller extends CommonController {
 
         $this->schoolName = $this->school[Schema::SCHOOL_NAME[Schema::COLUMN]];
         $grades = Grade::getGrades($this->schoolID);
+
         if (isset($grades) and $grades != false) {
             $this->grades = $grades;
+        }
+        $departments = Department::getDepartments($this->schoolID);
+        if (isset($departments) and $departments != false) {
+            $this->departments = $departments;
         }
         $this->districtID = $this->school[Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN]];
         $this->preProcessDistrictID($this->districtID);
@@ -84,6 +91,7 @@ class Controller extends CommonController {
     public function preProcessTeamID($teamID) {
         $this->teamID = $teamID;
         $this->team = Team::getTeam($this->teamID);
+        $this->teamName = $this->team[Schema::TEAM_NAME[Schema::COLUMN]];
         $this->preProcessGradeID($this->team[Schema::TEAM_GRADE_ID[Schema::COLUMN]]);
     }
 
@@ -94,6 +102,16 @@ class Controller extends CommonController {
 
         $schoolID = $this->grade[Schema::GRADE_SCHOOL_ID[Schema::COLUMN]];
         $this->teams = Team::getTeams($this->gradeID);
+        $this->preProcessSchoolID($schoolID);
+    }
+
+    public function preProcessDepartmentID($departmentID) {
+
+        $this->departmentID = $departmentID;
+        $this->department = Department::getDepartment($this->departmentID);
+
+        $this->departmentName = $this->department[Schema::DEPARTMENT_NAME[Schema::COLUMN]];
+        $schoolID = $this->department[Schema::DEPARTMENT_SCHOOL_ID[Schema::COLUMN]];
         $this->preProcessSchoolID($schoolID);
     }
 
