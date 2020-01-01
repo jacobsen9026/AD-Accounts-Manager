@@ -33,3 +33,4 @@ nbproject/private/private.xml
 nbproject/project.xml
 app/database/config.db
 app/database/config.db.bak
+app/lib/gam/oauth2.txt
