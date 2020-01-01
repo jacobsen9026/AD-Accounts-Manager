@@ -42,6 +42,8 @@ use app\config\Router;
 use app\config\MasterConfig;
 use app\models\user\User;
 use app\models\user\Privilege;
+use app\api\AD;
+use app\models\Auth;
 
 class App extends CommonApp {
 
@@ -108,6 +110,7 @@ class App extends CommonApp {
         $this->request = $req;
         /*
          * Define the Grade Codes
+         * @DEPRECATED
          */
         define('GRADE_CODES', array('PK3', 'PK4', 'K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'));
     }
@@ -126,6 +129,8 @@ class App extends CommonApp {
     public function loadConfig() {
         //$this->config = new MasterConfig();
         $this->coreLogger->info("The app config has been loaded");
+        define('GAMPATH', APPPATH . DIRECTORY_SEPARATOR . "lib" . DIRECTORY_SEPARATOR . "gam");
+
         /*
          * Set the php errror mode repective of the setting
          * in the webConfig.
@@ -137,7 +142,6 @@ class App extends CommonApp {
      * @return App
      */
     public function run() {
-
         $this->logger->debug("Creating Session");
 
         $this->user = Session::getUser();
@@ -180,6 +184,7 @@ class App extends CommonApp {
         //var_dump($_SESSION);
         if (!isset($this->user) or $this->user == null or $this->user->privilege <= Privilege::UNAUTHENTICATED) {
             $this->logger->warning('user not logged in');
+            // Change route to login if not logged in.
             $this->route = array('Login', 'index');
         } else {
             Session::updateTimeout();
@@ -188,17 +193,23 @@ class App extends CommonApp {
          * Build the controller based on the previously computed settings
          */
         if ($this->controller = Factory::buildController($this)) {
+
+            $this->logger->debug($this->route[0]);
             $method = $this->route[1];
             if (method_exists($this->controller, $method)) {
+                // Check if there is a parameter set from the request
+
+                $this->logger->debug($this->route[1]);
                 if (empty($this->route[2])) {
                     $this->outputBody .= $this->controller->$method();
                 } else {
-
+                    $this->logger->debug($this->route[2]);
                     $this->outputBody .= $this->controller->$method($this->route[2]);
                 }
                 //var_dump($this->outputBody);
             } else {
                 $this->logger->warning("No method found by name of " . $this->router->method . ' in the controller ' . $this->router->controller);
+
                 $this->outputBody .= $this->view('errors/405');
             }
             /*
