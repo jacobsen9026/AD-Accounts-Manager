@@ -32,5 +32,44 @@ namespace app\api;
  * @author cjacobsen
  */
 class GAM {
-    //put your code here
+
+//put your code here
+    public $oauthFilePath;
+
+    /** @var AppLogger The application logger */
+    private $logger;
+
+    /** @var GAM|null */
+    public static $instance;
+
+    function __construct($username = null, $password = null) {
+
+        if (isset(self::$instance)) {
+            return self::$instance;
+        } else {
+            self::$instance = $this;
+            $this->logger = \system\app\AppLogger::get();
+            $this->oauthFilePath = APPPATH . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'gam' . DIRECTORY_SEPARATOR . 'oauth2.txt';
+        }
+    }
+
+    /**
+     *
+     * @return GAM
+     */
+    public static function get() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    public function checkOAuth() {
+        if (file_exists($this->oauthFilePath)) {
+            return true;
+        } else {
+            return "The file does not exist";
+        }
+    }
+
 }
