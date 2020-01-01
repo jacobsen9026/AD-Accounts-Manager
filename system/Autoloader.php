@@ -38,6 +38,7 @@ abstract class Autoloader {
         include(ROOTPATH . DIRECTORY_SEPARATOR . "system" . DIRECTORY_SEPARATOR . "CoreFunctions.php");
         spl_autoload_register(function ($class) {
             //var_dump($class);
+            // Check root namspace PSR path
             $filename = ROOTPATH . DIRECTORY_SEPARATOR . $class . '.php';
             if (!class_exists($class)) {
                 if (file_exists($filename)) {
@@ -45,6 +46,26 @@ abstract class Autoloader {
                         require $filename;
                     } catch (Exception $ex) {
                         echo $ex;
+                    }
+                } else {
+                    // Check app lib directory PSR path
+                    $filename = ROOTPATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . $class . '.php';
+                    if (file_exists($filename)) {
+                        try {
+                            require $filename;
+                        } catch (Exception $ex) {
+                            echo $ex;
+                        }
+                    } else {
+                        // Check system lib directory PSR path
+                        $filename = ROOTPATH . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . $class . '.php';
+                        if (file_exists($filename)) {
+                            try {
+                                require $filename;
+                            } catch (Exception $ex) {
+                                echo $ex;
+                            }
+                        }
                     }
                 }
             }
