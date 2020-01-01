@@ -9,7 +9,13 @@
 namespace system\app;
 
 /**
- * Description of Form
+ * Form
+ *
+ * Form Builder Class
+ *
+ * Create a new object and add each item via the build methods
+ * followed by an addTo call to place it in the form matrix
+ *
  *
  * @author cjacobsen
  */
@@ -21,40 +27,61 @@ class Form {
 
 //put your code here
     private $formHTML;
+
+    /** @var array * */
     private $inputGroups;
     private $lastComponentBuilt;
     private $currentRow;
-    private $formEnd = '</div>';
+    private $componentEnd = '</div>';
     private $subForm = false;
     private $logger;
 
     /**
+     * This essentially builds the form tag
      *
      * @param string $action The action attribute of the form tag
      * @param string $name The name attribute of the form tag
      * @param string $method
      */
-    function __construct($action, $name = '', $method = 'post') {
-        $this->formHTML = '<form name="' . $name . '" method="' . $method . '" action="' . $action . '">';
+    function __construct($action = null, $name = '', $method = 'post') {
+        // Check if action is null and if so set to current URL
+        if (is_null($action)) {
+            $action = $_SERVER["REQUEST_URI"];
+        }
+        // Build form opening tag from construct parameters
+        $this->formHTML = '<form class="pb-3" name="' . $name . '" method="' . $method . '" action="' . $action . '" enctype="multipart/form-data">';
+        // Initialize form row to 1
         $this->currentRow = 1;
+        // Initialize form logger
         $this->logger = AppLogger::get();
     }
 
+    /**
+     * subForm
+     * Designates the form to be drawn with no form tags surrounding the components
+     *
+     * @return Form
+     */
     public function subForm() {
-//var_dump($this->formHTML);
+        // Overwrite formHTML with nothing to erase default form opening tag
         $this->formHTML = '';
-//var_dump($this->formHTML);
+        // Set flag variable to tell getFormHTML that this is a subForm
         $this->subForm = true;
         return $this;
     }
 
+    /**
+     * getFormHTML
+     * This is the final step in building a form.
+     * Accounting for all previously set options the form HTML is generated and returned as a string
+     *
+     * @return string
+     */
     public function getFormHTML() {
         $formBody = '';
-//Create display tables for input groups
-//var_dump($this->inputGroups);
+        // Create display tables for input groups
         if (!empty($this->inputGroups)) {
-
-//var_dump($this->inputGroups);
+            // Sort components by row
             ksort($this->inputGroups);
             foreach ($this->inputGroups as $group) {
                 $formBody .= '<div class="row mb-2">';
@@ -68,14 +95,28 @@ class Form {
             }
         }
         $this->formHTML .= $formBody;
+        // If not a subForm close the form tag
         if (!$this->subForm) {
             $this->formHTML .= "</form>";
         }
-
-
-//var_dump($this->formHTML);
-//echo "<script> console.log('" . $this->formHTML . "');</script>";
         return $this->formHTML;
+    }
+
+    /**
+     *
+     * @return Form
+     */
+    public function addSeperator() {
+
+
+        $name = $this->preProcessName(null);
+        $formComponent = $this->startInput(null, null, null);
+
+        $formComponent .= '<input style="visibility:hidden;" type="text" class="col form-control text-center" hidden /><br/><br/>';
+        $formComponent .= $this->componentEnd;
+        $this->lastComponentBuilt = $formComponent;
+        $this->addToNewRow();
+        return $this;
     }
 
     /**
@@ -83,6 +124,7 @@ class Form {
      *
      * Adds a form item to the specified row. If no column is supplied, the item is added to the end of the row.
      * If no form component is provided, the last form item that was created will be added.
+     *
      * @param mixed $rowKey The row index
      * @param mixed $colKey The column index
      * @return Form Description
@@ -95,22 +137,30 @@ class Form {
         if (is_null($rowKey)) {
             $rowKey = $this->currentRow;
         }
-//var_dump($formComponent);
-//var_dump($rowKey);
 
         $this->inputGroups[$rowKey][] = $formComponent;
         $this->currentRow = $rowKey;
         return $this;
     }
 
-    public function addToNewRow() {
+    /**
+     * addToNewRow
+     * Adds a form component built to a new row at the end of the list
+     * If no form component is provided, the last form item that was created will be added.
+     *
+     *
+     * @param type $formComponent
+     * @return $this
+     */
+    public function addToNewRow($formComponent = null) {
+        //var_dump($formComponent);
+        //$this->logger->debug($formComponent);
+        if (is_null($formComponent)) {
 
+            $formComponent = $this->lastComponentBuilt;
+        }
         $rowKey = $this->currentRow + 1;
-
-//var_dump($formComponent);
-//var_dump($rowKey);
-
-        $this->inputGroups[$rowKey][] = $this->lastComponentBuilt;
+        $this->inputGroups[$rowKey][] = $formComponent;
         $this->currentRow = $rowKey;
         return $this;
     }
@@ -130,6 +180,9 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     */
     public function addLastBuildToForm() {
         $this->formHTML .= $this->lastComponentBuilt;
     }
@@ -165,16 +218,16 @@ class Form {
      * @return Form
      */
     public function small() {
-        if (strpos($this->lastComponentBuilt, 'input-group')) {
-            $this->lastComponentBuilt = str_replace('input-group', 'input-group col-md-3 mx-auto', $this->lastComponentBuilt);
+        if (strpos($this->lastComponentBuilt, 'col form-control')) {
+            $this->lastComponentBuilt = str_replace('col form-control', 'col-md-6 col-lg-4 col-xl-2 mx-auto form-control', $this->lastComponentBuilt);
 //var_dump("form-control found");
         }
         return $this;
     }
 
     public function medium() {
-        if (strpos($this->lastComponentBuilt, 'input-group')) {
-            $this->lastComponentBuilt = str_replace('input-group', 'input-group col-md-5 mx-auto', $this->lastComponentBuilt);
+        if (strpos($this->lastComponentBuilt, 'col form-control')) {
+            $this->lastComponentBuilt = str_replace('col form-control', 'col-md col-lg-8 col-xl-6 mx-auto form-control', $this->lastComponentBuilt);
 //var_dump("form-control found");
         }
         return $this;
@@ -182,10 +235,10 @@ class Form {
 
     public function insertObjectIDInput($schema, $value) {
 //var_dump($schema);
-        $this->lastComponentBuilt = '<input hidden type="hidden"
+        $hiddenInput = '<input hidden type="hidden"
             name="' . $schema[Schema::NAME] . '"
             value="' . $value . '"/>';
-        $this->addLastBuildToForm();
+        $this->formHTML .= $hiddenInput;
         return $this;
     }
 
@@ -206,7 +259,7 @@ class Form {
         return $this;
     }
 
-    public function buildSubmitButton($text, $buttonClass) {
+    public function buildSubmitButton($text, $buttonClass = 'primary') {
 
         $this->lastComponentBuilt = '<div class="nav justify-content-center nav-pills m-3">
 
@@ -247,7 +300,100 @@ class Form {
         $formComponent = $this->startInput($name, $label, $helpText);
 
         $formComponent .= '<input type="text" class="col form-control text-center" name="' . $name . '" value="' . $value . '" placeholder="' . $placeholder . '"/>';
-        $formComponent .= $this->formEnd;
+        $formComponent .= $this->componentEnd;
+        $this->lastComponentBuilt = $formComponent;
+        return $this;
+    }
+
+    /**
+     *
+     * @param string $label
+     * @param const $name
+     * @param string $value
+     * @param string $helpText
+     * @param string $placeholder
+     * @return Form
+     */
+    public function buildStatusCheck($label, $value, $helpText = null) {
+        //var_dump($value);
+        $formComponent = $this->startInput(null, $label, $helpText);
+
+        $formComponent .= '<div class="col-md text-center ">';
+        if ($value == '1') {
+            $formComponent .= '<h1><i class="fas fa-check-circle text-success"></i></h1>';
+        } else {
+            $formComponent .= '<h1><i class="fas fa-times-circle text-danger"></i></h1><p class="mb-0">' . $value . '</p>';
+        }
+        $formComponent .= '</div>';
+        $formComponent .= $this->componentEnd;
+        $this->lastComponentBuilt = $formComponent;
+        return $this;
+    }
+
+    /**
+     *
+     * @param string $label
+     * @param const $name
+     * @param string $value
+     * @param string $helpText
+     * @param string $placeholder
+     * @return Form
+     */
+    public function buildAJAXStatusCheck($label, $target, $data = null, $helpText = null) {
+        //var_dump($value);
+        $formComponent = $this->startInput(null, $label, $helpText);
+        $label = strtolower(str_replace(" ", "", $label));
+
+        $formComponent .= '<div class="col-md text-center" id="' . $label . 'ajaxOutput">';
+        $formComponent .= '<button type="button" class="btn btn-primary" id="' . $label . 'button">Perorm Check</button>';
+        $formComponent .= '</div>';
+
+
+        $formComponent .= $this->componentEnd;
+        $postData = '';
+        if (!is_null($data)) {
+            foreach ($data as $entry) {
+                $postData .= $entry[0] . ': ' . $entry[1];
+            }
+        }
+        $formComponent .= "<script>
+                    $('#" . $label . "button').on('click', function () {
+                        console.log('works');
+                        $('#" . $label . "ajaxOutput').html(" . '"' . "<span class='spinner-border text-primary'>" . '"' . ");
+                        $.post('$target', {" . $postData . "},
+                                function (data) {
+                                    //request completed
+                                    //now update the div with the new data
+                                    $('#" . $label . "ajaxOutput').html(data);
+                }
+                );
+                //$('#" . $label . "ajaxOutput').slideDown('slow');
+                });
+
+        </script>";
+        $this->lastComponentBuilt = $formComponent;
+        return $this;
+    }
+
+    /**
+     *
+     * @param string $label
+     * @param const $name
+     * @param string $value
+     * @param string $helpText
+     * @param string $placeholder
+     * @return Form
+     */
+    public function buildFileInput($name, $label, $helpText = null, $placeholder = null) {
+
+        $formComponent = '<div class="row p-3 h-100">';
+        $formComponent .= '<input type="file" name="' . $name . '" id="' . $name . '">';
+        $formComponent .= '<input type="text" name="somethingelse" hidden />';
+        //      $formComponent = '<div class="row p-3 h-100 custom-file">';
+        //$formComponent .= '<input type="file" class="custom-file-input" id="' . $name . '" name="' . $name . '"/>';
+        //$formComponent .= ' <label class=" custom-file-label" for="' . $name . '">Choose file</label>';
+
+        $formComponent .= $this->componentEnd;
         $this->lastComponentBuilt = $formComponent;
         return $this;
     }
@@ -262,12 +408,12 @@ class Form {
      * @return Form
      */
     public function buildTextAreaInput($label, $name, $value = null, $helpText = null, $placeholder = null) {
-//var_dump($name);
+        //var_dump($name);
         $name = $this->preProcessName($name);
         $formComponent = $this->startInput($name, $label, $helpText);
 
         $formComponent .= '<textarea type="text" class="h-100 form-control" name="' . $name . '" placeholder="' . $placeholder . '">' . $value . '</textarea>';
-        $formComponent .= $this->formEnd;
+        $formComponent .= $this->componentEnd;
         $this->lastComponentBuilt = $formComponent;
         $this->inline();
         return $this;
@@ -287,9 +433,9 @@ class Form {
         $name = $this->preProcessName($name);
         $formComponent = $this->startInput($name, $label, $helpText);
 
-        $formComponent .= '<select type="text" class="form-control text-center" name="' . $name . '">';
+        $formComponent .= '<select type="text" class="col form-control text-center" name="' . $name . '">';
         foreach ($array as $option) {
-            var_dump($option);
+            //var_dump( $option);
             if (is_array($option)) {
                 $value = $option[1];
                 $text = $option[0];
@@ -301,7 +447,7 @@ class Form {
             $formComponent .= '<option value="' . $value . '">' . $text . '</option>';
         }
         $formComponent .= '</select>';
-        $formComponent .= $this->formEnd;
+        $formComponent .= $this->componentEnd;
         $this->lastComponentBuilt = $formComponent;
         return $this;
     }
@@ -309,7 +455,7 @@ class Form {
     public function center() {
         if (strpos($this->lastComponentBuilt, '<option')) {
             $this->lastComponentBuilt = str_replace('<option', '<option class="text-center"', $this->lastComponentBuilt);
-//var_dump("form-control found");
+            //var_dump("form-control found");
         }
         return $this;
     }
@@ -324,31 +470,43 @@ class Form {
      * @return Form
      */
     public function buildPasswordInput($label, $name, $value = null, $helpText = null, $placeholder = null) {
-//var_dump($name);
+        //var_dump($name);
         $name = $this->preProcessName($name);
         $formComponent = $this->startInput($name, $label, $helpText);
 
-        $formComponent .= '<input type="password" class="form-control text-center" name="' . $name . '" value="' . $value . '" placeholder="' . $placeholder . '"/>';
-        $formComponent .= $this->formEnd;
+        $formComponent .= '<input type="password" class="col form-control text-center" name="' . $name . '" value="' . $value . '" placeholder="' . $placeholder . '"/>';
+        $formComponent .= $this->componentEnd;
         $this->lastComponentBuilt = $formComponent;
         return $this;
     }
 
-    public function appendInput($appendContent) {
+    public function disable() {
+        if (strpos($this->lastComponentBuilt, '<input ')) {
+            $this->lastComponentBuilt = str_replace('<input ', '<input disabled ', $this->lastComponentBuilt);
+            //var_dump("form-control found");
+        }
+        return $this;
+    }
+
+    public function appendInput($appendContent = null) {
+        if (is_null($appendContent)) {
+            $appendContent = $this->lastComponentBuilt;
+        }
         $append = '<div class="px-0 col-md-4 col-lg-3 col-xl-2">
-    <span class="input-group-text">' . $appendContent . '</span>
-  </div>';
-        $this->lastComponentBuilt = substr($this->lastComponentBuilt, 0, strlen($this->lastComponentBuilt) - 6) . $append . $this->formEnd;
+            <span class="input-group-text">' . $appendContent . '</span>
+        </div>';
+        $this->lastComponentBuilt = substr($this->lastComponentBuilt, 0, strlen($this->lastComponentBuilt) - 6) . $append . $this->componentEnd;
         return $this;
     }
 
     private function startInput($name, $label, $helpText = null) {
-        $startInput = '<label class="font-weight-bold mb-0" for="' . $name . '">' . $label . '</label>';
+        $labelClass = 'font-weight-bold mb-0';
+        $startInput = '<label class="' . $labelClass . '" for="' . $name . '">' . $label . '</label>';
         if (!empty($helpText)) {
 
             $startInput .= '<small id="' . $name . 'HelpBlock" class="form-text text-muted mt-0">' . $helpText . '</small>';
         }
-        $startInput .= '<div class="row  p-3 h-100">';
+        $startInput .= '<div class="row p-3 h-100">';
         return $startInput;
     }
 
@@ -362,46 +520,56 @@ class Form {
      * @return $this
      */
     public function buildBinaryInput($label, $name, $state, $helpText = null, $helpFunction = null) {
+
+        //var_dump($label);
         //var_dump(boolval($state));
+
         $state = boolval($state);
         $name = $this->preProcessName($name);
-        $formComponent = $this->startInput($name, $label);
-        if (!empty($helpText)) {
-            $formComponent .= '<div class="col "><div><small id="' . $name . 'HelpBlock" class="form-text text-muted">';
-            if (!is_null($helpText)) {
-                $formComponent .= $helpText;
-                if (!is_null($helpFunction)) {
-                    ob_start();
-                    $helpFunction();
-                    $formComponent .= ob_get_clean();
-                }
-            }
-            $formComponent .= '</small></div>';
+        $formComponent = $this->startInput($name, $label, $helpText);
+        $formComponent .= '<div class="col">';
+
+
+        if (!is_null($helpFunction)) {
+            ob_start();
+            $helpFunction();
+            $formComponent .= ob_get_clean();
         }
+
+        // $formComponent .= '</small></div></div>';
+
 
 
         $formComponent .= '<div class="row">';
-        $formComponent .= ' <div class="col-md">';
+        $formComponent .= ' <div class="col-md custom-radio custom-control">';
+        $inputClass = 'custom-control-input';
+        $common = '<input class="' . $inputClass . '" type="radio" name="' . $name . '"';
+
+
         if (!$state) {
-            $formComponent .= ' <input class="form-control-input" type="radio" name="' . $name . '" value="0" checked/>';
+            $formComponent .= $common . 'id="' . $name . '_FALSE" value="0" checked/>';
         } else {
-            $formComponent .= ' <input class="form-control-input" type="radio" name="' . $name . '" value="0" />';
+            $formComponent .= $common . 'id="' . $name . '_FALSE" value="0" />';
         }
-        $formComponent .= '<label class="" for="' . $name . '">False</label>';
+
+
+        $formComponent .= '<label class="custom-control-label" for="' . $name . '_FALSE">False</label>';
         $formComponent .= '</div>';
-        $formComponent .= ' <div class="col-md">';
+        $formComponent .= ' <div class="col-md custom-radio custom-control">';
+
+
         if ($state) {
-            $formComponent .= ' <input class="form-control-input" type="radio" name="' . $name . '" value="1" checked/>';
+            $formComponent .= $common . 'id="' . $name . '_TRUE"" value="1" checked/>';
         } else {
-            $formComponent .= ' <input class="form-control-input" type="radio" name="' . $name . '" value="1" />';
+            $formComponent .= $common . 'id="' . $name . '_TRUE"" value="1" />';
         }
-        $formComponent .= '<label class="" for="' . $name . '">True</label>';
+        $formComponent .= '<label class="custom-control-label" for="' . $name . '_TRUE">True</label>';
         $formComponent .= '</div>';
         $formComponent .= '</div>';
         $formComponent .= '</div>';
 
 
-        $formComponent .= $this->formEnd;
+        $formComponent .= $this->componentEnd;
 
         $this->lastComponentBuilt = $formComponent;
         //$this->inline();
@@ -447,11 +615,11 @@ class Form {
     public function inline() {
 
         $this->lastComponentBuilt = str_replace('<label', '<div class="row"><div class="col-md-4"><label"', $this->lastComponentBuilt);
-//var_dump("form-control found");
+        //var_dump("form-control found");
 
         if (strpos($this->lastComponentBuilt, '</small>')) {
-            $this->lastComponentBuilt = str_replace('</small>', '</small></div><div class="col-md-8">', $this->lastComponentBuilt);
-//var_dump("form-control found");
+            $this->lastComponentBuilt = str_replace('</small>', '</small></div><div class = "col-md-8">', $this->lastComponentBuilt);
+            //var_dump("form-control found");
         }
         if (strpos($this->lastComponentBuilt, '</div>')) {
             $this->lastComponentBuilt .= "</div></div>";
