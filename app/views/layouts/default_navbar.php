@@ -11,7 +11,10 @@ use app\models\AppConfig;
 
         <div class="collapse navbar-collapse" id="navbarBrandText">
             <!-- Brand -->
-            <a class="navbar-brand" href="/"> <i class="text-light fas fa-graduation-cap mr-1"></i><?php echo AppConfig::getAppName(); ?></a>
+            <a class="navbar-brand" href="/">
+                <i class="text-light fas fa-graduation-cap mr-1"></i>
+                <?php echo AppConfig::getAppName(); ?>
+            </a>
         </div>
 
         <div  data-toggle="collapse" data-target="#collapseAbbreviation">
@@ -20,7 +23,10 @@ use app\models\AppConfig;
         <div class="" >
 
             <!-- Brand -->
-            <a class="navbar-brand d-md-none" href="/"> <i class="text-light fas fa-graduation-cap mr-1"></i><?php echo AppConfig::getAppAbbreviation(); ?></a>
+            <a class="navbar-brand d-md-none" href="/">
+                <i class="text-light fas fa-graduation-cap mr-1"></i>
+                <?php echo AppConfig::getAppAbbreviation(); ?>
+            </a>
         </div>
     </div>
     <?php
@@ -85,13 +91,13 @@ use app\models\AppConfig;
                                 <i class="fas fa-tools d-none d-md-inline"></i>
                                 <p class="d-inline d-md-none">Settings</p>
                             </a>
-                            <div class="shadow dropdown-menu dropdown-menu-right pt-0">
-                                <div class="dropdown-header bg-light">Settings</div>
+                            <div class="shadow dropdown-menu dropdown-menu-right">
 
 
 
-                                <a class="dropdown-item" href="/settings">Application</a>
-                                <a class="dropdown-item" href="/districts">District Setup</a>
+
+                                <a class="dropdown-item" href="/settings/application">Application</a>
+                                <a class="dropdown-item" href="/settings/districts">District Setup</a>
 
                                 <?php if (App::get()->inDebugMode()) {
                                     ?>
@@ -114,9 +120,9 @@ use app\models\AppConfig;
 
                         </a>
                         <div class="shadow dropdown-menu dropdown-menu-right pt-0">
-                            <div class="dropdown-header bg-light"> <?php echo $this->user->username; ?></div>
+                            <div class="dropdown-header bg-secondary text-light"> <?php echo $this->user->username; ?></div>
 
-                            <a class="dropdown-item" href="/profile">Profile</a>
+                            <a class="dropdown-item" href="/settings/profile">Profile</a>
 
                             <a class="dropdown-item" href="/logout">Logout</a>
                         </div>
