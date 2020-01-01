@@ -41,4 +41,40 @@ class CoreUser {
     public $username;
     public $privilege;
 
+    /**
+     *
+     * @return type
+     */
+    public function getUsername() {
+        return $this->username;
+    }
+
+    /**
+     *
+     * @return type
+     */
+    public function getPrivilege() {
+        return $this->privilege;
+    }
+
+    /**
+     *
+     * @param type $username
+     * @return $this
+     */
+    public function setUsername($username) {
+        $this->username = $username;
+        return $this;
+    }
+
+    /**
+     *
+     * @param type $privilege
+     * @return $this
+     */
+    public function setPrivilege($privilege) {
+        $this->privilege = $privilege;
+        return $this;
+    }
+
 }
