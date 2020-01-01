@@ -44,15 +44,12 @@ class CommonRouter {
 
     /** @var array|null */
     public $customRoutes = null;
-    private $app = null;
-    private $userPrivilege = null;
     private $request = null;
     public $controller = null;
     public $method = null;
     public $data = null;
 
     public function __construct(App $app) {
-        $this->app = $app;
         $this->logger = $app->logger;
 
         $this->request = $app->request;
@@ -62,7 +59,7 @@ class CommonRouter {
      *
      * @return string
      */
-    public function getDefaultModule() {
+    public function getDefaultController() {
         return "Home";
     }
 
@@ -70,7 +67,7 @@ class CommonRouter {
      *
      * @return string
      */
-    public function getDefaultPage() {
+    public function getDefaultMethod() {
         return "index";
     }
 
@@ -98,9 +95,14 @@ class CommonRouter {
         return $route;
     }
 
+    /**
+     *
+     * @param type $route
+     * @return type
+     */
     private function replaceCustomRoutes($route) {
-        //Inset custom routes over computed route
-        //var_dump($route);
+//Inset custom routes over computed route
+//var_dump($route);
         $controller = $route[0];
         $method = $route[1];
         foreach ($this->customRoutes as $customRoute) {
@@ -113,66 +115,144 @@ class CommonRouter {
                  */
             }
         }
-        //var_dump($route);
+//var_dump($route);
         return $route;
     }
 
+    /**
+     *
+     */
     private function setRoute() {
-        //Set the route to take based on the request
-        //This is prior to custom route insertion
-        if (!isset($this->request->module)) {
-            $this->controller = $this->getDefaultModule();
+//Set the route to take based on the request
+//This is prior to custom route insertion
+// Set Controller
+        if (!isset($this->request->controller)) {
+            $this->controller = $this->getDefaultController();
         } else {
-            $this->controller = $this->preProcess($this->request->module);
+//var_dump($this->request->controller);
+            $this->controller = $this->preProcessController($this->request->controller);
         }
-        if (!isset($this->request->page)) {
-            $this->method = $this->getDefaultPage();
+// Set Method
+        if (!isset($this->request->method)) {
+            $this->method = $this->getDefaultMethod();
         } else {
 
-            $this->method = $this->preProcess($this->request->page);
+            $this->method = $this->preProcess($this->request->method);
         }
-        if (isset($this->request->action)) {
-            $this->data = $this->request->action;
+// Attach Data
+        if (isset($this->request->data)) {
+            $this->data = $this->request->data;
         }
+//var_dump($this->method);
+        if (strtolower($this->controller) == "api") {
+            $this->unfoldLeft();
+            $this->controller = "api\\" . $this->controller;
+            $this->logger->debug($this->controller);
+            $this->logger->debug($this->method);
+            $this->logger->debug($this->data);
+            if (strtolower($this->controller) == "api\\settings") {
+                $this->shiftLeft();
+                $this->controller = "api\\settings\\" . $this->controller;
+
+                $this->logger->debug($this->controller);
+                $this->logger->debug($this->method);
+                $this->logger->debug($this->data);
+            }
+        }
+        if (strtolower($this->controller) == "settings") {
+            $this->unfoldLeft();
+            $this->controller = "settings\\" . $this->controller;
+        }
+
+//var_dump($this->method);
+//var_dump($this->controller);
+//
+// Alter for POST or GET
         if (isset($_POST) and $_POST != null) {
             $this->method = $this->method . 'Post';
         } elseif (isset($_GET) and $_GET != null) {
             $this->method = $this->method . 'Get';
         }
-        //var_dump($this);
+
+//var_dump($this);
         $this->logger->info("Route taken: " . $this->controller . "->" . $this->method . "->" . $this->data);
     }
 
+    /**
+     *
+     * @param type $string
+     * @return type
+     */
     private function preProcess($string) {
         /*
          * Break down a request like /students-cms/account-status
          * and convert it to a call to the method accountStatus
          * on an object of the class StudentsCms
          */
-        //$this->app->logger->debug($string . '  ' . strpos($string, '-'));
+//$this->app->logger->debug($string . '  ' . strpos($string, '-'));
         if (strpos($string, '-')) {
 
-            //$this->app->logger->debug('- found');
-            $brokenString = explode("-", $string);
+            $this->logger->debug('- found');
             $first = true;
-            foreach ($brokenString as $piece) {
+            foreach (explode("-", $string) as $piece) {
                 if ($first) {
 
-                    //$this->app->logger->debug('first piece ' . $piece);
+                    $this->logger->debug('first piece ' . $piece);
                     $processedString = $piece;
                     $first = false;
                     continue;
                 }
                 $processedString .= ucfirst($piece);
 
-                //$this->app->logger->debug($processedString);
-                return $processedString;
+                $this->logger->debug($processedString);
             }
-
-            //$this->app->logger->debug($piece);
-            return $piece;
+            return $processedString;
+//$this->app->logger->debug($piece);
+//return $piece;
         }
         return $string;
+    }
+
+    /**
+     * Shifts controller, method and data, left one function, removing the controller.
+     */
+    private function shiftLeft() {
+        if (!is_null($this->method)) {
+            $this->controller = $this->method;
+            $this->method = $this->data;
+            if (is_null($this->method)) {
+                $this->method = $this->getDefaultMethod();
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private function unfoldLeft() {
+        $this->controller = $this->request->method;
+        $this->method = explode("/", $this->request->data)[0];
+
+        if (is_null($this->method) or $this->method == '') {
+            $this->method = $this->getDefaultMethod();
+        }
+        if (sizeof(explode("/", $this->request->data, 2)) > 1) {
+            $this->data = explode("/", $this->request->data, 2)[1];
+        } else {
+            $this->data = null;
+        }
+    }
+
+    /**
+     *
+     * @param type $string
+     * @return type
+     */
+    private function preProcessController($string) {
+
+        $this->controller = $string;
+
+        return $this->controller;
     }
 
 }
