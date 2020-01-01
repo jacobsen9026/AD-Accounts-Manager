@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -30,130 +31,179 @@ namespace system\app\auth;
  *
  * @author cjacobsen
  */
+use app\models\Auth;
+use app\models\user\User;
+use system\app\auth\AuthException;
+use app\models\user\Privilege;
+
 abstract class LDAP {
 
-    //put your code here
-    public function authenticate($username, $password, $domain, $domainController) {
-        $adServer = "adserver";
-        $domainArray = explode(".", 'domain name');
-        $distinguishedName = '';
-        foreach ($domainArray as $domain) {
-            $distinguishedName = strval($distinguishedName . "DC=" . $domain . ",");
+//put your code here
+    public static function authenticate($username, $password) {
+        $logger = \system\app\AppLogger::get();
+        $server = Auth::getLDAPServer();
+        $domain = Auth::getLDAP_FQDN();
+        // Prepare connection username by appending domain name if not already provided
+        if (!strpos($username, $domain)) {
+            $ldapUser = $username . "@" . $domain;
         }
-        $distinguishedName = substr($distinguishedName, 0, strlen($distinguishedName) - 1);
+        // Connect to LDAP server
+        $connection = ldap_connect("ldap://" . $server)
+                or die("Could not connect to LDAP server.");
 
-        $ldap = ldap_connect($adServer);
-        $username = strtolower($username);
+        if ($connection) {
+            try {
+                // Set options and bind
+                ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
+                ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
+                $connected = ldap_bind($connection, $ldapUser, $password);
+            } catch (Exception $ex) {
+                $logger->warning($ex);
+            }
+            // If bind was successful, user was found in LDAP continue processing
+            if ($connected) {
+                $logger->info("LDAP bind successful to " . $server . " using credentials: " . $ldapUser);
+                // Explode ldap FQDN into a base DN
+                $baseDN = '';
+                $afterFirst = false;
+                foreach (explode(".", $domain) as $part) {
+                    if ($afterFirst) {
+                        $baseDN .= ',';
+                    }
+                    $baseDN .= 'DC=' . $part;
+                    $afterFirst = true;
+                }
+                $techDN = self::getGroupDN($connection, $baseDN, Auth::getTechADGroup());
+                $adminDN = self::getGroupDN($connection, $baseDN, Auth::getAdminADGroup());
+                $powerDN = self::getGroupDN($connection, $baseDN, Auth::getPowerADGroup());
+                $basicDN = self::getGroupDN($connection, $baseDN, Auth::getBasicADGroup());
+                //var_dump($baseDN);
+                //var_dump($username);
+                $filter = "(sAMAccountName=$username)";
+                $result = ldap_search($connection, $baseDN, $filter);
+                $info = ldap_get_entries($connection, $result);
+                $filterBasic = "(&(sAMAccountName=" . $username . ")(memberOf:1.2.840.113556.1.4.1941:=" . $basicDN . "))";
+                $filterPower = "(&(sAMAccountName=" . $username . ")(memberOf:1.2.840.113556.1.4.1941:=" . $powerDN . "))";
+                $filterAdmin = "(&(sAMAccountName=" . $username . ")(memberOf:1.2.840.113556.1.4.1941:=" . $adminDN . "))";
+                $filterTech = "(&(sAMAccountName=" . $username . ")(memberOf:1.2.840.113556.1.4.1941:=" . $techDN . "))";
 
+                $resultBasic = ldap_search($connection, $baseDN, $filterBasic);
+                $resultPower = ldap_search($connection, $baseDN, $filterPower);
+                $resultAdmin = ldap_search($connection, $baseDN, $filterAdmin);
+                $resultTech = ldap_search($connection, $baseDN, $filterTech);
 
-        $ldaprdn = 'netbios' . "\\" . $username;
+                $infoBasic = ldap_get_entries($connection, $resultBasic);
+                $infoPower = ldap_get_entries($connection, $resultPower);
+                $infoAdmin = ldap_get_entries($connection, $resultAdmin);
+                $infoTech = ldap_get_entries($connection, $resultTech);
+                $passed = false;
 
-        ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
-        ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
+                for ($i = 0; $i < $infoBasic["count"]; $i++) {
+                    if ($username == strtolower($infoBasic[$i]["samaccountname"][0])) {
+                        $passed = true;
+                        $fullName = $infoBasic[$i]["name"][0];
+                        $privilege = Privilege::BASIC;
+                    }
+                }
+                for ($i = 0; $i < $infoPower["count"]; $i++) {
+                    if ($username == strtolower($infoPower[$i]["samaccountname"][0])) {
+                        $passed = true;
 
-        $bind = @ldap_bind($ldap, $ldaprdn, $password);
+                        $fullName = $infoPower[$i]["name"][0];
+                        $privilege = Privilege::POWER;
+                    }
+                }
+                for ($i = 0; $i < $infoAdmin["count"]; $i++) {
+                    if ($username == strtolower($infoAdmin[$i]["samaccountname"][0])) {
+                        $passed = true;
 
-        if ($bind) {
-            $filter = "(sAMAccountName=$username)";
-            $result = ldap_search($ldap, $distinguishedName, $filter);
-            //ldap_sort($ldap,$result,"sn");
-            $info = ldap_get_entries($ldap, $result);
+                        $fullName = $infoAdmin[$i]["name"][0];
+                        $privilege = Privilege::ADMIN;
+                    }
+                }
+                for ($i = 0; $i < $infoTech["count"]; $i++) {
+                    if ($username == strtolower($infoTech[$i]["samaccountname"][0])) {
+                        $passed = true;
 
-            $filterBasic = "(&(sAMAccountName=" . $username . ")(memberOf:1.2.840.113556.1.4.1941:=CN=" . $appConfig["userMappings"]["basic"] . ",OU=System Security Groups," . $distinguishedName . "))";
-            $filterPower = "(&(sAMAccountName=" . $username . ")(memberOf:1.2.840.113556.1.4.1941:=CN=" . $appConfig["userMappings"]["power"] . ",OU=System Security Groups," . $distinguishedName . "))";
-            $filterAdmin = "(&(sAMAccountName=" . $username . ")(memberOf:1.2.840.113556.1.4.1941:=CN=" . $appConfig["userMappings"]["admin"] . ",OU=System Security Groups," . $distinguishedName . "))";
-            $filterTech = "(&(sAMAccountName=" . $username . ")(memberOf:1.2.840.113556.1.4.1941:=CN=" . $appConfig["userMappings"]["tech"] . ",OU=System Security Groups," . $distinguishedName . "))";
-            $resultBasic = ldap_search($ldap, $distinguishedName, $filterBasic);
-            $resultPower = ldap_search($ldap, $distinguishedName, $filterPower);
-            $resultAdmin = ldap_search($ldap, $distinguishedName, $filterAdmin);
-            $resultTech = ldap_search($ldap, $distinguishedName, $filterTech);
-            $infoBasic = ldap_get_entries($ldap, $resultBasic);
-            $infoPower = ldap_get_entries($ldap, $resultPower);
-            $infoAdmin = ldap_get_entries($ldap, $resultAdmin);
-            $infoTech = ldap_get_entries($ldap, $resultTech);
+                        $fullName = $infoTech[$i]["name"][0];
+                        $privilege = Privilege::TECH;
+                    }
+                }
 
-            //echo "<br/><br/><br/><br/>";
-            $passed = false;
+                if ($passed) {
+                    $user = new User();
+                    $user->setFullName($fullName)
+                            ->setPrivilege($privilege)
+                            ->setUsername($username);
+                    return $user;
 
-            for ($i = 0; $i < $infoBasic["count"]; $i++) {
-                //print_r($infoBasic[$i])."<br/><br/><br/>";
-                if ($username == strtolower($infoBasic[$i]["samaccountname"][0])) {
-                    $passed = true;
-                    $_SESSION["authenticated_basic"] = "true";
-                    $_SESSION["authenticated_power"] = "false";
-                    $_SESSION["authenticated_admin"] = "false";
-                    $_SESSION["authenticated_tech"] = "false";
+                    var_dump($user);
+                    exit;
+                    return true;
+                } else {
+                    throw new AuthException(AuthException::NOT_AUTHORIZED);
+                }
+            } else {
+                $error = ldap_error($connection);
+                if ($error == "Invalid credentials") {
 
-                    $_SESSION["userLastName"] = $infoBasic[$i]["sn"][0];
-                    $_SESSION["userFirstName"] = $infoBasic[$i]["givenname"][0];
+                    throw new AuthException(AuthException::BAD_PASSWORD);
+                }
+                exit;
+                return false;
+            }
+        } else {
+
+            var_dump(ldap_error($connection));
+            $logger->warning("LDAP bind failed  to " . $server . " using credentials: " . $username . ' ' . $password);
+            exit;
+            return false;
+        }
+    }
+
+    /**
+     *
+     * @param type $connection
+     * @param type $baseDN
+     * @param type $groupName
+     * @return string
+     */
+    public static function getGroupDN($connection, $baseDN, $groupName) {
+        $filter = "(&(objectClass=group)(cn=" . Auth::getTechADGroup() . "))";
+        $result = ldap_search($connection, $baseDN, $filter);
+        $info = ldap_get_entries($connection, $result);
+        //var_dump($info);
+        if (is_array($info)) {
+            if (key_exists("count", $info)) {
+                if ($info["count"] == 1) {
+                    if (key_exists("distinguishedname", $info[0])) {
+                        return $info[0]["distinguishedname"][0];
+                    }
                 }
             }
-            for ($i = 0; $i < $infoPower["count"]; $i++) {
-                //print_r($infoBasic[$i])."<br/><br/><br/>";
-                if ($username == strtolower($infoPower[$i]["samaccountname"][0])) {
-                    $passed = true;
-                    $_SESSION["authenticated_basic"] = "true";
-                    $_SESSION["authenticated_power"] = "true";
-                    $_SESSION["authenticated_admin"] = "false";
-                    $_SESSION["authenticated_tech"] = "false";
-                    $_SESSION["userLastName"] = $infoPower[$i]["sn"][0];
-                    $_SESSION["userFirstName"] = $infoPower[$i]["givenname"][0];
-                }
-            }
-            for ($i = 0; $i < $infoAdmin["count"]; $i++) {
-                //print_r($infoBasic[$i])."<br/><br/><br/>";
-                if ($username == strtolower($infoAdmin[$i]["samaccountname"][0])) {
-                    $passed = true;
-                    $_SESSION["authenticated_basic"] = "true";
-                    $_SESSION["authenticated_power"] = "true";
-                    $_SESSION["authenticated_admin"] = "true";
-                    $_SESSION["authenticated_tech"] = "false";
-                    $_SESSION["userLastName"] = $infoAdmin[$i]["sn"][0];
-                    $_SESSION["userFirstName"] = $infoAdmin[$i]["givenname"][0];
-                }
-            }
-            for ($i = 0; $i < $infoTech["count"]; $i++) {
-                //print_r($infoBasic[$i])."<br/><br/><br/>";
-                if ($username == strtolower($infoTech[$i]["samaccountname"][0])) {
-                    $passed = true;
-                    $_SESSION["authenticated_basic"] = "true";
-                    $_SESSION["authenticated_power"] = "true";
-                    $_SESSION["authenticated_admin"] = "true";
-                    $_SESSION["authenticated_tech"] = "true";
-                    $_SESSION["userLastName"] = $infoTech[$i]["sn"][0];
-                    $_SESSION["userFirstName"] = $infoTech[$i]["givenname"][0];
-                }
-            }
-            //exit();
+        }
+    }
 
-            if ($passed) {
-                //echo "authenticated";
-                echo "<div id='authenticated'></div>";
-                ?>
-                <script>reauthenticatedSession();</script>
+    public static function testConnection($server, $username, $password) {
+        $logger = \system\app\AppLogger::get();
+        $ldapconn = ldap_connect("ldap://" . $server)
 
-                <?php
-                //exit();
-                file_put_contents("./logs/login.log", $date . "," . $time . "," . $username . "\r\n", FILE_APPEND);
-                if (isset($_POST["rememberUsername"]) || isset($_POST["rememberMe"])) {
-                    //echo "remember me";
-                    //$_COOKIE["username"] = $username;
-                    setcookie("username", $username, time() + (86400 * 3650));
-                }
-                if (isset($_POST["rememberMe"])) {
-                    //echo "remember me";
-                    setcookie("token", json_encode(Array(getSIDHash($username), hash("sha256", $_SESSION["authenticated_basic"]), hash("sha256", $_SESSION["authenticated_power"]), hash("sha256", $_SESSION["authenticated_admin"]), hash("sha256", $_SESSION["authenticated_tech"])), time() + (86400 * 3650)));
-                    //echo getSIDHash($username);
-                    //exit();
-                }
+                or die("Could not connect to LDAP server.");
 
-                if ($_POST["intent"] != "") {
-                    ?>
-                    <script>
-                        window.location = "/?goto=<?php echo $_POST['intent']; ?>";
-                    </script>
-                    <?php
-                }
+        if ($ldapconn) {
+
+            // binding anonymously
+            $ldapbind = ldap_bind($ldapconn, $username, $password);
+
+            if ($ldapbind) {
+                $logger->info("LDAP Auth bind successful to " . $server . " using credentials: " . $username . ' ' . $password);
+                ldap_unbind($ldapconn);
+                return true;
+            } else {
+                $logger->warning("LDAP Auth bind failed  to " . $server . " using credentials: " . $username . ' ' . $password);
+                $error = ldap_error($ldapconn);
+                ldap_close($ldapconn);
+                return $error;
             }
         }
     }
