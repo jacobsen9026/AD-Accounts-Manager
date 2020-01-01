@@ -173,7 +173,7 @@ class Query {
         }
         //var_dump($query);
         //echo '<br/><br/><br/><br/><br/><br/>';
-        //var_dump($query);
+        //AppLogger::get()->warning($this->query);
         return \system\Database::get()->query($this->query);
     }
 
