@@ -36,6 +36,10 @@ class GoogleApps {
                 return self::getSchoolField($id, $column, $type);
 
                 break;
+            case Schema::DEPARTMENT:
+                return self::getDepartmentField($id, $column, $type);
+
+                break;
             case Schema::GRADE:
                 return self::getGradeField($id, $column, $type);
 
@@ -73,6 +77,23 @@ class GoogleApps {
         if ($return == false or $return == null or $return == '') {
             \system\app\AppLogger::get()->warning('Couldn\'t find school ' . $type . ' ' . $constant . ' will check district.');
             $return = self::getDistrictField($districtID, $column, $type);
+        }
+        return $return;
+    }
+
+    private static function getDepartmentField($id, $column, $type) {
+
+        \system\app\AppLogger::get()->info('Getting Department ' . $id . ' Field ' . $column);
+        $department = Department::getGASettings($id, $type);
+        $schoolID = Department::getSchoolID($id);
+        //\system\app\AppLogger::get()->debug($school);
+        $schema = 'GOOGLEAPPS_' . $column;
+        $constant = self::getSchemaColumn($schema);
+        //\system\app\AppLogger::get()->debug($constant);
+        $return = $department[$constant];
+        if ($return == false or $return == null or $return == '') {
+            \system\app\AppLogger::get()->warning('Couldn\'t find school ' . $type . ' ' . $constant . ' will check district.');
+            $return = self::getSchoolField($schoolID, $column, $type);
         }
         return $return;
     }
