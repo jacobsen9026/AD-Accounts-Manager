@@ -32,52 +32,63 @@ abstract class DatabasePost {
         $logger->debug('Primary Table: ' . $primaryTable);
         $logger->debug('ID: ' . $id);
         $logger->debug($post);
+        $logger->debug($_FILES);
+        if (isset($_FILES) and!empty($_FILES)) {
+            self::uploadFiles();
+        }
         foreach ($post as $label => $value) {
-
             $value = self::preProcessValue($label, $value);
-            $column = explode("_", $label, 2)[1];
-            $table = explode("_", $label, 2)[0];
-            if ($column == 'ID') {
-                $logger->info('Skipping ID column');
-                continue;
-            }
-            if ($table != $primaryTable) {
-                //The variable we are saving is different that the table provided to the method
-                // Therefore, the where should match against the given tables ID column
-                //var_dump($table . ' does not equal ' . $primaryTable);
-                //Prepare the Schema Constant Variable
-                $schemaID = strtoupper($table) . '_' . strtoupper($primaryTable) . '_ID';
-
-                $schemaClass = new \ReflectionClass('app\database\Schema');
-                $schema = $schemaClass->getConstant($schemaID);
-
-                $query = new Query($table, Query::UPDATE, $column);
-                $query->where($schema, $id)
-                        ->set($column, $value);
-                if ($type != null) {
-                    switch ($type) {
-                        case 'Staff':
-                            $query->where(Schema::ACTIVEDIRECTORY_TYPE[Schema::COLUMN], 'Staff');
-
-                            break;
-                        case 'Student':
-
-                            $query->where(Schema::ACTIVEDIRECTORY_TYPE[Schema::COLUMN], 'Student');
-
-                            break;
-
-
-                        default:
-                            break;
-                    }
+            $logger->debug($label);
+            $logger->debug($value);
+            $logger->debug(strpos($label, "_"));
+            if (strpos($label, "_")) {
+                //$logger->error('found _');
+                $column = explode("_", $label, 2)[1];
+                $table = explode("_", $label, 2)[0];
+                $logger->debug($table);
+                $logger->debug($column);
+                if ($column == 'ID') {
+                    $logger->info('Skipping ID column');
+                    continue;
                 }
-                $query->run();
-                //  $query = 'UPDATE ' . $table . ' SET "' . $column . '" = "' . $value . '" WHERE ' . $schema[Schema::COLUMN] . ' = ' . $id;
-                // Database::get()->query($query);
-            } else {
+                if ($table != $primaryTable) {
+                    //The variable we are saving is different that the table provided to the method
+                    // Therefore, the where should match against the given tables ID column
+                    //var_dump($table . ' does not equal ' . $primaryTable);
+                    //Prepare the Schema Constant Variable
+                    $schemaID = strtoupper($table) . '_' . strtoupper($primaryTable) . '_ID';
 
-                $query = 'UPDATE ' . $table . ' SET "' . $column . '" = "' . $value . '" WHERE ID = ' . $id;
-                Database::get()->query($query);
+                    $schemaClass = new \ReflectionClass('app\database\Schema');
+                    $schema = $schemaClass->getConstant($schemaID);
+
+                    $query = new Query($table, Query::UPDATE, $column);
+                    $query->where($schema, $id)
+                            ->set($column, $value);
+                    if ($type != null) {
+                        switch ($type) {
+                            case 'Staff':
+                                $query->where(Schema::ACTIVEDIRECTORY_TYPE[Schema::COLUMN], 'Staff');
+
+                                break;
+                            case 'Student':
+
+                                $query->where(Schema::ACTIVEDIRECTORY_TYPE[Schema::COLUMN], 'Student');
+
+                                break;
+
+
+                            default:
+                                break;
+                        }
+                    }
+                    $query->run();
+                    //  $query = 'UPDATE ' . $table . ' SET "' . $column . '" = "' . $value . '" WHERE ' . $schema[Schema::COLUMN] . ' = ' . $id;
+                    // Database::get()->query($query);
+                } else {
+
+                    $query = 'UPDATE ' . $table . ' SET "' . $column . '" = "' . $value . '" WHERE ID = ' . $id;
+                    Database::get()->query($query);
+                }
             }
         }
     }
@@ -98,11 +109,26 @@ abstract class DatabasePost {
                     return AppConfig::getAdminPassword();
                 }
                 return $value;
+            case 'oauth':
+
+                self::uploadOAuth();
+                return null;
 
             default:
                 return $value;
                 break;
         }
+    }
+
+    private static function uploadFiles() {
+        var_dump($_FILES);
+
+        foreach ($_FILES as $file) {
+            if ($file['name'] == 'oauth2.txt') {
+                move_uploaded_file($file['tmp_name'], GAMPATH . DIRECTORY_SEPARATOR . 'oauth2.txt');
+            }
+        }
+        //exit;
     }
 
 }
