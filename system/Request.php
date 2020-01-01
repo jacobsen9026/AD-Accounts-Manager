@@ -39,10 +39,10 @@ class Request {
      */
     public $get = null;
     public $uri = null;
-    public $module = null;
-    public $page = null;
+    public $controller = null;
+    public $method = null;
     public $referer = null;
-    public $action = null;
+    public $data = null;
     public $type = null;
     private $logger;
 
@@ -75,22 +75,22 @@ class Request {
             /*
              * Break up the request by slashes into /module/page/action
              */
-            $exploded = explode("/", $this->uri);
+            $exploded = explode("/", $this->uri, 4);
             //var_export($exploded);
             if (sizeof($exploded) > 0) {
                 if (isset($exploded[1]) and $exploded[1] != '') {
-                    $this->module = ucfirst(strtolower($exploded[1]));
+                    $this->controller = ucfirst(strtolower($exploded[1]));
                     //echo "module";
                 }
                 //echo $this->module;
                 if (isset($exploded[2]) and $exploded[2] != '') {
-                    $this->page = $exploded[2];
+                    $this->method = $exploded[2];
                 }
                 if (isset($exploded[3]) and $exploded[3] != '') {
-                    $this->action = $exploded[3];
+                    $this->data = $exploded[3];
                 }
             }
-            $this->logger->debug("Request made: " . $this->module . "->" . $this->page . "->" . $this->action);
+            $this->logger->debug("Request made: " . $this->controller . "->" . $this->method . "->" . $this->data);
         }
         if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             $this->type = 'ajax';
