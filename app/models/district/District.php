@@ -37,7 +37,13 @@ class District {
         return $query->run();
     }
 
-    public static function getADSettings($districtID, $type) {
+    /**
+     *
+     * @param type $districtID
+     * @param type $type
+     * @return array
+     */
+    public static function getADSettings($districtID, $type = 'Staff') {
         $query = new Query(Schema::ACTIVEDIRECTORY);
         $query->where(Schema::ACTIVEDIRECTORY_DISTRICT_ID, $districtID)
                 ->where(Schema::ACTIVEDIRECTORY_TYPE, $type);
@@ -63,6 +69,24 @@ class District {
 
     public static function deleteDistrict($districtID) {
         return Database::get()->query('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::DISTRICT_ID[Schema::COLUMN] . ' = ' . $districtID);
+    }
+
+    public static function getAD_FQDN($districtID) {
+        $query = new Query(self::TABLE_NAME, Query::SELECT, Schema::DISTRICT_AD_FQDN[Schema::COLUMN]);
+        $query->where(Schema::DISTRICT_ID, $districtID);
+        return $query->run();
+    }
+
+    public static function getADUsername($districtID) {
+        $query = new Query(self::TABLE_NAME, Query::SELECT, Schema::DISTRICT_AD_USERNAME[Schema::COLUMN]);
+        $query->where(Schema::DISTRICT_ID, $districtID);
+        return $query->run();
+    }
+
+    public static function getADPassword($districtID) {
+        $query = new Query(self::TABLE_NAME, Query::SELECT, Schema::DISTRICT_AD_PASSWORD[Schema::COLUMN]);
+        $query->where(Schema::DISTRICT_ID, $districtID);
+        return $query->run();
     }
 
     public static function getSchools($districtID) {
