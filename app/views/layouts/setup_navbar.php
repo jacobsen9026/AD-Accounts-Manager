@@ -13,7 +13,7 @@ use app\database\Schema;
 
 <nav class="navbar navbar-expand-md navbar-dark sticky-top district-nav bg-success shadow-sm w-100">
     <!-- Brand -->
-    <a class="nav-link text-weight-bold text-light" href="/districts">District Setup</a>
+    <a class="nav-link text-weight-bold text-light" href="/settings/districts">District Setup</a>
     <?php
     if (isset($this->schoolID)) {
         ?>
@@ -35,38 +35,57 @@ use app\database\Schema;
 
             <ul class="navbar-nav">
                 <?php
+                $breadCrumb = '
+                    <li class="d-none d-md-block nav-item">
+                        <a class="nav-link">
+                            >
+                        </a>
+                    </li>';
                 if (isset($this->schoolID)) {
+
+                    echo $breadCrumb;
                     ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="/schools/show/<?php echo $this->districtID; ?>">Schools</a>
+                        <a class="nav-link" href="/settings/schools/show/<?php echo $this->districtID; ?>">Schools</a>
                     </li>
                     <?php
                 }
                 if (isset($this->schoolID) and isset($this->controller) and $this->controller != 'Schools') {
                     ?>
+                    <li class="d-none d-md-block nav-item">
+                        <a class="nav-link">
+                            >
+                        </a>
+                    </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/schools/edit/<?php echo $this->schoolID; ?>"><?= $this->schoolName; ?></a>
+                        <a class="nav-link" href="/settings/schools/edit/<?php echo $this->schoolID; ?>"><?= $this->schoolName; ?></a>
                     </li>
                     <?php
                 }
                 if (isset($this->gradeID)) {
+
+                    echo $breadCrumb;
                     ?>
+
                     <li class="nav-item">
-                        <a class="nav-link" href="/grades/show/<?php echo $this->schoolID; ?>">Grades</a>
+                        <a class="nav-link" href="/settings/grades/show/<?php echo $this->schoolID; ?>">Grades</a>
                     </li>
                     <?php
                 }
                 if (isset($this->teams) and isset($this->controller) and $this->controller != 'Grades') {
+
+                    echo $breadCrumb;
                     ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="/grades/edit/<?php echo $this->gradeID; ?>">Grade <?= $this->grade[Schema::GRADEDEFINITION_DISPLAY_CODE[app\database\Schema::COLUMN]]; ?></a>
+                        <a class="nav-link" href="/settings/grades/edit/<?php echo $this->gradeID; ?>">Grade <?= $this->grade[Schema::GRADEDEFINITION_DISPLAY_CODE[app\database\Schema::COLUMN]]; ?></a>
                     </li>
                     <?php
                 }
                 if (isset($this->teamID)) {
+                    echo $breadCrumb;
                     ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="/teams/show/<?php echo $this->gradeID; ?>">Teams</a>
+                        <a class="nav-link" href="/settings/teams/show/<?php echo $this->gradeID; ?>">Teams</a>
                     </li>
                     <?php
                 }
