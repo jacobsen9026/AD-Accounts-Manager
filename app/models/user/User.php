@@ -40,15 +40,76 @@ class User extends CoreUser {
 
     public $theme = 'default';
     public $fullName;
+    public static $instance;
 
-    function __construct($string = null) {
-        if ($string == CoreUser::ADMINISTRATOR) {
-            $this->privilege = Privilege::TECH;
-            $this->fullName = \system\Lang::get('Administrator Full Name');
-            $this->username = "admin";
+    /**
+     *
+     * @param type $username
+     * @return type
+     */
+    function __construct($username = null) {
+        //set_error_handler(array($this, 'handleError'));
+        //set_exception_handler(array($this, 'handleException'));
+        if (isset(self::$instance)) {
+            return self::$instance;
         } else {
-            $this->privilege = Privilege::UNAUTHENTICATED;
+            if ($username == CoreUser::ADMINISTRATOR) {
+                $this->privilege = Privilege::TECH;
+                $this->fullName = \system\Lang::get('Administrator Full Name');
+                $this->username = "admin";
+            } else {
+                $this->privilege = Privilege::UNAUTHENTICATED;
+            }
+            self::$instance = $this;
         }
+    }
+
+    /**
+     *
+     * @return User
+     */
+    public static function get() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    /**
+     *
+     * @return type
+     */
+    public function getTheme() {
+        return $this->theme;
+    }
+
+    /**
+     *
+     * @return type
+     */
+    public function getFullName() {
+        return $this->fullName;
+    }
+
+    /**
+     *
+     * @param type $theme
+     * @return User
+     */
+    public function setTheme($theme) {
+        $this->theme = $theme;
+        \system\app\Session::setUser($this);
+        return $this;
+    }
+
+    /**
+     *
+     * @param type $fullName
+     * @return User
+     */
+    public function setFullName($fullName) {
+        $this->fullName = $fullName;
+        return $this;
     }
 
     //put your code here
