@@ -55,12 +55,10 @@ class Router extends CommonRouter {
         $this->customRoutes[] = array("Districts", "*", "settings\Districts", "*");
         $this->customRoutes[] = array("Schools", "*", "settings\Schools", "*");
         $this->customRoutes[] = array("Grades", "*", "settings\Grades", "*");
+        $this->customRoutes[] = array("Departments", "*", "settings\Departments", "*");
         $this->customRoutes[] = array("Teams", "*", "settings\Teams", "*");
-        $this->customRoutes[] = array("Draw", "*", "api\Draw", "*");
-
-
-
-
+        //$this->customRoutes[] = array("Draw", "*", "api\Draw", "*");
+        //$this->customRoutes[] = array("Ldap", "*", "api\LDAP", "*");
         //var_dump($this->customRoutes);
     }
 
