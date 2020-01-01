@@ -1,7 +1,7 @@
 
 
 <div class="p-5">
-    <form method="post" name="test" class ="table-hover" action="/teams/create/<?php echo $this->gradeID; ?>">
+    <form method="post" name="test" class ="table-hover" action="/settings/teams/create/<?php echo $this->gradeID; ?>">
         <div class="container container-lg">
             <div>
                 Add Team

@@ -39,7 +39,7 @@ use app\database\Schema;
 
 
                         <td>
-                            <a href="/grades/edit/<?php echo $this->grade["ID"]; ?>"  class = "btn btn-warning">Edit Grade</a>
+                            <a href="/settings/grades/edit/<?php echo $this->grade["ID"]; ?>"  class = "btn btn-warning">Edit Grade</a>
                         </td>
                         <td>
                             <?php echo $this->view('modals/deleteGrade'); ?>

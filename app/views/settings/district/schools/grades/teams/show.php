@@ -8,7 +8,7 @@ if (!empty($this->teams)) {
     ?>
 
     <div class="p-5">
-        <h4>Teams under Grade <?php // echo $this->grade[Schema::GRADE_VALUE[Schema::COLUMN]];      ?></h4>
+        <h4>Teams under Grade <?php // echo $this->grade[Schema::GRADE_VALUE[Schema::COLUMN]];       ?></h4>
 
         <div class="table-responsive-sm">
 
@@ -32,7 +32,7 @@ if (!empty($this->teams)) {
 
 
                             <td>
-                                <a href="/teams/edit/<?php echo $this->team[Schema::TEAM_ID[Schema::COLUMN]]; ?>"  class = "btn btn-warning">Edit Team</a>
+                                <a href="/settings/teams/edit/<?php echo $this->team[Schema::TEAM_ID[Schema::COLUMN]]; ?>"  class = "btn btn-warning">Edit Team</a>
                             </td>
                             <td>
                                 <?php echo $this->view('modals/deleteTeam'); ?>

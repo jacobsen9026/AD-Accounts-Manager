@@ -9,7 +9,7 @@ if (empty($this->grades)) {
 }
 ?>
 <div class="p-5">
-    <form method="post" name="test" class ="table-hover" action="/grades/create/<?php echo $this->schoolID; ?>">
+    <form method="post" name="test" class ="table-hover" action="/settings/grades/create/<?php echo $this->schoolID; ?>">
         <div class="container container-lg">
 
             <div>

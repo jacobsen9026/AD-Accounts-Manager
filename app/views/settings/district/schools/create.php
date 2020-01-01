@@ -3,7 +3,7 @@
 use app\database\Schema;
 ?>
 
-<form method = "post" class = "table-hover" action = "/schools/create/<?php echo $this->districtID; ?>">
+<form method = "post" class = "table-hover" action = "/settings/schools/create/<?php echo $this->districtID; ?>">
     <div class = "border mt-3 container container-lg py-3 bg-light shadow-sm">
         <h5>
             Create School

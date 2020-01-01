@@ -61,7 +61,7 @@ use app\models\district\Grade;
 
 
                         <td>
-                            <a href="/schools/edit/<?php echo $this->school[Schema::SCHOOL_ID[Schema::COLUMN]]; ?>"  class = "btn btn-warning">Edit School</a>
+                            <a href="/settings/schools/edit/<?php echo $this->school[Schema::SCHOOL_ID[Schema::COLUMN]]; ?>"  class = "btn btn-warning">Edit School</a>
                         </td>
                         <td>
                             <?php echo $this->view('modals/deleteSchool'); ?>
@@ -77,6 +77,9 @@ use app\models\district\Grade;
 
 
         </table>
+
+
+
     </div>
     <!--
     <button class = "btn btn-info" type = "button" onclick="saveOrder()">Update Order</button>
