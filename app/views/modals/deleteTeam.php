@@ -13,13 +13,13 @@ use app\database\Schema;
                 <button type="button" class="close text-light" data-dismiss="modal">&times;</button>
 
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-center">
                 <p class="px-5 pb-2">Are you sure you want to delete Team <?php echo $this->team[Schema::TEAM_NAME[Schema::COLUMN]]; ?>?<br/>
                     All team configuration including OU mappings,
                     and any other team specific data will be erased.
                     Please ensure you have a recent backup of the application configuration.
                 </p>
-                <a class="btn btn-danger" aria-label="Delete" href="/teams/delete/<?php echo $this->team["ID"]; ?>">
+                <a class="btn btn-danger" aria-label="Delete" href="/settings/teams/delete/<?php echo $this->team[Schema::TEAM_ID[Schema::COLUMN]]; ?>">
                     Delete
                 </a>
             </div>

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -28,7 +29,7 @@ use app\models\AppConfig;
 use app\models\Auth;
 use system\app\Form;
 
-$form = new Form('/settings', 'authentication');
+$form = new Form('/settings/application', 'authentication');
 $form->buildTextInput('Web App Name', Schema::APP_NAME, AppConfig::getAppName())
         ->addToRow()
         ->buildTextAreaInput('Admin Usernames',
@@ -71,6 +72,7 @@ echo $form->getFormHTML();
 ?>
 
 <?php
+
 $function = function() {
     if (isset($appConfig["redirectHTTP"])) {
         if ($appConfig["redirectHTTP"]) {
@@ -85,45 +87,6 @@ $function = function() {
     }
 };
 ?>
-
-<div class="row">
-    <div class="col-md">
-        <?php //formBinaryInput('Redirect to HTTPS', Schema::APP_FORCE_HTTPS, AppConfig::getForceHTTPS(), null, $function);    ?>
-    </div>
-    <div class="col-md">
-        <?php
-        /* formBinaryInput('App Debug Mode', Schema::APP_DEBUG_MODE, AppConfig::getDebugMode(),
-          'Only for developement or error reporting');
-         *
-         */
-        ?>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md">
-        <?php
-        /* formTextInput('Session Timeout', Schema::AUTH_SESSION_TIMEOUT, Auth::getSessionTimeout(),
-          'Time in seconds');
-         *
-         */
-        ?>
-    </div>
-    <div class="col-md">
-        <?php
-        /* formTextInput('Website Public FQDN', Schema::APP_WEBSITIE_FQDN, AppConfig::getWebsiteFQDN(),
-          'All requests will be redirected to this address. Ensure it is accurate.');
-         *
-         */
-        ?>
-    </div>
-</div>
-<?php
-/* formTextInput('User Helpdesk URL', Schema::APP_USER_HELPDESK_URL, AppConfig::getUserHelpdeskURL(),
-  'Provide your users with a link to your support portal for when they need assistance.');
- *
- */
-?>
-
 
 
 
