@@ -91,7 +91,7 @@ class Menu extends Parser {
         $students = new TopMenuItem('Students');
         $students->addSubItem(new SubMenuItem('Account Status', '/' . strtolower($students->displayText) . '/account-status'));
         if ($this->userPrivs > Privilege::BASIC) {
-            $students->addSubItem(new SubMenuItem('Account Change', '/' . strtolower($students->displayText) . '/account-change'));
+            $students->addSubItem(new SubMenuItem('Account Status Change', '/' . strtolower($students->displayText) . '/account-status-change'));
             $students->addSubItem(new SubMenuItem('Google Classroom', '/' . strtolower($students->displayText) . '/google-classroom'));
             $students->addSubItem(new SubMenuItem('Google Groups', '/' . strtolower($students->displayText) . '/google-groups'));
             $students->addSubItem(new SubMenuItem('H-Drive', '/' . strtolower($students->displayText) . '/home-drive'));
