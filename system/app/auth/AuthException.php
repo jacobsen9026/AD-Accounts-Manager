@@ -35,6 +35,7 @@ class AuthException extends \Exception {
 
     const BAD_PASSWORD = "BAD_PASSWORD";
     const BAD_USER = "BAD_USER";
+    const NOT_AUTHORIZED = "NOT_AUTHORIZED";
 
     //put your code here
 }
