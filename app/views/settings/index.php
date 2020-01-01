@@ -44,11 +44,12 @@
     Settings
 </h4>
 <nav>
-    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <div class="nav nav-tabs nav-fill nav-justified" id="nav-tab" role="tablist">
         <a class="nav-item nav-link active" id="nav-app-tab" data-toggle="tab" href="#nav-app" role="tab" aria-controls="nav-app" aria-selected="true">Application</a>
         <a class="nav-item nav-link" id="nav-auth-tab" data-toggle="tab" href="#nav-auth" role="tab" aria-controls="nav-auth" aria-selected="false">Authentication</a>
-        <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-email" role="tab" aria-controls="nav-email" aria-selected="false">Email</a>
-        <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-notification" role="tab" aria-controls="nav-notification" aria-selected="false">Notification</a>
+        <a class="nav-item nav-link" id="nav-email-tab" data-toggle="tab" href="#nav-email" role="tab" aria-controls="nav-email" aria-selected="false">Email</a>
+        <a class="nav-item nav-link" id="nav-notification-tab" data-toggle="tab" href="#nav-notification" role="tab" aria-controls="nav-notification" aria-selected="false">Notification</a>
+        <a class="nav-item nav-link" id="nav-gam-tab" data-toggle="tab" href="#nav-gam" role="tab" aria-controls="nav-gam" aria-selected="false">GAM</a>
     </div>
 </nav>
 <div class="tab-content pt-5" id="nav-tabContent">
@@ -56,4 +57,5 @@
     <div class="tab-pane fade" id="nav-auth" role="tabpanel" aria-labelledby="nav-auth-tab"><?php echo $this->view('settings/authentication'); ?></div>
     <div class="tab-pane fade" id="nav-email" role="tabpanel" aria-labelledby="nav-email-tab"><?php echo $this->view('settings/email'); ?></div>
     <div class="tab-pane fade" id="nav-notification" role="tabpanel" aria-labelledby="nav-notification-tab"><?php echo $this->view('settings/notification'); ?></div>
+    <div class="tab-pane fade" id="nav-gam" role="tabpanel" aria-labelledby="nav-notification-tab"><?php echo $this->view('settings/gam'); ?></div>
 </div>
