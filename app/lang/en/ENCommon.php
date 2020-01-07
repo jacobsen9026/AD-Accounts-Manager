@@ -29,5 +29,8 @@ abstract class ENCommon {
         'Username' => 'Username',
         'Password' => 'Password'
     );
+    public static $help = array(
+        'User Search' => 'Can also enter first or last name to search for username.'
+    );
 
 }

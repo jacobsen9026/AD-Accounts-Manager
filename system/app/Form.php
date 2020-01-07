@@ -31,6 +31,7 @@ class Form {
     /** @var array * */
     private $inputGroups;
     private $lastComponentBuilt;
+    private $lastID;
     private $currentRow;
     private $componentEnd = '</div>';
     private $subForm = false;
@@ -84,7 +85,7 @@ class Form {
             // Sort components by row
             ksort($this->inputGroups);
             foreach ($this->inputGroups as $group) {
-                $formBody .= '<div class="row mb-2">';
+                $formBody .= '<div class="row mx-0 mb-2">';
                 foreach ($group as $input) {
                     $formBody .= '<div class="col-md">';
                     $formBody .= $input;
@@ -219,7 +220,7 @@ class Form {
      */
     public function small() {
         if (strpos($this->lastComponentBuilt, 'col form-control')) {
-            $this->lastComponentBuilt = str_replace('col form-control', 'col-md-6 col-lg-4 col-xl-2 mx-auto form-control', $this->lastComponentBuilt);
+            $this->lastComponentBuilt = str_replace('col form-control', 'col-md-6 col-lg-4 col-xl-2 form-control mx-auto', $this->lastComponentBuilt);
 //var_dump("form-control found");
         }
         return $this;
@@ -227,7 +228,65 @@ class Form {
 
     public function medium() {
         if (strpos($this->lastComponentBuilt, 'col form-control')) {
-            $this->lastComponentBuilt = str_replace('col form-control', 'col-md col-lg-8 col-xl-6 mx-auto form-control', $this->lastComponentBuilt);
+            $this->lastComponentBuilt = str_replace('col form-control', 'col-md col-lg-8 col-xl-6 form-control mx-auto', $this->lastComponentBuilt);
+//var_dump("form-control found");
+        }
+        return $this;
+    }
+
+    public function addID($id) {
+        $this->lastID = $id;
+        if (strpos($this->lastComponentBuilt, '/>')) {
+            $this->lastComponentBuilt = str_replace('/>', ' id="' . $id . '" />', $this->lastComponentBuilt);
+//var_dump("form-control found");
+        }
+        return $this;
+    }
+
+    public function addAutoComplete($sourceURL, $minLength = 1) {
+        $jsScript = '<script>
+
+    $(function () {
+
+
+    var getData = function (request, response) {
+        $.getJSON(
+            "' . $sourceURL . '" + request.term,
+            function (data) {
+                response(data);
+            });
+    };
+
+    var selectItem = function (event, ui) {
+    console.log("select");
+    console.log(ui);
+    console.log(event);
+
+        $("#' . $this->lastID . '").val(ui.item.value);
+        return false;
+    }
+
+    $("#' . $this->lastID . '").autocomplete({
+        source: getData,
+        select: selectItem,
+        minLength: ' . $minLength . ',
+        change: function() {
+            $("#' . $this->lastID . '").css("display", 2);
+        }
+    });
+});
+
+</script>';
+        if (strpos($this->lastComponentBuilt, '</div>')) {
+            $this->lastComponentBuilt = str_replace('</div>', '</div>' . $jsScript, $this->lastComponentBuilt);
+//var_dump("form-control found");
+        }
+        return $this;
+    }
+
+    public function onType($jsFunction) {
+        if (strpos($this->lastComponentBuilt, '>')) {
+            $this->lastComponentBuilt = str_replace('>', ' onkeypress="' . $jsFunction . '">', $this->lastComponentBuilt);
 //var_dump("form-control found");
         }
         return $this;
@@ -272,6 +331,25 @@ class Form {
         return $this;
     }
 
+    /**
+     * Providing true or no parameter will result in a student search
+     * Passing false as a parameter will result in a staff search
+     *
+     * @param type $student
+     * @return $this
+     */
+    public function buildUserSearchInput($searchStudents = true) {
+        $this->buildTextInput('Username', 'username', null, \system\Lang::getHelp('User Search'))
+                ->addID("username");
+        if ($searchStudents) {
+            $this->addAutoComplete("/api/ldap/autocompleteStudent/", 2);
+        } else {
+            $this->addAutoComplete("/api/ldap/autocompleteStaff/", 2);
+        }
+        $this->medium();
+        return $this;
+    }
+
     private function preProcessName($name) {
         if (is_array($name)) {
             if (key_exists(Schema::NAME, $name)) {
@@ -299,7 +377,32 @@ class Form {
         $name = $this->preProcessName($name);
         $formComponent = $this->startInput($name, $label, $helpText);
 
-        $formComponent .= '<input type="text" class="col form-control text-center" name="' . $name . '" value="' . $value . '" placeholder="' . $placeholder . '"/>';
+        $formComponent .= '<input type="text" class="col form-control text-center" name="' . $name . '"';
+        if (isset($value))
+            $formComponent .= ' value="' . $value . '"';
+        if (isset($placeholder))
+            $formComponent .= ' placeholder="' . $placeholder . '"';
+        $formComponent .= '/>';
+        $formComponent .= $this->componentEnd;
+        $this->lastComponentBuilt = $formComponent;
+        return $this;
+    }
+
+    /**
+     *
+     * @param string $label
+     * @param const $name
+     * @param string $value
+     * @param string $helpText
+     * @param string $placeholder
+     * @return Form
+     */
+    public function buildErrorOutput($output) {
+//var_dump($name);
+        //$name = $this->preProcessName($name);
+        $formComponent = $this->startInput('', '', '');
+
+        $formComponent .= $output;
         $formComponent .= $this->componentEnd;
         $this->lastComponentBuilt = $formComponent;
         return $this;
@@ -433,7 +536,7 @@ class Form {
         $name = $this->preProcessName($name);
         $formComponent = $this->startInput($name, $label, $helpText);
 
-        $formComponent .= '<select type="text" class="col form-control text-center" name="' . $name . '">';
+        $formComponent .= '<select type="text" class="col form-control custom-select text-center" name="' . $name . '">';
         foreach ($array as $option) {
             //var_dump( $option);
             if (is_array($option)) {
@@ -506,7 +609,7 @@ class Form {
 
             $startInput .= '<small id="' . $name . 'HelpBlock" class="form-text text-muted mt-0">' . $helpText . '</small>';
         }
-        $startInput .= '<div class="row p-3 h-100">';
+        $startInput .= '<div class="row p-3 h-100 ui-widget">';
         return $startInput;
     }
 

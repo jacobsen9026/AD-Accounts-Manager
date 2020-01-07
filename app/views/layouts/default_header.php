@@ -16,7 +16,12 @@
     <link rel="mask-icon" href="/img/favicon/safari-pinned-tab.svg" color="#5bbad5">
 
 
-
+    <?php
+    if ($this->app->user->theme == \app\config\Theme::RED_THEME) {
+        system\app\AppLogger::get()->debug("theme is red");
+        echo ' <link rel="stylesheet" href="/css/redTheme.css">';
+    }
+    ?>
 
 
 

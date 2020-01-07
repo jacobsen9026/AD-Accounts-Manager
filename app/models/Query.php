@@ -114,7 +114,7 @@ class Query {
     public function set($Schema, $value) {
         $column = "'" . $Schema . "'";
         //var_dump($column);
-        var_dump($value);
+        //var_dump($value);
         $this->targetSets[] = [$column, "'" . $value . "'"];
         return $this;
     }
@@ -180,7 +180,7 @@ class Query {
     private function prepareInsert() {
         $firstAction = true;
 
-        var_dump($this->targetInserts);
+        //var_dump($this->targetInserts);
 
         $this->query = $this->queryType . ' INTO ' . $this->targetTable . ' (';
         foreach ($this->targetInserts as $insert) {
@@ -202,7 +202,7 @@ class Query {
         }
         $this->query .= ')';
 
-        var_dump($this->targetInserts);
+        //var_dump($this->targetInserts);
         //exit;
     }
 
@@ -228,7 +228,7 @@ class Query {
             $firstAction = false;
         }
 
-        var_dump($this->targetSets);
+        //var_dump($this->targetSets);
         //exit;
     }
 

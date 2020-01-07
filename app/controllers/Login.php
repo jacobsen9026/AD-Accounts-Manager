@@ -33,19 +33,26 @@ class Login extends Controller {
                 $user = Local::authenticate(Post::get('username'), Post::get('password'));
             } catch (AuthException $ex) {
                 if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
-                    session_destroy();
+                    $this->lastErrorMessage = $ex->getMessage();
+                    return $this->view('login/loginPrompt');
                 }
+                if (\app\models\Auth::getLDAPEnabled()) {
+                    try {
+                        $user = \system\app\auth\LDAP::authenticate(Post::get('username'), Post::get('password'));
+                    } catch (AuthException $ex) {
+                        if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
 
-                try {
-                    $user = \system\app\auth\LDAP::authenticate(Post::get('username'), Post::get('password'));
-                } catch (AuthException $ex) {
-                    if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
-                        session_destroy();
+                            $this->lastErrorMessage = $ex->getMessage();
+                            return $this->view('login/loginPrompt');
+                        }
+                        $this->lastErrorMessage = $ex->getMessage();
+                        return $this->view('login/loginPrompt');
                     }
-                    return $ex->getMessage();
+                } else {
+                    $this->lastErrorMessage = $ex->getMessage();
+                    return $this->view('login/loginPrompt');
                 }
             }
-
             /** @var App|null The system logger */
             $app = App::get();
             //$config = MasterConfig::get();
@@ -55,10 +62,9 @@ class Login extends Controller {
 
             Session::setUser($user);
             Session::updateTimeout();
-
-            header("Location: /");
+            $this->redirect("/");
         } else {
-            return $this->view('login/index');
+            return $this->view('login/loginPrompt');
         }
     }
 

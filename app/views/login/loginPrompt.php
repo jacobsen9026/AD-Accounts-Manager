@@ -4,14 +4,19 @@ use system\app\Form;
 use system\Lang;
 
 $form = new Form('/');
+if (isset($this->lastErrorMessage)) {
+    $form->buildErrorOutput($this->lastErrorMessage)
+            ->addToNewRow();
+}
+
 $form->buildTextInput(Lang::get('Username'), 'username')
         ->medium()
-        ->addToRow(1)
+        ->addToNewRow()
         ->buildPasswordInput(Lang::get('Password'), 'password')
         ->medium()
-        ->addToRow(2)
+        ->addToNewRow()
         ->buildSubmitButton(Lang::get('Login'), 'primary')
-        ->addToRow(3);
+        ->addToNewRow();
 echo $form->getFormHTML();
 ?>
 

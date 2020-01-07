@@ -43,3 +43,9 @@ and open the template in the editor.
 .bg-primary,.btn-primary,.text-primary, .active{
  #background-color: #a32430!important;
 }
+
+.ui-autocomplete{
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 50%;
+}

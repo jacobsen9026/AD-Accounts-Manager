@@ -51,17 +51,26 @@ class User extends CoreUser {
         //set_error_handler(array($this, 'handleError'));
         //set_exception_handler(array($this, 'handleException'));
         if (isset(self::$instance)) {
+
+            if ($username == self::ADMINISTRATOR) {
+                $this->setAsAdministrator();
+                self::$instance = $this;
+            }
             return self::$instance;
         } else {
-            if ($username == CoreUser::ADMINISTRATOR) {
-                $this->privilege = Privilege::TECH;
-                $this->fullName = \system\Lang::get('Administrator Full Name');
-                $this->username = "admin";
+            if ($username == self::ADMINISTRATOR) {
+                $this->setAsAdministrator();
             } else {
                 $this->privilege = Privilege::UNAUTHENTICATED;
             }
             self::$instance = $this;
         }
+    }
+
+    private function setAsAdministrator() {
+        $this->privilege = Privilege::TECH;
+        $this->fullName = \system\Lang::get('Administrator Full Name');
+        $this->username = "admin";
     }
 
     /**

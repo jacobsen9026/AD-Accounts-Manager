@@ -10,11 +10,14 @@
 use system\app\Form;
 
 $form = new Form();
-$form->buildTextInput('Username', 'username')
-        ->medium()
+$form->buildUserSearchInput()
         ->addToNewRow()
         ->buildSubmitButton('Submit')
-        ->addToNewRow();
+        ->addToRow(100);
 
 
 echo $form->getFormHTML();
+
+
+
+

@@ -55,7 +55,7 @@ class Menu extends Parser {
     public $logger;
     public $userPrivs;
 
-    function __construct(User $user, $layout = 'default') {
+    function __construct($user, $layout = 'default') {
 
         $this->user = $user;
         //$this->config = MasterConfig::get();
@@ -73,8 +73,9 @@ class Menu extends Parser {
             $this->items[] = $this->buildStudentMenu();
             if ($this->userPrivs > Privilege::POWER) {
                 $this->logger->debug("Building Parent and Staff Menus");
-                $this->items[] = $this->buildParentMenu();
                 $this->items[] = $this->buildStaffMenu();
+                $this->items[] = $this->buildParentMenu();
+
                 // Test of privilege
                 if ($this->userPrivs > \app\models\user\Privilege::TECH - 1) {
                     $this->items[] = $this->buildTechMenu();
@@ -94,7 +95,7 @@ class Menu extends Parser {
             $students->addSubItem(new SubMenuItem('Account Status Change', '/' . strtolower($students->displayText) . '/account-status-change'));
             $students->addSubItem(new SubMenuItem('Google Classroom', '/' . strtolower($students->displayText) . '/google-classroom'));
             $students->addSubItem(new SubMenuItem('Google Groups', '/' . strtolower($students->displayText) . '/google-groups'));
-            $students->addSubItem(new SubMenuItem('H-Drive', '/' . strtolower($students->displayText) . '/home-drive'));
+            //$students->addSubItem(new SubMenuItem('H-Drive', '/' . strtolower($students->displayText) . '/home-drive'));
             $students->addSubItem(new SubMenuItem('New Password', '/' . strtolower($students->displayText) . '/reset-password'));
         }
         if ($this->userPrivs > Privilege::ADMIN) {

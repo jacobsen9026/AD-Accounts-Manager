@@ -3,7 +3,6 @@
 namespace system;
 
 chdir("../");
-
 require('./system/Core.php');
 $core = new Core();
 

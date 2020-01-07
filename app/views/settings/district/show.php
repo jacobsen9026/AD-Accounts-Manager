@@ -3,12 +3,15 @@
 
 use app\database\Schema;
 use system\app\Form;
+use app\models\district\District;
 
 echo $this->modal('deleteDistrict');
 //var_dump($this->staffADSettings);
 //var_dump($this->staffADSettings[Schema::ACTIVEDIRECTORY_OU[Schema::COLUMN]]);
+/** @var $ad AD */
 $ad = new app\api\AD($this->districtID);
 $adTestResult = $ad->getConnectionResult();
+$defaultBaseDN = District::parseBaseDNFromFQDN(District::getAD_FQDN($this->districtID));
 //var_dump($adTestResult);
 ?>
 <?= $this->view('layouts/setup_navbar'); ?>
@@ -142,14 +145,27 @@ $adTestResult = $ad->getConnectionResult();
                     Schema::DISTRICT_AD_FQDN,
                     $this->district[Schema::DISTRICT_AD_FQDN[Schema::COLUMN]])
             ->addToNewRow()
-            ->buildTextInput('Google Apps FQDN',
-                    Schema::DISTRICT_GA_FQDN,
-                    $this->district[Schema::DISTRICT_GA_FQDN[Schema::COLUMN]])
+            ->buildTextInput('Active Directory Base DN',
+                    Schema::DISTRICT_AD_BASEDN,
+                    $this->district[Schema::DISTRICT_AD_BASEDN[Schema::COLUMN]],
+                    'The point from which the application searches from.',
+                    $defaultBaseDN
+            )
             ->addToRow()
             ->buildTextInput('Active Directory Username',
                     Schema::DISTRICT_AD_USERNAME,
                     $this->district[Schema::DISTRICT_AD_USERNAME[Schema::COLUMN]],
                     'Enter an account with admin privileges to the district OU\'s')
+            ->addToNewRow()
+            ->buildPasswordInput('Active Directory Password',
+                    Schema::DISTRICT_AD_PASSWORD,
+                    $this->district[Schema::DISTRICT_AD_PASSWORD[Schema::COLUMN]],
+                    'Enter password for admin user')
+            ->addToRow()
+            ->buildTextInput('Active Directory Student Group',
+                    Schema::DISTRICT_AD_STUDENT_GROUP,
+                    $this->district[Schema::DISTRICT_AD_STUDENT_GROUP[Schema::COLUMN]],
+                    'This group should contain all active and inactive students')
             ->addToNewRow()
             ->buildStatusCheck('LDAP Connection Test',
                     $adTestResult)
@@ -161,11 +177,10 @@ $adTestResult = $ad->getConnectionResult();
                 ->addToRow();
     }
 
-    $form->buildPasswordInput('Active Directory Password',
-                    Schema::DISTRICT_AD_PASSWORD,
-                    $this->district[Schema::DISTRICT_AD_PASSWORD[Schema::COLUMN]],
-                    'Enter password for admin user')
-            ->addToRow()
+    $form->buildTextInput('Google Apps FQDN',
+                    Schema::DISTRICT_GA_FQDN,
+                    $this->district[Schema::DISTRICT_GA_FQDN[Schema::COLUMN]])
+            ->addToNewRow()
             ->buildBinaryInput('Using GADS',
                     Schema::DISTRICT_USING_GADS,
                     $this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]],

@@ -36,7 +36,9 @@ $this->auth = Auth::get();
 $server = $this->auth[Schema::AUTH_LDAP_SERVER[Schema::COLUMN]];
 $username = $this->auth[Schema::AUTH_LDAP_USERNAME[Schema::COLUMN]];
 $password = $this->auth[Schema::AUTH_LDAP_PASSWORD[Schema::COLUMN]];
-$adTestResult = system\app\auth\LDAP::testConnection($server, $username, $password);
+if (!empty($server)) {
+    $adTestResult = system\app\auth\LDAP::testConnection($server, $username, $password);
+}
 //var_dump($adTestResult);
 $form = new Form(null, 'authentication');
 

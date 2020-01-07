@@ -94,6 +94,7 @@ class CommonLayout extends Parser {
     }
 
     public function getNavigation() {
+        // var_dump($this->user);
         $menu = new Menu($this->user);
         return $menu->getMenu();
     }

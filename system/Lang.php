@@ -30,6 +30,19 @@ abstract class Lang {
         return $target::get($name);
     }
 
+    public static function getHelp($name) {
+        $requestedLang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+
+        if (self::langExists($requestedLang)) {
+
+            $target = '\app\lang\\' . $requestedLang . '\\' . strtoupper($requestedLang) . 'Common';
+        } else {
+            $target = '\app\lang\\' . DEFAULT_LANG . '\\' . strtoupper(DEFAULT_LANG) . 'Common';
+        }
+        //echo $target;
+        return $target::getHelp($name);
+    }
+
     private static function langExists($lang) {
         if (file_exists(APPPATH . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . strtoupper($lang) . 'Common.php') and class_exists($lang . "Common")) {
 

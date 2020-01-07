@@ -99,7 +99,9 @@ use app\models\AppConfig;
                                 <a class="dropdown-item" href="/settings/application">Application</a>
                                 <a class="dropdown-item" href="/settings/districts">District Setup</a>
 
-                                <?php if (App::get()->inDebugMode()) {
+                                <?php
+                                $debugMode = App::get()->inDebugMode();
+                                if ($debugMode) {
                                     ?>
                                     <a id="debugConfigButton" class="dropdown-item" href="#"><text data-toggle="modal" data-target="#debugConfigModal">View Config</text></a>
                                     <?php
@@ -136,7 +138,7 @@ use app\models\AppConfig;
     </div>
 </nav>
 <?php
-if (App::get()->inDebugMode() and $this->userPrivs == Privilege::TECH) {
+if ($this->userPrivs > Privilege::UNAUTHENTICATED and $debugMode and $this->userPrivs == Privilege::TECH) {
     echo $this->view('modals/debugConfigModal');
 }
 ?>

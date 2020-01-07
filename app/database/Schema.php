@@ -129,8 +129,10 @@ class Schema {
     const DISTRICT_AD_FQDN = array('table' => 'District', 'column' => 'AD_FQDN', 'name' => 'District_AD_FQDN');
     const DISTRICT_AD_SERVER = array('table' => 'District', 'column' => 'AD_Server', 'name' => 'District_AD_Server');
     const DISTRICT_AD_NETBIOS = array('table' => 'District', 'column' => 'AD_NetBIOS', 'name' => 'District_AD_NetBIOS');
+    const DISTRICT_AD_BASEDN = array('table' => 'District', 'column' => 'AD_BaseDN', 'name' => 'District_AD_BaseDN');
     const DISTRICT_AD_USERNAME = array('table' => 'District', 'column' => 'AD_Username', 'name' => 'District_AD_Username');
     const DISTRICT_AD_PASSWORD = array('table' => 'District', 'column' => 'AD_Password', 'name' => 'District_AD_Password');
+    const DISTRICT_AD_STUDENT_GROUP = array('table' => 'District', 'column' => 'AD_Student_Group', 'name' => 'District_AD_Student_Group');
     const DISTRICT_GA_FQDN = array('table' => 'District', 'column' => 'GA_FQDN', 'name' => 'District_GA_FQDN');
     const DISTRICT_PARENT_EMAIL_GROUP = array('table' => 'District', 'column' => 'Parent_Email_Group', 'name' => 'District_Parent_Email_Group');
     const DISTRICT_STAFF_USERNAME_FORMAT = array('table' => 'District', 'column' => 'Staff_Username_Format', 'name' => 'District_Staff_Username_Format');

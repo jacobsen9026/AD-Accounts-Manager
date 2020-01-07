@@ -77,6 +77,29 @@ class District {
         return $query->run();
     }
 
+    public static function getAD_BaseDN($districtID) {
+        $query = new Query(self::TABLE_NAME, Query::SELECT, Schema::DISTRICT_AD_BASEDN[Schema::COLUMN]);
+        $query->where(Schema::DISTRICT_ID, $districtID);
+        $result = $query->run();
+        if ($result == "false") {
+            return self::parseBaseDNFromFQDN(self::getAD_FQDN($districtID));
+        }
+        return $result;
+    }
+
+    public static function parseBaseDNFromFQDN($fqdn) {
+        $baseDN = '';
+        $afterFirst = false;
+        foreach (explode(".", $fqdn) as $part) {
+            if ($afterFirst) {
+                $baseDN .= ',';
+            }
+            $baseDN .= 'DC=' . $part;
+            $afterFirst = true;
+        }
+        return $baseDN;
+    }
+
     public static function getADUsername($districtID) {
         $query = new Query(self::TABLE_NAME, Query::SELECT, Schema::DISTRICT_AD_USERNAME[Schema::COLUMN]);
         $query->where(Schema::DISTRICT_ID, $districtID);

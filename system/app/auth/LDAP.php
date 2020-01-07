@@ -44,7 +44,7 @@ abstract class LDAP {
         $server = Auth::getLDAPServer();
         $domain = Auth::getLDAP_FQDN();
         // Prepare connection username by appending domain name if not already provided
-        if (!strpos($username, $domain)) {
+        if (!is_null($domain) and!strpos($username, $domain)) {
             $ldapUser = $username . "@" . $domain;
         }
         // Connect to LDAP server
@@ -149,8 +149,7 @@ abstract class LDAP {
 
                     throw new AuthException(AuthException::BAD_PASSWORD);
                 }
-                exit;
-                return false;
+                throw new AuthException(AuthException::BAD_USER);
             }
         } else {
 
