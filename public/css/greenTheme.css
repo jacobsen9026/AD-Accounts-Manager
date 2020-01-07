@@ -1,0 +1,48 @@
+
+
+
+
+
+
+
+
+
+
+
+.bg-primary,.btn-primary,.text-primary ,.dropdown-item:active{
+	background-color:#338540 !important;
+	border-color:#338540 !important;
+}
+.form-control:focus{
+    
+    border-color:#cfabad !important;
+        box-shadow: 0 0 0 0.2rem rgba(97,21,10,.25);
+}
+.nav-item.nav-link{
+    color:#338540 !important;
+}
+.nav-item.nav-link.active{
+    color:#000 !important;
+    color:
+}
+
+.custom-control-input:not(:disabled):active~.custom-control-label::before{
+    background-color: #b6d7af;
+    border-color: #b6d7af;
+    border-top-color: rgb(175,182,215);
+    border-right-color: rgb(175,182,215);
+    border-bottom-color: rgb(175,182,215);
+    border-left-color: rgb(175,182,215);
+}
+
+.custom-control-input:checked~.custom-control-label::before{
+    border-color: #338540;
+    border-top-color: rgb(51,133,64);
+    border-right-color: rgb(51,133,64);
+    border-bottom-color: rgb(51,133,64);
+    border-left-color: rgb(51,133,64);
+    background-color: #338540;
+    
+}
+
+
