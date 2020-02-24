@@ -195,6 +195,11 @@ class Form {
      * @return Form
      */
     public function addToForm($formComponent, $rowKey = null) {
+        if (is_null($rowKey)) {
+            $this->currentRow++;
+            $this->addToRow($this->currentRow, $formComponent);
+            return $this;
+        }
         $this->addToRow($rowKey, $formComponent);
         return $this;
     }
@@ -277,10 +282,13 @@ class Form {
 });
 
 </script>';
+        $this->logger->debug(htmlspecialchars($this->lastComponentBuilt));
+
         if (strpos($this->lastComponentBuilt, '</div>')) {
             $this->lastComponentBuilt = str_replace('</div>', '</div>' . $jsScript, $this->lastComponentBuilt);
 //var_dump("form-control found");
         }
+
         return $this;
     }
 
@@ -346,7 +354,10 @@ class Form {
         } else {
             $this->addAutoComplete("/api/ldap/autocompleteStaff/", 2);
         }
-        $this->medium();
+        $this->medium()
+                ->prependInput('<i class="fas fa-search"></i>');
+
+        $this->logger->debug(htmlspecialchars($this->lastComponentBuilt));
         return $this;
     }
 
@@ -377,11 +388,13 @@ class Form {
         $name = $this->preProcessName($name);
         $formComponent = $this->startInput($name, $label, $helpText);
 
-        $formComponent .= '<input type="text" class="col form-control text-center" name="' . $name . '"';
-        if (isset($value))
+        $formComponent .= '<input type="text" class="col form-control text-center  ml-0 mr-auto" name="' . $name . '"';
+        if (isset($value)) {
             $formComponent .= ' value="' . $value . '"';
-        if (isset($placeholder))
+        }
+        if (isset($placeholder)) {
             $formComponent .= ' placeholder="' . $placeholder . '"';
+        }
         $formComponent .= '/>';
         $formComponent .= $this->componentEnd;
         $this->lastComponentBuilt = $formComponent;
@@ -417,16 +430,21 @@ class Form {
      * @param string $placeholder
      * @return Form
      */
-    public function buildStatusCheck($label, $value, $helpText = null) {
+    public function buildStatusCheck($label, $value, $helpText = null, $tooltip = null) {
         //var_dump($value);
         $formComponent = $this->startInput(null, $label, $helpText);
 
         $formComponent .= '<div class="col-md text-center ">';
+        $valueDisplay = '';
         if ($value == '1') {
-            $formComponent .= '<h1><i class="fas fa-check-circle text-success"></i></h1>';
+
+            $classes = 'fas fa-check-circle text-success';
         } else {
-            $formComponent .= '<h1><i class="fas fa-times-circle text-danger"></i></h1><p class="mb-0">' . $value . '</p>';
+            $valueDisplay = '<p class="mb-0">' . $value . '</p>';
+            $classes = 'fas fa-times-circle text-danger';
         }
+        $formComponent .= '<h1><i class="' . $classes . '"  data-toggle="tooltip" data-placement="top" title="' . $tooltip . '"></i></h1>' . $valueDisplay;
+
         $formComponent .= '</div>';
         $formComponent .= $this->componentEnd;
         $this->lastComponentBuilt = $formComponent;
@@ -487,11 +505,18 @@ class Form {
      * @param string $placeholder
      * @return Form
      */
-    public function buildFileInput($name, $label, $helpText = null, $placeholder = null) {
+    public function buildFileInput($name, $label, $helpText = null, $acceptedFileTypes = null) {
 
         $formComponent = '<div class="row p-3 h-100">';
-        $formComponent .= '<input type="file" name="' . $name . '" id="' . $name . '">';
+        $formComponent .= '<label class="d-block w-100 font-weight-bold" for="' . $name . '">' . $label . '</label><br/>'
+                . '<div class="d-block w-100">';
+        $formComponent .= '<input type="file" ';
+        if (!is_null($acceptedFileTypes)) {
+            $formComponent .= ' accept = "' . $acceptedFileTypes . '" ';
+        }
+        $formComponent .= 'name="' . $name . '" id="' . $name . '">';
         $formComponent .= '<input type="text" name="somethingelse" hidden />';
+        $formComponent .= '</div>';
         //      $formComponent = '<div class="row p-3 h-100 custom-file">';
         //$formComponent .= '<input type="file" class="custom-file-input" id="' . $name . '" name="' . $name . '"/>';
         //$formComponent .= ' <label class=" custom-file-label" for="' . $name . '">Choose file</label>';
@@ -595,10 +620,31 @@ class Form {
         if (is_null($appendContent)) {
             $appendContent = $this->lastComponentBuilt;
         }
-        $append = '<div class="px-0 col-md-4 col-lg-3 col-xl-2">
+        $append = '<div class="px-0 col-sm-auto">
             <span class="input-group-text">' . $appendContent . '</span>
         </div>';
         $this->lastComponentBuilt = substr($this->lastComponentBuilt, 0, strlen($this->lastComponentBuilt) - 6) . $append . $this->componentEnd;
+        return $this;
+    }
+
+    public function prependInput($prependContent = null) {
+        if (is_null($prependContent)) {
+            $prependContent = $this->lastComponentBuilt;
+        }
+        $prepend = '<div class="px-0 col-auto ml-auto mr-0">
+            <span class="input-group-text h-100 text-center">' . $prependContent . '</span>
+        </div><div>';
+        //var_dump($this->lastComponentBuilt);
+        $exploded = explode('<div class="row p-3 h-100 ui-widget">', $this->lastComponentBuilt);
+        $this->lastComponentBuilt = $exploded[0] . '<div class="row p-3 h-100 ui-widget">' . $prepend . $exploded[1] . $this->componentEnd;
+        if (strpos($this->lastComponentBuilt, 'mx-auto')) {
+            $this->lastComponentBuilt = str_replace('mx-auto', '', $this->lastComponentBuilt);
+            //var_dump("form-control found");
+        }
+        if (strpos($this->lastComponentBuilt, 'col-md col-lg-8 col-xl-6')) {
+            $this->lastComponentBuilt = str_replace('col-md col-lg-8 col-xl-6', 'col', $this->lastComponentBuilt);
+            //var_dump("form-control found");
+        }
         return $this;
     }
 

@@ -47,6 +47,8 @@ use app\models\Auth;
 
 class App extends CommonApp {
 
+    use RequestRedirection;
+
     /** @var MasterConfig|null The system logger */
     public $config;
 
@@ -129,7 +131,7 @@ class App extends CommonApp {
     public function loadConfig() {
         //$this->config = new MasterConfig();
         $this->coreLogger->info("The app config has been loaded");
-        define('GAMPATH', APPPATH . DIRECTORY_SEPARATOR . "lib" . DIRECTORY_SEPARATOR . "gam");
+        define('GAMPATH', CONFIGPATH . DIRECTORY_SEPARATOR . "google");
 
         /*
          * Set the php errror mode repective of the setting
@@ -142,6 +144,7 @@ class App extends CommonApp {
      * @return App
      */
     public function run() {
+
         $this->logger->debug("Creating Session");
 
         $this->user = Session::getUser();
@@ -167,6 +170,21 @@ class App extends CommonApp {
 
     public function route() {
         /*
+         * HTTPS redirect check
+         * If database setting for https redirect is set,
+         * check that the protocol used is actually https for
+         * this request. If it isn't redirect the request to https
+         */
+        $this->handleHttpsRedirect();
+        /*
+         * Hostname redirect check
+         * If database setting for the website FQDN is set,
+         * check that the request used the database value.
+         *  If it isn't redirect the request to the database
+         * stored FQDN value
+         */
+        $this->handleHostnameRedirect();
+        /*
          * Build a router based on the current app state
          */
         $this->router = new Router($this);
@@ -175,6 +193,20 @@ class App extends CommonApp {
          */
         $this->route = $this->router->route();
         $this->logger->debug($this->route);
+    }
+
+    private function handleHttpsRedirect() {
+        $this->logger->debug("Protocol: " . $this->request->protocol);
+        if ($this->request->protocol == "http" && \app\models\AppConfig::getForceHTTPS()) {
+            $this->redirect("https://" . $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"]);
+        }
+    }
+
+    private function handleHostnameRedirect() {
+        $this->logger->debug("Hostname: " . ($_SERVER["SERVER_NAME"]));
+        if (strtolower($_SERVER["SERVER_NAME"]) != strtolower(\app\models\AppConfig::getWebsiteFQDN())) {
+            $this->redirect($this->request->protocol . "://" . strtolower(\app\models\AppConfig::getWebsiteFQDN()) . $_SERVER["REQUEST_URI"]);
+        }
     }
 
     public function control() {

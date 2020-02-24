@@ -122,10 +122,10 @@ abstract class DatabasePost {
 
     private static function uploadFiles() {
         var_dump($_FILES);
-
-        foreach ($_FILES as $file) {
-            if ($file['name'] == 'oauth2.txt') {
-                move_uploaded_file($file['tmp_name'], GAMPATH . DIRECTORY_SEPARATOR . 'oauth2.txt');
+        //exit;
+        foreach ($_FILES as $key => $file) {
+            if ($key == 'client_secret') {
+                move_uploaded_file($file['tmp_name'], GAMPATH . DIRECTORY_SEPARATOR . 'client_secret.json');
             }
         }
         //exit;

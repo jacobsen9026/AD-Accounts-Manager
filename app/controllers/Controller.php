@@ -44,6 +44,8 @@ use system\app\App;
 use app\models\Query;
 
 class Controller extends CommonController {
+
+    use \system\app\RequestRedirection;
     //put your code here
 
     /** @var User|null The system logger */
@@ -118,15 +120,6 @@ class Controller extends CommonController {
     public function preProcessDistrictID($districtID) {
         $this->districtID = $districtID;
         $this->district = District::getDistrict($this->districtID);
-    }
-
-    public function redirect($url) {
-        if ($this->app->inDebugMode()) {
-            $this->app->outputBody .= "In Debug Mode<br/>Would have redirected<br/>"
-                    . "<a href='" . $url . "'>here</a>";
-        } else {
-            header('Location: ' . $url);
-        }
     }
 
 }

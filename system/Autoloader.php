@@ -34,7 +34,7 @@ namespace system;
 abstract class Autoloader {
 
     public static function run(Core $core) {
-
+        require_once ROOTPATH . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
         include(ROOTPATH . DIRECTORY_SEPARATOR . "system" . DIRECTORY_SEPARATOR . "CoreFunctions.php");
         spl_autoload_register(function ($class) {
             //var_dump($class);

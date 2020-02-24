@@ -4,6 +4,7 @@
 use app\database\Schema;
 use system\app\Form;
 use app\models\district\District;
+use app\api\GAM;
 
 echo $this->modal('deleteDistrict');
 //var_dump($this->staffADSettings);
@@ -12,6 +13,8 @@ echo $this->modal('deleteDistrict');
 $ad = new app\api\AD($this->districtID);
 $adTestResult = $ad->getConnectionResult();
 $defaultBaseDN = District::parseBaseDNFromFQDN(District::getAD_FQDN($this->districtID));
+$clientSecretExists = GAM::get()->clientSecretExists();
+$google = GAM::get();
 //var_dump($adTestResult);
 ?>
 <?= $this->view('layouts/setup_navbar'); ?>
@@ -118,15 +121,14 @@ $defaultBaseDN = District::parseBaseDNFromFQDN(District::getAD_FQDN($this->distr
     </div>
     <?php
     $tabs = ob_get_clean();
+    ?>
 
-
-
-
-
-
-
-
-
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <?php
 //var_dump(\app\models\district\GoogleApps::getField(Schema::GRADE, $this->districtID, Schema::GOOGLEAPPS_OU, 'Staff'));
     $form = new Form('/settings/districts/edit/' . $this->districtID);
     $form->buildTextInput('Name',
@@ -173,7 +175,8 @@ $defaultBaseDN = District::parseBaseDNFromFQDN(District::getAD_FQDN($this->distr
     if ($adTestResult == "true") {
         $form->buildAJAXStatusCheck('LDAP Permission Test',
                         '/api/ldap/testPerms',
-                        [['districtID', $this->districtID]])
+                        [['districtID', $this->districtID]],
+                        $this->district[Schema::DISTRICT_AD_BASEDN[Schema::COLUMN]])
                 ->addToRow();
     }
 
@@ -181,17 +184,73 @@ $defaultBaseDN = District::parseBaseDNFromFQDN(District::getAD_FQDN($this->distr
                     Schema::DISTRICT_GA_FQDN,
                     $this->district[Schema::DISTRICT_GA_FQDN[Schema::COLUMN]])
             ->addToNewRow()
-            ->buildBinaryInput('Using GADS',
+            ->buildBinaryInput('Using Google Cloud Directory Sync',
                     Schema::DISTRICT_USING_GADS,
                     $this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]],
                     'Tells the application whether or not to perform directory changes on Google Apps')
-            ->addToNewRow()
-            ->buildBinaryInput('Using GAPS',
-                    Schema::DISTRICT_USING_GAPS,
-                    $this->district[Schema::DISTRICT_USING_GAPS[Schema::COLUMN]],
-                    'Tells the application whether or not to perform password changes on Google Apps')
-            ->addToRow()
-            ->buildTextInput('District Parent Email Group',
+            ->addToNewRow();
+
+    if (!$this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]]) {
+        $form->buildBinaryInput('Using G Suite Password Sync',
+                        Schema::DISTRICT_USING_GAPS,
+                        $this->district[Schema::DISTRICT_USING_GAPS[Schema::COLUMN]],
+                        'Tells the application whether or not to perform password changes on Google Apps')
+                ->addToRow();
+    } else {
+        $form->buildBinaryInput('Using GAPS',
+                        Schema::DISTRICT_USING_GAPS,
+                        true,
+                        'When using Google Cloud Directory Sync this settings is not available')
+                ->disable()
+                ->addToRow();
+    }
+    if (!$this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]]) {
+        if (!$clientSecretExists) {
+
+
+            $jsonInstructions = 'If you do not have a json you will need to make/download it from the '
+                    . '<a href="https://console.developers.google.com/apis/dashboard">Google Developers Console</a>'
+                    . '<br/>You can create a new project or add an Oauth credential to an existing one.';
+
+            $form->buildFileInput("client_secret",
+                            'Upload a client_secret.json',
+                            'Choose your client_secret.json',
+                            'application/JSON')
+                    ->addToNewRow()
+                    ->addToForm($jsonInstructions);
+            //->buildCustomButton('Check OAuth Validity', 'primary', 'api/gam/test')
+            //->addOnClickListenerFunction($onClick)
+            // ->addToNewRow()
+            //->addToNewRow();
+        } else {
+
+            $form->buildFileInput("client_secret",
+                            'Replace client_secret.json',
+                            'Choose your client_secret.json',
+                            'application/JSON')
+                    ->addToNewRow();
+        }
+
+
+        if (!$google->isAuthorized() and $google->clientSecretExists()) {
+            $form->buildCustomButton("Authorize this app for Google!", "primary", $google->getAuthUrl())
+                    ->addToRow();
+        }
+
+        if ($google->isAuthorized()) {
+            $scopes = '';
+            foreach ($google->getScopes() as $scope) {
+                $scopes .= $scope . "\n";
+            }
+            $scopes = "   Scopes \n " . $scopes;
+            $form->buildStatusCheck("Google Connected", true, $google->getDomainNames()[0], $scopes)
+                    ->addToRow()
+                    ->buildCustomButton("Re-Authorize / Update Permissions", "primary", $google->getAuthUrl())
+                    ->addToRow();
+        }
+    }
+
+    $form->buildTextInput('District Parent Email Group',
                     Schema::DISTRICT_PARENT_EMAIL_GROUP,
                     $this->district[Schema::DISTRICT_PARENT_EMAIL_GROUP[Schema::COLUMN]],
                     'Do not enter the domain name.')

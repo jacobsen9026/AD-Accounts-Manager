@@ -125,7 +125,7 @@ class CommonRouter {
     private function setRoute() {
 //Set the route to take based on the request
 //This is prior to custom route insertion
-// Set Controller
+// Set Controller$
         if (!isset($this->request->controller)) {
             $this->controller = $this->getDefaultController();
         } else {
@@ -170,9 +170,13 @@ class CommonRouter {
 // Alter for POST or GET
         if (isset($_POST) and $_POST != null) {
             $this->method = $this->method . 'Post';
-        } elseif (isset($_GET) and $_GET != null) {
-            $this->method = $this->method . 'Get';
         }
+        /*
+          elseif (isset($_GET) and $_GET != null) {
+          $this->method = $this->method . 'Get';
+          }
+         *
+         */
 
 //var_dump($this);
         $this->logger->info("Route taken: " . $this->controller . "->" . $this->method . "->" . $this->data);

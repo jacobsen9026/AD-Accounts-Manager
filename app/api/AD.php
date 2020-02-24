@@ -114,12 +114,34 @@ class AD {
         return self::$instance;
     }
 
+    public function setPassword($username, $password) {
+        $userDN = $this->getUserDN($username);
+        $encoded_newPassword = "{SHA}" . base64_encode(pack("H*", sha1($password)));
+        $entry = array();
+        $entry["userPassword"] = "$encoded_newPassword";
+        $this->logger->debug($userDN);
+        $this->logger->debug($entry);
+
+        if (ldap_modify($this->connection, $userDN, $entry) === false) {
+            $error = ldap_error($this->connection);
+            $errno = ldap_errno($this->connection);
+            $message[] = "E201 - Your password cannot be change, please contact the administrator.";
+            $message[] = "$errno - $error";
+        } else {
+            echo "Success";
+        }
+    }
+
     public function connect() {
         $this->connection = ldap_connect("ldap://" . $this->fqdn)
                 or die("Could not connect to LDAP server.");
 
         if ($this->connection) {
+
             try {
+
+                ldap_set_option($this->connected, LDAP_OPT_REFERRALS, 0);
+                ldap_set_option($this->connected, LDAP_OPT_PROTOCOL_VERSION, 3);
                 $this->connected = ldap_bind($this->connection, $this->username, $this->password);
             } catch (Exception $ex) {
                 $this->logger->warning($ex);
@@ -239,61 +261,6 @@ class AD {
         return false;
     }
 
-    private function processUser($user) {
-        $aduser = new \app\models\district\ADUser();
-        if (key_exists("givenname", $user)) {
-            $aduser->setFirstName($user["givenname"][0]);
-        }
-        if (key_exists("sn", $user)) {
-            $aduser->setLastName($user["sn"][0]);
-        }
-        if (key_exists("middlename", $user)) {
-            $aduser->setMiddleName($user["middlename"][0]);
-        }
-        if (key_exists("cn", $user)) {
-            $aduser->setFullName($user["cn"][0]);
-        }
-        if (key_exists("employeeid", $user)) {
-            $aduser->setId($user["employeeid"][0]);
-        }
-        if (key_exists("homedirectory", $user)) {
-            $aduser->setHdir($user["homedirectory"][0]);
-        }
-        if (key_exists("homedrive", $user)) {
-            $aduser->setHdrv($user["homedrive"][0]);
-        }
-        if (key_exists("scriptpath", $user)) {
-            $aduser->setScript($user["scriptpath"][0]);
-        }
-        if (key_exists("streetaddress", $user)) {
-            $aduser->setStreet($user["streetaddress"][0]);
-        }
-        if (key_exists("description", $user)) {
-            $aduser->setDescription($user["description"][0]);
-        }
-        if (key_exists("memberof", $user)) {
-            foreach ($user["memberof"] as $key => $memberGroup) {
-                if (strval($key) != "count") {
-                    $groups[] = $memberGroup;
-                }
-            }
-
-            $aduser->setGroups($groups);
-        }
-
-        if (key_exists("lockouttime", $user)) {
-            if (intval($user["lockouttime"][0]) > 0) {
-                $aduser->setLockedOut(true);
-            } else {
-                $aduser->setLockedOut(false);
-            }
-        } else {
-            $aduser->setLockedOut(false);
-        }
-
-        return $aduser;
-    }
-
     public function getUser($username) {
         $filter = '(&(objectClass=person)(objectClass=user)(sAMAccountName=' . $username . '))';
         return $this->queryObject($filter);
@@ -303,14 +270,33 @@ class AD {
 
         $studentGroupDN = $this->getGroupDN("Students");
         $filter = '(&(objectClass=person)(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . ')(objectClass=user)(sAMAccountName=' . $username . '))';
-        return $this->queryObject($filter);
+
+        $studentResult = $this->queryObject($filter);
+        $enabledFilter = '(&(userAccountControl:1.2.840.113556.1.4.803:=2)(sAMAccountName=' . $username . '))';
+        $enabled = ['enabled' => true];
+        $enabledResult = $this->queryObject($enabledFilter);
+        //var_dump($enabledResult);
+        if ($enabledResult == false) {
+            $enabled = ['enabled' => false];
+        }
+
+        return array_merge($studentResult, $enabled);
     }
 
     public function getStaffUser($username) {
 
         $studentGroupDN = $this->getGroupDN("Students");
         $filter = '(&(objectClass=person)(!(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . '))(objectClass=user)(sAMAccountName=' . $username . '))';
-        return $this->queryObject($filter);
+        $staffResult = $this->queryObject($filter);
+        $enabledFilter = '(&(userAccountControl:1.2.840.113556.1.4.803:=2)(sAMAccountName=' . $username . '))';
+        $enabled = ['enabled' => true];
+        $enabledResult = $this->queryObject($enabledFilter);
+        //var_dump($enabledResult);
+        if ($enabledResult == false) {
+            $enabled = ['enabled' => false];
+        }
+
+        return array_merge($staffResult, $enabled);
     }
 
     public function unlockUser($username) {
@@ -370,7 +356,7 @@ class AD {
             if (key_exists("count", $result) and $result["count"] == 1) {
                 $user = $result[0];
                 //var_dump($user);
-                return $this->processUser($user);
+                return $user;
             }
         }
         return false;
@@ -386,7 +372,9 @@ class AD {
     public function getGroupDN($groupName) {
         $filter = "(&(objectClass=group)(cn=" . $groupName . "))";
         //var_dump($filter);
-        return $this->getObjectDN($filter);
+        $dn = $this->getObjectDN($filter);
+        //var_dump($dn);
+        return $dn;
     }
 
     /**
@@ -404,8 +392,12 @@ class AD {
     private function getObjectDN($filter) {
         //var_dump($filter);
         //var_dump($this->baseDN);
+        //var_dump($this->connection);
         $result = ldap_search($this->connection, $this->baseDN, $filter);
+        //ldap_search($this->connection, $this->baseDN, '(objectClass=person)');
+        //var_dump(ldap_error($this->connection));
         $info = ldap_get_entries($this->connection, $result);
+        //var_dump($result);
         //var_dump($info);
         if (is_array($info)) {
             if (key_exists("count", $info)) {

@@ -76,14 +76,14 @@ class Renderer extends Parser {
     }
 
     public function errors_exist() {
-
-        if ($this->appLogger->getLog('error') !== null and sizeof($this->appLogger->getLog('error')) > 0) {
-            return true;
+        if (isset($this->appLogger)) {
+            if ($this->appLogger->getLog('error') !== null and sizeof($this->appLogger->getLog('error')) > 0) {
+                return true;
+            }
+            if ($this->logger->getLog('error') !== null and sizeof($this->logger->getLog('error')) > 0) {
+                return true;
+            }
         }
-        if ($this->logger->getLog('error') !== null and sizeof($this->logger->getLog('error')) > 0) {
-            return true;
-        }
-
         return false;
     }
 

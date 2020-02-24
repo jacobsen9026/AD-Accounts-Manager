@@ -44,6 +44,7 @@ class Request {
     public $referer = null;
     public $data = null;
     public $type = null;
+    public $protocol = "http";
     private $logger;
 
     /**
@@ -52,12 +53,7 @@ class Request {
      */
     function __construct() {
         $this->logger = SystemLogger::get();
-        /*
-         * Store GET
-         */
-        if (isset($_GET)) {
-            $this->get = $_GET;
-        }
+
         /*
          * Store the referer
          */
@@ -72,6 +68,21 @@ class Request {
              * Set Request URI
              */
             $this->uri = $_SERVER["REQUEST_URI"];
+
+            /*
+             * Store GET
+             */
+            if (isset($_GET)) {
+                $this->get = $_GET;
+                //Remove Get portion from URI
+                $this->logger->debug("URI: " . $this->uri);
+                $this->logger->debug("Position of ? " . strpos($this->uri, "?"));
+                if (strpos($this->uri, "?")) {
+                    $this->uri = explode("?", $this->uri)[0];
+                } elseif ($this->uri[0] == "?") {
+                    $this->uri = "";
+                }
+            }
             /*
              * Break up the request by slashes into /module/page/action
              */
@@ -96,6 +107,9 @@ class Request {
             $this->type = 'ajax';
         } else {
             $this->type = 'http';
+        }
+        if (isset($_SERVER["HTTPS"])) {
+            $this->protocol = "https";
         }
         //var_export($this);
         //return $this;

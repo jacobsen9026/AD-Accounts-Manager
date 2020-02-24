@@ -7,7 +7,9 @@ and open the template in the editor.
     Created on : Dec 4, 2019, 8:12:01 PM
     Author     : cjacobsen
 */
-
+:root {
+  --light:#cbd3da;
+}
 .dark-shadow{
     box-shadow: 0.1em 0.2em 1em #000;
 }

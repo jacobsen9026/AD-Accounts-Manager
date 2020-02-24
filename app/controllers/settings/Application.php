@@ -51,6 +51,10 @@ class Application extends Controller {
         return $this->view('settings/index');
     }
 
+    public function indexGet() {
+        $this->index();
+    }
+
     public function indexPost() {
         \system\app\AppLogger::get()->debug('Edit Post');
         $post = \system\Post::getAll();

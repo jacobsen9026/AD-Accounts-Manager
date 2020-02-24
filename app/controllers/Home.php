@@ -41,6 +41,13 @@ class Home extends Controller {
         return $this->view('homepage');
     }
 
+    public function indexPost() {
+        $this->motd = \app\models\AppConfig::getMOTD();
+        $this->applicationName = \app\models\AppConfig::getAppName();
+        $this->layout = "default";
+        return $this->view('homepage');
+    }
+
 }
 
 ?>

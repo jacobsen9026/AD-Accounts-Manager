@@ -14,6 +14,7 @@ namespace app\controllers;
  * @author cjacobsen
  */
 use app\models\district\Student;
+use app\api\AD;
 
 class Students extends Controller {
 
@@ -43,9 +44,12 @@ class Students extends Controller {
     }
 
     private function getStudent($username) {
-        $adUser = \app\api\AD::get()->getStudentUser($username);
-        var_dump($adUser);
-        return $adUser;
+
+
+        $student = new Student($username);
+
+        //var_dump($student);
+        return $student;
 //$gaUser = \app\api\GAM::getUser($username);
     }
 
@@ -87,6 +91,12 @@ class Students extends Controller {
 
     public function resetPassword() {
         return $this->view('students/resetPassword');
+    }
+
+    public function resetPasswordPost() {
+        $username = \system\Post::get("username");
+        $password = \system\Post::get("password");
+        AD::get()->setPassword($username, $password);
     }
 
     public function createAccounts() {

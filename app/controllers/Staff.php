@@ -14,6 +14,7 @@ namespace app\controllers;
  * @author cjacobsen
  */
 use app\models\district\Student;
+use app\models\district\Staff as StaffModel;
 
 class Staff extends Controller {
 
@@ -36,16 +37,16 @@ class Staff extends Controller {
     public function accountStatusPost() {
         $post = \system\Post::getAll();
         if (isset($post)and key_exists("username", $post)) {
-
-            $this->staff = $this->getStaff($post["username"]);
+            $this->staff = new StaffModel($post["username"]);
         }
         return $this->view('staff/show/staff');
     }
 
     private function getStaff($username) {
-        $adUser = \app\api\AD::get()->getStaffUser($username);
-        var_dump($adUser);
-        return $adUser;
+        $gaUser = \app\api\GAM::get()->getUser($username);
+
+        //var_dump($staff);
+        return $staff;
 //$gaUser = \app\api\GAM::getUser($username);
     }
 

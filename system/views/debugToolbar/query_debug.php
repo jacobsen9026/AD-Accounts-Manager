@@ -1,7 +1,8 @@
 
 <?php
-$log = $this->appLogger->getLog('query');
-
+if (isset($this->appLogger)) {
+    $log = $this->appLogger->getLog('query');
+}
 if (!function_exists('printQueryLog')) {
 
     function printQueryLog($array) {

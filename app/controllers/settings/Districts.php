@@ -53,7 +53,7 @@ class Districts extends Controller {
     public function createPost() {
         $post = \system\Post::getAll();
         District::createDistrict($post['name']);
-        $this->redirect('/districts');
+        $this->redirect('/settings/districts');
     }
 
     public function schools() {

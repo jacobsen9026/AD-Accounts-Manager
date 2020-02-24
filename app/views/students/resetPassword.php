@@ -10,7 +10,7 @@
 use system\app\Form;
 
 $form = new Form();
-$form->buildTextInput('Username', 'username')
+$form->buildUserSearchInput()
         ->medium()
         ->addToNewRow()
         ->buildPasswordInput('Password', 'password', null, "Leave blank for a new random password")

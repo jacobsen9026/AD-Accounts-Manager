@@ -34,3 +34,8 @@ nbproject/project.xml
 app/database/config.db
 app/database/config.db.bak
 app/lib/gam/oauth2.txt
+/vendor/
+/nbproject/private/
+app/config/google/client_secret.json
+app/config/google/token.json
+app/lib/gam/token.json
