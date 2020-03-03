@@ -1,6 +1,6 @@
 <?php
 
-use system\app\Form;
+use system\app\forms\Form;
 use system\Lang;
 
 $form = new Form('/');

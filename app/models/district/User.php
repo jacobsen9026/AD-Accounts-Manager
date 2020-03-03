@@ -16,20 +16,25 @@ namespace app\models\district;
 class User {
 
     //put your code here
-    private $adFirstName;
-    private $adMiddleName;
-    private $adEmployeeID;
-    private $adLastName;
-    private $adUsername;
-    private $adEnabled;
-    private $adStreet;
-    private $adLockedOut;
-    private $adDescription;
-    private $adGroups;
-    private $adScript;
-    private $adHomeDir;
-    private $adHomeDrv;
-    private $adEmail;
+    private $firstName;
+    private $middleName;
+    private $employeeID;
+    private $lastName;
+    private $username;
+    private $enabled;
+    private $street;
+    private $lockedOut;
+    private $description;
+    private $groups;
+    private $script;
+    private $homeDir;
+    private $homeDrv;
+    private $email;
+    private $city;
+    private $state;
+    private $zip;
+    private $homePhone;
+    private $office;
 
     /**
      *
@@ -39,63 +44,78 @@ class User {
     function __construct($username) {
         /* @var $gaUserRaw \Google_Service_Directory_User */
         //var_dump($adUserRaw);
-
-        $adUserRaw = \app\api\AD::get()->getStaffUser($username);
-        $this->processAD($adUserRaw);
+        //$adUserRaw = \app\api\AD::get()->getUser($username);
+        //$this->processAD($adUserRaw);
     }
 
     /**
      *
      * @param type $adUserRaw
      */
-    private function processAD($adUserRaw) {
+    public function processAD($adUserRaw) {
+        //var_dump($adUserRaw);
         if (key_exists("givenname", $adUserRaw)) {
-            $this->adFirstName = $adUserRaw["givenname"][0];
+            $this->firstName = $adUserRaw["givenname"][0];
         }
         if (key_exists("sn", $adUserRaw)) {
-            $this->adLastName = $adUserRaw["sn"][0];
+            $this->lastName = $adUserRaw["sn"][0];
         }
         if (key_exists("middlename", $adUserRaw)) {
-            $this->adMiddleName = $adUserRaw["middlename"][0];
+            $this->middleName = $adUserRaw["middlename"][0];
         }
         if (key_exists("employeeid", $adUserRaw)) {
-            $this->adEmployeeID = $adUserRaw["employeeid"][0];
+            $this->employeeID = $adUserRaw["employeeid"][0];
         }
         if (key_exists("homedirectory", $adUserRaw)) {
-            $this->adHomeDir = $adUserRaw["homedirectory"][0];
+            $this->homeDir = $adUserRaw["homedirectory"][0];
         }
         if (key_exists("homedrive", $adUserRaw)) {
-            $this->adHomeDrv = $adUserRaw["homedrive"][0];
+            $this->homeDrv = $adUserRaw["homedrive"][0];
         }
         if (key_exists("scriptpath", $adUserRaw)) {
-            $this->adScript = $adUserRaw["scriptpath"][0];
+            $this->script = $adUserRaw["scriptpath"][0];
         }
         if (key_exists("pager", $adUserRaw)) {
             $this->adPager = $adUserRaw["pager"][0];
         }
         if (key_exists("scriptpath", $adUserRaw)) {
-            $this->adScript = $adUserRaw["scriptpath"][0];
+            $this->script = $adUserRaw["scriptpath"][0];
         }
         if (key_exists("company", $adUserRaw)) {
             $this->adCompany = $adUserRaw["company"][0];
         }
         if (key_exists("streetaddress", $adUserRaw)) {
-            $this->adStreet = $adUserRaw["streetaddress"][0];
+            $this->street = $adUserRaw["streetaddress"][0];
         }
         if (key_exists("mail", $adUserRaw)) {
-            $this->adEmail = $adUserRaw["mail"][0];
+            $this->email = $adUserRaw["mail"][0];
         }
         if (key_exists("description", $adUserRaw)) {
-            $this->adDescription = $adUserRaw["description"][0];
+            $this->description = $adUserRaw["description"][0];
         }
         if (key_exists("samaccountname", $adUserRaw)) {
-            $this->adUsername = $adUserRaw["samaccountname"][0];
+            $this->username = $adUserRaw["samaccountname"][0];
         }
         if (key_exists("displayName", $adUserRaw)) {
             $this->adDisplayName = $adUserRaw["displayName"][0];
         }
         if (key_exists("department", $adUserRaw)) {
             $this->adDepartment = $adUserRaw["department"][0];
+        }
+        if (key_exists("l", $adUserRaw)) {
+            $this->city = $adUserRaw["l"][0];
+        }
+        if (key_exists("st", $adUserRaw)) {
+            $this->state = $adUserRaw["st"][0];
+        }
+        if (key_exists("postalcode", $adUserRaw)) {
+            $this->zip = $adUserRaw["postalcode"][0];
+        }
+        if (key_exists("homephone", $adUserRaw)) {
+            $this->homePhone = $adUserRaw["homephone"][0];
+        }
+        if (key_exists("physicaldeliveryofficename", $adUserRaw)) {
+            $this->office = $adUserRaw["physicaldeliveryofficename"][0];
         }
 
         if (key_exists("cn", $adUserRaw)) {
@@ -108,19 +128,19 @@ class User {
                 }
             }
 
-            $this->adGroups = $groups;
+            $this->groups = $groups;
         }
 
         if (key_exists("lockouttime", $adUserRaw)) {
             if (intval($adUserRaw["lockouttime"][0]) > 0) {
-                $this->adLockedOut = true;
+                $this->lockedOut = true;
             } else {
-                $this->adLockedOut = false;
+                $this->lockedOut = false;
             }
         } else {
-            $this->adLockedOut = false;
+            $this->lockedOut = false;
         }
-        $this->adEnabled = $adUserRaw['enabled'];
+        $this->enabled = $adUserRaw['enabled'];
     }
 
     private function processGA($gaUserRaw) {
@@ -139,23 +159,23 @@ class User {
     }
 
     public function getADFirstName() {
-        return $this->adFirstName;
+        return $this->firstName;
     }
 
     public function getADMiddleName() {
-        return $this->adMiddleName;
+        return $this->middleName;
     }
 
     public function getLastName() {
-        return $this->adLastName;
+        return $this->lastName;
     }
 
     public function getAdUsername() {
-        return $this->adUsername;
+        return $this->username;
     }
 
     public function getAdEnabled() {
-        return $this->adEnabled;
+        return $this->enabled;
     }
 
     public function getGaEnabled() {
@@ -163,19 +183,19 @@ class User {
     }
 
     public function getAdGroups() {
-        return $this->adGroups;
+        return $this->groups;
     }
 
     public function getAdScript() {
-        return $this->adScript;
+        return $this->script;
     }
 
     public function getAdHomeDir() {
-        return $this->adHomeDir;
+        return $this->homeDir;
     }
 
     public function getAdEmail() {
-        return $this->adEmail;
+        return $this->email;
     }
 
     public function getGaUsername() {
@@ -192,7 +212,7 @@ class User {
      * @return self
      */
     public function setFirstName($firstName) {
-        $this->adFirstName = $firstName;
+        $this->firstName = $firstName;
         return $this;
     }
 
@@ -202,7 +222,7 @@ class User {
      * @return self
      */
     public function setMiddleName($middleName) {
-        $this->adMiddleName = $middleName;
+        $this->middleName = $middleName;
         return $this;
     }
 
@@ -212,7 +232,7 @@ class User {
      * @return self
      */
     public function setLastName($lastName) {
-        $this->adLastName = $lastName;
+        $this->lastName = $lastName;
         return $this;
     }
 
@@ -222,7 +242,7 @@ class User {
      * @return self
      */
     public function setAdUsername($adUsername) {
-        $this->adUsername = $adUsername;
+        $this->username = $adUsername;
         return $this;
     }
 
@@ -232,7 +252,7 @@ class User {
      * @return self
      */
     public function setAdEnabled($adEnabled) {
-        $this->adEnabled = $adEnabled;
+        $this->enabled = $adEnabled;
         return $this;
     }
 
@@ -252,7 +272,7 @@ class User {
      * @return self
      */
     public function setAdGroups($adGroups) {
-        $this->adGroups = $adGroups;
+        $this->groups = $adGroups;
         return $this;
     }
 
@@ -262,7 +282,7 @@ class User {
      * @return self
      */
     public function setAdScript($adScript) {
-        $this->adScript = $adScript;
+        $this->script = $adScript;
         return $this;
     }
 
@@ -272,7 +292,7 @@ class User {
      * @return self
      */
     public function setAdHomeDir($adHomeDir) {
-        $this->adHomeDir = $adHomeDir;
+        $this->homeDir = $adHomeDir;
         return $this;
     }
 
@@ -282,7 +302,7 @@ class User {
      * @return self
      */
     public function setAdEmail($adEmail) {
-        $this->adEmail = $adEmail;
+        $this->email = $adEmail;
         return $this;
     }
 

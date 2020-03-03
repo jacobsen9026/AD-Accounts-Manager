@@ -7,7 +7,7 @@
 
 <?php
 
-use system\app\Form;
+use system\app\forms\Form;
 
 $form = new Form();
 $form->buildUserSearchInput()

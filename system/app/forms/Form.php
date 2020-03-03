@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace system\app;
+namespace system\app\forms;
 
 /**
  * Form
@@ -22,9 +22,20 @@ namespace system\app;
 use app\database\Schema;
 use app\models\district\ActiveDirectory;
 use app\models\district\GoogleApps;
+use system\app\AppLogger;
 
 class Form {
 
+    private $method = "post";
+    private $action;
+    private $name;
+    private $style;
+
+
+
+
+    /* A 2D array that represents the layout of the form */
+    private $elements;
 //put your code here
     private $formHTML;
 
@@ -45,16 +56,50 @@ class Form {
      * @param string $method
      */
     function __construct($action = null, $name = '', $method = 'post') {
-        // Check if action is null and if so set to current URL
+// Check if action is null and if so set to current URL
         if (is_null($action)) {
             $action = $_SERVER["REQUEST_URI"];
         }
-        // Build form opening tag from construct parameters
-        $this->formHTML = '<form class="pb-3" name="' . $name . '" method="' . $method . '" action="' . $action . '" enctype="multipart/form-data">';
-        // Initialize form row to 1
-        $this->currentRow = 1;
-        // Initialize form logger
+        $this->action = $action;
+        $this->method = $method;
+        $this->name = $name;
+// Build form opening tag from construct parameters
+        $this->formHTML = '<form class="pb-3" name="' . $this->name . '" method="' . $this->method . '" action="' . $this->action . '" enctype="multipart/form-data">';
+// Initialize form row to 1
+        $this->currentRow = 0;
+// Initialize form logger
         $this->logger = AppLogger::get();
+    }
+
+    public function setStyle($style) {
+        $this->style = $style;
+        return $this;
+    }
+
+    public function addElementToCurrentRow($element) {
+
+        $this->elements[$this->currentRow][] = $element;
+
+        return $this;
+//var_dump($this->elements);
+    }
+
+    public function addElementToNewRow($element) {
+
+        $this->currentRow++;
+        $this->addElementToCurrentRow($element);
+
+        return $this;
+    }
+
+    public function print() {
+        $html = "<form action='$this->action' method='$this->method' name='$this->name' style='$this->style'>";
+        foreach ($this->elements as $row) {
+            foreach ($row as $element) {
+                $html .= $element->getHTML();
+            }
+        }
+        return $html;
     }
 
     /**
@@ -64,9 +109,9 @@ class Form {
      * @return Form
      */
     public function subForm() {
-        // Overwrite formHTML with nothing to erase default form opening tag
+// Overwrite formHTML with nothing to erase default form opening tag
         $this->formHTML = '';
-        // Set flag variable to tell getFormHTML that this is a subForm
+// Set flag variable to tell getFormHTML that this is a subForm
         $this->subForm = true;
         return $this;
     }
@@ -80,9 +125,9 @@ class Form {
      */
     public function getFormHTML() {
         $formBody = '';
-        // Create display tables for input groups
+// Create display tables for input groups
         if (!empty($this->inputGroups)) {
-            // Sort components by row
+// Sort components by row
             ksort($this->inputGroups);
             foreach ($this->inputGroups as $group) {
                 $formBody .= '<div class="row mx-0 mb-2">';
@@ -96,7 +141,7 @@ class Form {
             }
         }
         $this->formHTML .= $formBody;
-        // If not a subForm close the form tag
+// If not a subForm close the form tag
         if (!$this->subForm) {
             $this->formHTML .= "</form>";
         }
@@ -154,8 +199,8 @@ class Form {
      * @return $this
      */
     public function addToNewRow($formComponent = null) {
-        //var_dump($formComponent);
-        //$this->logger->debug($formComponent);
+//var_dump($formComponent);
+//$this->logger->debug($formComponent);
         if (is_null($formComponent)) {
 
             $formComponent = $this->lastComponentBuilt;
@@ -412,7 +457,7 @@ class Form {
      */
     public function buildErrorOutput($output) {
 //var_dump($name);
-        //$name = $this->preProcessName($name);
+//$name = $this->preProcessName($name);
         $formComponent = $this->startInput('', '', '');
 
         $formComponent .= $output;
@@ -431,7 +476,7 @@ class Form {
      * @return Form
      */
     public function buildStatusCheck($label, $value, $helpText = null, $tooltip = null) {
-        //var_dump($value);
+//var_dump($value);
         $formComponent = $this->startInput(null, $label, $helpText);
 
         $formComponent .= '<div class="col-md text-center ">';
@@ -461,7 +506,7 @@ class Form {
      * @return Form
      */
     public function buildAJAXStatusCheck($label, $target, $data = null, $helpText = null) {
-        //var_dump($value);
+//var_dump($value);
         $formComponent = $this->startInput(null, $label, $helpText);
         $label = strtolower(str_replace(" ", "", $label));
 
@@ -517,9 +562,9 @@ class Form {
         $formComponent .= 'name="' . $name . '" id="' . $name . '">';
         $formComponent .= '<input type="text" name="somethingelse" hidden />';
         $formComponent .= '</div>';
-        //      $formComponent = '<div class="row p-3 h-100 custom-file">';
-        //$formComponent .= '<input type="file" class="custom-file-input" id="' . $name . '" name="' . $name . '"/>';
-        //$formComponent .= ' <label class=" custom-file-label" for="' . $name . '">Choose file</label>';
+//      $formComponent = '<div class="row p-3 h-100 custom-file">';
+//$formComponent .= '<input type="file" class="custom-file-input" id="' . $name . '" name="' . $name . '"/>';
+//$formComponent .= ' <label class=" custom-file-label" for="' . $name . '">Choose file</label>';
 
         $formComponent .= $this->componentEnd;
         $this->lastComponentBuilt = $formComponent;
@@ -536,7 +581,7 @@ class Form {
      * @return Form
      */
     public function buildTextAreaInput($label, $name, $value = null, $helpText = null, $placeholder = null) {
-        //var_dump($name);
+//var_dump($name);
         $name = $this->preProcessName($name);
         $formComponent = $this->startInput($name, $label, $helpText);
 
@@ -563,7 +608,7 @@ class Form {
 
         $formComponent .= '<select type="text" class="col form-control custom-select text-center" name="' . $name . '">';
         foreach ($array as $option) {
-            //var_dump( $option);
+//var_dump( $option);
             if (is_array($option)) {
                 $value = $option[1];
                 $text = $option[0];
@@ -583,7 +628,7 @@ class Form {
     public function center() {
         if (strpos($this->lastComponentBuilt, '<option')) {
             $this->lastComponentBuilt = str_replace('<option', '<option class="text-center"', $this->lastComponentBuilt);
-            //var_dump("form-control found");
+//var_dump("form-control found");
         }
         return $this;
     }
@@ -598,7 +643,7 @@ class Form {
      * @return Form
      */
     public function buildPasswordInput($label, $name, $value = null, $helpText = null, $placeholder = null) {
-        //var_dump($name);
+//var_dump($name);
         $name = $this->preProcessName($name);
         $formComponent = $this->startInput($name, $label, $helpText);
 
@@ -611,7 +656,7 @@ class Form {
     public function disable() {
         if (strpos($this->lastComponentBuilt, '<input ')) {
             $this->lastComponentBuilt = str_replace('<input ', '<input disabled ', $this->lastComponentBuilt);
-            //var_dump("form-control found");
+//var_dump("form-control found");
         }
         return $this;
     }
@@ -634,16 +679,16 @@ class Form {
         $prepend = '<div class="px-0 col-auto ml-auto mr-0">
             <span class="input-group-text h-100 text-center">' . $prependContent . '</span>
         </div><div>';
-        //var_dump($this->lastComponentBuilt);
+//var_dump($this->lastComponentBuilt);
         $exploded = explode('<div class="row p-3 h-100 ui-widget">', $this->lastComponentBuilt);
         $this->lastComponentBuilt = $exploded[0] . '<div class="row p-3 h-100 ui-widget">' . $prepend . $exploded[1] . $this->componentEnd;
         if (strpos($this->lastComponentBuilt, 'mx-auto')) {
             $this->lastComponentBuilt = str_replace('mx-auto', '', $this->lastComponentBuilt);
-            //var_dump("form-control found");
+//var_dump("form-control found");
         }
         if (strpos($this->lastComponentBuilt, 'col-md col-lg-8 col-xl-6')) {
             $this->lastComponentBuilt = str_replace('col-md col-lg-8 col-xl-6', 'col', $this->lastComponentBuilt);
-            //var_dump("form-control found");
+//var_dump("form-control found");
         }
         return $this;
     }
@@ -670,8 +715,8 @@ class Form {
      */
     public function buildBinaryInput($label, $name, $state, $helpText = null, $helpFunction = null) {
 
-        //var_dump($label);
-        //var_dump(boolval($state));
+//var_dump($label);
+//var_dump(boolval($state));
 
         $state = boolval($state);
         $name = $this->preProcessName($name);
@@ -685,7 +730,7 @@ class Form {
             $formComponent .= ob_get_clean();
         }
 
-        // $formComponent .= '</small></div></div>';
+// $formComponent .= '</small></div></div>';
 
 
 
@@ -721,7 +766,7 @@ class Form {
         $formComponent .= $this->componentEnd;
 
         $this->lastComponentBuilt = $formComponent;
-        //$this->inline();
+//$this->inline();
         return $this;
     }
 
@@ -764,11 +809,11 @@ class Form {
     public function inline() {
 
         $this->lastComponentBuilt = str_replace('<label', '<div class="row"><div class="col-md-4"><label"', $this->lastComponentBuilt);
-        //var_dump("form-control found");
+//var_dump("form-control found");
 
         if (strpos($this->lastComponentBuilt, '</small>')) {
             $this->lastComponentBuilt = str_replace('</small>', '</small></div><div class = "col-md-8">', $this->lastComponentBuilt);
-            //var_dump("form-control found");
+//var_dump("form-control found");
         }
         if (strpos($this->lastComponentBuilt, '</div>')) {
             $this->lastComponentBuilt .= "</div></div>";

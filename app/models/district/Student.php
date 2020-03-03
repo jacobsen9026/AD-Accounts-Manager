@@ -14,7 +14,13 @@ namespace app\models\district;
  * @author cjacobsen
  */
 use app\models\district\User;
+use app\api\AD;
 
 class Student extends User {
+
+    function __construct($username) {
+        parent::__construct($username);
+        $this->processAD(AD::get()->getStudentUser($username));
+    }
 
 }

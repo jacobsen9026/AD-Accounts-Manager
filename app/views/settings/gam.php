@@ -26,7 +26,7 @@
 use app\database\Schema;
 use app\models\AppConfig;
 use app\models\Email;
-use system\app\Form;
+use system\app\forms\Form;
 
 $this->email = Email::get();
 //var_dump($this->email);

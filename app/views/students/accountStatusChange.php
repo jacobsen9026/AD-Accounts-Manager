@@ -7,7 +7,7 @@
 
 <?php
 
-use system\app\Form;
+use system\app\forms\Form;
 
 $actionArray = [["Unlock", "unlock"]];
 if ($this->user->privilege >= \app\models\user\Privilege::TECH) {

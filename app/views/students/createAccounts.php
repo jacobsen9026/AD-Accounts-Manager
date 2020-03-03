@@ -7,7 +7,7 @@
 
 <?php
 
-use system\app\Form;
+use system\app\forms\Form;
 
 $grades = \app\models\district\GradeDefinition::getDropdownArray();
 $form = new Form();

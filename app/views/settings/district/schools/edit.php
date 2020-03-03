@@ -3,7 +3,7 @@
 <?php
 
 use app\database\Schema;
-use system\app\Form;
+use system\app\forms\Form;
 
 echo $this->view('layouts/setup_navbar');
 $this->schoolName = $this->school[Schema::SCHOOL_NAME[Schema::COLUMN]];

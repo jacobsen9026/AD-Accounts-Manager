@@ -27,7 +27,7 @@
 use app\database\Schema;
 use app\models\AppConfig;
 use app\models\Auth;
-use system\app\Form;
+use system\app\forms\Form;
 
 $this->auth = Auth::get();
 //var_dump($this->auth);

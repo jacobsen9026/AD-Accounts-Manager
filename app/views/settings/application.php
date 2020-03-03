@@ -27,7 +27,7 @@
 use app\database\Schema;
 use app\models\AppConfig;
 use app\models\Auth;
-use system\app\Form;
+use system\app\forms\Form;
 
 $form = new Form('/settings/application', 'authentication');
 $form->buildTextInput('Web App Name', Schema::APP_NAME, AppConfig::getAppName())
