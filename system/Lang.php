@@ -27,6 +27,7 @@ abstract class Lang {
             $target = '\app\lang\\' . DEFAULT_LANG . '\\' . strtoupper(DEFAULT_LANG) . 'Common';
         }
         //echo $target;
+        app\AppLogger::get()->debug("Language translation: ".$name.' -> '.$target::get($name));
         return $target::get($name);
     }
 
@@ -44,7 +45,9 @@ abstract class Lang {
     }
 
     private static function langExists($lang) {
-        if (file_exists(APPPATH . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . strtoupper($lang) . 'Common.php') and class_exists($lang . "Common")) {
+        $path = APPPATH . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . strtoupper($lang) . 'Common.php';
+        //app\AppLogger::get()->info("Language Path: ".$path);
+        if (file_exists($path)) {
 
             return true;
         }

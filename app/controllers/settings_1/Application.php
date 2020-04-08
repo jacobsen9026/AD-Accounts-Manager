@@ -24,28 +24,58 @@
  * THE SOFTWARE.
  */
 
-namespace app\config;
+namespace app\controllers\settings;
 
 /**
- * Description of Theme
+ * Description of Home
  *
  * @author cjacobsen
  */
-class Theme {
+use system\Post;
+use app\models\district\District;
+use app\database\Schema;
+use app\controllers\Controller;
+
+class Application extends Controller {
+
+    public $postables;
+
+    function __construct($app) {
+        parent::__construct($app);
+    }
 
     //put your code here
-    const DEFAULT_THEME = "default_theme";
-    const BLUE_THEME = "blue_theme";
-    const RED_THEME = "red_theme";
-    const GREEN_THEME = "green_theme";
+    public function index() {
+
+
+        return $this->view('settings/index');
+    }
+
+    public function indexGet() {
+        $this->index();
+    }
+
+    public function indexPost() {
+        \system\app\AppLogger::get()->debug('Edit Post');
+        $post = \system\Post::getAll();
+        var_dump($post);
+        \app\models\DatabasePost::setPost(Schema::APP, \system\app\App::getID(), $post);
+        //var_dump($post);
+        $this->redirect('/settings/application');
+    }
 
     /**
-     *
-     * @return type An array of all theme constants
+     * Write the database schema as constants to a file for the IDE
      */
-    public static function getThemes() {
-        $rc = new \ReflectionClass(new Theme);
-        return $rc->getConstants();
+    public function updateSchema() {
+
+        $constantsTable = \system\Database::get()->getConstants();
+        //var_dump($constantsTable);
+        if (!empty($constantsTable)) {
+            \system\File::refreshSchemaDefinitions($constantsTable);
+        }
     }
 
 }
+
+?>

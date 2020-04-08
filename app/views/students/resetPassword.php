@@ -8,16 +8,20 @@
 <?php
 
 use system\app\forms\Form;
-
-$form = new Form();
-$form->buildUserSearchInput()
-        ->medium()
-        ->addToNewRow()
-        ->buildPasswordInput('Password', 'password', null, "Leave blank for a new random password")
-        ->medium()
-        ->addToNewRow()
-        ->buildSubmitButton('Submit')
-        ->addToNewRow();
+use system\app\forms\FormButton;
+use system\app\forms\FormText;
 
 
-echo $form->getFormHTML();
+
+$form = new Form("/students/reset-password", "StudentPasswordChange");
+$button = new FormButton("Submit");
+$button->small();
+$textBox = new FormText("Username", "Can also enter first or last name to search for username.", "username");
+$textBox->autoCompleteUsername()
+        ->appendIcon('<i class="fas fa-search"></i>');
+$passwordBox = new FormText("New  Password", "Leave blank for a new random password", "password");
+$passwordBox->isPassword();
+$form->addElementToNewRow($textBox)
+        ->addElementToNewRow($passwordBox)
+        ->addElementToNewRow($button);
+echo $form->print();

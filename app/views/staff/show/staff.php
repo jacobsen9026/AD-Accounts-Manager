@@ -5,4 +5,5 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var_dump($this->staff);
+//var_dump($this->staff);
+echo $this->staff->getCard();

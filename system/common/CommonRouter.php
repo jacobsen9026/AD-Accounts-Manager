@@ -171,13 +171,11 @@ class CommonRouter {
         if (isset($_POST) and $_POST != null) {
             $this->method = $this->method . 'Post';
         }
-        /*
+        
           elseif (isset($_GET) and $_GET != null) {
           $this->method = $this->method . 'Get';
           }
-         *
-         */
-
+         
 //var_dump($this);
         $this->logger->info("Route taken: " . $this->controller . "->" . $this->method . "->" . $this->data);
     }

@@ -13,6 +13,7 @@ namespace app\models\district;
  *
  * @author cjacobsen
  */
+use app\api\AD;
 class User {
 
     //put your code here
@@ -30,24 +31,17 @@ class User {
     private $homeDir;
     private $homeDrv;
     private $email;
+    private $adDepartment;
     private $city;
     private $state;
     private $zip;
     private $homePhone;
     private $office;
+    private $adCompany;
+    private $adCommonName;
+    private $photo;
 
-    /**
-     *
-     * @param type $adUserRaw
-     * @param type $gaUserRaw
-     */
-    function __construct($username) {
-        /* @var $gaUserRaw \Google_Service_Directory_User */
-        //var_dump($adUserRaw);
-        //$adUserRaw = \app\api\AD::get()->getUser($username);
-        //$this->processAD($adUserRaw);
-    }
-
+  
     /**
      *
      * @param type $adUserRaw
@@ -56,6 +50,10 @@ class User {
         //var_dump($adUserRaw);
         if (key_exists("givenname", $adUserRaw)) {
             $this->firstName = $adUserRaw["givenname"][0];
+        }
+        
+        if (key_exists("thumbnailphoto", $adUserRaw)) {
+            $this->photo = $adUserRaw["thumbnailphoto"][0];
         }
         if (key_exists("sn", $adUserRaw)) {
             $this->lastName = $adUserRaw["sn"][0];
@@ -78,9 +76,7 @@ class User {
         if (key_exists("pager", $adUserRaw)) {
             $this->adPager = $adUserRaw["pager"][0];
         }
-        if (key_exists("scriptpath", $adUserRaw)) {
-            $this->script = $adUserRaw["scriptpath"][0];
-        }
+  
         if (key_exists("company", $adUserRaw)) {
             $this->adCompany = $adUserRaw["company"][0];
         }
@@ -142,7 +138,10 @@ class User {
         }
         $this->enabled = $adUserRaw['enabled'];
     }
-
+    /**
+     * @deprecated since version number
+     * @param \Google_Service_Directory_User $gaUserRaw
+     */
     private function processGA($gaUserRaw) {
         /* @var $gaUserRaw \Google_Service_Directory_User */
         $this->gaFirstName = $gaUserRaw->getName()->getGivenName();
@@ -177,8 +176,30 @@ class User {
     public function getAdEnabled() {
         return $this->enabled;
     }
+    function getAdDepartment() {
+        return $this->adDepartment;
+    }
 
-    public function getGaEnabled() {
+    function setAdDepartment($adDepartment): void {
+        $this->adDepartment = $adDepartment;
+    }
+
+    function getDescription() {
+        return $this->description;
+    }
+    function getPhoto() {
+        return $this->photo;
+    }
+
+    function setPhoto($photo): void {
+        $this->photo = $photo;
+    }
+
+        function setDescription($description): void {
+        $this->description = $description;
+    }
+
+        public function getGaEnabled() {
         return $this->gaEnabled;
     }
 
@@ -225,7 +246,24 @@ class User {
         $this->middleName = $middleName;
         return $this;
     }
+    function getAdCommonName() {
+        return $this->adCommonName;
+    }
 
+    function setAdCommonName($adCommonName) {
+        $this->adCommonName = $adCommonName;
+        return $this;
+    }
+    function getAdCompany() {
+        return $this->adCompany;
+    }
+
+    function setAdCompany($adCompany) {
+        $this->adCompany = $adCompany;
+        return $this;
+    }
+
+    
     /**
      *
      * @param type $lastName
@@ -245,8 +283,84 @@ class User {
         $this->username = $adUsername;
         return $this;
     }
+    function getOffice() {
+        return $this->office;
+    }
 
-    /**
+    function setOffice($office) {
+        $this->office = $office;
+        return $this;
+    }
+    function getCity() {
+        return $this->city;
+    }
+
+    function getState() {
+        return $this->state;
+    }
+
+    function getZip() {
+        return $this->zip;
+    }
+
+    function setCity($city) {
+        $this->city = $city;
+        return $this;
+    }
+
+    function setState($state) {
+        $this->state = $state;
+        return $this;
+    }
+
+    function setZip($zip) {
+        $this->zip = $zip;
+        return $this;
+    }
+    function getStreet() {
+        return $this->street;
+    }
+
+    function setStreet($street) {
+        $this->street = $street;
+        return $this;
+    }
+    function getHomePhone() {
+        return $this->homePhone;
+    }
+
+    function setHomePhone($homePhone) {
+        $this->homePhone = $homePhone;
+        return $this;
+    }
+
+    function getEmployeeID() {
+        return $this->employeeID;
+    }
+
+    function setEmployeeID($employeeID) {
+        $this->employeeID = $employeeID;
+        return $this;
+    }
+    function getEnabled() {
+        return $this->enabled;
+    }
+
+    function getLockedOut() {
+        return $this->lockedOut;
+    }
+
+    function setEnabled($enabled) {
+        $this->enabled = $enabled;
+        return $this;
+    }
+
+    function setLockedOut($lockedOut) {
+        $this->lockedOut = $lockedOut;
+        return $this;
+    }
+
+            /**
      *
      * @param type $adEnabled
      * @return self
@@ -325,5 +439,17 @@ class User {
         $this->gaGroups = $gaGroups;
         return $this;
     }
+    
+    public function unlock(){
+        $result = AD::get()->unlockUser($this->username);
+    }
+   public function disable(){
+       $result = AD::get()->disableUser($this->username);
+       
+   }
+   public function enable(){
+       $result = AD::get()->enableUser($this->username);
+       
+   }
 
 }

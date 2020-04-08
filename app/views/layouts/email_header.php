@@ -21,10 +21,6 @@
         system\app\AppLogger::get()->debug("theme is red");
         echo ' <link rel="stylesheet" href="/css/redTheme.css">';
     }
-    if ($this->app->user->theme == \app\config\Theme::GREEN_THEME) {
-        system\app\AppLogger::get()->debug("theme is green");
-        echo ' <link rel="stylesheet" href="/css/greenTheme.css">';
-    }
     ?>
 
 

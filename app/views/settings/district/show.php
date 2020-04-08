@@ -63,7 +63,8 @@ $google = GAM::get();
                     $adForm->subForm();
                     $adForm->buildTextInput('Staff Active Directory OU',
                                     Schema::ACTIVEDIRECTORY_OU,
-                                    $this->staffADSettings[Schema::ACTIVEDIRECTORY_OU[Schema::COLUMN]])
+                                    $this->district[Schema::DISTRICT_AD_BASEDN[Schema::COLUMN]])
+                            ->disable()
                             ->addToRow(1)
                             ->buildTextInput('Staff Active Directory User Description',
                                     Schema::ACTIVEDIRECTORY_DESCRIPTION,
@@ -183,28 +184,11 @@ $google = GAM::get();
     $form->buildTextInput('Google Apps FQDN',
                     Schema::DISTRICT_GA_FQDN,
                     $this->district[Schema::DISTRICT_GA_FQDN[Schema::COLUMN]])
-            ->addToNewRow()
-            ->buildBinaryInput('Using Google Cloud Directory Sync',
-                    Schema::DISTRICT_USING_GADS,
-                    $this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]],
-                    'Tells the application whether or not to perform directory changes on Google Apps')
             ->addToNewRow();
+            
 
-    if (!$this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]]) {
-        $form->buildBinaryInput('Using G Suite Password Sync',
-                        Schema::DISTRICT_USING_GAPS,
-                        $this->district[Schema::DISTRICT_USING_GAPS[Schema::COLUMN]],
-                        'Tells the application whether or not to perform password changes on Google Apps')
-                ->addToRow();
-    } else {
-        $form->buildBinaryInput('Using GAPS',
-                        Schema::DISTRICT_USING_GAPS,
-                        true,
-                        'When using Google Cloud Directory Sync this settings is not available')
-                ->disable()
-                ->addToRow();
-    }
-    if (!$this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]]) {
+   
+ 
         if (!$clientSecretExists) {
 
 
@@ -248,7 +232,7 @@ $google = GAM::get();
                     ->buildCustomButton("Re-Authorize / Update Permissions", "primary", $google->getAuthUrl())
                     ->addToRow();
         }
-    }
+    
 
     $form->buildTextInput('District Parent Email Group',
                     Schema::DISTRICT_PARENT_EMAIL_GROUP,

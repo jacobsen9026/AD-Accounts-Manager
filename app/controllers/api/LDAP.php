@@ -13,7 +13,7 @@ namespace app\controllers\api;
  *
  * @author cjacobsen
  */
-class LDAP {
+class LDAP extends APIController {
 
     //put your code here
     public function testPerms() {
@@ -44,29 +44,44 @@ class LDAP {
     }
 
     public function autocompleteStudent($username) {
+        $username = $this->parseInput($username);
         $users = \app\api\AD::get()->listStudentUsers($username);
-        echo $this->formatUsers($users);
-        exit;
+        echo $this->packageList($users);
     }
 
-    private function formatUsers($users) {
+    private function packageList($items) {
         $output = "";
         $first = true;
-        foreach ($users as $user) {
+        foreach ($items as $item) {
             if (!$first) {
                 $output .= ',';
             }
-            $output .= ' "' . $user . '" ';
+            if (is_array($item)) {
+                $output .= ' { "label": "' . $item["label"] . '", "value": "' . $item["value"] . '"} ';
+            } else {
+                $output .= ' "' . $item . '" ';
+            }
             $first = false;
         }
         return '[' . $output . ']';
         //echo '["' . $users . 'Test", "anotheruser"]';
     }
 
+    private function parseInput($input) {
+        return str_replace("%20", " ", $input);
+    }
+
     public function autocompleteStaff($username) {
+
+        $username = $this->parseInput($username);
         $users = \app\api\AD::get()->listStaffUsers($username);
-        echo $this->formatUsers($users);
-        exit;
+        echo $this->packageList($users);
+    }
+
+    public function autocompleteGroup($group) {
+        $group = $this->parseInput($group);
+        $groups = \app\api\AD::get()->listGroups($group);
+        echo $this->packageList($groups);
     }
 
 }

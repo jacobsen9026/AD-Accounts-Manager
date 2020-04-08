@@ -15,12 +15,13 @@ namespace app\models\district;
  */
 use app\models\district\User;
 use app\api\AD;
+use app\models\district\CardPrinter;
 
 class Student extends User {
 
     function __construct($username) {
-        parent::__construct($username);
+        
         $this->processAD(AD::get()->getStudentUser($username));
     }
-
+   
 }

@@ -52,14 +52,15 @@ class Renderer extends Parser {
     }
 
     public function draw() {
-//var_dump($this->core->appOutput);
+        $appBody = $this->core->appOutput->getBody();
+//var_dump($appBody);
         if ($this->core->request->type == 'http') {
             $this->include('system/views/HTML_start');
             $this->logger->info("Drawing of app started");
         }
-        if (isset($this->core->appOutput) and $this->core->appOutput != '') {
+        if (isset($appBody) and $appBody != '') {
             //var_dump('output');
-            echo $this->core->appOutput;
+            echo $appBody;
         } elseif ($this->core->request->type == 'http') {
             $this->showNoAppOutputWarning();
         }

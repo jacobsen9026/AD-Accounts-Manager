@@ -27,46 +27,52 @@
 namespace system;
 
 /**
- * Description of App
+ * Description of Core
  *
- * @author cjacobsen
+ * This is the main system core class. It is the first thing
+ * called upon receiving an http request. It handles bootstrapping
+ * the system classes and loading core configuration. From there it
+ * triggers the application to run and receives it's output and log.
+ * Finally the renderer compiles the app and core data together into
+ * a final HTTP response for the user.
  */
 require './system/Autoloader.php';
 
 use system\app\App;
+use system\app\AppOutput;
 use system\common\CommonApp;
 use system\CoreException;
 use system\SystemLogger;
 
 class Core {
 
-    /** @var Parser|null The view parser */
+    /** @var Parser|null The view parser that enables printing of views */
     private $parser;
 
     /** @var SystemLogger|null The system logger */
     public $logger;
 
-    /** @var Request|null The Request */
+    /** @var Request|null The Request object */
     public $request;
 
-    /** @var Renderer|null The output renderer */
+    /** @var Renderer|null The application output renderer */
     public $renderer;
 
-    /** @var string|null The application output */
+    /** @var AppOutput The application output */
     public $appOutput;
 
     /** @var AppLogger|null The application logger */
     public $appLogger;
 
-    /** @var App|null The App */
+    /** @var App|null The App Instance */
     public $app;
 
-    /** @var Core|null */
+    /** @var Core|null This core instance */
     public static $instance;
 
     function __construct() {
         /*
-         * Create
+         * Create Core
          * Start Session
          * Declare ROOTPATH constant which is used for all file interactions
          */
@@ -75,14 +81,21 @@ class Core {
         }
 
         define('ROOTPATH', getcwd());
-        //Enable Error Reporting for core until the system config is loaded
+        /*
+         * Enable Error Reporting for core until the system config is loaded
+         */
         error_reporting(E_ALL);
         ini_set('display_errors', TRUE);
         ini_set('display_startup_errors', TRUE);
+        ini_set('file_uploads', true);
+        /*
+         * Store new instance for abstract reference
+         */
         self::$instance = $this;
     }
 
     /**
+     * Gets the current core instance
      *
      * @return Core
      */
@@ -93,13 +106,14 @@ class Core {
         return self::$instance;
     }
 
+    /**
+     * Start the system core running. This should be called from the public php index file
+     */
     public function run() {
         /**
          * BEGIN
          *
-         */
-        /**
-         * Auto-load all classes in directories specified within class
+         * Initialize the application
          */
         try {
             $this->initializeApp();
@@ -141,17 +155,19 @@ class Core {
     }
 
     /**
-     * Initialize all core systems
+     * Initialize all core systems for application running
      */
     private function initializeApp() {
-        ini_set('file_uploads', true);
+        /**
+         * Run autoloader
+         */
         Autoloader::run($this);
+
+        new CoreErrorHandler();
         /*
          * Load the parser in the core since it cannot
          * extend the parser.
          */
-        new CoreErrorHandler();
-
         $this->parser = new Parser();
         /*
          * Load the system logger
@@ -184,6 +200,9 @@ class Core {
          */
     }
 
+    /**
+     * Executes the application class by calling the runApp() method
+     */
     private function execute() {
         $this->logger->info("App starting");
         /*
@@ -194,8 +213,8 @@ class Core {
 
         //ob_start();
         $this->appOutput = $this->runApp();
-        $this->appLogger = $this->appOutput[1];
-        $this->appOutput = $this->appOutput[0];
+        $this->appLogger = $this->appOutput->getLogs();
+        //$this->appOutput = $this->appOutput->getBody();
         //ob_flush();
         new CoreErrorHandler();
         /*
@@ -249,6 +268,12 @@ class Core {
         $this->renderer->draw($this);
     }
 
+    /**
+     * Sets the error mode according to the core debug setting
+     *
+     * Debug On: Print all errors
+     * Debug Off: Suppress Errors
+     */
     private function setErrorMode() {
         if ($this->inDebugMode()) {
             $this->logger->info("Enabling PHP Errors");
@@ -261,6 +286,8 @@ class Core {
     }
 
     /**
+     * Returns true if the core is in debug mode,
+     * false if it is not.
      *
      * @return boolean
      */

@@ -22,5 +22,5 @@ class Staff extends User {
         parent::__construct($username);
         $this->processAD(AD::get()->getStaffUser($username));
     }
-
+    
 }

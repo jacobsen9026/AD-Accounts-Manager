@@ -31,10 +31,9 @@ namespace system\app;
  *
  * @author cjacobsen
  */
-use system\common\CommonSession;
 use app\models\user\User;
 
-abstract class Session extends CommonSession {
+abstract class Session {
     //put your code here
 
     /** @var User|null */
@@ -71,8 +70,10 @@ abstract class Session extends CommonSession {
         return false;
     }
 
+    /**
+     * Update the user timeout with the value set in the application settings
+     */
     public static function updateTimeout() {
-        /* @var $config MasterConfig */
 
         $nextTimeout = \app\models\Auth::getSessionTimeout() + time();
         //$nextTimeout = 1;

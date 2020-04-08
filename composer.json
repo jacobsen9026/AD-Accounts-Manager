@@ -1,6 +1,8 @@
 {
     "require": {
         "google/apiclient": "2.0",
-        "guzzlehttp/guzzle": "~5.3.1"
+        "guzzlehttp/guzzle": "~5.3.1",
+        "directorytree/ldaprecord": "^1.2",
+        "phpmailer/phpmailer": "^6.1"
     }
 }

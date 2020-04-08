@@ -20,7 +20,12 @@ class FormButton extends FormElement {
     private $type = 'submit';
 
     //put your code here
-
+    /**
+     *
+     * @param type $label
+     * @param type $subLabel
+     * @param type $size Must be one of: small,medium,large
+     */
     function __construct($label = '', $subLabel = '', $size = "medium") {
         $this->setLabel($label);
         $this->setSubLabel($subLabel);
@@ -35,8 +40,9 @@ class FormButton extends FormElement {
         return $this->type;
     }
 
-    function setType($type): void {
+    function setType($type) {
         $this->type = $type;
+        return $this;
     }
 
     public function setTheme($theme) {
@@ -47,8 +53,9 @@ class FormButton extends FormElement {
         return $this->target;
     }
 
-    public function setTarget($target): void {
+    public function setTarget($target) {
         $this->target = $target;
+        return $this;
     }
 
     public function getHTML() {
@@ -70,6 +77,7 @@ class FormButton extends FormElement {
         $html .= '
         <button type="' . $this->getType() . '" class="nav-link btn btn-' . $this->getTheme() . '">' . $this->getLabel() . '</button>
 </div></div>';
+        $html .= $this->printScript();
         return $html;
     }
 

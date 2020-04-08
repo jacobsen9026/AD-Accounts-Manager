@@ -29,24 +29,29 @@ namespace system;
 /**
  * Description of Factory
  *
+ * This is the Controller Factory
+ * This class creates a controller object based on the route.
+ *
+ *
  * @author cjacobsen
  */
 use system\app\App;
 
 abstract class Factory {
 
-    //put your code here
+    /**
+     *
+     * @param App $app
+     * @return Controller The appropriate Controller object based on the given route, already instantiated.
+     */
     public static function buildController(App $app) {
-        //var_dump($app);
+        /**
+         * Set Controller Path
+         * This should be converted to a core configuration constant
+         */
         $controllerPath = '\\app\\controllers\\';
-        //echo $app->route[0];
         $classname = $controllerPath . $app->route[0];
-        //echo $classname;
-        //var_dump($router);
-        //echo $app->router->module();
         if (class_exists($classname)) {
-
-
             return new $classname($app);
         }
         return false;

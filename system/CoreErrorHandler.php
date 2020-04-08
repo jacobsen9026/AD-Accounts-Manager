@@ -27,7 +27,9 @@
 namespace system;
 
 /**
- * Description of ErrorHandler
+ * Description of CoreErrorHandler
+ *
+ * This is the custom core error/exception handler class to catch all error that may occur.
  *
  * @author cjacobsen
  */
@@ -40,8 +42,8 @@ class CoreErrorHandler {
     public static $instance;
 
     function __construct() {
-        //set_error_handler(array($this, 'handleError'));
-        //set_exception_handler(array($this, 'handleException'));
+        set_error_handler(array($this, 'handleError'));
+        set_exception_handler(array($this, 'handleException'));
         if (isset(self::$instance)) {
             return self::$instance;
         } else {
@@ -60,8 +62,15 @@ class CoreErrorHandler {
         return self::$instance;
     }
 
-    //put your code here
-
+    /**
+     * Custom Error Handler
+     *
+     * @param type $code
+     * @param type $description
+     * @param type $file
+     * @param type $line
+     * @param type $context
+     */
     public function handleError($code, $description = null, $file = null, $line = null, $context = null) {
         $output = "Error: [$code] $description";
         if ($file != null and $line != null) {
@@ -70,13 +79,15 @@ class CoreErrorHandler {
         SystemLogger::get()->error($output);
     }
 
-    /* @var $exception Error */
-
+    /**
+     * Custom Exception Handler
+     *
+     * @param Error $exception
+     */
     function handleException($exception) {
         /* @var $file string */
         ob_flush();
         $file = $exception->getFile();
-        //echo "<br/><br/><br/><br/>";
 
         if (isset($exception->xdebug_message)) {
             $xdebugMessage = $exception->xdebug_message;
@@ -91,19 +102,15 @@ class CoreErrorHandler {
         /* @var $trace array */
         $trace = $exception->getTrace();
         $line = file($file)[$lineNumber];
-        //var_dump($exception);
-        //var_dump(file($file));
-        //Log the exception to our server's error logs.
-        //SystemLogger::get()->error($exception);
         //Send a 500 internal server error to the browser.
         header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-        //Display our custom error page.
-        //var_dump($exception);
         $logMessage = $file . ':' . $lineNumber . ' ' . $message;
         $errorMessage = '<div class="alert alert-danger">Fatal Errror <br/><br/>' . $message . '<br/><br/>' . $file
                 . ':' . $lineNumber . '<br/><pre>'
                 . $line . '</pre></div>';
-        //Kill the script.
+        /*
+         * Kill the core execution.
+         */
         echo $errorMessage;
         Core::get()->abort($logMessage);
     }

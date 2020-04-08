@@ -32,11 +32,13 @@ namespace app\models\user;
  * @author cjacobsen
  */
 use system\app\auth\CoreUser;
+use system\app\Cookie;
 
 class User extends CoreUser {
 
     const THEME = "theme";
     const FULL_NAME = "fullName";
+    const USER = "user";
 
     public $theme = 'default';
     public $fullName;
@@ -63,8 +65,10 @@ class User extends CoreUser {
             } else {
                 $this->privilege = Privilege::UNAUTHENTICATED;
             }
+            //$this->load();
             self::$instance = $this;
         }
+        //$this->save();
     }
 
     private function setAsAdministrator() {
@@ -89,6 +93,7 @@ class User extends CoreUser {
      * @return type
      */
     public function getTheme() {
+
         return $this->theme;
     }
 
@@ -107,7 +112,7 @@ class User extends CoreUser {
      */
     public function setTheme($theme) {
         $this->theme = $theme;
-        \system\app\Session::setUser($this);
+        $this->save();
         return $this;
     }
 
@@ -119,6 +124,21 @@ class User extends CoreUser {
     public function setFullName($fullName) {
         $this->fullName = $fullName;
         return $this;
+    }
+
+    public function save() {
+        var_dump("saving user");
+        \system\app\Session::setUser($this);
+        Cookie::set(self::USER . '_' . $this->username, serialize($this));
+    }
+
+    public function load() {
+        $data = Cookie::get(self::USER . '_');
+        if (!$data) {
+            //$this = unserialize($data);
+            return true;
+        }
+        return false;
     }
 
     //put your code here

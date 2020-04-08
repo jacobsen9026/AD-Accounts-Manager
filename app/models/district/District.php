@@ -87,6 +87,14 @@ class District {
         return $result;
     }
 
+    /**
+     * Breaks up a FQDN into a DistiguishedName
+     *
+     * EG: contoso.com -> dc=contoso,dc=com
+     * 
+     * @param type $fqdn
+     * @return string
+     */
     public static function parseBaseDNFromFQDN($fqdn) {
         $baseDN = '';
         $afterFirst = false;

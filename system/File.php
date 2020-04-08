@@ -72,6 +72,12 @@ abstract class File {
         return $folders;
     }
 
+    /**
+     * Returns a list of filenames in a given directory
+     *
+     * @param string $dir
+     * @return array A list of file names
+     */
     public static function getAllFiles($dir) {
         $rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir));
         $files[] = null;
@@ -89,6 +95,10 @@ abstract class File {
         return $files;
     }
 
+    /**
+     * Writes to app/database/schema to update the column constants
+     * @param type $constantsTable
+     */
     public static function refreshSchemaDefinitions($constantsTable) {
         $writeFooter = false;
         if (!file_exists(self::SCHEMA_FILE_PATH)) {

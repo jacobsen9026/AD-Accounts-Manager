@@ -45,7 +45,7 @@ class Districts extends Controller {
 
     public function show($districtID) {
         $this->staffADSettings = District::getADSettings($districtID, 'Staff');
-        //$this->staffGASettings = District::getGASettings($districtID, 'Staff');
+        $this->staffGASettings = District::getGASettings($districtID, 'Staff');
         $this->districtID = $districtID;
         return $this->view('settings/district/show');
     }
@@ -56,6 +56,13 @@ class Districts extends Controller {
         $this->redirect('/settings/districts');
     }
 
+    public function schools() {
+
+    }
+
+    public function schoolsPost($function) {
+
+    }
 
     public function editPost() {
         $post = \system\Post::getAll();

@@ -35,7 +35,12 @@ and open the template in the editor.
     top:7rem!important;
     }
 
-
+    .minw-1{
+        width:1em;
+    }
+        .minw-5{
+        width:80%;
+    }
 
 .log-nav{
     top:2.5rem!important;
@@ -50,4 +55,11 @@ and open the template in the editor.
     overflow-y: auto;
     overflow-x: hidden;
     max-height: 50%;
+}
+.hover-zoom{
+    
+    transition: 0.25s;
+}
+.hover-zoom:hover{
+    width:100% !important;
 }

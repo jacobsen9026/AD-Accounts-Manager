@@ -11,6 +11,10 @@ namespace system;
 /**
  * Description of Database
  *
+ * This needs to be moved to App/Models
+ *
+ * This class is the bottom layer of database access, all queries
+ * should be funneled into this class.
  * @author cjacobsen
  */
 use SQLite3;
@@ -51,6 +55,9 @@ class Database extends Parser {
             $seedDatabse = true;
         }
         SystemLogger::get()->info("connecting " . DBPATH);
+        /**
+         * Connect to database, will create file if it doesn't already exist
+         */
         $this->db = new \PDO("sqlite:" . DBPATH, null, null, array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -62,7 +69,9 @@ class Database extends Parser {
         if (!empty($seedDatabse)) {
             $this->seedDatabase();
         }
-        // activate use of foreign key constraints
+        /**
+         *  activate use of foreign key constraints
+         */
         $this->db->exec('PRAGMA foreign_keys = ON;');
     }
 
@@ -85,6 +94,13 @@ class Database extends Parser {
         $this->db->exec($query);
     }
 
+    /**
+     * Performs a query on the config database
+     * Should be in the form of a standard SQL query
+     *
+     * @param string $query
+     * @return boolean
+     */
     public function query($query) {
 
         //var_dump($query);
@@ -134,8 +150,10 @@ class Database extends Parser {
     }
 
     /**
+     * Returns all tables in the config database
+     * as an array
      *
-     * @return array
+     * @return array A list of table names
      */
     public function getAllTables() {
         /*
@@ -150,9 +168,10 @@ class Database extends Parser {
     }
 
     /**
+     * Returns all columns for a table as an array
      *
-     * @param string $table
-     * @return array
+     * @param string $table The table name
+     * @return array A list of column names
      */
     public function getAllColumns($table) {
         /*
@@ -170,10 +189,11 @@ class Database extends Parser {
     /**
      * getConstants
      *
+     * Get all Database constants to match Schema constant,
      * creates an array of DATABASE_FIELD,Field
      * for all tables and columns in database
      *
-     * @return array
+     * @return array ["TABLE_COLUMN"=>COLUMN,...]
      */
     public function getConstants() {
         $tables = $this->getAllTables();

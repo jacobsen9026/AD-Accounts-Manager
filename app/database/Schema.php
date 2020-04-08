@@ -137,5 +137,7 @@ class Schema {
     const DISTRICT_PARENT_EMAIL_GROUP = array('table' => 'District', 'column' => 'Parent_Email_Group', 'name' => 'District_Parent_Email_Group');
     const DISTRICT_STAFF_USERNAME_FORMAT = array('table' => 'District', 'column' => 'Staff_Username_Format', 'name' => 'District_Staff_Username_Format');
     const DISTRICT_STUDENT_USERNAME_FORMAT = array('table' => 'District', 'column' => 'Student_Username_Format', 'name' => 'District_Student_Username_Format');
-
+    const PERMISSION_ID = array('table' => 'Permission', 'column' => 'ID', 'name' => 'Permission_ID');
+    const PERMISSION_REQUIRED_PERMISSION = array('table' => 'Permission', 'column' => 'Required_Permission', 'name' => 'Permission_Required_Permission');
+    const PERMISSION_PATH = array('table' => 'Permission', 'column' => 'Path', 'name' => 'Permission_Path');
 }

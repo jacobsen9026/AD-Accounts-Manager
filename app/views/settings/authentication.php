@@ -28,6 +28,7 @@ use app\database\Schema;
 use app\models\AppConfig;
 use app\models\Auth;
 use system\app\forms\Form;
+use app\auth\LDAP;
 
 $this->auth = Auth::get();
 //var_dump($this->auth);
@@ -37,7 +38,7 @@ $server = $this->auth[Schema::AUTH_LDAP_SERVER[Schema::COLUMN]];
 $username = $this->auth[Schema::AUTH_LDAP_USERNAME[Schema::COLUMN]];
 $password = $this->auth[Schema::AUTH_LDAP_PASSWORD[Schema::COLUMN]];
 if (!empty($server)) {
-    $adTestResult = system\app\auth\LDAP::testConnection($server, $username, $password);
+    $adTestResult = LDAP::testConnection($server, $username, $password);
 }
 //var_dump($adTestResult);
 $form = new Form(null, 'authentication');
@@ -65,15 +66,14 @@ $form->buildBinaryInput('LDAP Enabled',
         ->center()
         ->addToNewRow();
 if (Auth::getLDAPEnabled()) {
-    $form->buildStatusCheck('LDAP Connection Test',
+    $form->buildStatusCheck('LDAP Connection Status',
                     $adTestResult)
             ->addToRow();
 }
 $form->buildBinaryInput('Use SSL with LDAP',
                 Schema::AUTH_LDAP_USE_SSL,
                 $this->auth[Schema::AUTH_LDAP_USE_SSL[Schema::COLUMN]],
-                'Not Yet Implemented')
-        ->disable()
+                'Required for password reset.')
         ->addToRow()
         ->buildTextInput('LDAP Server',
                 Schema::AUTH_LDAP_SERVER,
@@ -90,19 +90,19 @@ $form->buildBinaryInput('Use SSL with LDAP',
         ->buildTextInput('LDAP Server Port',
                 Schema::AUTH_LDAP_PORT,
                 $this->auth[Schema::AUTH_LDAP_PORT[Schema::COLUMN]],
-                'Non-SSL:389  SSL:',
+                '',
                 '389')
         ->addToRow()
         ->buildTextInput('LDAP Username',
                 Schema::AUTH_LDAP_USERNAME,
                 $this->auth[Schema::AUTH_LDAP_USERNAME[Schema::COLUMN]],
-                'Read only user for authentication',
-                'read-only')
+                'User for binding (leave blank for annonymous)',
+                '')
         ->addToNewRow()
         ->buildPasswordInput('LDAP Password',
                 Schema::AUTH_LDAP_PASSWORD,
                 $this->auth[Schema::AUTH_LDAP_PASSWORD[Schema::COLUMN]],
-                'Read only user\'s password')
+                'Bind user\'s password')
         ->addToRow()
         ->buildTextInput('LDAP Basic User Permission Group',
                 Schema::AUTH_BASIC_AD_GROUP,
@@ -128,6 +128,7 @@ $form->buildBinaryInput('Use SSL with LDAP',
                 'Enter group name',
                 'SAM Tech Users')
         ->addToRow()
+        /*
         ->addSeperator()
         ->buildBinaryInput('OAuth Enabled',
                 Schema::AUTH_OAUTH_ENABLED,
@@ -159,6 +160,8 @@ $form->buildBinaryInput('Use SSL with LDAP',
                 'Enter group name',
                 'SAM Tech Users')
         ->addToRow()
+         * 
+         */
         ->buildUpdateButton()
         ->addToNewRow();
 echo $form->getFormHTML();

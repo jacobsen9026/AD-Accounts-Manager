@@ -9,24 +9,33 @@
 namespace system;
 
 /**
- * Description of Post
+ * Description of Get
+ *
+ * Represents the Get Variable of the Request
  *
  * @author cjacobsen
  */
 abstract class Get {
 
-    //put your code here
+    /**
+     * Check if the GET was used in the request
+     * @return boolean
+     */
     public static function isSet() {
-        if (isset($_POST) and $_POST != null) {
+        if (isset($_GET) and $_GET != null) {
             return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * Returns the contents of the GET array, or false if GET was not used.
+     * @return null|array
+     */
     public static function getAll() {
-        if (Post::isSet()) {
-            return $_POST;
+        if (Get::isSet()) {
+            return $_GET;
         } else {
             return null;
         }

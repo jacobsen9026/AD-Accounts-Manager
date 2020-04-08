@@ -15,4 +15,15 @@ namespace system\app\forms;
  */
 class FormHTML extends FormElement {
     //put your code here
+    private $html;
+    
+    function getHtml() {
+        return $this->html;
+    }
+
+    function setHtml($html): void {
+        $this->html = $html;
+    }
+
+
 }

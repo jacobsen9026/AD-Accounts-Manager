@@ -39,3 +39,6 @@ app/lib/gam/oauth2.txt
 app/config/google/client_secret.json
 app/config/google/token.json
 app/lib/gam/token.json
+app.zip
+app/config/activedirectory/ad.crt
+app/config/activedirectory/ad.pem

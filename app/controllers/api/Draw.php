@@ -13,29 +13,28 @@ namespace app\controllers\api;
  *
  * @author cjacobsen
  */
-use app\controllers\Controller;
 use system\Post;
 
-class Draw extends Controller {
+class Draw extends APIController {
 
     private $output;
 
     //put your code here
     public function indexPost() {
-        $this->app->request->type = 'ajax';
-        $this->app->core->request->type = 'ajax';
+
         $post = Post::get('query');
         switch ($post) {
             case 'debugConfig':
-                $this->output = "<h1>Configuration Database</h1>";
-                foreach (\system\Database::get()->getAllTables()as $table) {
-                    $this->output .= "<h3>" . $table . "</h3>";
-                    $this->output .= $this->html_table(\system\Database::get()->query("SELECT * FROM " . $table));
-                    ob_start();
-                    //var_dump(\system\Database::get()->query("SELECT * FROM " . $table));
-                    $this->output .= ob_get_clean();
+                if ($this->user->privilege >= \app\models\user\Privilege::ADMIN) {
+                    $this->output = "<h1>Configuration Database</h1>";
+                    foreach (\system\Database::get()->getAllTables()as $table) {
+                        $this->output .= "<h3>" . $table . "</h3>";
+                        $this->output .= $this->html_table(\system\Database::get()->query("SELECT * FROM " . $table));
+                        ob_start();
+                        //var_dump(\system\Database::get()->query("SELECT * FROM " . $table));
+                        $this->output .= ob_get_clean();
+                    }
                 }
-
                 break;
 
             default:

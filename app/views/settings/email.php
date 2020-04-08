@@ -95,5 +95,6 @@ $form->buildTextInput('SMTP Server',
         ->buildUpdateButton()
         ->addToNewRow();
 echo $form->getFormHTML();
+//\system\app\Email::sendTest();
 ?>
 

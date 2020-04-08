@@ -31,7 +31,7 @@ class Profile extends Controller {
 
     private function setTheme($theme) {
 
-        setcookie("theme", $theme);
+        //setcookie("theme", $theme);
         \system\app\Session::getUser()->setTheme($theme);
     }
 

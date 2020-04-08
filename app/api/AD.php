@@ -32,7 +32,6 @@ namespace app\api;
  * @author cjacobsen
  */
 use app\models\district\District;
-use app\database\Schema;
 
 class AD {
 
@@ -48,6 +47,7 @@ class AD {
     private $testUserDN;
     private $testUserName = "1891351591_SchoolAccountsManager_Test_User";
     private $districtID;
+    private $ssl = false;
 
     /** @var AppLogger The application logger */
     private $logger;
@@ -65,6 +65,11 @@ class AD {
     }
 
     private function initialize($districtID, $fqdn, $username, $password) {
+
+
+
+
+
         $this->districtID = $districtID;
         self::$instance = $this;
         $this->logger = \system\app\AppLogger::get();
@@ -72,6 +77,7 @@ class AD {
         if (!is_null($fqdn)) {
             $this->fqdn = $fqdn;
         }
+
         $baseDN = District::getAD_BaseDN($districtID);
         if ($baseDN == "") {
             $this->baseDN = District::parseBaseDNFromFQDN($this->fqdn);
@@ -96,10 +102,8 @@ class AD {
         if (!is_null($password)) {
             $this->password = $password;
         }
-        $this->logger->debug($this->username);
-        $this->logger->debug($this->password);
         if (!empty($this->username) and!empty($this->password)) {
-            $this->connect();
+            $this->connectSSL();
         }
     }
 
@@ -114,25 +118,91 @@ class AD {
         return self::$instance;
     }
 
+    public function ouExists($dn) {
+        $this->logger->debug("Testing if " . $dn . " exists");
+        //$test = $this->query('(distinguishedName="' . $dn . '")');
+        $test = $this->read('(&(objectClass=organizationalUnit))', $dn);
+        //var_dump($test);
+        if ($test == "false" or $test["count"] == 0) {
+            $this->logger->warning($dn . " is an invalid OU");
+            return false;
+        }
+        $this->logger->debug($dn . " is a valid OU");
+        return true;
+    }
+
+    private function hashPassword($newPassword) {
+        $newPassword = "\"" . $newPassword . "\"";
+        $len = strlen($newPassword);
+        $newPassw = "";
+        for ($i = 0; $i < $len; $i++) {
+            $newPassw .= "{$newPassword {$i}}\000";
+        }
+        return $newPassw;
+    }
+
     public function setPassword($username, $password) {
         $userDN = $this->getUserDN($username);
-        $encoded_newPassword = "{SHA}" . base64_encode(pack("H*", sha1($password)));
+        $newpw = $this->hashPassword($password);
+
+        //$encoded_newPassword = "{SHA}" . base64_encode(pack("H*", sha1($password)));
         $entry = array();
-        $entry["userPassword"] = "$encoded_newPassword";
+        $entry["unicodePwd"] = $newpw;
         $this->logger->debug($userDN);
         $this->logger->debug($entry);
 
-        if (ldap_modify($this->connection, $userDN, $entry) === false) {
+        if (ldap_mod_replace($this->connection, $userDN, $entry) === false) {
             $error = ldap_error($this->connection);
             $errno = ldap_errno($this->connection);
             $message[] = "E201 - Your password cannot be change, please contact the administrator.";
             $message[] = "$errno - $error";
+            var_dump($message);
+            return false;
         } else {
-            echo "Success";
+            return true;
+        }
+    }
+
+    public function connectSSL() {
+        //putenv('LDAPTLS_REQCERT=never');
+        //putenv('TLS_REQCERT=never');
+
+        $this->logger->debug("LDAP URL: ldap://" . $this->fqdn);
+
+        $this->connection = ldap_connect("ldap://" . $this->fqdn)
+                or die("Could not connect to LDAP server.");
+
+        $this->logger->debug("LDAP URL reachable");
+        if ($this->connection) {
+
+            try {
+                ldap_set_option(null, LDAP_OPT_DEBUG_LEVEL, 7);
+                ldap_set_option($this->connection, LDAP_OPT_REFERRALS, 0);
+                ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, 3);
+                ldap_set_option($this->connection, LDAP_OPT_X_TLS_CERTFILE, CONFIGPATH . DIRECTORY_SEPARATOR . "activedirectory" . DIRECTORY_SEPARATOR . "ad.pem");
+                ldap_set_option($this->connection, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
+                if (ldap_start_tls($this->connection)) {
+                    $this->connected = ldap_bind($this->connection, $this->username, $this->password);
+                }
+            } catch (Exception $ex) {
+                $this->logger->warning($ex);
+            }
+
+            if ($this->connected) {
+                $this->logger->info("LDAP bind successful to " . $this->fqdn . " using credentials: " . $this->username);
+
+                return $this;
+            } else {
+                $this->logger->warning("LDAP bind failed  to " . $this->fqdn . " using credentials: " . $this->username);
+
+                return false;
+            }
         }
     }
 
     public function connect() {
+
+
         $this->connection = ldap_connect("ldap://" . $this->fqdn)
                 or die("Could not connect to LDAP server.");
 
@@ -148,11 +218,11 @@ class AD {
             }
 
             if ($this->connected) {
-                $this->logger->info("LDAP bind successful to " . $this->fqdn . " using credentials: " . $this->username . ' ' . $this->password);
+                $this->logger->info("LDAP bind successful to " . $this->fqdn . " using credentials: " . $this->username);
 
                 return $this;
             } else {
-                $this->logger->warning("LDAP bind failed  to " . $this->fqdn . " using credentials: " . $this->username . ' ' . $this->password);
+                $this->logger->warning("LDAP bind failed  to " . $this->fqdn . " using credentials: " . $this->username);
 
                 return false;
             }
@@ -166,7 +236,55 @@ class AD {
         if (is_null($base_dn)) {
             $base_dn = $this->baseDN;
         }
+        $this->logger->info($base_dn);
+        $this->logger->info($filter);
         $result = ldap_search($this->connection, $base_dn, $filter);
+        //var_dump("test");
+        if ($result != false) {
+            $info = ldap_get_entries($this->connection, $result);
+            $this->logger->info($info);
+            return $info;
+        }
+        return false;
+    }
+
+    public function getPhoto($username) {
+        $studentGroupDN = $this->getGroupDN("Students");
+        $filter = '(&(objectClass=person)(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . ')(objectClass=user)(sAMAccountName=' . $username . '))';
+        $studentResult = $this->queryObject($filter);
+    }
+
+    public function read($filter = null, $base_dn = null) {
+        if (is_null($filter)) {
+            $filter = "(&(objectClass=person)(objectClass=user))";
+        }
+        if (is_null($base_dn)) {
+            $base_dn = $this->baseDN;
+        }
+        $this->logger->info($base_dn);
+        $this->logger->info($filter);
+
+        $result = ldap_read($this->connection, $base_dn, $filter, ["*"], 0, 50, 10);
+        if ($result != false) {
+            $info = ldap_get_entries($this->connection, $result);
+            $this->logger->info($info);
+
+            return $info;
+        }
+
+        return false;
+    }
+
+    public function list($filter = null, $base_dn = null) {
+        if (is_null($filter)) {
+            $filter = "(&(objectClass=person)(objectClass=user))";
+        }
+        if (is_null($base_dn)) {
+            $base_dn = $this->baseDN;
+        }
+        $this->logger->info($base_dn);
+        $this->logger->info($filter);
+        $result = ldap_list($this->connection, $base_dn, $filter, ["*"], 0, 50, 10);
         if ($result != false) {
             $info = ldap_get_entries($this->connection, $result);
             $this->logger->info($info);
@@ -272,12 +390,13 @@ class AD {
         $filter = '(&(objectClass=person)(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . ')(objectClass=user)(sAMAccountName=' . $username . '))';
 
         $studentResult = $this->queryObject($filter);
+        //$this->getAttributes($studentResult);
         $enabledFilter = '(&(userAccountControl:1.2.840.113556.1.4.803:=2)(sAMAccountName=' . $username . '))';
-        $enabled = ['enabled' => true];
+        $enabled = ['enabled' => false];
         $enabledResult = $this->queryObject($enabledFilter);
         //var_dump($enabledResult);
         if ($enabledResult == false) {
-            $enabled = ['enabled' => false];
+            $enabled = ['enabled' => true];
         }
 
         return array_merge($studentResult, $enabled);
@@ -289,22 +408,55 @@ class AD {
         $filter = '(&(objectClass=person)(!(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . '))(objectClass=user)(sAMAccountName=' . $username . '))';
         $staffResult = $this->queryObject($filter);
         $enabledFilter = '(&(userAccountControl:1.2.840.113556.1.4.803:=2)(sAMAccountName=' . $username . '))';
-        $enabled = ['enabled' => true];
+        $enabled = ['enabled' => false];
         $enabledResult = $this->queryObject($enabledFilter);
         //var_dump($enabledResult);
         if ($enabledResult == false) {
-            $enabled = ['enabled' => false];
+            $enabled = ['enabled' => true];
         }
 
         return array_merge($staffResult, $enabled);
     }
 
     public function unlockUser($username) {
-        $entry = array("lockouttime" => 0);
+        $entry = array("lockoutTime" => 0);
         //var_dump($this->getUserDN($username));
         ldap_mod_replace($this->connection, $this->getUserDN($username), $entry);
-        $filter = '(&(objectClass=person)(objectClass=user)(sAMAccountName=' . $username . '))';
-        return $this->queryObject($filter);
+    }
+
+    public function enableUser($username) {
+        $this->setEnabledStatus($username, true);
+        //exit;
+    }
+
+    private function setEnabledStatus($username, $enable = true) {
+
+        //echo "<br><br><br>";
+        $useraccountcontrol = $this->queryObject($filter)["useraccountcontrol"][0];
+
+        //var_dump($useraccountcontrol);
+        $disabled = ($useraccountcontrol | 2); // set all bits plus bit 1 (=dec2)
+        $enabled = ($useraccountcontrol & ~2); // set all bits minus bit 1 (=dec2)
+
+        if ($enable) {
+            if ($enabled != 1)
+                $new = $enabled;
+            else
+                $new = $disabled; //enable or disable?
+        } else {
+            if ($enabled == 1)
+                $new = $enabled;
+            else
+                $new = $disabled; //enable or disable?
+        }
+        //var_dump($new);
+        $entry = array("userAccountControl" => $new);
+        ldap_mod_replace($this->connection, $this->getUserDN($username), $entry);
+    }
+
+    public function disableUser($username) {
+        $this->setEnabledStatus($username, false);
+        //exit;
     }
 
     public function listStudentUsers($usernameFragment) {
@@ -313,10 +465,10 @@ class AD {
         $filter = '(&(objectClass=person)(objectClass=user)'
                 . '(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . ')'
                 . '(|(sAMAccountName=*' . $usernameFragment . '*)(givenname=' . $usernameFragment . '*)(sn=' . $usernameFragment . '*)))';
-        return $this->listUsers($filter);
+        return $this->getUsers($filter);
     }
 
-    private function listUsers($filter) {
+    private function getUsers($filter) {
         $result = $this->query($filter);
         //var_dump($filter);
         if ($result != false) {
@@ -337,6 +489,32 @@ class AD {
         return false;
     }
 
+    private function getGroups($filter) {
+        $result = $this->query($filter);
+        //var_dump($filter);
+        if ($result != false) {
+            if (key_exists("count", $result)) {
+                foreach ($result as $group) {
+                    // var_dump($group);
+                    // var_dump($group["distinguishedname"][0]);
+                    if (key_exists("cn", $group)) {
+                        $insert["label"] = $group["cn"][0];
+                        $insert["value"] = $group["distinguishedname"][0];
+                        //$groups[]=$insert;
+                        $groups[] = $group["cn"][0];
+                    }
+                }
+            }
+        }
+        if (isset($groups)) {
+
+//var_dump($usernames);
+            sort($groups);
+            return $groups;
+        }
+        return false;
+    }
+
     public function listStaffUsers($usernameFragment) {
         $studentGroupDN = $this->getGroupDN("Students");
 
@@ -346,7 +524,16 @@ class AD {
                 . '(!(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . '))'
                 . '(|(sAMAccountName=' . $usernameFragment . '*)(givenname=' . $usernameFragment . '*)(sn=' . $usernameFragment . '*)))';
 
-        return $this->listUsers($filter);
+        return $this->getUsers($filter);
+    }
+
+    public function listGroups($groupFragment) {
+
+
+        // var_dump($studentGroupDN);
+        $filter = '(&(objectClass=group)(|(sAMAccountName=*' . $groupFragment . '*)(mail=*' . $groupFragment . '*)(description=*' . $groupFragment . '*)))';
+
+        return $this->getGroups($filter);
     }
 
     private function queryObject($filter) {
@@ -408,6 +595,57 @@ class AD {
                 }
             }
         }
+    }
+
+    public function getSubOUs($parentDN) {
+        if ($this->ouExists($parentDN)) {
+
+            $filter = '(objectClass=organizationalUnit)';
+            $buildingsRaw = $this->list($filter, $parentDN);
+            foreach ($buildingsRaw as $building) {
+                //var_dump($building["ou"]);
+            }
+            //var_dump($buildingsRaw);
+            return $buildingsRaw;
+        }
+        return false;
+    }
+
+    public function getAllSubOUs($dn, $array = null) {
+        if ($this->ouExists($dn)) {
+
+            $filter = '(objectClass=organizationalUnit)';
+            $result = $this->list($filter, $dn);
+            foreach ($result as $resultEntry) {
+                //var_dump($building["ou"]);
+                if ($resultEntry["distinguishedname"][0] != $dn) {
+                    if ($this->hasSubOUs($resultEntry["distinguishedname"][0])) {
+                        $array[$resultEntry["ou"][0]] = $resultEntry;
+                        $this->getAllSubOUs($dn, $array);
+                    } else {
+                        $array[] = $resultEntry;
+                    }
+                }
+            }
+            //var_dump($array);
+            //var_dump($buildingsRaw);
+            return $result;
+        }
+        return false;
+    }
+
+    public function hasSubOUs($dn) {
+        if ($this->ouExists($dn)) {
+
+            $filter = '(objectClass=organizationalUnit)';
+            $result = $this->list($filter, $dn);
+
+            //var_dump($buildingsRaw);
+            if ($result["count"] > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

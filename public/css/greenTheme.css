@@ -10,8 +10,8 @@
 
 
 .bg-primary,.btn-primary,.text-primary ,.dropdown-item:active{
-	background-color:#338540 !important;
-	border-color:#338540 !important;
+	background-color:#1e7e34 !important;
+	border-color:#1e7e34 !important;
 }
 .form-control:focus{
     
@@ -19,7 +19,7 @@
         box-shadow: 0 0 0 0.2rem rgba(97,21,10,.25);
 }
 .nav-item.nav-link{
-    color:#338540 !important;
+    color:#1e7e34 !important;
 }
 .nav-item.nav-link.active{
     color:#000 !important;
@@ -36,12 +36,12 @@
 }
 
 .custom-control-input:checked~.custom-control-label::before{
-    border-color: #338540;
+    border-color: #1e7e34;
     border-top-color: rgb(51,133,64);
     border-right-color: rgb(51,133,64);
     border-bottom-color: rgb(51,133,64);
     border-left-color: rgb(51,133,64);
-    background-color: #338540;
+    background-color: #1e7e34;
     
 }
 

@@ -25,6 +25,13 @@
  */
 
 
+/*
+ * Core Config
+ *
+ * This file contains the hard coded core configuration settings.
+ * Do not change anything in here unless you know what you are doing
+ */
+
 
 
 /*

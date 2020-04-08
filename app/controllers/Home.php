@@ -48,6 +48,13 @@ class Home extends Controller {
         return $this->view('homepage');
     }
 
+    public function show403() {
+        $this->motd = \app\models\AppConfig::getMOTD();
+        $this->applicationName = \app\models\AppConfig::getAppName();
+        $this->layout = "default";
+        return $this->view('errors/403');
+    }
+
 }
 
 ?>

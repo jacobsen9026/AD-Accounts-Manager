@@ -99,6 +99,7 @@ class Form {
                 $html .= $element->getHTML();
             }
         }
+        $html.="</form>";
         return $html;
     }
 
@@ -118,6 +119,9 @@ class Form {
 
     /**
      * getFormHTML
+     * DEPRECATED
+     * Use Form Element Objects and the print() method
+     * 
      * This is the final step in building a form.
      * Accounting for all previously set options the form HTML is generated and returned as a string
      *

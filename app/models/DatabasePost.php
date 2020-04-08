@@ -65,21 +65,8 @@ abstract class DatabasePost {
                     $query->where($schema, $id)
                             ->set($column, $value);
                     if ($type != null) {
-                        switch ($type) {
-                            case 'Staff':
-                                $query->where(Schema::ACTIVEDIRECTORY_TYPE[Schema::COLUMN], 'Staff');
+                                $query->where(Schema::ACTIVEDIRECTORY_TYPE[Schema::COLUMN], $type);
 
-                                break;
-                            case 'Student':
-
-                                $query->where(Schema::ACTIVEDIRECTORY_TYPE[Schema::COLUMN], 'Student');
-
-                                break;
-
-
-                            default:
-                                break;
-                        }
                     }
                     $query->run();
                     //  $query = 'UPDATE ' . $table . ' SET "' . $column . '" = "' . $value . '" WHERE ' . $schema[Schema::COLUMN] . ' = ' . $id;

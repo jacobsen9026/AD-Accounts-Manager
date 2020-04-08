@@ -28,6 +28,8 @@ use app\database\Schema;
 use app\models\AppConfig;
 use app\models\Auth;
 use system\app\forms\Form;
+use system\app\forms\FormButton;
+use system\app\forms\FormText;
 
 $form = new Form('/settings/application', 'authentication');
 $form->buildTextInput('Web App Name', Schema::APP_NAME, AppConfig::getAppName())
@@ -69,6 +71,29 @@ $form->buildTextInput('Web App Name', Schema::APP_NAME, AppConfig::getAppName())
         ->buildUpdateButton('Save Settings')
         ->addToNewRow();
 echo $form->getFormHTML();
+
+$form = new Form('/settings/application', 'authentication');
+$button = new FormButton("Submit");
+$button->small();
+$webAppName = new FormText("Web App Name",null,Schema::APP_NAME, AppConfig::getAppName());
+$webAppName->large();
+$webFQDN = new FormText("Website FQDN","If this is set all requests are redirected to this address. Be sure it is correct and stays available.",Schema::APP_WEBSITIE_FQDN, AppConfig::getWebsiteFQDN());
+$webFQDN->large()
+        ->setPlaceholder("Enter the public FQDN that users use to access this applicaiton.");
+$webHelpDesk = new FormText("User Helpdesk URL","The url that users should use to access your help portal.",Schema::APP_USER_HELPDESK_URL, AppConfig::getUserHelpdeskURL());
+$webHelpDesk->large()
+        ->setPlaceholder("https://helpdesk.company.com");
+//$adminUsernames = new FormTextArea ();
+$findGroups= new FormText("Find Groups Test", "Search for groups", "group");
+$findGroups->autoCompleteGroupName();
+
+$form->addElementToNewRow($webAppName)
+        ->addElementToNewRow($webFQDN)
+        ->addElementToNewRow($webHelpDesk)
+        ->addElementToNewRow($findGroups)
+        ->addElementToNewRow($button);
+echo $form->print();
+
 ?>
 
 <?php

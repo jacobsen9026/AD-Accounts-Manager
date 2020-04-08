@@ -15,14 +15,11 @@ namespace app\controllers;
  */
 use app\models\district\Student;
 use app\api\AD;
+use system\Post;
 
 class Students extends Controller {
 
 //put your code here
-    public function homeDrive() {
-        return $this->view('students/homeDrive');
-    }
-
     public function homeDrivePost() {
         $post = \system\Post::getAll();
         if (isset($post)and key_exists("action", $post) and $post["action"] == "query") {
@@ -30,17 +27,35 @@ class Students extends Controller {
         }
     }
 
-    public function accountStatus() {
+    public function accountStatus($username=null) {
+        if ($username==null){
         return $this->view('students/accountStatus');
+    }
+    else{
+        //var_export($username);
+        
+            return $this->showAccountStatus($username);
+        }
+        
     }
 
     public function accountStatusPost() {
-        $post = \system\Post::getAll();
+        $post = Post::getAll();
         if (isset($post)and key_exists("username", $post)) {
-
-            $this->student = $this->getStudent($post["username"]);
+            return $this->showAccountStatus($post["username"]);
+            
         }
-        return $this->view('students/show/student');
+    }
+    public function accountStatusGet() {
+        $get = Get::getAll();
+        if (isset($get)and key_exists("username", $get)) {
+            return $this->showAccountStatus($post["username"]);
+        }
+    }
+    private function showAccountStatus($username){
+        
+                        $this->student = $this->getStudent($username);
+                        return $this->view('students/show/student');
     }
 
     private function getStudent($username) {
@@ -50,33 +65,33 @@ class Students extends Controller {
 
         //var_dump($student);
         return $student;
-//$gaUser = \app\api\GAM::getUser($username);
-    }
 
-    private function unlockStudent($username) {
-        $adUser = \app\api\AD::get()->unlockUser($username);
-        var_dump($adUser);
-        return $adUser;
-//$gaUser = \app\api\GAM::getUser($username);
     }
-
     public function accountStatusChange() {
 
         return $this->view('students/accountStatusChange');
     }
 
     public function accountStatusChangePost() {
-        $post = \system\Post::getAll();
+        $post = Post::getAll();
         if (isset($post)and key_exists("username", $post)) {
             $username = $post["username"];
+            $student = $this->getStudent($username);
             if (key_exists("action", $post)) {
                 switch ($post["action"]) {
                     case "unlock":
-                        $this->unlockStudent($username);
-                        $this->student = $this->getStudent($post["username"]);
-                        return $this->view('students/show/student');
-                        break;
-                    case "lock":
+                        $student->unlock();
+                        return $this->showAccountStatus($username);
+                        
+                    
+                    case "enable":
+                        $student->enable();
+                       // var_dump($username);
+                        return $this->showAccountStatus($username);
+                    case "disable";
+                         $student->disable();
+                       // var_dump($username);
+                        return $this->showAccountStatus($username);
                         break;
 
                     default:
@@ -94,9 +109,9 @@ class Students extends Controller {
     }
 
     public function resetPasswordPost() {
-        $username = \system\Post::get("username");
-        $password = \system\Post::get("password");
-        AD::get()->setPassword($username, $password);
+        $username = Post::get("username");
+        $password = Post::get("password");
+        return AD::get()->setPassword($username, $password);
     }
 
     public function createAccounts() {

@@ -19,7 +19,7 @@ use app\models\user\User;
 use system\app\Session;
 use system\app\auth\AuthException;
 use system\Post;
-use app\config\MasterConfig;
+use app\auth\LDAP;
 
 class Login extends Controller {
 
@@ -38,7 +38,7 @@ class Login extends Controller {
                 }
                 if (\app\models\Auth::getLDAPEnabled()) {
                     try {
-                        $user = \system\app\auth\LDAP::authenticate(Post::get('username'), Post::get('password'));
+                        $user = LDAP::authenticate(Post::get('username'), Post::get('password'));
                     } catch (AuthException $ex) {
                         if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
 
@@ -62,7 +62,7 @@ class Login extends Controller {
 
             Session::setUser($user);
             Session::updateTimeout();
-            $this->redirect("/");
+            $this->redirect($this->app->request->referer);
         } else {
             return $this->view('login/loginPrompt');
         }
