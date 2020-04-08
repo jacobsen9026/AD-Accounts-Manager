@@ -27,23 +27,28 @@ abstract class Email extends Model {
         return $query->run()[0];
     }
 
+    private static function getDBValue($column) {
+        $query = new Query(self::TABLE_NAME, 'SELECT', $column);
+
+        $query->where(Schema::EMAIL_APP_ID, App::getID());
+
+        return $query->run();
+    }
+
     public static function getSMTPServer() {
-        $query = 'SELECT ' . self::getColumnFromSchema(Schema::EMAIL_SMTP_SERVER) . ' FROM ' . self::TABLE_NAME . ' WHERE ' . self::getColumnFromSchema(Schema::APP_ID) . ' = ' . App::getID();
-        $result = Database::get()->query($query);
-        return $result;
-        $query = new Query(self::TABLE_NAME);
-
-        $query->where(Schema::ACTIVEDIRECTORY_DISTRICT_ID, $districtID)
-                ->where(Schema::ACTIVEDIRECTORY_TYPE, $type);
-
-        return $query->run()[0];
+        return self::getDBValue(self::getColumnFromSchema(Schema::EMAIL_SMTP_SERVER));
     }
 
     public static function getSMTPUsername() {
-        $query = 'SELECT ' . self::getColumnFromSchema(Schema::EMAIL_SMTP_USERNAME) . ' FROM ' . self::TABLE_NAME . ' WHERE ' . self::getColumnFromSchema(Schema::APP_ID) . ' = ' . App::getID();
+        return self::getDBValue(self::getColumnFromSchema(Schema::EMAIL_SMTP_USERNAME));
+    }
 
-        $result = Database::get()->query($query);
-        return $result;
+    public static function getSMTPPassword() {
+        return self::getDBValue(self::getColumnFromSchema(Schema::EMAIL_SMTP_PASSWORD));
+    }
+
+    public static function getSMTPAuth() {
+        return self::getDBValue(self::getColumnFromSchema(Schema::EMAIL_USE_SMTP_AUTH));
     }
 
 //put your code here
