@@ -58,9 +58,9 @@ class Query {
 
     /**
      *
-     * @param const $table
-     * @param const $type
-     * @param stirng $columns
+     * @param const $table Target Table
+     * @param const $type If not supplied will be a SELECT
+     * @param stirng $columns If not supplied will be '*'
      */
     function __construct($table, $type = self::SELECT, $columns = '*') {
         $this->targetTable = $table;
