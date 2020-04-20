@@ -22,7 +22,7 @@ class Districts extends Controller {
 
     function __construct(\system\app\App $app) {
         parent::__construct($app);
-        $this->layout = 'setup';
+        //$this->layout = 'setup';
     }
 
     //put your code here

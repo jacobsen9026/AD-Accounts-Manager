@@ -30,7 +30,7 @@ class Schools extends Controller {
      */
     function __construct(\system\app\App $app) {
         parent::__construct($app);
-        $this->layout = 'setup';
+        //$this->layout = 'setup';
     }
 
     public function getDistrictDirectory2() {
