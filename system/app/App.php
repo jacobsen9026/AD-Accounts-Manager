@@ -36,18 +36,19 @@ namespace system\app;
  *
  * No application specific data/functions should be present in this class. That should be utilized in classes within the App namespace.
  */
-use system\common\CommonApp;
+use system\app\Route;
 use system\app\AppErrorHandler;
-use system\Request;
 use system\SystemLogger;
 use system\Factory;
-use app\config\Router;
+use system\Request;
+use system\app\Router;
+use system\Parser;
 use app\config\MasterConfig;
 use app\models\user\User;
 use app\models\user\Privilege;
 use system\app\auth\PermissionHandler;
 
-class App extends CommonApp {
+class App extends Parser {
 
     use RequestRedirection;
 
@@ -78,7 +79,7 @@ class App extends CommonApp {
     /** @var string|null The system logger */
     public $output;
 
-    /** @var Array|null The system logger */
+    /** @var Route|null The system logger */
     public $route;
 
     /** @var string|null The system logger */
@@ -87,11 +88,14 @@ class App extends CommonApp {
     /** @var Layout|null The system logger */
     public $layout;
 
+    /** @var AppOutput The application output */
+    public $appOutput;
+
     /** @var User|null The system logger */
     public $user;
     public static $instance;
 
-    function __construct(\system\Request $req, \system\SystemLogger $cLogger) {
+    function __construct(Request $req, SystemLogger $cLogger) {
 
         //session_destroy();
         //$this->user = "this";
@@ -111,6 +115,7 @@ class App extends CommonApp {
          * Load the request into the app
          */
         $this->loadConfig();
+        $this->appOutput = new AppOutput();
         $this->request = $req;
         /*
          * Define the Grade Codes
@@ -149,11 +154,18 @@ class App extends CommonApp {
     public function loadUser() {
 
         $this->user = Session::getUser();
-        $cookieData = Cookie::get(User::USER . '_' . $this->user->username);
+        $cookieName = User::USER . '_' . $this->user->username;
+        $cookieData = Cookie::get($cookieName);
         //var_dump($cookieData);
         if ($cookieData != false) {
             $this->logger->info("Loading user from cookie");
-            $this->user = unserialize($cookieData);
+            $cookieUser = unserialize(\system\Encryption::decrypt($cookieData));
+            if ($cookieUser instanceof User) {
+                $this->user = $cookieUser;
+            } else {
+                Cookie::delete($cookieName);
+                $this->user->save();
+            }
         } else {
             $this->logger->warning("Cookie not found");
         }
@@ -167,31 +179,46 @@ class App extends CommonApp {
     public function run() {
 
         $this->logger->debug("Creating Session");
-
-        $this->loadUser();
+        User::load($this);
         try {
             $this->route();
+            /**
+             * Is the current user allowed to access this uri?
+             * If not, this function changes the route to 403 error page
+             */
             $this->checkPermission();
 
-            try {
-                $this->control();
-            } catch (Exception $ex) {
-                $this->logger->error($ex);
-            }
+            /**
+             * This is where the magic happens. The control function calls the class and method
+             * determined by the routing.
+             */
+            $this->control();
         } catch (\Exception $ex) {
+            /**
+             * If a minor error happens during routing or permission checks we get kick up to here.
+             * We log the error to the app logger so we can debug later.
+             */
             $this->logger->error($ex);
+            $this->appOutput->setBody($ex->getMessage());
         }
-
+        /**
+         * Now we need to apply the customized header/footer/styling for the
+         * current user and the current page.
+         */
         $this->layout();
-        //var_dump($this->output);
+        /**
+         * Lets destroy the app logger if the app isn't in debug mode.
+         * We don't want to risk sending any private information.
+         */
         if (!$this->inDebugMode()) {
             $this->logger = null;
         }
-        $appOutput = new AppOutput();
-        $appOutput->setBody($this->output);
-        $appOutput->setLogs($this->logger);
-        return $appOutput;
-//return array($this->output, $this->logger);
+        /**
+         * We need to inject the logs into the appOutput so the core can handle it.
+         */
+        //$this->appOutput->setBody($this->output);
+        $this->appOutput->setLogs($this->logger);
+        return $this->appOutput;
     }
 
     public function route() {
@@ -221,10 +248,14 @@ class App extends CommonApp {
         $this->logger->debug($this->route);
     }
 
+    /**
+     * Check against the config database's permission table that the current user has the
+     * required privilege to access this uri
+     */
     private function checkPermission() {
-        $uri = $this->route;
+
         try {
-            $required = PermissionHandler::handleRequest($uri, $this->user);
+            $required = PermissionHandler::handleRequest($this->route, $this->user);
             if ($this->user->privilege < $required) {
                 $hasPermission = false;
                 $this->route = array('Home', 'show403');
@@ -271,9 +302,9 @@ class App extends CommonApp {
         if (!isset($this->user) or $this->user == null or $this->user->privilege <= Privilege::UNAUTHENTICATED) {
             $this->logger->warning('user not logged in');
             // Change route to login if not logged in.
-            //$this->route = array('Login', 'index');
+            //$this->route;
             $login = new \app\controllers\Login($this);
-            $this->outputBody .= $login->index();
+            $this->appOutput->appendBody($login->index());
             return;
         } else {
             /*
@@ -286,23 +317,23 @@ class App extends CommonApp {
          */
         if ($this->controller = Factory::buildController($this)) {
 
-            $this->logger->debug($this->route[0]);
-            $method = $this->route[1];
+            $this->logger->debug($this->route);
+            $method = $this->route->getMethod();
             if (method_exists($this->controller, $method)) {
                 // Check if there is a parameter set from the request
 
-                $this->logger->debug($this->route[1]);
-                if (empty($this->route[2])) {
-                    $this->outputBody .= $this->controller->$method();
+                $this->logger->debug($this->route->getMethod());
+                if (empty($this->route->getData())) {
+                    $this->appOutput->appendBody($this->controller->$method());
                 } else {
-                    $this->logger->debug($this->route[2]);
-                    $this->outputBody .= $this->controller->$method($this->route[2]);
+                    $this->logger->debug($this->route->getData());
+                    $this->appOutput->appendBody($this->controller->$method($this->route->getData()));
                 }
                 //var_dump($this->outputBody);
             } else {
-                $this->logger->warning("No method found by name of " . $this->route[1] . ' in the controller ' . $this->route[0]);
+                $this->logger->warning("No method found by name of " . $this->route->getMethod() . ' in the controller ' . $this->route->getControler());
 
-                $this->outputBody .= $this->view('errors/405');
+                $this->appOutput->appendBody($this->view('errors/405'));
             }
             /*
              * If no controller could be created, it's because the class doesnt exists or is setup wrong
@@ -310,7 +341,7 @@ class App extends CommonApp {
              */
         } else {
             $this->logger->warning("No Controller found by name of " . $this->router->controller);
-            $this->outputBody .= $this->view('errors/404');
+            $this->appOutput->appendBody($this->view('errors/404'));
         }
     }
 
@@ -319,7 +350,7 @@ class App extends CommonApp {
      */
     public function layout() {
         $this->layout = new Layout($this);
-        $this->output = $this->layout->apply();
+        $this->appOutput->setBody($this->layout->apply());
         //var_dump($this->output);
     }
 

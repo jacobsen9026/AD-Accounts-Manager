@@ -14,8 +14,8 @@ namespace app\controllers\settings;
  * @author cjacobsen
  */
 use app\controllers\Controller;
-use app\models\district\District;
-use app\models\district\School;
+use app\models\district\DistrictDatabase;
+use app\models\district\SchoolDatabase;
 use app\models\district\Department;
 use app\database\Schema;
 

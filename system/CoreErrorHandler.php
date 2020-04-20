@@ -101,13 +101,20 @@ class CoreErrorHandler {
 
         /* @var $trace array */
         $trace = $exception->getTrace();
-        $line = file($file)[$lineNumber];
+        $surroundingCode = $lineNumber - 3 . file($file)[$lineNumber - 4];
+        $surroundingCode .= $lineNumber - 2 . file($file)[$lineNumber - 3];
+        $surroundingCode .= $lineNumber - 1 . file($file)[$lineNumber - 2];
+        $surroundingCode .= $lineNumber . file($file)[$lineNumber - 1];
+        $surroundingCode .= $lineNumber + 1 . file($file)[$lineNumber - 0];
+        $surroundingCode .= $lineNumber + 2 . file($file)[$lineNumber + 1];
+        $surroundingCode .= $lineNumber + 3 . file($file)[$lineNumber + 2];
+        $surroundingCode = str_replace("'", '"', $surroundingCode);
         //Send a 500 internal server error to the browser.
         header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
         $logMessage = $file . ':' . $lineNumber . ' ' . $message;
         $errorMessage = '<div class="alert alert-danger">Fatal Errror <br/><br/>' . $message . '<br/><br/>' . $file
                 . ':' . $lineNumber . '<br/><pre>'
-                . $line . '</pre></div>';
+                . $surroundingCode . '</pre></div>';
         /*
          * Kill the core execution.
          */

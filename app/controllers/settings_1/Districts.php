@@ -14,7 +14,7 @@ namespace app\controllers\settings;
  * @author cjacobsen
  */
 use app\controllers\Controller;
-use app\models\district\District;
+use app\models\district\DistrictDatabase;
 use app\database\Schema;
 use app\models\DatabasePost;
 
@@ -28,7 +28,7 @@ class Districts extends Controller {
     //put your code here
     public function index() {
 
-        $this->districts = District::getDistricts();
+        $this->districts = DistrictDatabase::getDistricts();
         //var_dump($this->districts);
 
         if ($this->districts == false) {
@@ -44,15 +44,15 @@ class Districts extends Controller {
     }
 
     public function show($districtID) {
-        $this->staffADSettings = District::getADSettings($districtID, 'Staff');
-        $this->staffGASettings = District::getGASettings($districtID, 'Staff');
+        $this->staffADSettings = DistrictDatabase::getADSettings($districtID, 'Staff');
+        $this->staffGASettings = DistrictDatabase::getGASettings($districtID, 'Staff');
         $this->districtID = $districtID;
         return $this->view('settings/district/show');
     }
 
     public function createPost() {
         $post = \system\Post::getAll();
-        District::createDistrict($post['name']);
+        DistrictDatabase::createDistrict($post['name']);
         $this->redirect('/settings/districts');
     }
 
@@ -74,12 +74,12 @@ class Districts extends Controller {
     }
 
     public function delete($districtID = null) {
-        District::deleteDistrict($districtID);
+        DistrictDatabase::deleteDistrict($districtID);
         $this->redirect('/districts');
     }
 
     public function hasSchools($districtID) {
-        $schools = District::getSchools($districtID);
+        $schools = DistrictDatabase::getSchools($districtID);
         if ($schools == false or count($schools) < 1) {
             return false;
         }

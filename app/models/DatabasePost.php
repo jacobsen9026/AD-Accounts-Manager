@@ -56,7 +56,8 @@ abstract class DatabasePost {
                     // Therefore, the where should match against the given tables ID column
                     //var_dump($table . ' does not equal ' . $primaryTable);
                     //Prepare the Schema Constant Variable
-                    $schemaID = strtoupper($table) . '_' . strtoupper($primaryTable) . '_ID';
+                    //$schemaID = strtoupper($table) . '_' . strtoupper($primaryTable) . '_ID';
+                    $schemaID = strtoupper($table) . '_ID';
 
                     $schemaClass = new \ReflectionClass('app\database\Schema');
                     $schema = $schemaClass->getConstant($schemaID);
@@ -65,8 +66,7 @@ abstract class DatabasePost {
                     $query->where($schema, $id)
                             ->set($column, $value);
                     if ($type != null) {
-                                $query->where(Schema::ACTIVEDIRECTORY_TYPE[Schema::COLUMN], $type);
-
+                        $query->where(Schema::ACTIVEDIRECTORY_TYPE[Schema::COLUMN], $type);
                     }
                     $query->run();
                     //  $query = 'UPDATE ' . $table . ' SET "' . $column . '" = "' . $value . '" WHERE ' . $schema[Schema::COLUMN] . ' = ' . $id;
@@ -108,7 +108,7 @@ abstract class DatabasePost {
     }
 
     private static function uploadFiles() {
-        var_dump($_FILES);
+        //var_dump($_FILES);
         //exit;
         foreach ($_FILES as $key => $file) {
             if ($key == 'client_secret') {

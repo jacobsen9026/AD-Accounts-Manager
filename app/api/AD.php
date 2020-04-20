@@ -31,7 +31,7 @@ namespace app\api;
  *
  * @author cjacobsen
  */
-use app\models\district\District;
+use app\models\district\DistrictDatabase;
 
 class AD {
 
@@ -73,14 +73,14 @@ class AD {
         $this->districtID = $districtID;
         self::$instance = $this;
         $this->logger = \system\app\AppLogger::get();
-        $this->fqdn = District::getAD_FQDN($this->districtID);
+        $this->fqdn = DistrictDatabase::getAD_FQDN($this->districtID);
         if (!is_null($fqdn)) {
             $this->fqdn = $fqdn;
         }
 
-        $baseDN = District::getAD_BaseDN($districtID);
+        $baseDN = DistrictDatabase::getAD_BaseDN($districtID);
         if ($baseDN == "") {
-            $this->baseDN = District::parseBaseDNFromFQDN($this->fqdn);
+            $this->baseDN = DistrictDatabase::parseBaseDNFromFQDN($this->fqdn);
 
             $this->testUserDN = "CN=" . $this->testUserName . ",CN=Users," . $this->baseDN;
         } else {
@@ -89,16 +89,16 @@ class AD {
         }
         if ((is_null($username))) {
             if (strpos($username, "\\") > 0 or strpos($username, "@") > 0) {
-                $this->username = District::getADUsername($this->districtID) .
-                        "@" . District::getAD_FQDN($this->districtID);
+                $this->username = DistrictDatabase::getADUsername($this->districtID) .
+                        "@" . DistrictDatabase::getAD_FQDN($this->districtID);
             } else {
-                $this->username = District::getADUsername($this->districtID);
+                $this->username = DistrictDatabase::getADUsername($this->districtID);
             }
         } else {
             $this->username = $username;
         }
 
-        $this->password = District::getADPassword($this->districtID);
+        $this->password = DistrictDatabase::getADPassword($this->districtID);
         if (!is_null($password)) {
             $this->password = $password;
         }
@@ -430,7 +430,7 @@ class AD {
     }
 
     private function setEnabledStatus($username, $enable = true) {
-
+        $filter = "(&(samaccountname=$username))";
         //echo "<br><br><br>";
         $useraccountcontrol = $this->queryObject($filter)["useraccountcontrol"][0];
 
@@ -459,15 +459,49 @@ class AD {
         //exit;
     }
 
-    public function listStudentUsers($usernameFragment) {
-        $studentGroupDN = $this->getGroupDN("Students");
+    /**
+     * Returns an array of usernames that match
+     * the search term for username, first name,
+     * or last name.
+     *
+     * @param type $searchTerm
+     * @return type
+     */
+    public function listStudentUsers($searchTerm) {
+        $district = DistrictDatabase::getDistrict();
+
+        $studentGroupDN = $this->getGroupDN($district->getAdStudentGroupName());
         //var_dump($studentGroupDN);
         $filter = '(&(objectClass=person)(objectClass=user)'
                 . '(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . ')'
-                . '(|(sAMAccountName=*' . $usernameFragment . '*)(givenname=' . $usernameFragment . '*)(sn=' . $usernameFragment . '*)))';
+                . '(|(sAMAccountName=*' . $searchTerm . '*)(givenname=' . $searchTerm . '*)(sn=' . $searchTerm . '*)))';
         return $this->getUsers($filter);
     }
 
+    /**
+     * Returns an array of usernames that match
+     * the search term for username, first name,
+     * or last name.
+     *
+     * @param type $searchTerm
+     * @return type
+     */
+    public function listStudentGroups($searchTerm) {
+        $studentGroupDN = $this->getGroupDN("Students");
+        //var_dump($studentGroupDN);
+        $filter = '(&(objectClass=group)'
+                . '(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . ')'
+                . '(|(sAMAccountName=*' . $searchTerm . '*)(description=' . $searchTerm . '*)(sn=' . $searchTerm . '*)))';
+        return $this->getGroups($filter);
+    }
+
+    /**
+     * Returns an array of usernames that match the input filter
+     * Returns false if no users were found.
+     *
+     * @param type $filter
+     * @return array|false
+     */
     private function getUsers($filter) {
         $result = $this->query($filter);
         //var_dump($filter);
@@ -600,11 +634,8 @@ class AD {
     public function getSubOUs($parentDN) {
         if ($this->ouExists($parentDN)) {
 
-            $filter = '(objectClass=organizationalUnit)';
+            $filter = '(&(objectClass=organizationalUnit))';
             $buildingsRaw = $this->list($filter, $parentDN);
-            foreach ($buildingsRaw as $building) {
-                //var_dump($building["ou"]);
-            }
             //var_dump($buildingsRaw);
             return $buildingsRaw;
         }
@@ -646,6 +677,27 @@ class AD {
             }
         }
         return false;
+    }
+
+    /**
+     *
+     * @param type $districtID
+     * @return array \app\models\district\School
+     */
+    public static function getSchools($districtID) {
+        $districtOU = DistrictDatabase::getAD_BaseDN($districtID);
+        $ous = $this->getSubOUs($districtOU);
+        //var_dump($ous);
+        foreach ($ous as $ou) {
+            \system\app\AppLogger::get()->debug($ou);
+            if (is_array($ou)) {
+                $school = new School();
+                $school->importFromAD($ou);
+                $schools[] = $school;
+            }
+            //echo $ou["ou"][0] . "<br>" . $ou["distinguishedname"][0] . "<br>";
+        }
+        return $schools;
     }
 
 }

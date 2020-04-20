@@ -75,25 +75,31 @@ echo $form->getFormHTML();
 $form = new Form('/settings/application', 'authentication');
 $button = new FormButton("Submit");
 $button->small();
-$webAppName = new FormText("Web App Name",null,Schema::APP_NAME, AppConfig::getAppName());
+$webAppName = new FormText("Web App Name", null, Schema::APP_NAME, AppConfig::getAppName());
 $webAppName->large();
-$webFQDN = new FormText("Website FQDN","If this is set all requests are redirected to this address. Be sure it is correct and stays available.",Schema::APP_WEBSITIE_FQDN, AppConfig::getWebsiteFQDN());
+$webFQDN = new FormText("Website FQDN", "If this is set all requests are redirected to this address. Be sure it is correct and stays available.", Schema::APP_WEBSITIE_FQDN, AppConfig::getWebsiteFQDN());
 $webFQDN->large()
         ->setPlaceholder("Enter the public FQDN that users use to access this applicaiton.");
-$webHelpDesk = new FormText("User Helpdesk URL","The url that users should use to access your help portal.",Schema::APP_USER_HELPDESK_URL, AppConfig::getUserHelpdeskURL());
+$webHelpDesk = new FormText("User Helpdesk URL", "The url that users should use to access your help portal.", Schema::APP_USER_HELPDESK_URL, AppConfig::getUserHelpdeskURL());
 $webHelpDesk->large()
         ->setPlaceholder("https://helpdesk.company.com");
 //$adminUsernames = new FormTextArea ();
-$findGroups= new FormText("Find Groups Test", "Search for groups", "group");
+$findGroups = new FormText("Find Groups Test", "Search for groups", "group");
 $findGroups->autoCompleteGroupName();
+
+$adminUsernames = new system\app\forms\FormTextArea();
+$adminUsernames->setLabel("Admin Usernames")
+        ->setSubLabel("Users in this list will not be able to be modified via the tools on this site.")
+        ->setName(Schema::APP_PROTECTED_ADMIN_USERNAMES)
+        ->setValue(AppConfig::getAdminUsernames());
 
 $form->addElementToNewRow($webAppName)
         ->addElementToNewRow($webFQDN)
+        ->addElementToNewRow($adminUsernames)
         ->addElementToNewRow($webHelpDesk)
         ->addElementToNewRow($findGroups)
         ->addElementToNewRow($button);
 echo $form->print();
-
 ?>
 
 <?php

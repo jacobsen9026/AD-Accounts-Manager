@@ -29,11 +29,14 @@ $this->schoolName = $this->school[Schema::SCHOOL_NAME[Schema::COLUMN]];
                 <div class = "nav nav-tabs" id = "nav-tab" role = "tablist">
                     <a class = "shadow bg-primary text-light nav-item nav-link active" id = "nav-ad-tab" data-toggle = "tab" href = "#nav-ad" role = "tab" aria-controls = "nav-home" aria-selected = "true">Active Directory</a>
                     <?php
-                    if (!$this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]]) {
-                        ?>
-                        <a class = "shadow bg-primary text-light nav-item nav-link" id = "nav-ga-tab" data-toggle = "tab" href = "#nav-ga" role = "tab" aria-controls = "nav-profile" aria-selected = "false">Google Apps</a>
-                        <?php
-                    }
+                    /**
+                      if (!$this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]]) {
+                      ?>
+                      <a class = "shadow bg-primary text-light nav-item nav-link" id = "nav-ga-tab" data-toggle = "tab" href = "#nav-ga" role = "tab" aria-controls = "nav-profile" aria-selected = "false">Google Apps</a>
+                      <?php
+                      }
+                     *
+                     */
                     ?>
                 </div>
             </nav>
@@ -47,20 +50,23 @@ $this->schoolName = $this->school[Schema::SCHOOL_NAME[Schema::COLUMN]];
                     ?>
                 </div>
                 <?php
-                if (!$this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]]) {
-                    ?>
+                /**
+                  if (!$this->district[Schema::DISTRICT_USING_GADS[Schema::COLUMN]]) {
+                  ?>
 
-                    <div class="tab-pane fade pt-3" id="nav-ga" role="tabpanel" aria-labelledby="nav-ga-tab">
-                        <?php
-                        $gaForm = new Form('/settings/schools/edit/' . $this->school[Schema::SCHOOL_ID[Schema::COLUMN]]);
-                        $gaForm->subForm()
-                                ->generateGAForm($this->schoolID, $this->staffGASettings, Schema::SCHOOL);
+                  <div class="tab-pane fade pt-3" id="nav-ga" role="tabpanel" aria-labelledby="nav-ga-tab">
+                  <?php
+                  $gaForm = new Form('/settings/schools/edit/' . $this->school[Schema::SCHOOL_ID[Schema::COLUMN]]);
+                  $gaForm->subForm()
+                  ->generateGAForm($this->schoolID, $this->staffGASettings, Schema::SCHOOL);
 
-                        echo $gaForm->getFormHTML();
-                        ?>
-                    </div>
-                    <?php
-                }
+                  echo $gaForm->getFormHTML();
+                  ?>
+                  </div>
+                  <?php
+                  }
+                 *
+                 */
                 ?>
             </div>
         </div>
@@ -80,7 +86,7 @@ $this->schoolName = $this->school[Schema::SCHOOL_NAME[Schema::COLUMN]];
             ->medium()
             ->addToRow(2)
             ->buildTextInput('Parent Email Group', Schema::SCHOOL_PARENT_EMAIL_GROUP[Schema::NAME], $this->school[Schema::SCHOOL_PARENT_EMAIL_GROUP[Schema::COLUMN]])
-            ->appendInput('@' . $this->district[Schema::DISTRICT_GA_FQDN[Schema::COLUMN]])
+            //->appendInput('@' . $this->district[Schema::DISTRICT_GA_FQDN[Schema::COLUMN]])
             ->addToRow(3)
             ->addToForm($tabs, 6)
             ->buildCustomButton('Edit Departments', 'warning', '/settings/departments/show/' . $this->school[Schema::SCHOOL_ID[Schema::COLUMN]])

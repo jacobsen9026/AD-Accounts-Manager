@@ -17,14 +17,27 @@
 
 
     <?php
-    if ($this->app->user->theme == \app\config\Theme::RED_THEME) {
-        system\app\AppLogger::get()->debug("theme is red");
-        echo ' <link rel="stylesheet" href="/css/redTheme.css">';
+    /**
+     * Handle Themes
+     */
+    if ($this->app->user->theme != \app\config\Theme::DEFAULT_THEME and $this->app->user->theme != \app\config\Theme::BLUE_THEME) {
+        system\app\AppLogger::get()->debug("theme is " . $this->app->user->theme);
+        $theme = explode("_", $this->app->user->theme);
+        $theme = $theme[0] . ucfirst($theme[1]);
+
+        echo ' <link rel="stylesheet" href="/css/' . $theme . '.css">';
     }
-    if ($this->app->user->theme == \app\config\Theme::GREEN_THEME) {
-        system\app\AppLogger::get()->debug("theme is green");
-        echo ' <link rel="stylesheet" href="/css/greenTheme.css">';
-    }
+    /**
+      if ($this->app->user->theme == \app\config\Theme::RED_THEME) {
+      system\app\AppLogger::get()->debug("theme is red");
+      echo ' <link rel="stylesheet" href="/css/redTheme.css">';
+      }
+      if ($this->app->user->theme == \app\config\Theme::GREEN_THEME) {
+      system\app\AppLogger::get()->debug("theme is green");
+      echo ' <link rel="stylesheet" href="/css/greenTheme.css">';
+      }
+     *
+     */
     ?>
 
 

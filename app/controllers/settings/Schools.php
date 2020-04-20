@@ -14,8 +14,8 @@ namespace app\controllers\settings;
  * @author cjacobsen
  */
 use app\controllers\Controller;
-use app\models\district\District;
-use app\models\district\School;
+use app\models\district\DistrictDatabase;
+use app\models\district\SchoolDatabase;
 use app\database\Schema;
 use app\api\AD;
 
@@ -67,6 +67,7 @@ class Schools extends Controller {
             }
         }
     }
+
     public function getDistrictDirectory() {
         $ad = AD::get();
         $directory = $ad->getSubOUs("OU=Schools,DC=branchburg,DC=k12,DC=nj,DC=us");
@@ -79,6 +80,7 @@ class Schools extends Controller {
                         var_dump($subDir["ou"][0]);
                         $ad->getSubOUs("OU=Students,OU=" . $subDir["ou"][0] . ",OU=Schools,DC=branchburg,DC=k12,DC=nj,DC=us");
                         //var_dump($grades);
+                        return;
                         foreach ($grades as $grade) {
                             if (!is_null($grade["ou"][0])) {
                                 //var_dump($grade["ou"][0]);
@@ -104,10 +106,10 @@ class Schools extends Controller {
 
     public function show($districtID = null) {
 
-        $this->getDistrictDirectory();
+        //$this->getDistrictDirectory();
 
         $this->preProcessDistrictID($districtID);
-        $this->schools = District::getSchools($districtID);
+        $this->schools = DistrictDatabase::getSchools($districtID);
         //var_dump($this->schools);
         if ($this->schools != false) {
             return $this->view('settings/district/schools/show');
@@ -119,8 +121,8 @@ class Schools extends Controller {
     public function edit($schoolID) {
         $this->preProcessSchoolID($schoolID);
 
-        $this->staffADSettings = School::getADSettings($schoolID, 'Staff');
-        $this->staffGASettings = School::getGASettings($schoolID, 'Staff');
+        $this->staffADSettings = SchoolDatabase::getADSettings($schoolID, 'Staff');
+        $this->staffGASettings = SchoolDatabase::getGASettings($schoolID, 'Staff');
         //var_dump($this->school);
         if ($this->school != false) {
             return $this->view('settings/district/schools/edit');
@@ -138,14 +140,14 @@ class Schools extends Controller {
 
     public function createPost($districtID = null) {
         $post = \system\Post::getAll();
-        School::createSchool($post[Schema::SCHOOL_NAME[Schema::NAME]], $districtID);
+        SchoolDatabase::createSchool($post['name'], $post['abbr'], $post['ou'], $districtID);
         $this->redirect('/schools/show/' . $districtID);
         //return $this->index();
     }
 
     public function delete($schoolID) {
-        $this->districtID = School::getDistrictID($schoolID);
-        School::deleteSchool($schoolID);
+        $this->districtID = SchoolDatabase::getDistrictID($schoolID);
+        SchoolDatabase::deleteSchool($schoolID);
         $this->redirect('/schools/show/' . $this->districtID);
     }
 

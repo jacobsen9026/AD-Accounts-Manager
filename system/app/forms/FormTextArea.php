@@ -14,5 +14,47 @@ namespace system\app\forms;
  * @author cjacobsen
  */
 class FormTextArea extends FormElement {
-    //put your code here
+
+    private $resizable = true;
+    private $value;
+
+    public function getResizable() {
+        return $this->resizable;
+    }
+
+    public function getValue() {
+        return $this->value;
+    }
+
+    public function resizable($resizable = true) {
+        $this->resizable = $resizable;
+        return $this;
+    }
+
+    public function setValue($value) {
+        $this->value = $value;
+        return $this;
+    }
+
+    public function getHTML() {
+
+        return '<div class = "row">
+        <div class = "col-md-4">
+        <label class = "' . $this->getLabelClasses() . '" for = "App_Protected_Admin_Usernames">
+        ' . $this->getLabel() . '
+        <small id = "App_Protected_Admin_UsernamesHelpBlock" class = "' . $this->getSubLabelClasses() . '">
+        ' . $this->getSubLabel() . '
+        </small>
+        </label>
+        </div>
+        <div class = "col-md-8">
+        <div class = "row p-3 h-100 ui-widget">
+        <textarea type = "text" class = "h-100 form-control" name = "' . $this->getName() . '" placeholder = "Enter one username per line">
+' . $this->getValue() . '
+</textarea>
+        </div>
+        </div>
+        </div>';
+    }
+
 }

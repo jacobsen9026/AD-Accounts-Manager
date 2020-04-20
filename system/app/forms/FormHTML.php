@@ -13,17 +13,18 @@ namespace system\app\forms;
  *
  * @author cjacobsen
  */
-class FormHTML extends FormElement {
+class FormHTML extends FormElement implements FormElementInterface {
+
     //put your code here
     private $html;
-    
-    function getHtml() {
-        return $this->html;
-    }
 
-    function setHtml($html): void {
+    public function setHtml($html) {
         $this->html = $html;
     }
 
+    public function getElementHTML() {
+
+        return $this->html;
+    }
 
 }

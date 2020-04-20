@@ -13,119 +13,176 @@ namespace app\models\district;
  *
  * @author cjacobsen
  */
-use system\Database;
-use app\database\Schema;
-use app\models\Query;
+use app\models\DatabaseModel;
 
-class District {
+class District extends DatabaseModel {
 
-    const TABLE_NAME = "District";
-
-//put your code here
-
-
-
-
-    public static function createDistrict($name) {
-        \system\app\AppLogger::get()->debug("Creating new district named: " . $name);
-        return Database::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (Name,App_ID) VALUES ("' . $name . '","' . \system\app\App::getID() . '")');
-    }
-
-    public static function getDistricts() {
-        $appID = \system\app\App::get()->getID();
-        $query = new Query(self::TABLE_NAME);
-        return $query->run();
-    }
+    private $id;
+    private $name;
+    private $gradeMin;
+    private $gradeMax;
+    private $abbr;
+    private $adFQDN;
+    private $adServer;
+    private $adBaseDN;
+    private $adNetBIOS;
+    private $adUsername;
+    private $adPassword;
+    private $adStudentGroupName;
+    private $gsFQDN;
+    private $parentEmailGroup;
 
     /**
      *
-     * @param type $districtID
-     * @param type $type
-     * @return array
+     * @param type $LDAPReponse
+     * @return $this
      */
-    public static function getADSettings($districtID, $type = 'Staff') {
-        $query = new Query(Schema::ACTIVEDIRECTORY);
-        $query->where(Schema::ACTIVEDIRECTORY_DISTRICT_ID, $districtID)
-                ->where(Schema::ACTIVEDIRECTORY_TYPE, $type);
-
-        return $query->run()[0];
+    public function importFromAD($LDAPReponse) {
+        $this->setId($LDAPReponse["ID"]);
+        $this->setName($LDAPReponse["Name"]);
+        $this->setGradeMin($LDAPReponse["Grade_Span_From"]);
+        $this->setGradeMax($LDAPReponse["Grade_Span_To"]);
+        $this->setAbbr($LDAPReponse["Abbreviation"]);
+        $this->setAdFQDN($LDAPReponse["AD_FQDN"]);
+        $this->setAdServer($LDAPReponse["AD_Server"]);
+        $this->setAdBaseDN($LDAPReponse["AD_BaseDN"]);
+        $this->setAdNetBIOS($LDAPReponse["AD_NetBIOS"]);
+        $this->setAdUsername($LDAPReponse["AD_Username"]);
+        $this->setAdPassword($LDAPReponse["AD_Password"]);
+        $this->setAdStudentGroupName($LDAPReponse["AD_Student_Group"]);
+        $this->setGsFQDN($LDAPReponse["GA_FQDN"]);
+        //$this->setGsFQDN($LDAPReponse["Parent_Email_Group"]);
+        return $this;
     }
 
-    public static function getGASettings($districtID, $type) {
-        $query = new Query(Schema::GOOGLEAPPS);
-        $query->where(Schema::GOOGLEAPPS_DISTRICT_ID, $districtID)
-                ->where(Schema::GOOGLEAPPS_TYPE, $type);
-
-        return $query->run()[0];
+    public function getId() {
+        return $this->id;
     }
 
-    public static function getDistrict($districtID) {
-        $query = new Query(self::TABLE_NAME);
-        $query->where(Schema::DISTRICT_ID, $districtID);
-
-        return $query->run()[0];
-        //return Database::get()->query('SELECT * FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::DISTRICT_ID[Schema::COLUMN] . ' = ' . $districtID)[0];
+    public function getName() {
+        return $this->name;
     }
 
-    public static function deleteDistrict($districtID) {
-        return Database::get()->query('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::DISTRICT_ID[Schema::COLUMN] . ' = ' . $districtID);
+    public function getGradeMin() {
+        return $this->gradeMin;
     }
 
-    public static function getAD_FQDN($districtID) {
-        $query = new Query(self::TABLE_NAME, Query::SELECT, Schema::DISTRICT_AD_FQDN[Schema::COLUMN]);
-        $query->where(Schema::DISTRICT_ID, $districtID);
-        return $query->run();
+    public function getGradeMax() {
+        return $this->gradeMax;
     }
 
-    public static function getAD_BaseDN($districtID) {
-        $query = new Query(self::TABLE_NAME, Query::SELECT, Schema::DISTRICT_AD_BASEDN[Schema::COLUMN]);
-        $query->where(Schema::DISTRICT_ID, $districtID);
-        $result = $query->run();
-        if ($result == "false") {
-            return self::parseBaseDNFromFQDN(self::getAD_FQDN($districtID));
-        }
-        return $result;
+    public function getAbbr() {
+        return $this->abbr;
     }
 
-    /**
-     * Breaks up a FQDN into a DistiguishedName
-     *
-     * EG: contoso.com -> dc=contoso,dc=com
-     * 
-     * @param type $fqdn
-     * @return string
-     */
-    public static function parseBaseDNFromFQDN($fqdn) {
-        $baseDN = '';
-        $afterFirst = false;
-        foreach (explode(".", $fqdn) as $part) {
-            if ($afterFirst) {
-                $baseDN .= ',';
-            }
-            $baseDN .= 'DC=' . $part;
-            $afterFirst = true;
-        }
-        return $baseDN;
+    public function getAdFQDN() {
+        return $this->adFQDN;
     }
 
-    public static function getADUsername($districtID) {
-        $query = new Query(self::TABLE_NAME, Query::SELECT, Schema::DISTRICT_AD_USERNAME[Schema::COLUMN]);
-        $query->where(Schema::DISTRICT_ID, $districtID);
-        return $query->run();
+    public function getAdServer() {
+        return $this->adServer;
     }
 
-    public static function getADPassword($districtID) {
-        $query = new Query(self::TABLE_NAME, Query::SELECT, Schema::DISTRICT_AD_PASSWORD[Schema::COLUMN]);
-        $query->where(Schema::DISTRICT_ID, $districtID);
-        return $query->run();
+    public function getAdBaseDN() {
+        return $this->adBaseDN;
     }
 
-    public static function getSchools($districtID) {
-        $query = new Query(School::TABLE_NAME);
-        $query->where(Schema::SCHOOL_DISTRICT_ID, $districtID);
+    public function getAdNetBIOS() {
+        return $this->adNetBIOS;
+    }
 
-        return $query->run();
-        return Database::get()->query('SELECT * FROM ' . School::TABLE_NAME . ' WHERE ' . Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN] . ' = ' . $districtID);
+    public function getAdUsername() {
+        return $this->adUsername;
+    }
+
+    public function getAdPassword() {
+        return $this->adPassword;
+    }
+
+    public function getAdStudentGroupName() {
+        return $this->adStudentGroupName;
+    }
+
+    public function getGsFQDN() {
+        return $this->gsFQDN;
+    }
+
+    public function getParentEmailGroup() {
+        return $this->parentEmailGroup;
+    }
+
+    public function setId($id) {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function setName($name) {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function setGradeMin($gradeMin) {
+        $this->gradeMin = $gradeMin;
+        return $this;
+    }
+
+    public function setGradeMax($gradeMax) {
+        $this->gradeMax = $gradeMax;
+        return $this;
+    }
+
+    public function setAbbr($abbr) {
+        $this->abbr = $abbr;
+        return $this;
+    }
+
+    public function setAdFQDN($adFQDN) {
+        $this->adFQDN = $adFQDN;
+        return $this;
+    }
+
+    public function setAdServer($adServer) {
+        $this->adServer = $adServer;
+        return $this;
+    }
+
+    public function setAdBaseDN($adBaseDN) {
+        $this->adBaseDN = $adBaseDN;
+        return $this;
+    }
+
+    public function setAdNetBIOS($adNetBIOS) {
+        $this->adNetBIOS = $adNetBIOS;
+        return $this;
+    }
+
+    public function setAdUsername($adUsername) {
+        $this->adUsername = $adUsername;
+        return $this;
+    }
+
+    public function setAdPassword($adPassword) {
+        $this->adPassword = $adPassword;
+        return $this;
+    }
+
+    public function setAdStudentGroupName($adStudentGroupName) {
+        $this->adStudentGroupName = $adStudentGroupName;
+        return $this;
+    }
+
+    public function setGsFQDN($gsFQDN) {
+        $this->gsFQDN = $gsFQDN;
+        return $this;
+    }
+
+    public function setParentEmailGroup($parentEmailGroup) {
+        $this->parentEmailGroup = $parentEmailGroup;
+        return $this;
+    }
+
+    public function saveToDB() {
+
     }
 
 }

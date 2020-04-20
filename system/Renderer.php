@@ -52,7 +52,9 @@ class Renderer extends Parser {
     }
 
     public function draw() {
-        $appBody = $this->core->appOutput->getBody();
+        if ($this->core->appOutput != null) {
+            $appBody = $this->core->appOutput->getBody();
+        }
 //var_dump($appBody);
         if ($this->core->request->type == 'http') {
             $this->include('system/views/HTML_start');

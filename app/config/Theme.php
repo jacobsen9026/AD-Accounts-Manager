@@ -35,9 +35,13 @@ class Theme {
 
     //put your code here
     const DEFAULT_THEME = "default_theme";
+    const BROWN_THEME = "brown_theme";
     const BLUE_THEME = "blue_theme";
-    const RED_THEME = "red_theme";
     const GREEN_THEME = "green_theme";
+    const ORANGE_THEME = "orange_theme";
+    const PURPLE_THEME = "purple_theme";
+    const RED_THEME = "red_theme";
+    const SLATE_THEME = "slate_theme";
 
     /**
      *

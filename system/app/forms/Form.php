@@ -23,6 +23,7 @@ use app\database\Schema;
 use app\models\district\ActiveDirectory;
 use app\models\district\GoogleApps;
 use system\app\AppLogger;
+use app\models\user\User;
 
 class Form {
 
@@ -30,13 +31,20 @@ class Form {
     private $action;
     private $name;
     private $style;
+    private $id;
 
 
 
 
     /* A 2D array that represents the layout of the form */
-    private $elements;
+    private $rowsOfElements;
 //put your code here
+
+    /**
+     *
+     * @var type
+     * @deprecated since version number
+     */
     private $formHTML;
 
     /** @var array * */
@@ -49,13 +57,28 @@ class Form {
     private $logger;
 
     /**
+     *
+     * @var String
+     */
+    private $csrfToken;
+
+    /**
+     *
+     * @var string
+     */
+    private $onSubmit;
+
+    /**
      * This essentially builds the form tag
      *
-     * @param string $action The action attribute of the form tag
+     * @param string $action The action attribute of the form tag. If left blank will be current page URL
      * @param string $name The name attribute of the form tag
      * @param string $method
      */
     function __construct($action = null, $name = '', $method = 'post') {
+
+// Initialize form logger
+        $this->logger = AppLogger::get();
 // Check if action is null and if so set to current URL
         if (is_null($action)) {
             $action = $_SERVER["REQUEST_URI"];
@@ -63,12 +86,12 @@ class Form {
         $this->action = $action;
         $this->method = $method;
         $this->name = $name;
+        $this->id = $name;
 // Build form opening tag from construct parameters
         $this->formHTML = '<form class="pb-3" name="' . $this->name . '" method="' . $this->method . '" action="' . $this->action . '" enctype="multipart/form-data">';
-// Initialize form row to 1
+// Initialize form row to 0
         $this->currentRow = 0;
-// Initialize form logger
-        $this->logger = AppLogger::get();
+        $this->csrfToken = \system\Encryption::encrypt(\system\app\Session::getID());
     }
 
     public function setStyle($style) {
@@ -76,15 +99,25 @@ class Form {
         return $this;
     }
 
-    public function addElementToCurrentRow($element) {
+    /**
+     *
+     * @param \system\app\forms\FormElement $element
+     * @return $this
+     */
+    public function addElementToCurrentRow(FormElement $element) {
 
-        $this->elements[$this->currentRow][] = $element;
+        $this->rowsOfElements[$this->currentRow][] = $element;
 
         return $this;
-//var_dump($this->elements);
+        $this->logger->debug($this->rowsOfElements);
     }
 
-    public function addElementToNewRow($element) {
+    /**
+     *
+     * @param \system\app\forms\FormElement $element
+     * @return $this
+     */
+    public function addElementToNewRow(FormElement $element) {
 
         $this->currentRow++;
         $this->addElementToCurrentRow($element);
@@ -92,14 +125,72 @@ class Form {
         return $this;
     }
 
-    public function print() {
-        $html = "<form action='$this->action' method='$this->method' name='$this->name' style='$this->style'>";
-        foreach ($this->elements as $row) {
-            foreach ($row as $element) {
+    public function setActionVariable(FormElement $element) {
+        $elementName = $element->getName();
+        $attribute = 'name="' . $elementName . '"';
+        $jsFunction = ' new function(){
+    var inputVal = $("#' . $element->getId() . '").val();
+
+console.log(inputVal);
+    var urlLink = "' . $this->action . '/";
+    urlLink = urlLink + inputVal;
+
+
+
+    $("#' . $this->id . '").attr("action", urlLink);
+    }';
+        $this->setOnSubmit($jsFunction);
+    }
+
+    /**
+     * Returns the output of an array of elements
+     *
+     * Useful for printing rows at a time
+     *
+     * @param type $arrayOfElements
+     * @param type $html
+     * @return type
+     */
+    private function printArrayOfElements($arrayOfElements, $html = '') {
+        //var_dump($arrayOfElements);
+
+        foreach ($arrayOfElements as $element) {
+            if (is_array($element)) {
+
+
+                $this->printArrayOfElements($element, $html);
+            } else {
+
+
                 $html .= $element->getHTML();
             }
+            //var_dump($html);
         }
-        $html.="</form>";
+
+        return $html;
+    }
+
+    /**
+     * Generate the HTML output for the form
+     * This is the final step
+     * @return string
+     */
+    public function print() {
+
+        $html = "<form action='$this->action' method='$this->method' name='$this->name' id='$this->id' style='$this->style' onclick='$this->onSubmit'>";
+        $html .= '<input type="hidden" name="csrfToken" value="' . $this->csrfToken . '"/>';
+        foreach ($this->rowsOfElements as $rowOfElements) {
+
+            $html .= '<div class="row">';
+            if (is_array($rowOfElements)) {
+                $html .= $this->printArrayOfElements($rowOfElements);
+            } else {
+
+                $html .= $rowOfElements->getHTML();
+            }
+            $html .= '</div>';
+        }
+        $html .= "</form>";
         return $html;
     }
 
@@ -107,6 +198,7 @@ class Form {
      * subForm
      * Designates the form to be drawn with no form tags surrounding the components
      *
+     * @deprecated since version number
      * @return Form
      */
     public function subForm() {
@@ -121,10 +213,11 @@ class Form {
      * getFormHTML
      * DEPRECATED
      * Use Form Element Objects and the print() method
-     * 
+     *
      * This is the final step in building a form.
      * Accounting for all previously set options the form HTML is generated and returned as a string
      *
+     * @deprecated since version number
      * @return string
      */
     public function getFormHTML() {
@@ -154,6 +247,7 @@ class Form {
 
     /**
      *
+     * @deprecated since version number
      * @return Form
      */
     public function addSeperator() {
@@ -175,6 +269,7 @@ class Form {
      * Adds a form item to the specified row. If no column is supplied, the item is added to the end of the row.
      * If no form component is provided, the last form item that was created will be added.
      *
+     * @deprecated since version number
      * @param mixed $rowKey The row index
      * @param mixed $colKey The column index
      * @return Form Description
@@ -199,6 +294,7 @@ class Form {
      * If no form component is provided, the last form item that was created will be added.
      *
      *
+     * @deprecated since version number
      * @param type $formComponent
      * @return $this
      */
@@ -217,6 +313,7 @@ class Form {
 
     /**
      *
+     * @deprecated since version number
      * @param type $colKey
      * @param type $rowKey
      * @return Form
@@ -232,6 +329,7 @@ class Form {
 
     /**
      *
+     * @deprecated since version number
      */
     public function addLastBuildToForm() {
         $this->formHTML .= $this->lastComponentBuilt;
@@ -239,6 +337,7 @@ class Form {
 
     /**
      *
+     * @deprecated since version number
      * @param type $formComponent
      * @param type $rowKey
      * @return Form
@@ -255,6 +354,7 @@ class Form {
 
     /**
      *
+     * @deprecated since version number
      * @return Form
      */
     public function buildUpdateButton($text = null) {
@@ -270,6 +370,7 @@ class Form {
 
     /**
      *
+     * @deprecated since version number
      * @return Form
      */
     public function small() {
@@ -280,6 +381,11 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @return $this
+     * @deprecated since version number
+     */
     public function medium() {
         if (strpos($this->lastComponentBuilt, 'col form-control')) {
             $this->lastComponentBuilt = str_replace('col form-control', 'col-md col-lg-8 col-xl-6 form-control mx-auto', $this->lastComponentBuilt);
@@ -288,6 +394,12 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @param type $id
+     * @return $this
+     * @deprecated since version number
+     */
     public function addID($id) {
         $this->lastID = $id;
         if (strpos($this->lastComponentBuilt, '/>')) {
@@ -297,6 +409,13 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @param type $sourceURL
+     * @param type $minLength
+     * @return $this
+     * @deprecated since version number
+     */
     public function addAutoComplete($sourceURL, $minLength = 1) {
         $jsScript = '<script>
 
@@ -341,6 +460,12 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @param type $jsFunction
+     * @return $this
+     * @deprecated since version number
+     */
     public function onType($jsFunction) {
         if (strpos($this->lastComponentBuilt, '>')) {
             $this->lastComponentBuilt = str_replace('>', ' onkeypress="' . $jsFunction . '">', $this->lastComponentBuilt);
@@ -349,6 +474,13 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @param type $schema
+     * @param type $value
+     * @return $this
+     * @deprecated since version number
+     */
     public function insertObjectIDInput($schema, $value) {
 //var_dump($schema);
         $hiddenInput = '<input hidden type="hidden"
@@ -360,6 +492,7 @@ class Form {
 
     /**
      *
+     * @deprecated since version number
      * @return Form
      */
     public function buildCustomButton($text, $buttonClass, $target) {
@@ -375,6 +508,13 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @param type $text
+     * @param type $buttonClass
+     * @return $this
+     * @deprecated since version number
+     */
     public function buildSubmitButton($text, $buttonClass = 'primary') {
 
         $this->lastComponentBuilt = '<div class="nav justify-content-center nav-pills m-3">
@@ -394,6 +534,8 @@ class Form {
      *
      * @param type $student
      * @return $this
+     *
+     * @deprecated since version number
      */
     public function buildUserSearchInput($searchStudents = true) {
         $this->buildTextInput('Username', 'username', null, \system\Lang::getHelp('User Search'))
@@ -410,6 +552,12 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @param type $name
+     * @return string
+     * @deprecated since version number
+     */
     private function preProcessName($name) {
         if (is_array($name)) {
             if (key_exists(Schema::NAME, $name)) {
@@ -431,6 +579,7 @@ class Form {
      * @param string $helpText
      * @param string $placeholder
      * @return Form
+     * @deprecated since version number
      */
     public function buildTextInput($label, $name, $value = null, $helpText = null, $placeholder = null) {
 //var_dump($name);
@@ -458,6 +607,7 @@ class Form {
      * @param string $helpText
      * @param string $placeholder
      * @return Form
+     * @deprecated since version number
      */
     public function buildErrorOutput($output) {
 //var_dump($name);
@@ -478,6 +628,7 @@ class Form {
      * @param string $helpText
      * @param string $placeholder
      * @return Form
+     * @deprecated since version number
      */
     public function buildStatusCheck($label, $value, $helpText = null, $tooltip = null) {
 //var_dump($value);
@@ -508,6 +659,7 @@ class Form {
      * @param string $helpText
      * @param string $placeholder
      * @return Form
+     * @deprecated since version number
      */
     public function buildAJAXStatusCheck($label, $target, $data = null, $helpText = null) {
 //var_dump($value);
@@ -553,6 +705,7 @@ class Form {
      * @param string $helpText
      * @param string $placeholder
      * @return Form
+     * @deprecated since version number
      */
     public function buildFileInput($name, $label, $helpText = null, $acceptedFileTypes = null) {
 
@@ -583,6 +736,7 @@ class Form {
      * @param string $helpText
      * @param string $placeholder
      * @return Form
+     * @deprecated since version number
      */
     public function buildTextAreaInput($label, $name, $value = null, $helpText = null, $placeholder = null) {
 //var_dump($name);
@@ -604,6 +758,7 @@ class Form {
      * @param type $helpText
      * @param type $placeholder
      * @return Form
+     * @deprecated since version number
      */
     public function buildDropDownInput($label, $name, $array, $helpText = null) {
 
@@ -629,6 +784,11 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @return $this
+     * @deprecated since version number
+     */
     public function center() {
         if (strpos($this->lastComponentBuilt, '<option')) {
             $this->lastComponentBuilt = str_replace('<option', '<option class="text-center"', $this->lastComponentBuilt);
@@ -645,6 +805,7 @@ class Form {
      * @param type $helpText
      * @param type $placeholder
      * @return Form
+     * @deprecated since version number
      */
     public function buildPasswordInput($label, $name, $value = null, $helpText = null, $placeholder = null) {
 //var_dump($name);
@@ -657,6 +818,11 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @return $this
+     * @deprecated since version number
+     */
     public function disable() {
         if (strpos($this->lastComponentBuilt, '<input ')) {
             $this->lastComponentBuilt = str_replace('<input ', '<input disabled ', $this->lastComponentBuilt);
@@ -665,6 +831,12 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @param type $appendContent
+     * @return $this
+     * @deprecated since version number
+     */
     public function appendInput($appendContent = null) {
         if (is_null($appendContent)) {
             $appendContent = $this->lastComponentBuilt;
@@ -676,6 +848,12 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @param type $prependContent
+     * @return $this
+     * @deprecated since version number
+     */
     public function prependInput($prependContent = null) {
         if (is_null($prependContent)) {
             $prependContent = $this->lastComponentBuilt;
@@ -697,6 +875,14 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @param type $name
+     * @param type $label
+     * @param type $helpText
+     * @return string
+     * @deprecated since version number
+     */
     private function startInput($name, $label, $helpText = null) {
         $labelClass = 'font-weight-bold mb-0';
         $startInput = '<label class="' . $labelClass . '" for="' . $name . '">' . $label . '</label>';
@@ -716,6 +902,7 @@ class Form {
      * @param string $helpText
      * @param function $helpFunction
      * @return $this
+     * @deprecated since version number
      */
     public function buildBinaryInput($label, $name, $state, $helpText = null, $helpFunction = null) {
 
@@ -774,6 +961,15 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @param type $objectID
+     * @param type $staffADSettings
+     * @param type $schema
+     * @param type $type
+     * @return $this
+     * @deprecated since version number
+     */
     public function generateADForm($objectID, $staffADSettings, $schema, $type = 'Staff') {
         $this->logger->info('Generating Staff AD Form for ' . $schema . ' ' . $objectID);
         $this->buildTextInput($type . ' Active Directory OU',
@@ -810,6 +1006,11 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @return $this
+     * @deprecated since version number
+     */
     public function inline() {
 
         $this->lastComponentBuilt = str_replace('<label', '<div class="row"><div class="col-md-4"><label"', $this->lastComponentBuilt);
@@ -826,6 +1027,15 @@ class Form {
         return $this;
     }
 
+    /**
+     *
+     * @param type $objectID
+     * @param type $staffGASettings
+     * @param type $schema
+     * @param type $type
+     * @return $this
+     * @deprecated since version number
+     */
     public function generateGAForm($objectID, $staffGASettings, $schema, $type = 'Staff') {
         $this->logger->info('Generating Staff GA Form for ' . $schema . ' ' . $objectID);
         $this->buildTextInput($type . ' Google Apps OU',
@@ -847,6 +1057,15 @@ class Form {
                         GoogleApps::getField($schema, $objectID, Schema::GOOGLEAPPS_OTHER_GROUPS, $type))
                 ->addToRow(2);
 
+        return $this;
+    }
+
+    public function getOnSubmit(): string {
+        return $this->onSubmit;
+    }
+
+    public function setOnSubmit(string $onSubmit) {
+        $this->onSubmit = $onSubmit;
         return $this;
     }
 

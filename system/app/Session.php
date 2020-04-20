@@ -38,33 +38,25 @@ abstract class Session {
 
     /** @var User|null */
     const TIMEOUT = 'timeout';
-
-    /**
-     *
-     * @return Session
-     */
-    public static function get() {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
+    const USER = 'user';
 
     public static function getUser() {
-        if (isset($_SESSION['user']) and $_SESSION['user'] != '') {
+        if (isset($_SESSION[self::USER]) and $_SESSION[self::USER] != '') {
             if (Session::getTimeoutStatus()) {
-                //session_destroy();
                 return new User();
             } else {
-                return unserialize($_SESSION['user']);
+                return unserialize($_SESSION[self::USER]);
             }
         }
         return new User();
     }
 
+    public static function getID() {
+        return session_id();
+    }
+
     public static function setUser($user) {
-        var_dump($user);
-        if ($_SESSION['user'] = serialize($user)) {
+        if ($_SESSION[self::USER] = serialize($user)) {
             return true;
         }
         return false;
@@ -76,15 +68,19 @@ abstract class Session {
     public static function updateTimeout() {
 
         $nextTimeout = \app\models\Auth::getSessionTimeout() + time();
-        //$nextTimeout = 1;
-        $_SESSION['timeout'] = $nextTimeout;
+        $_SESSION[self::TIMEOUT] = $nextTimeout;
     }
 
     public static function getTimeoutStatus() {
-        if (time() > $_SESSION['timeout']) {
+        if (time() > $_SESSION[self::TIMEOUT]) {
             return true;
         }
         return false;
+    }
+
+    public static function end() {
+        session_unset();
+        Cookie::delete("PHPSESSID");
     }
 
 }

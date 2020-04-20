@@ -33,6 +33,8 @@ namespace app\models\user;
  */
 use system\app\auth\CoreUser;
 use system\app\Cookie;
+use system\app\Session;
+use system\app\App;
 
 class User extends CoreUser {
 
@@ -40,9 +42,8 @@ class User extends CoreUser {
     const FULL_NAME = "fullName";
     const USER = "user";
 
-    public $theme = 'default';
+    public $theme = \app\config\Theme::DEFAULT_THEME;
     public $fullName;
-    public static $instance;
 
     /**
      *
@@ -52,22 +53,15 @@ class User extends CoreUser {
     function __construct($username = null) {
         //set_error_handler(array($this, 'handleError'));
         //set_exception_handler(array($this, 'handleException'));
-        if (isset(self::$instance)) {
 
-            if ($username == self::ADMINISTRATOR) {
-                $this->setAsAdministrator();
-                self::$instance = $this;
-            }
-            return self::$instance;
+        if ($username == self::ADMINISTRATOR) {
+            $this->setAsAdministrator();
         } else {
-            if ($username == self::ADMINISTRATOR) {
-                $this->setAsAdministrator();
-            } else {
-                $this->privilege = Privilege::UNAUTHENTICATED;
-            }
-            //$this->load();
-            self::$instance = $this;
+            $this->privilege = Privilege::UNAUTHENTICATED;
         }
+
+        return $this;
+
         //$this->save();
     }
 
@@ -111,8 +105,10 @@ class User extends CoreUser {
      * @return User
      */
     public function setTheme($theme) {
+        \system\app\AppLogger::get()->debug("Changing theme to " . $theme);
         $this->theme = $theme;
-        $this->save();
+
+        // $this->save();
         return $this;
     }
 
@@ -126,19 +122,49 @@ class User extends CoreUser {
         return $this;
     }
 
-    public function save() {
-        var_dump("saving user");
-        \system\app\Session::setUser($this);
-        Cookie::set(self::USER . '_' . $this->username, serialize($this));
+    public function setToken($token) {
+        $this->apiToken = $token;
+        return $this;
     }
 
-    public function load() {
-        $data = Cookie::get(self::USER . '_');
-        if (!$data) {
-            //$this = unserialize($data);
-            return true;
+    public function save() {
+        if ($this->getApiToken() == null or $this->getApiToken() == '')
+            $this->generateAPIToken();
+        \system\app\AppLogger::get()->debug("Changing theme to " . $this->theme);
+        //var_dump("saving user");
+        //var_dump($this);
+        \system\app\Session::setUser($this);
+        Cookie::set(self::USER . '_' . $this->username, \system\Encryption::encrypt(serialize($this)));
+        UserDatabase::setUserToken($this->username, $this->apiToken);
+        UserDatabase::setUserTheme($this->username, $this->theme);
+        UserDatabase::setUserPrivilege($this->username, $this->privilege);
+    }
+
+    public static function load(App $app) {
+        $app->user = Session::getUser();
+        if ($app->user->username != null) {
+            $app->user->setToken(UserDatabase::getToken($app->user->username));
+            $app->user->setTheme(UserDatabase::getTheme($app->user->username));
         }
-        return false;
+        /**
+          $cookieName = User::USER . '_' . $app->user->username;
+          $cookieData = Cookie::get($cookieName);
+          //var_dump($cookieData);
+          if ($cookieData != false) {
+          $app->logger->info("Loading user from cookie");
+          $cookieUser = unserialize(\system\Encryption::decrypt($cookieData));
+          if ($cookieUser instanceof self) {
+          $app->user = $cookieUser;
+          } else {
+          Cookie::delete($cookieName);
+          $app->user->save();
+          }
+          } else {
+          $app->logger->warning("Cookie not found");
+          }
+         *
+         */
+        $app->logger->info($app->user);
     }
 
     //put your code here

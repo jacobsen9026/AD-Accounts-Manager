@@ -40,6 +40,7 @@ class CoreUser {
     //put your code here
     public $username;
     public $privilege;
+    public $apiToken;
 
     /**
      *
@@ -75,6 +76,26 @@ class CoreUser {
     public function setPrivilege($privilege) {
         $this->privilege = $privilege;
         return $this;
+    }
+
+    public function generateAPIToken() {
+        //$user = new self();
+        //$user->setUsername($this->username);
+        //$user->setPrivilege($this->getPrivilege());
+        $user = gzcompress($this);
+        $this->apiToken = \system\Encryption::encrypt(serialize($user));
+
+        //$this->apiToken = hash("sha256", serialize($user));
+    }
+
+    public function getApiToken() {
+        /**
+          if ($this->apiToken == null) {
+          $this->generateAPIToken();
+          }
+         *
+         */
+        return $this->apiToken;
     }
 
 }

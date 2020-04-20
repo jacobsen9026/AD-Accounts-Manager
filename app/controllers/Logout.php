@@ -16,7 +16,8 @@ namespace app\controllers;
 class Logout extends Controller {
 
     public function index() {
-        session_destroy();
+        \system\app\Session::end();
+        //session_destroy();
         header("Location: /");
     }
 

@@ -1,27 +1,9 @@
 <?php
 
 /*
- * The MIT License
- *
- * Copyright 2019 cjacobsen.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 
 namespace app\models\district;
@@ -31,61 +13,48 @@ namespace app\models\district;
  *
  * @author cjacobsen
  */
-use app\database\Schema;
-use app\models\Query;
+use app\models\DatabaseModel;
 
-class School {
+class School extends DatabaseModel {
 
-    const TABLE_NAME = 'School';
+    private $name;
+    private $abbr;
+    private $ou;
 
-    //put your code here
-    public $name;
+    public function importFromAD($LDAPResponse) {
+        \system\app\AppLogger::get()->debug($LDAPResponse);
 
-    /** @var Grade The grades contained within this school */
-    public $grades;
+        if (key_exists("displayname", $LDAPResponse))
+            $this->setName($LDAPResponse["displayname"][0]);
+        $this->setAbbr($LDAPResponse["ou"][0]);
+        $this->setOU($LDAPResponse["distinguishedname"][0]);
+    }
 
-    function __construct($name) {
+    public function getName() {
+        return $this->name;
+    }
+
+    public function getAbbr() {
+        return $this->abbr;
+    }
+
+    public function getOu() {
+        return $this->ou;
+    }
+
+    public function setName($name) {
         $this->name = $name;
+        return $this;
     }
 
-    public static function createSchool($name, $districtID) {
-        \system\app\AppLogger::get()->debug("Creating new district named: " . $name);
-        return \system\Database::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (' . Schema::SCHOOL_NAME[Schema::COLUMN] . ',' . Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN] . ') VALUES ("' . $name . '", "' . $districtID . '")');
+    public function setAbbr($abbr) {
+        $this->abbr = $abbr;
+        return $this;
     }
 
-    public static function getDistrictID($schoolID) {
-        $query = new Query(self::TABLE_NAME, Query::SELECT, Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN]);
-        $query->where(Schema::SCHOOL_ID, $schoolID);
-        return $query->run();
-    }
-
-    public static function getSchool($schoolID) {
-        $query = new Query(self::TABLE_NAME);
-        $query->where(Schema::SCHOOL_ID, $schoolID);
-
-        return $query->run()[0];
-        \system\app\AppLogger::get()->debug("Get school by id: " . $schoolID);
-        return(\system\Database::get()->query('SELECT * From ' . self::TABLE_NAME . ' Where ' . Schema::SCHOOL_ID[Schema::COLUMN] . '=' . $schoolID)[0]);
-    }
-
-    public static function deleteSchool($schoolID) {
-        \system\app\AppLogger::get()->debug("Delete school id: " . $schoolID);
-        return \system\Database::get()->query('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::SCHOOL_ID[Schema::COLUMN] . '=' . $schoolID);
-    }
-
-    public static function getADSettings($schoolID, $type) {
-        $query = new Query(Schema::ACTIVEDIRECTORY);
-        $query->where(Schema::ACTIVEDIRECTORY_SCHOOL_ID, $schoolID)
-                ->where(Schema::ACTIVEDIRECTORY_TYPE, $type);
-
-        return $query->run()[0];
-    }
-
-    public static function getGASettings($schoolID, $type) {
-        $query = new Query(Schema::GOOGLEAPPS);
-        $query->where(Schema::GOOGLEAPPS_SCHOOL_ID, $schoolID)
-                ->where(Schema::GOOGLEAPPS_TYPE, $type);
-        return $query->run()[0];
+    public function setOu($ou) {
+        $this->ou = $ou;
+        return $this;
     }
 
 }

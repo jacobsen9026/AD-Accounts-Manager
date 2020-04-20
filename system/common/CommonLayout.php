@@ -50,7 +50,7 @@ class CommonLayout extends Parser {
     public $user;
 
     /** @var string|null The view parser */
-    private $appOutput;
+    private $layoutOutput;
 
 //put your code here
     function __construct($app) {
@@ -71,17 +71,17 @@ class CommonLayout extends Parser {
     public function apply() {
         //var_dump($this->app->request->type);
         if ($this->app->request->type == 'http') {
-            $this->appOutput = $this->getHeader();
+            $this->layoutOutput = $this->getHeader();
         }
-        $this->appOutput .= $this->app->outputBody;
+        $this->layoutOutput .= $this->app->appOutput->getBody();
 
         if ($this->app->request->type == 'http') {
-            $this->appOutput .= $this->getNavigation();
-            $this->appOutput .= $this->getFooter();
+            $this->layoutOutput .= $this->getNavigation();
+            $this->layoutOutput .= $this->getFooter();
         }
 
         //var_dump($this->appOutput);
-        return $this->appOutput;
+        return $this->layoutOutput;
     }
 
     public function getHeader() {

@@ -30,7 +30,7 @@ use app\models\AppConfig;
         </div>
     </div>
     <?php
-    if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
+    if ($this->user->privilege > Privilege::UNAUTHENTICATED) {
         ?>
         <!-- Toggler/collapsibe Button -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
@@ -52,37 +52,53 @@ use app\models\AppConfig;
 //var_dump($this);
             if (isset($this->items) and $this->items != null) {
                 foreach ($this->items as $topItem) {
-                    ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                            <?php echo $topItem->displayText; ?>
-                        </a>
-                        <div class="shadow dropdown-menu">
+                    if ($topItem->targetURL == null) {
+                        ?>
 
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="<?php echo $topItem->targetURL; ?>" id="navbardrop" data-toggle="dropdown">
+                                <?php echo $topItem->displayText; ?>
+                            </a>
+                            <div class="shadow dropdown-menu">
 
-                            <?php
-                            foreach ($topItem->subItems as $subItem) {
-                                ?>
-                                <a class="dropdown-item" href="<?php echo $subItem->targetURL; ?>"><?php echo $subItem->displayText; ?></a>
 
                                 <?php
-                            }
-                            ?>
+                                foreach ($topItem->subItems as $subItem) {
+                                    ?>
+                                    <a class="dropdown-item" href="<?php echo $subItem->targetURL; ?>"><?php echo $subItem->displayText; ?></a>
 
-                        </div>
-                    </li>
+                                    <?php
+                                }
+                                ?>
+
+                            </div>
+                        </li>
 
 
 
-                    <?php
+                        <?php
+                    } else {
+                        ?>
+
+                        <li class="nav-item ">
+                            <a class="nav-link" href="<?php echo $topItem->targetURL; ?>">
+                                <?php echo $topItem->displayText; ?>
+                            </a>
+
+                        </li>
+
+
+
+                        <?php
+                    }
                 }
             }
             ?>
         </ul>
-        <?php if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
+        <?php if ($this->user->privilege > Privilege::UNAUTHENTICATED) {
             ?>
             <div class="d-md-flex text-center flex-md-row-reverse w-100">
-                <?php if ($this->userPrivs >= Privilege::TECH) {
+                <?php if ($this->user->privilege >= Privilege::TECH) {
                     ?>
                     <ul class="order-md-1 navbar-nav">
                         <!-- Settings Dropdown -->
@@ -138,7 +154,7 @@ use app\models\AppConfig;
     </div>
 </nav>
 <?php
-if ($this->userPrivs > Privilege::UNAUTHENTICATED and $debugMode and $this->userPrivs == Privilege::TECH) {
+if ($this->user->privilege > Privilege::UNAUTHENTICATED and $debugMode and $this->user->privilege == Privilege::TECH) {
     echo $this->view('modals/debugConfigModal');
 }
 ?>

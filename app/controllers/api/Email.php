@@ -15,9 +15,14 @@ namespace app\controllers\api;
  */
 class Email extends APIController {
 
-    public function test() {
+    /**
+     *
+     * @param type $to The email address to send a test to.
+     */
+    public function test($to = null) {
+        //var_dump($to);
         if ($this->user->privilege >= \app\models\user\Privilege::ADMIN) {
-            \system\app\Email::sendTest();
+            \system\app\Email::sendTest($to);
         }
     }
 

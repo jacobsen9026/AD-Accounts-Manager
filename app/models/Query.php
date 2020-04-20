@@ -18,7 +18,7 @@ use system\app\AppLogger;
 
 class Query {
 
-    //put your code here
+//put your code here
     const SELECT = "SELECT";
     const UPDATE = "UPDATE";
     const CREATE = "CREATE";
@@ -77,7 +77,7 @@ class Query {
         if (!is_int($value) and is_string($value)) {
             $value = "'" . $value . "'";
         }
-        //\system\app\AppLogger::get()->debug($column);
+//\system\app\AppLogger::get()->debug($column);
         if (is_array($column)) {
             $where = $column[Schema::TABLE] . '.' . $column[Schema::COLUMN] . ' = ' . $value;
         } elseif (is_string($column)) {
@@ -98,23 +98,27 @@ class Query {
         $this->targetJoin .= ' LEFT JOIN ' . $joinTable . ' ON '
                 . $this->targetTable . '.' . $srcMatchColumn[Schema::COLUMN] . ' = '
                 . $joinTable . '.' . $dstMatchColumn[Schema::COLUMN];
-        //var_dump($this);
+//var_dump($this);
         return $this;
     }
 
     public function insert($Schema, $value) {
-        $column = "'" . $Schema[Schema::COLUMN] . "'";
-        //var_dump($column);
+        if (is_array($Schema)) {
+            $column = "'" . $Schema[Schema::COLUMN] . "'";
+        } else {
+            $column = "'" . $Schema . "'";
+        }
+//var_dump($column);
         $columnValue = "'" . $value . "'";
-        //var_dump($columnValue);
+//var_dump($columnValue);
         $this->targetInserts[] = [$column, $columnValue];
         return $this;
     }
 
     public function set($Schema, $value) {
         $column = "'" . $Schema . "'";
-        //var_dump($column);
-        //var_dump($value);
+//var_dump($column);
+//var_dump($value);
         $this->targetSets[] = [$column, "'" . $value . "'"];
         return $this;
     }
@@ -137,7 +141,7 @@ class Query {
                     }
                     $this->targetColumns = $targetColumns;
                 }
-                //var_dump($this->targetColumns);
+//var_dump($this->targetColumns);
                 $this->query = $this->queryType .
                         ' ' .
                         $this->targetColumns .
@@ -171,16 +175,16 @@ class Query {
                 $this->query .= ' AND ' . $where;
             }
         }
-        //var_dump($query);
-        //echo '<br/><br/><br/><br/><br/><br/>';
-        //AppLogger::get()->warning($this->query);
+//var_dump($query);
+//echo '<br/><br/><br/><br/><br/><br/>';
+//AppLogger::get()->warning($this->query);
         return \system\Database::get()->query($this->query);
     }
 
     private function prepareInsert() {
         $firstAction = true;
 
-        //var_dump($this->targetInserts);
+//var_dump($this->targetInserts);
 
         $this->query = $this->queryType . ' INTO ' . $this->targetTable . ' (';
         foreach ($this->targetInserts as $insert) {
@@ -202,8 +206,8 @@ class Query {
         }
         $this->query .= ')';
 
-        //var_dump($this->targetInserts);
-        //exit;
+//var_dump($this->targetInserts);
+//exit;
     }
 
     private function prepareUpdate() {
@@ -214,20 +218,23 @@ class Query {
             if (!$firstAction) {
                 $this->query .= ', ';
             }
-            $this->query .= $set[0];
+            $this->query .= $set[0] . '=' . $set[1];
             $firstAction = false;
         }
         $firstAction = true;
-        $this->query .= ' = ';
-        foreach ($this->targetSets as $set) {
-            if (!$firstAction) {
-                $this->query .= ', ';
-            }
-            $this->query .= $set[1];
+        /**
+          $this->query .= ' = ';
 
-            $firstAction = false;
-        }
+          foreach ($this->targetSets as $set) {
+          if (!$firstAction) {
+          $this->query .= ', ';
+          }
+          $this->query .= $set[1];
 
+          $firstAction = false;
+          }
+
+         */
         //var_dump($this->targetSets);
         //exit;
     }

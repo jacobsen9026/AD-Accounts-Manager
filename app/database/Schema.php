@@ -18,7 +18,7 @@ class Schema {
     const GRADEDEFINITION = 'GradeDefinition';
     const LOGON = 'Logon';
     const SCHOOL = 'School';
-    const SESSION = 'Session';
+    const USER = 'Session';
     const TEAM = 'Team';
     const ACTIVEDIRECTORY_ID = array('table' => 'ActiveDirectory', 'column' => 'ID', 'name' => 'ActiveDirectory_ID');
     const ACTIVEDIRECTORY_DISTRICT_ID = array('table' => 'ActiveDirectory', 'column' => 'District_ID', 'name' => 'ActiveDirectory_District_ID');
@@ -85,13 +85,13 @@ class Schema {
     const SCHOOL_ID = array('table' => 'School', 'column' => 'ID', 'name' => 'School_ID');
     const SCHOOL_DISTRICT_ID = array('table' => 'School', 'column' => 'District_ID', 'name' => 'School_District_ID');
     const SCHOOL_NAME = array('table' => 'School', 'column' => 'Name', 'name' => 'School_Name');
+    const SCHOOL_OU = array('table' => 'School', 'column' => 'OU', 'name' => 'School_OU');
     const SCHOOL_ABBREVIATION = array('table' => 'School', 'column' => 'Abbreviation', 'name' => 'School_Abbreviation');
     const SCHOOL_PARENT_EMAIL_GROUP = array('table' => 'School', 'column' => 'Parent_Email_Group', 'name' => 'School_Parent_Email_Group');
-    const SESSION_ID = array('table' => 'Session', 'column' => 'ID', 'name' => 'Session_ID');
-    const SESSION_APP_ID = array('table' => 'Session', 'column' => 'App_ID', 'name' => 'Session_App_ID');
-    const SESSION_LAST_AUTHENTICATED = array('table' => 'Session', 'column' => 'Last_Authenticated', 'name' => 'Session_Last_Authenticated');
-    const SESSION_USER_OBJECT = array('table' => 'Session', 'column' => 'User_Object', 'name' => 'Session_User_Object');
-    const SESSION_TOKEN = array('table' => 'Session', 'column' => 'Token', 'name' => 'Session_Token');
+    const USER_ID = array('table' => 'Session', 'column' => 'ID', 'name' => 'Session_ID');
+    const USER_LAST_AUTHENTICATED = array('table' => 'Session', 'column' => 'Last_Authenticated', 'name' => 'Session_Last_Authenticated');
+    const USER_USER_OBJECT = array('table' => 'Session', 'column' => 'User_Object', 'name' => 'Session_User_Object');
+    const USER_TOKEN = array('table' => 'Session', 'column' => 'Token', 'name' => 'Session_Token');
     const TEAM_ID = array('table' => 'Team', 'column' => 'ID', 'name' => 'Team_ID');
     const TEAM_GRADE_ID = array('table' => 'Team', 'column' => 'Grade_ID', 'name' => 'Team_Grade_ID');
     const TEAM_NAME = array('table' => 'Team', 'column' => 'Name', 'name' => 'Team_Name');
@@ -140,4 +140,5 @@ class Schema {
     const PERMISSION_ID = array('table' => 'Permission', 'column' => 'ID', 'name' => 'Permission_ID');
     const PERMISSION_REQUIRED_PERMISSION = array('table' => 'Permission', 'column' => 'Required_Permission', 'name' => 'Permission_Required_Permission');
     const PERMISSION_PATH = array('table' => 'Permission', 'column' => 'Path', 'name' => 'Permission_Path');
+
 }

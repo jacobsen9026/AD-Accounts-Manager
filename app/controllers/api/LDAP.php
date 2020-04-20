@@ -17,38 +17,56 @@ class LDAP extends APIController {
 
     //put your code here
     public function testPerms() {
-        $districtID = 1;
-        $testResult = $this->getPermissionCheckResult($districtID);
-        if ($testResult == 'true') {
-            return '<h1><i class="fas fa-check-circle text-success"></i></h1>';
-        } else {
-            return '<h1><i class="fas fa-times-circle text-danger"></i></h1>' . $testResult;
+        if ($this->user->privilege >= \app\models\user\Privilege::TECH) {
+            $districtID = 1;
+            $testResult = $this->getPermissionCheckResult($districtID);
+            if ($testResult == 'true') {
+                return '<h1><i class="fas fa-check-circle text-success"></i></h1>';
+            } else {
+                return '<h1><i class="fas fa-times-circle text-danger"></i></h1>' . $testResult;
+            }
         }
     }
 
     public function testPermsPost() {
-        $districtID = \system\Post::get("districtID");
-        $testResult = $this->getPermissionCheckResult($districtID);
-        if ($testResult == 'true') {
-            return '<h1><i class="fas fa-check-circle text-success"></i></h1>';
-        } else {
-            return '<h1><i class="fas fa-times-circle text-danger"></i></h1>' . $testResult;
+
+        if ($this->user->privilege >= \app\models\user\Privilege::TECH) {
+            $districtID = \system\Post::get("districtID");
+            $testResult = $this->getPermissionCheckResult($districtID);
+            if ($testResult == 'true') {
+                return '<h1><i class="fas fa-check-circle text-success"></i></h1>';
+            } else {
+                return '<h1><i class="fas fa-times-circle text-danger"></i></h1>' . $testResult;
+            }
         }
     }
 
     private function getPermissionCheckResult($districtID) {
-        $ad = new \app\api\AD($districtID);
-        $testResult = $ad->createTestUser();
-        // var_dump($testResult);
-        return $testResult;
+
+        if ($this->user->privilege >= \app\models\user\Privilege::TECH) {
+            $ad = new \app\api\AD($districtID);
+            $testResult = $ad->createTestUser();
+            // var_dump($testResult);
+            return $testResult;
+        }
     }
 
-    public function autocompleteStudent($username) {
-        $username = $this->parseInput($username);
-        $users = \app\api\AD::get()->listStudentUsers($username);
+    /**
+     * Used for form input autocompletion
+     *
+     * @param type $searchTerm
+     */
+    public function autocompleteStudent($searchTerm) {
+        $searchTerm = $this->parseInput($searchTerm);
+        $users = \app\api\AD::get()->listStudentUsers($searchTerm);
         echo $this->packageList($users);
     }
 
+    /**
+     * Packages the autocomplete output
+     * @param type $items
+     * @return type
+     */
     private function packageList($items) {
         $output = "";
         $first = true;
@@ -78,9 +96,9 @@ class LDAP extends APIController {
         echo $this->packageList($users);
     }
 
-    public function autocompleteGroup($group) {
+    public function autocompleteStudentGroup($group) {
         $group = $this->parseInput($group);
-        $groups = \app\api\AD::get()->listGroups($group);
+        $groups = \app\api\AD::get()->listStudentGroups($group);
         echo $this->packageList($groups);
     }
 

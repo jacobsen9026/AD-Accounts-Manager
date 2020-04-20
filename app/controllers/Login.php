@@ -18,6 +18,7 @@ use system\app\App;
 use app\models\user\User;
 use system\app\Session;
 use system\app\auth\AuthException;
+use system\app\AppLogger;
 use system\Post;
 use app\auth\LDAP;
 
@@ -26,11 +27,16 @@ class Login extends Controller {
     //put your code here
 
     public function index() {
-        \system\app\AppLogger::get()->debug('logining in');
-        if (Post::isSet()) {
+        $logger = AppLogger::get();
+        $logger->debug('logining in');
+        if (isset($_POST) and isset($_POST['username']) and isset($_POST['password'])) {
+            $username = $_POST['username'];
+            $password = $_POST['password'];
             try {
+
+                $logger->debug('trying local auth');
                 /* @var $user User */
-                $user = Local::authenticate(Post::get('username'), Post::get('password'));
+                $user = Local::authenticate($username, $password);
             } catch (AuthException $ex) {
                 if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
                     $this->lastErrorMessage = $ex->getMessage();
@@ -38,7 +44,9 @@ class Login extends Controller {
                 }
                 if (\app\models\Auth::getLDAPEnabled()) {
                     try {
-                        $user = LDAP::authenticate(Post::get('username'), Post::get('password'));
+
+                        $logger->debug('trying LDAP auth');
+                        $user = LDAP::authenticate($username, $password);
                     } catch (AuthException $ex) {
                         if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
 
@@ -53,6 +61,8 @@ class Login extends Controller {
                     return $this->view('login/loginPrompt');
                 }
             }
+
+            $logger->debug('Completed login');
             /** @var App|null The system logger */
             $app = App::get();
             //$config = MasterConfig::get();
@@ -62,6 +72,8 @@ class Login extends Controller {
 
             Session::setUser($user);
             Session::updateTimeout();
+
+            $logger->debug('Referer: ' . $this->app->request->referer);
             $this->redirect($this->app->request->referer);
         } else {
             return $this->view('login/loginPrompt');

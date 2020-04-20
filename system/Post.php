@@ -13,19 +13,23 @@ namespace system;
  *
  * @author cjacobsen
  */
+use system\app\Session;
+use system\AppException;
+
 abstract class Post {
 
     //put your code here
     public static function isSet($key = null) {
 
         if ($key == null) {
-            if (isset($_POST) and $_POST != null) {
+            if (isset($_POST) and $_POST != null and!empty($_POST)) {
                 return true;
             } else {
                 return false;
             }
         } else {
             if (isset($_POST[$key]) and $_POST[$key] != null) {
+                self::csrfCheck();
                 return true;
             } else {
                 return false;
@@ -49,6 +53,18 @@ abstract class Post {
         } else {
             throw new CoreException($key . ' not found in POST');
         }
+    }
+
+    public static function csrfCheck() {
+        if (Post::isSet()) {
+            if (isset($_POST["csrfToken"])) {
+                if (Encryption::decrypt($_POST["csrfToken"]) == Session::getID()) {
+                    return true;
+                }
+            }
+        }
+        throw new AppException("CSRF Invalid");
+        //return false;
     }
 
 }

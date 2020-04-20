@@ -37,6 +37,7 @@ class CommonLogger extends Parser {
 
     private $startTime;
     private $logs;
+    private $logEntries;
     private $queries;
 
     function __construct() {
@@ -93,8 +94,31 @@ class CommonLogger extends Parser {
      *
      * @param mixed $message
      * @return string
+     * @deprecated
+     *
      */
     private function preProcessMessage($message) {
+        if (is_array($message)) {
+            $message = var_export($message, true);
+        }
+        if (is_object($message)) {
+            $message = $this->debugObject($message);
+        }
+        $message = str_replace("\n", "", $message);
+        $caller = backTrace();
+        if (isset($caller["file"])and isset($caller["file"])) {
+            $caller["file"] = $this->sanitize($caller['file']);
+            return $caller["file"] . ":" . $caller["line"] . ' ' . $message;
+        }
+        return 'Unable to back trace: ' . $message;
+    }
+
+    /**
+     *
+     * @param mixed $message
+     * @return string
+     */
+    private function preProcessMessage2($message) {
         if (is_array($message)) {
             $message = var_export($message, true);
         }
@@ -210,6 +234,28 @@ class CommonLogger extends Parser {
         krsort($backTrace);
         //var_dump($backTrace);
 
+        return array($et, $level, $this->preProcessMessage($message), $backTrace);
+    }
+
+    private function createEntry($level, $message) {
+        $et = floatval(microtime()) - $this->startTime;
+        $x = 2;
+
+        while (backTrace($x)) {
+            $caller = backTrace($x);
+            if (key_exists('file', $caller)) {
+                $backTrace[$x - 1] = $caller["file"] . ":" . $caller["line"] . "<br/>";
+            }
+            $x++;
+        }
+        //ksort($backTrace, SORT_ASC);
+        krsort($backTrace);
+        //var_dump($backTrace);
+        $entry = new CommonLogEntry();
+        $entry->setLevel($level);
+        $entry->setBacktrace($backTrace);
+        $entry->setDeltaTime($et);
+        $entry->setMessage($message);
         return array($et, $level, $this->preProcessMessage($message), $backTrace);
     }
 

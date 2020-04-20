@@ -32,7 +32,7 @@ namespace app\controllers\settings;
  * @author cjacobsen
  */
 use system\Post;
-use app\models\district\District;
+use app\models\district\DistrictDatabase;
 use app\database\Schema;
 use app\controllers\Controller;
 

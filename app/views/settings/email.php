@@ -39,58 +39,57 @@ $form = new Form(null, 'email');
 $form->buildTextInput('SMTP Server',
                 Schema::EMAIL_SMTP_SERVER,
                 $this->email[Schema::EMAIL_SMTP_SERVER[Schema::COLUMN]],
-                'Read only user for authentication',
-                'samAuthUser')
+                'Enter the SMTP server address',
+                '')
         ->addToRow()
         ->buildTextInput('SMTP Port',
                 Schema::EMAIL_SMTP_PORT,
                 $this->email[Schema::EMAIL_SMTP_PORT[Schema::COLUMN]],
-                'Allow authentication by LDAP')
+                'Enter the SMTP server port')
         ->center()
         ->addToRow()
         ->buildBinaryInput('Use SMTP Auth',
                 Schema::EMAIL_USE_SMTP_AUTH,
                 $this->email[Schema::EMAIL_USE_SMTP_AUTH[Schema::COLUMN]],
-                '')
+                'Use SMTP User Authentication')
         ->addToNewRow()
         ->buildTextInput('SMTP Username',
                 Schema::EMAIL_SMTP_USERNAME,
                 $this->email[Schema::EMAIL_SMTP_USERNAME[Schema::COLUMN]],
-                'Can also be the domain name in most environments.',
-                'ldap.constoso.com')
+                'SMTP Auth Username',
+                '')
         ->addToRow()
         ->buildTextInput('SMTP Password',
                 Schema::EMAIL_SMTP_PASSWORD,
                 $this->email[Schema::EMAIL_SMTP_PASSWORD[Schema::COLUMN]],
-                'Non-SSL:389  SSL:',
-                '389')
+                'SMTP Auth Password',
+                '')
         ->addToNewRow()
         ->buildBinaryInput('Use SMTP over SSL',
                 Schema::EMAIL_USE_SMTP_SSL,
                 $this->email[Schema::EMAIL_USE_SMTP_SSL[Schema::COLUMN]],
-                'Read only user for authentication')
+                'Send Emails securly')
         ->addToRow()
-        ->buildPasswordInput('From Address',
+        ->buildTextInput('From Address',
                 Schema::EMAIL_FROM_ADDRESS,
                 $this->email[Schema::EMAIL_FROM_ADDRESS[Schema::COLUMN]],
-                'Read only user\'s password')
+                'The from address for emails sent from this app')
         ->addToNewRow()
         ->buildTextInput('From Name',
                 Schema::EMAIL_FROM_NAME,
                 $this->email[Schema::EMAIL_FROM_NAME[Schema::COLUMN]],
-                'Read only user for authentication',
+                'The display name for emails sent from this app',
                 AppConfig::getAppName())
         ->addToRow()
         ->buildPasswordInput('Reply-To Address',
                 Schema::EMAIL_REPLY_TO_ADDRESS,
                 $this->email[Schema::EMAIL_REPLY_TO_ADDRESS[Schema::COLUMN]],
-                'Read only user\'s password')
+                'The reply-to address for emails sent from this app')
         ->addToNewRow()
         ->buildTextInput('Reply-To Name',
                 Schema::EMAIL_REPLY_TO_NAME,
                 $this->email[Schema::EMAIL_REPLY_TO_NAME[Schema::COLUMN]],
-                'Read only user for authentication',
-                AppConfig::getAppName())
+                'The reply-to display name for emails sent from this app')
         ->addToRow()
         ->buildUpdateButton()
         ->addToNewRow();

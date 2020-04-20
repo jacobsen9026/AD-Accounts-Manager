@@ -13,14 +13,13 @@ namespace app\controllers\menu;
  *
  * @author cjacobsen
  */
-class TopMenuItem {
+class TopMenuItem extends MenuItem {
 
     //put your code here
-    public $displayText;
     public $subItems;
 
     function __construct($displayText) {
-        $this->displayText = $displayText;
+        $this->setDisplayText($displayText);
     }
 
     public function addSubItem(SubMenuItem $item) {

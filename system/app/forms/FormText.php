@@ -13,17 +13,24 @@ namespace system\app\forms;
  *
  * @author cjacobsen
  */
-class FormText extends FormElement {
+class FormText extends FormElement implements FormElementInterface {
 
     //put your code here
     private $autocomplete = false;
     private $appendIcon;
-    private $name;
     private $type = "text";
     private $placeholder = '';
     private $value;
+    private $disabled = false;
 
-    function __construct($label = '', $subLabel = '', $name = '',$value = '') {
+    /**
+     *
+     * @param type $label
+     * @param type $subLabel
+     * @param type $name
+     * @param type $value
+     */
+    function __construct($label = '', $subLabel = '', $name = '', $value = '') {
         $this->setLabel($label);
         $this->setSubLabel($subLabel);
         $this->setName($name);
@@ -62,12 +69,13 @@ class FormText extends FormElement {
         $this->setScript($script);
         return $this;
     }
+
     public function autoCompleteGroupName() {
         $this->autocomplete = true;
         $script = ' $(function () {
         var getGroup = function (request, response) {
             $.getJSON(
-                "/api/ldap/autocompleteGroup/" + request.term,
+                "/api/ldap/autocompleteStudentGroup/" + request.term,
                 function (data) {
                     response(data);
                 });
@@ -78,16 +86,16 @@ class FormText extends FormElement {
         console.log(ui);
         console.log(event);
 
-            $("#'.$this->name.'").val(ui.item.value);
+            $("#' . $this->getName() . '").val(ui.item.value);
             return false;
         }
 
-        $("#'.$this->name.'").autocomplete({
+        $("#' . $this->getName() . '").autocomplete({
             source: getGroup,
             select: selectItem,
-            minLength: 2,
+            minLength: 1,
             change: function() {
-                $("#'.$this->name.'").css("display", 2);
+                $("#' . $this->getName() . '").css("display", 2);
             }
         });
     });';
@@ -100,48 +108,37 @@ class FormText extends FormElement {
         return $this;
     }
 
-    public function getHTML() {
-        
-        switch ($this->getSize()) {
-            case "large":
-
-
-                break;
-            case "medium":
-                $classes = '<div class="col-md"><div class="nav justify-content-center nav-pills m-3">';
-                break;
-            case "small":
-                $classes = '<div class="col-sm"><div class="nav justify-content-center nav-pills m-1">';
-                break;
-
-            default:
-                break;
+    /**
+     *
+     * @param type $value
+     */
+    public function getElementHTML() {
+        $html = '';
+        $disable = '';
+        if ($this->disabled) {
+            $disable = 'disabled';
         }
-        //var_dump($this->isHidden());
-        $html = '<div class="col-md"';
-        if($this->isHidden()){
-            $html .= ' style="display:none" ';
-        }
-               $html .= '>'
-                . '<label class="'.$this->getLabelClasses().'" for="' . $this->name . '">' . $this->getLabel() . '</label>'
-                . '<small id="' . $this->name . 'HelpBlock" class="'.$this->getSubLabelClasses().'">' . $this->getSubLabel() . '</small>'
-                . '<div class="row p-3 ui-widget">'
-                . '<div class="px-0 col-auto ml-auto mr-auto">';
+
+        $html .= '<div class="col"><div class="row pl-3 ui-widget">'
+                . '<div class="pr-0 w-100 row">';
         if ($this->appendIcon != null) {
-            $html .= '<div class="d-inline h-100"><span class="input-group-text h-100 text-center d-inline">' . $this->appendIcon . '</span></div>';
+            $inputCol = 10;
+            $html .= '<span class="d-inline-block col-2 pr-0 mr-0 input-group-text h-100 text-center d-inline">' . $this->appendIcon . '</span>'
+            ;
         }
-       
-        $html .= '<div class=" d-inline-block w-80"><input type="'.$this->type.'" class="form-control text-center  w-100 ui-autocomplete-input"  !important;" name="' . $this->name . '" id="' . $this->name . '" value="'.$this->value.'" placeholder="'.$this->placeholder.'"></div>
-            </div>';
-        $html.=$this->printScript();
+
+        $html .= '<div class="d-inline-block col mx-auto pr-0">'
+                . '<input type="' . $this->type . '" class="form-control text-center ui-autocomplete-input" name="' . $this->getName() . '" id="' . $this->getName() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" ' . $disable . '>'
+                . '</div></div>';
         $html .= '</div></div>';
         return $html;
     }
-    
-    public function setValue($value){
+
+    public function setValue($value) {
         $this->value = $value;
+        return $this;
     }
-    
+
     function getAutocomplete() {
         return $this->autocomplete;
     }
@@ -150,38 +147,32 @@ class FormText extends FormElement {
         return $this->appendIcon;
     }
 
-    function getName() {
-        return $this->name;
+    public function disable($disable = true) {
+        $this->disabled = $disable;
+        return $this;
     }
 
-    function setAutocomplete($autocomplete):self {
+    function setAutocomplete($autocomplete): self {
         $this->autocomplete = $autocomplete;
         return $this;
     }
 
-    function setAppendIcon($appendIcon):self {
+    function setAppendIcon($appendIcon): self {
         $this->appendIcon = $appendIcon;
         return $this;
     }
 
-    function setName($name):self {
-        if (is_array($name)){
-            if(key_exists("name", $name)){
-                $this->name=$name["name"];
-            }
-        }else{
-        $this->name = $name;
-        }
+    /**
+     * Sets the input type to "password"
+     */
+    public function password() {
+        $this->type = "password";
         return $this;
     }
-    
-    public function isPassword(){
-        $this->type="password";
-    }
-    public function setPlaceholder($placeholder){
+
+    public function setPlaceholder($placeholder) {
         $this->placeholder = $placeholder;
+        return $this;
     }
-
-
 
 }

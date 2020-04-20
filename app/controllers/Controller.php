@@ -36,16 +36,18 @@ use app\models\user\User;
 use app\config\MasterConfig;
 use app\database\Schema;
 use app\models\district\Grade;
-use app\models\district\School;
-use app\models\district\District;
+use app\models\district\SchoolDatabase;
+use app\models\district\DistrictDatabase;
 use app\models\district\Team;
 use app\models\district\Department;
 use system\app\App;
 use app\models\Query;
+use app\models\district\District;
 
 class Controller extends CommonController {
 
     use \system\app\RequestRedirection;
+
     //put your code here
 
     /** @var User|null The system logger */
@@ -54,8 +56,8 @@ class Controller extends CommonController {
     /** @var MasterConfig Description */
     public $config;
 
-    /** @var string The controller string from the requested URL */
-    public $controller;
+    /** @var District The district */
+    public $district;
 
     /* @var $app App */
 
@@ -63,7 +65,7 @@ class Controller extends CommonController {
 
         parent::__construct($app);
         //$this->config = MasterConfig::get();
-        $this->controller = $app->request->controller;
+        //$this->controller = $app->route->getControler();
         $this->user = $app->user;
         $this->layout = "default";
     }
@@ -74,7 +76,7 @@ class Controller extends CommonController {
         $this->gradeDefinitions = $query->run();
         //var_dump($this->gradeDefinitions);
         $this->schoolID = $schoolID;
-        $this->school = School::getSchool($this->schoolID);
+        $this->school = SchoolDatabase::getSchool($this->schoolID);
 
         $this->schoolName = $this->school[Schema::SCHOOL_NAME[Schema::COLUMN]];
         $grades = Grade::getGrades($this->schoolID);
@@ -119,7 +121,15 @@ class Controller extends CommonController {
 
     public function preProcessDistrictID($districtID) {
         $this->districtID = $districtID;
-        $this->district = District::getDistrict($this->districtID);
+        $this->district = DistrictDatabase::getDistrict($this->districtID);
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function unauthorized() {
+        return $this->view('errors/403');
     }
 
 }

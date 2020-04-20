@@ -14,8 +14,8 @@ namespace app\controllers\settings;
  * @author cjacobsen
  */
 use app\controllers\Controller;
-use app\models\district\District;
-use app\models\district\School;
+use app\models\district\DistrictDatabase;
+use app\models\district\SchoolDatabase;
 use app\database\Schema;
 use app\api\AD;
 
@@ -107,7 +107,7 @@ class Schools extends Controller {
         $this->getDistrictDirectory();
 
         $this->preProcessDistrictID($districtID);
-        $this->schools = District::getSchools($districtID);
+        $this->schools = DistrictDatabase::getSchools($districtID);
         //var_dump($this->schools);
         if ($this->schools != false) {
             return $this->view('settings/district/schools/show');
@@ -119,8 +119,8 @@ class Schools extends Controller {
     public function edit($schoolID) {
         $this->preProcessSchoolID($schoolID);
 
-        $this->staffADSettings = School::getADSettings($schoolID, 'Staff');
-        $this->staffGASettings = School::getGASettings($schoolID, 'Staff');
+        $this->staffADSettings = SchoolDatabase::getADSettings($schoolID, 'Staff');
+        $this->staffGASettings = SchoolDatabase::getGASettings($schoolID, 'Staff');
         //var_dump($this->school);
         if ($this->school != false) {
             return $this->view('settings/district/schools/edit');
@@ -138,14 +138,14 @@ class Schools extends Controller {
 
     public function createPost($districtID = null) {
         $post = \system\Post::getAll();
-        School::createSchool($post[Schema::SCHOOL_NAME[Schema::NAME]], $districtID);
+        SchoolDatabase::createSchool($post[Schema::SCHOOL_NAME[Schema::NAME]], $districtID);
         $this->redirect('/schools/show/' . $districtID);
         //return $this->index();
     }
 
     public function delete($schoolID) {
-        $this->districtID = School::getDistrictID($schoolID);
-        School::deleteSchool($schoolID);
+        $this->districtID = SchoolDatabase::getDistrictID($schoolID);
+        SchoolDatabase::deleteSchool($schoolID);
         $this->redirect('/schools/show/' . $this->districtID);
     }
 

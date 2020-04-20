@@ -144,9 +144,9 @@ class Core {
     public function abort($message = null) {
         $this->logger->error("Aborting App Execution!");
         $this->logger->error($message);
-        $this->appLogger = $this->app->logger;
-        $this->appOutput = null;
-        $this->app = null;
+        $this->appLogger = ($this->app->logger);
+        //$this->appOutput = null;
+        //$this->app = null;
         try {
             $this->render();
         } catch (CoreException $ex) {

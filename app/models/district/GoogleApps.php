@@ -55,7 +55,7 @@ class GoogleApps {
     }
 
     private static function getDistrictField($id, $column, $type) {
-        $district = District::getGASettings($id, $type);
+        $district = DistrictDatabase::getGASettings($id, $type);
         //\system\app\AppLogger::get()->debug($district);
         $schema = 'GOOGLEAPPS_' . $column;
         $constant = self::getSchemaColumn($schema);
@@ -67,8 +67,8 @@ class GoogleApps {
     private static function getSchoolField($id, $column, $type) {
 
         \system\app\AppLogger::get()->info('Getting School ' . $id . ' Field ' . $column);
-        $school = School::getGASettings($id, $type);
-        $districtID = School::getDistrictID($id);
+        $school = SchoolDatabase::getGASettings($id, $type);
+        $districtID = SchoolDatabase::getDistrictID($id);
         //\system\app\AppLogger::get()->debug($school);
         $schema = 'GOOGLEAPPS_' . $column;
         $constant = self::getSchemaColumn($schema);

@@ -44,4 +44,8 @@ abstract class Cookie {
         setcookie($name, $value, time() + $expires, $path);
     }
 
+    public static function delete($name) {
+        setcookie($name, "", time() - 3600);
+    }
+
 }

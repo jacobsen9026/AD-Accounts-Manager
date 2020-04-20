@@ -19,20 +19,19 @@ class Profile extends Controller {
 
     //put your code here
     public function index() {
-        //echo "test";
         return $this->view('settings/profile');
     }
 
     public function indexPost() {
         $post = \system\Post::getAll();
-        $this->setTheme($post["theme"]);
+
+        $this->user->setTheme($post["theme"]);
+        $this->user->save();
         return $this->view('/settings/profile');
     }
 
     private function setTheme($theme) {
 
-        //setcookie("theme", $theme);
-        \system\app\Session::getUser()->setTheme($theme);
     }
 
 }

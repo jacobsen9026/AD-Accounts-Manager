@@ -27,12 +27,20 @@ class AppOutput {
         return $this->logs;
     }
 
-    public function setBody($body): void {
+    public function setBody($body) {
         $this->body = $body;
     }
 
-    public function setLogs($logs): void {
+    public function setLogs($logs) {
         $this->logs = $logs;
+    }
+
+    public function appendBody($body) {
+        $this->body .= $body;
+    }
+
+    public function prependBody($body) {
+        $this->body = $body . $this->body;
     }
 
 }

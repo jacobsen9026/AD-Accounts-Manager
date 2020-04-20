@@ -47,6 +47,14 @@ abstract class Email extends Model {
         return self::getDBValue(self::getColumnFromSchema(Schema::EMAIL_SMTP_PASSWORD));
     }
 
+    public static function getSMTPPort() {
+        return self::getDBValue(self::getColumnFromSchema(Schema::EMAIL_SMTP_PORT));
+    }
+
+    public static function getFromAddress() {
+        return self::getDBValue(self::getColumnFromSchema(Schema::EMAIL_FROM_ADDRESS));
+    }
+
     public static function getSMTPAuth() {
         return self::getDBValue(self::getColumnFromSchema(Schema::EMAIL_USE_SMTP_AUTH));
     }

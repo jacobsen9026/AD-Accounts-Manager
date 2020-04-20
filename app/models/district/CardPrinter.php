@@ -31,7 +31,7 @@ abstract class CardPrinter {
         $output = '<script>
             $(function () {$(\'[data-toggle="tooltip"]\').tooltip()})
   </script>
-            <div class="card mx-auto shadow w-100">
+            <div class="col">
       <!--   <i class="fas fa-user-circle"></i>   -->
 
   <div class="card-body">'
@@ -119,7 +119,7 @@ abstract class CardPrinter {
         }
     }
 
-    public static function buildCard($object, $user) {
+    public static function printCard($object, $user) {
         $class = get_class($object);
         //var_dump($class);
         switch ($class) {
@@ -146,8 +146,9 @@ abstract class CardPrinter {
 
 
         $button = new FormButton("Disable");
-        $button->small()
-                ->setTheme("danger");
+        $button->full()
+                ->setTheme("danger")
+                ->hideLabels();
 
         $form->addElementToNewRow($userInput)
                 ->addElementToNewRow($action)
@@ -173,7 +174,8 @@ abstract class CardPrinter {
 
 
         $button = new FormButton("Enable");
-        $button->small()
+        $button->full()
+                ->hideLabels()
                 ->setTheme("success");
 
 

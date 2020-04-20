@@ -3,6 +3,10 @@
 
 use app\database\Schema;
 use app\models\district\Grade;
+use app\models\district\District;
+
+/* @var $district District */
+$district = $this->district;
 ?>
 
 
@@ -16,7 +20,7 @@ use app\models\district\Grade;
             });
         });
     </script>
-    <h4>Schools in <?= $this->district[Schema::DISTRICT_NAME[Schema::COLUMN]]; ?></h4>
+    <h4>Schools in <?= $district->getName(); ?></h4>
 
     <div class="table-responsive-sm shadow-sm">
 

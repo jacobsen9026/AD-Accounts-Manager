@@ -3,7 +3,7 @@
 use system\app\forms\Form;
 use system\Lang;
 
-$form = new Form('/');
+$form = new Form();
 if (isset($this->lastErrorMessage)) {
     $form->buildErrorOutput($this->lastErrorMessage)
             ->addToNewRow();

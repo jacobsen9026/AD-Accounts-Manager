@@ -20,7 +20,7 @@ $textBox = new FormText("Username", "Can also enter first or last name to search
 $textBox->autoCompleteUsername()
         ->appendIcon('<i class="fas fa-search"></i>');
 $passwordBox = new FormText("New  Password", "Leave blank for a new random password", "password");
-$passwordBox->isPassword();
+$passwordBox->password();
 $form->addElementToNewRow($textBox)
         ->addElementToNewRow($passwordBox)
         ->addElementToNewRow($button);

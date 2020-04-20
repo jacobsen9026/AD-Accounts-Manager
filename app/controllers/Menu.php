@@ -39,11 +39,13 @@ use system\Parser;
 use app\models\user\Privilege;
 use app\models\user\User;
 use system\app\App;
-use app\config\MasterConfig;
 
 class Menu extends Parser {
 
-//put your code here
+    /**
+     *
+     * @var TopMenuItem
+     */
     public $items;
     public $layout;
     public $config;
@@ -53,7 +55,6 @@ class Menu extends Parser {
 
     /** @var AppLogger|null The app logger */
     public $logger;
-    public $userPrivs;
 
     function __construct($user, $layout = 'default') {
 
@@ -62,22 +63,21 @@ class Menu extends Parser {
         $this->layout = $layout;
         $this->logger = AppLogger::get();
 
-        $this->userPrivs = $this->user->privilege;
-
-        $this->logger->info('Menu Creation Started UserPrivilege:' . $this->userPrivs);
+        $this->logger->info('Menu Creation Started UserPrivilege:' . $this->user->privilege);
         /*
          * Create top level items
          */
 
-        if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
+        if ($this->user->privilege > Privilege::UNAUTHENTICATED) {
             $this->items[] = $this->buildStudentMenu();
-            if ($this->userPrivs > Privilege::POWER) {
+            if ($this->user->privilege > Privilege::POWER) {
                 $this->logger->debug("Building Parent and Staff Menus");
                 $this->items[] = $this->buildStaffMenu();
                 $this->items[] = $this->buildParentMenu();
+                $this->items[] = $this->buildGroupsMenu();
 
                 // Test of privilege
-                if ($this->userPrivs > \app\models\user\Privilege::TECH - 1) {
+                if ($this->user->privilege > \app\models\user\Privilege::TECH - 1) {
                     $this->items[] = $this->buildTechMenu();
                 }
             }
@@ -90,18 +90,40 @@ class Menu extends Parser {
          */
 
         $students = new TopMenuItem('Students');
+        $students->setTargetURL('/students');
         $students->addSubItem(new SubMenuItem('Account Status', '/' . strtolower($students->displayText) . '/account-status'));
-        if ($this->userPrivs > Privilege::BASIC) {
+        if ($this->user->privilege > Privilege::BASIC) {
             //$students->addSubItem(new SubMenuItem('Account Status Change', '/' . strtolower($students->displayText) . '/account-status-change'));
             //$students->addSubItem(new SubMenuItem('Google Classroom', '/' . strtolower($students->displayText) . '/google-classroom'));
             $students->addSubItem(new SubMenuItem('Email Groups', '/' . strtolower($students->displayText) . '/google-groups'));
             //$students->addSubItem(new SubMenuItem('H-Drive', '/' . strtolower($students->displayText) . '/home-drive'));
             $students->addSubItem(new SubMenuItem('New Password', '/' . strtolower($students->displayText) . '/reset-password'));
         }
-        if ($this->userPrivs > Privilege::ADMIN) {
+        if ($this->user->privilege > Privilege::ADMIN) {
             $students->addSubItem(new SubMenuItem('Create Acccounts', '/' . strtolower($students->displayText) . '/create-accounts'));
         }
         return $students;
+    }
+
+    private function buildGroupsMenu() {
+        /*
+         * Build Student Menu
+         */
+
+        $groups = new TopMenuItem('Groups');
+        $groups->setTargetURL('/groups');
+        $groups->addSubItem(new SubMenuItem('Account Status', '/' . strtolower($groups->displayText) . '/account-status'));
+        if ($this->user->privilege > Privilege::BASIC) {
+            //$students->addSubItem(new SubMenuItem('Account Status Change', '/' . strtolower($students->displayText) . '/account-status-change'));
+            //$students->addSubItem(new SubMenuItem('Google Classroom', '/' . strtolower($students->displayText) . '/google-classroom'));
+            $groups->addSubItem(new SubMenuItem('Email Groups', '/' . strtolower($groups->displayText) . '/google-groups'));
+            //$students->addSubItem(new SubMenuItem('H-Drive', '/' . strtolower($students->displayText) . '/home-drive'));
+            $groups->addSubItem(new SubMenuItem('New Password', '/' . strtolower($groups->displayText) . '/reset-password'));
+        }
+        if ($this->user->privilege > Privilege::ADMIN) {
+            $groups->addSubItem(new SubMenuItem('Create Acccounts', '/' . strtolower($groups->displayText) . '/create-accounts'));
+        }
+        return $groups;
     }
 
     private function buildStaffMenu() {

@@ -34,24 +34,21 @@ namespace app\controllers;
 class Home extends Controller {
 
     public function index() {
-
         $this->motd = \app\models\AppConfig::getMOTD();
         $this->applicationName = \app\models\AppConfig::getAppName();
-        $this->layout = "default";
+
         return $this->view('homepage');
     }
 
     public function indexPost() {
-        $this->motd = \app\models\AppConfig::getMOTD();
-        $this->applicationName = \app\models\AppConfig::getAppName();
-        $this->layout = "default";
-        return $this->view('homepage');
+        $this->index();
     }
 
     public function show403() {
+
+
         $this->motd = \app\models\AppConfig::getMOTD();
         $this->applicationName = \app\models\AppConfig::getAppName();
-        $this->layout = "default";
         return $this->view('errors/403');
     }
 

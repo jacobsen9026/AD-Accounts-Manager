@@ -50,7 +50,7 @@ abstract class Factory {
          * This should be converted to a core configuration constant
          */
         $controllerPath = '\\app\\controllers\\';
-        $classname = $controllerPath . $app->route[0];
+        $classname = $controllerPath . $app->route->getControler();
         if (class_exists($classname)) {
             return new $classname($app);
         }

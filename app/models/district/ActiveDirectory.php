@@ -51,7 +51,7 @@ class ActiveDirectory {
     }
 
     private static function getDistrictField($id, $column, $type) {
-        $district = District::getADSettings($id, $type);
+        $district = DistrictDatabase::getADSettings($id, $type);
         //\system\app\AppLogger::get()->debug($district);
         $schema = 'ACTIVEDIRECTORY_' . $column;
         $constant = self::getSchemaColumn($schema);
@@ -63,8 +63,8 @@ class ActiveDirectory {
     private static function getSchoolField($id, $column, $type) {
 
         //\system\app\AppLogger::get()->info('Getting School ' . $id . ' Field ' . $column);
-        $school = School::getADSettings($id, $type);
-        $districtID = School::getDistrictID($id);
+        $school = SchoolDatabase::getADSettings($id, $type);
+        $districtID = SchoolDatabase::getDistrictID($id);
         //\system\app\AppLogger::get()->debug($school);
         $schema = 'ACTIVEDIRECTORY_' . $column;
         $constant = self::getSchemaColumn($schema);

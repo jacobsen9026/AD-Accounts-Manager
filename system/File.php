@@ -97,6 +97,7 @@ abstract class File {
 
     /**
      * Writes to app/database/schema to update the column constants
+     * Only used during development
      * @param type $constantsTable
      */
     public static function refreshSchemaDefinitions($constantsTable) {
@@ -135,6 +136,22 @@ abstract class File {
         }
         file_put_contents(self::SCHEMA_FILE_PATH, "\n }", FILE_APPEND);
         //$this->redirect('/settings');
+    }
+
+    public static function overwriteFile($filepath, $contents) {
+        file_put_contents($filepath, $contents);
+    }
+
+    public static function appendToFile($filepath, $contents) {
+        file_put_contents($filepath, $contents, FILE_APPEND);
+    }
+
+    public static function deleteFile($filepath) {
+        unlink($filepath);
+    }
+
+    public static function getContents($filepath) {
+        return file_get_contents($filepath);
     }
 
 }
