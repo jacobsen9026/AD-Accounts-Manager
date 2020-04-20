@@ -181,6 +181,7 @@ $google = GAM::get();
     $adPassword = new system\app\forms\FormText("Active Directory Password", "Enter password for admin user", "adPassword", $district->getAdPassword());
     $adPassword->password();
     $adStudentGroup = new system\app\forms\FormText("Active Directory Student Group", "This group should contain all active and inactive students as well as all student groups", "adStudentGroup", $district->getAdStudentGroupName());
+    $adStaffGroup = new system\app\forms\FormText("Active Directory Staff Group", "This group should contain all active staff as well as all staff groups", "adStaffGroup", $district->getAdStaffGroupName());
     $adConnectionCheck = new system\app\forms\FormHTML();
 
     $valueDisplay = '';
@@ -207,7 +208,8 @@ $google = GAM::get();
             ->addElementToCurrentRow($adPassword)
             ->addElementToNewRow($adStudentGroup)
             ->addElementToCurrentRow($adConnectionCheck)
-            ->addElementToCurrentRow($adPermissionTestButton);
+            ->addElementToCurrentRow($adStaffGroup)
+            ->addElementToNewRow($adPermissionTestButton);
     echo $form->print();
     ?>
 

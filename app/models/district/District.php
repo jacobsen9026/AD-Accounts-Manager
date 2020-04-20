@@ -29,6 +29,7 @@ class District extends DatabaseModel {
     private $adUsername;
     private $adPassword;
     private $adStudentGroupName;
+    private $adStaffGroupName;
     private $gsFQDN;
     private $parentEmailGroup;
 
@@ -38,19 +39,20 @@ class District extends DatabaseModel {
      * @return $this
      */
     public function importFromAD($LDAPReponse) {
-        $this->setId($LDAPReponse["ID"]);
-        $this->setName($LDAPReponse["Name"]);
-        $this->setGradeMin($LDAPReponse["Grade_Span_From"]);
-        $this->setGradeMax($LDAPReponse["Grade_Span_To"]);
-        $this->setAbbr($LDAPReponse["Abbreviation"]);
-        $this->setAdFQDN($LDAPReponse["AD_FQDN"]);
-        $this->setAdServer($LDAPReponse["AD_Server"]);
-        $this->setAdBaseDN($LDAPReponse["AD_BaseDN"]);
-        $this->setAdNetBIOS($LDAPReponse["AD_NetBIOS"]);
-        $this->setAdUsername($LDAPReponse["AD_Username"]);
-        $this->setAdPassword($LDAPReponse["AD_Password"]);
-        $this->setAdStudentGroupName($LDAPReponse["AD_Student_Group"]);
-        $this->setGsFQDN($LDAPReponse["GA_FQDN"]);
+        $this->setId($LDAPReponse["ID"])
+                ->setName($LDAPReponse["Name"])
+                ->setGradeMin($LDAPReponse["Grade_Span_From"])
+                ->setGradeMax($LDAPReponse["Grade_Span_To"])
+                ->setAbbr($LDAPReponse["Abbreviation"])
+                ->setAdFQDN($LDAPReponse["AD_FQDN"])
+                ->setAdServer($LDAPReponse["AD_Server"])
+                ->setAdBaseDN($LDAPReponse["AD_BaseDN"])
+                ->setAdNetBIOS($LDAPReponse["AD_NetBIOS"])
+                ->setAdUsername($LDAPReponse["AD_Username"])
+                ->setAdPassword($LDAPReponse["AD_Password"])
+                ->setAdStudentGroupName($LDAPReponse["AD_Student_Group"])
+                ->setAdStaffGroupName($LDAPReponse["AD_Staff_Group"])
+                ->setGsFQDN($LDAPReponse["GA_FQDN"]);
         //$this->setGsFQDN($LDAPReponse["Parent_Email_Group"]);
         return $this;
     }
@@ -85,6 +87,15 @@ class District extends DatabaseModel {
 
     public function getAdBaseDN() {
         return $this->adBaseDN;
+    }
+
+    public function getAdStaffGroupName() {
+        return $this->adStaffGroupName;
+    }
+
+    public function setAdStaffGroupName($adStaffGroupName) {
+        $this->adStaffGroupName = $adStaffGroupName;
+        return $this;
     }
 
     public function getAdNetBIOS() {
