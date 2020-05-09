@@ -38,11 +38,10 @@ namespace system;
  */
 require './system/Autoloader.php';
 
-use system\app\App;
-use system\app\AppOutput;
-use system\common\CommonApp;
+use system\AppOutput;
 use system\CoreException;
 use system\SystemLogger;
+use system\common\CommonLogger;
 
 class Core {
 
@@ -51,6 +50,12 @@ class Core {
 
     /** @var SystemLogger|null The system logger */
     public $logger;
+
+    /**
+     *
+     * @var CommonLogger
+     */
+    public static $coreLogger;
 
     /** @var Request|null The Request object */
     public $request;
@@ -79,7 +84,6 @@ class Core {
         if (!isset($_SESSION)) {
             session_start();
         }
-
         define('ROOTPATH', getcwd());
         /*
          * Enable Error Reporting for core until the system config is loaded
@@ -121,14 +125,18 @@ class Core {
             $this->error($ex);
         }
         /**
-         * Run Web App
+         * Run the App
          */
         try {
             $this->execute();
         } catch (CoreException $ex) {
+            // $this->abort($ex
+            $this->appOutput->setBody($ex->getMessage());
             $this->logger->error($ex);
         }
-
+        /**
+         * Return the response to the user
+         */
         try {
             $this->render();
         } catch (CoreException $ex) {
@@ -136,11 +144,17 @@ class Core {
         }
         /*
          * The request has been completed and the response is being delivered.
-         * The app and core, along with all children, are kill.
+         * The app and core have completed execution and PHP is handed off
+         * back to the public index.php file immediately following the run().
          * EXIT
          */
     }
 
+    /**
+     * In the event of a CoreException, immediately stops app execution and pulls the current AppLogger state.
+     * Should not be used by other classes.
+     * @param type $message
+     */
     public function abort($message = null) {
         $this->logger->error("Aborting App Execution!");
         $this->logger->error($message);
@@ -161,9 +175,14 @@ class Core {
         /**
          * Run autoloader
          */
-        Autoloader::run($this);
-
+        Autoloader::run();
+        /**
+         * By instantiating the CoreErrorHandler we trigger errors and exceptions
+         * to be caught with our custom handlers.
+         *
+         */
         new CoreErrorHandler();
+
         /*
          * Load the parser in the core since it cannot
          * extend the parser.
@@ -172,9 +191,14 @@ class Core {
         /*
          * Load the system logger
          */
-
+        self::$coreLogger = new CommonLogger();
+        self::$coreLogger->info("Logger started");
         $this->logger = new SystemLogger();
         $this->logger->info("Logger started");
+        //var_export($this->coreLogger);
+        /**
+         * Log the session to the core logger
+         */
         $this->logger->debug("Session Export Below:");
         $this->logger->debug($_SESSION);
         /*
@@ -205,17 +229,24 @@ class Core {
      */
     private function execute() {
         $this->logger->info("App starting");
-        /*
-         * If system debug is enabled, do not buffer
-         * the output of the app to prevent it from echoing
+        /**
+         * We prep the output in case something goes wrong with the app
          */
-
-
-        //ob_start();
+        $this->appOutput = new AppOutput();
+        /**
+         * Run app
+         */
         $this->appOutput = $this->runApp();
+        /**
+         * This will go away but for backwards compatibility, I'm doing this
+         */
         $this->appLogger = $this->appOutput->getLogs();
-        //$this->appOutput = $this->appOutput->getBody();
-        //ob_flush();
+        /**
+         * We need to retake control of the run-time errors from the app
+         * if it was set to do so.
+         *
+         * So we re-instantiate the CoreErrorHandler
+         */
         new CoreErrorHandler();
         /*
          * Check if the system is in debug and if so set
@@ -229,19 +260,27 @@ class Core {
 
         /*
          * Check that the defined primary app class in the
-         * config actual loaded and then launch it if it is.
+         * config actually exists and then launch it if it is.
          */
         if (class_exists(APPCLASS)) {
             $class = APPCLASS;
             $this->app = new $class($this->request, $this->logger);
+            /**
+             * Make sure that this APPCLASS has the run method otherwise what's the point
+             */
             if (method_exists($this->app, 'run')) {
-
+                /**
+                 * Let's run the app and return what it gives back to the core execution
+                 */
                 return $this->app->run();
             } else {
+                throw new CoreException("The " . APPCLASS . " does not have a run() method", CoreException::APP_MISSING_RUN);
                 echo("The " . APPCLASS . " does not have a run() method");
+
                 exit;
             }
         } else {
+            throw new CoreException("The " . APPCLASS . " class was not found", CoreException::APP_MISSING);
             echo("The " . APPCLASS . " class was not found");
             exit;
         }
@@ -297,6 +336,10 @@ class Core {
         } else {
             return false;
         }
+    }
+
+    public static function getLogger() {
+        return self::$coreLogger;
     }
 
 }

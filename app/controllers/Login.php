@@ -1,9 +1,27 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The MIT License
+ *
+ * Copyright 2020 cjacobsen.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 namespace app\controllers;
@@ -20,11 +38,16 @@ use system\app\Session;
 use system\app\auth\AuthException;
 use system\app\AppLogger;
 use system\Post;
-use app\auth\LDAP;
+use app\auth\ADAuth;
+use app\models\database\AuthDatabase;
 
 class Login extends Controller {
 
-    //put your code here
+    public function __construct(App $app) {
+
+        parent::__construct($app);
+        $this->layout = 'login';
+    }
 
     public function index() {
         $logger = AppLogger::get();
@@ -42,11 +65,12 @@ class Login extends Controller {
                     $this->lastErrorMessage = $ex->getMessage();
                     return $this->view('login/loginPrompt');
                 }
-                if (\app\models\Auth::getLDAPEnabled()) {
+                if (AuthDatabase::getLDAPEnabled()) {
                     try {
 
                         $logger->debug('trying LDAP auth');
-                        $user = LDAP::authenticate($username, $password);
+                        $adAuth = new ADAuth();
+                        $user = $adAuth->authenticate($username, $password);
                     } catch (AuthException $ex) {
                         if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
 

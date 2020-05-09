@@ -118,10 +118,10 @@ class Menu extends Parser {
             //$students->addSubItem(new SubMenuItem('Google Classroom', '/' . strtolower($students->displayText) . '/google-classroom'));
             $groups->addSubItem(new SubMenuItem('Email Groups', '/' . strtolower($groups->displayText) . '/google-groups'));
             //$students->addSubItem(new SubMenuItem('H-Drive', '/' . strtolower($students->displayText) . '/home-drive'));
-            $groups->addSubItem(new SubMenuItem('New Password', '/' . strtolower($groups->displayText) . '/reset-password'));
+            //$groups->addSubItem(new SubMenuItem('New Password', '/' . strtolower($groups->displayText) . '/reset-password'));
         }
         if ($this->user->privilege > Privilege::ADMIN) {
-            $groups->addSubItem(new SubMenuItem('Create Acccounts', '/' . strtolower($groups->displayText) . '/create-accounts'));
+            //$groups->addSubItem(new SubMenuItem('Create Acccounts', '/' . strtolower($groups->displayText) . '/create-accounts'));
         }
         return $groups;
     }
@@ -131,14 +131,20 @@ class Menu extends Parser {
          * Build Staff Menu
          */
         $staff = new TopMenuItem('Staff');
+        $staff->setTargetURL('/staff');
         if ($staff) {
-            $staff->addSubItem(new SubMenuItem('Account Status', '/' . strtolower($staff->displayText) . '/account-status'));
-            $staff->addSubItem(new SubMenuItem('Account Change', '/' . strtolower($staff->displayText) . '/account-change'));
-            $staff->addSubItem(new SubMenuItem('Google Groups', '/' . strtolower($staff->displayText) . '/google-groups'));
-            $staff->addSubItem(new SubMenuItem('New Password', '/' . strtolower($staff->displayText) . '/reset-password'));
-            $staff->addSubItem(new SubMenuItem('Create Acccounts', '/' . strtolower($staff->displayText) . '/create-accounts'));
-            $staff->addSubItem(new SubMenuItem('Send Welcome Email', '/' . strtolower($staff->displayText) . '/welcome-email'));
+            /*
+              $staff->addSubItem(new SubMenuItem('Account Status', '/' . strtolower($staff->displayText) . '/account-status'));
+              $staff->addSubItem(new SubMenuItem('Account Change', '/' . strtolower($staff->displayText) . '/account-change'));
+              $staff->addSubItem(new SubMenuItem('Google Groups', '/' . strtolower($staff->displayText) . '/google-groups'));
+              $staff->addSubItem(new SubMenuItem('New Password', '/' . strtolower($staff->displayText) . '/reset-password'));
+              $staff->addSubItem(new SubMenuItem('Create Acccounts', '/' . strtolower($staff->displayText) . '/create-accounts'));
+              $staff->addSubItem(new SubMenuItem('Send Welcome Email', '/' . strtolower($staff->displayText) . '/welcome-email'));
+
+             *
+             */
         }
+
         return $staff;
     }
 
@@ -167,10 +173,17 @@ class Menu extends Parser {
         return $tech;
     }
 
-    public function getMenu() {
+    /**
+     * The layout name referring to the prefix of the layout file
+     * @param string $layoutName
+     * @return type
+     */
+    public function getMenu(string $layoutName) {
         $this->app = App::get();
+
+
         //$this->logger->debug($this->items);
-        return $this->view('/layouts/' . $this->layout . '_navbar');
+        return $this->view('/layouts/' . $layoutName . '_navbar');
     }
 
 }

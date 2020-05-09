@@ -32,6 +32,7 @@ namespace system\app;
  * @author cjacobsen
  */
 use app\models\user\User;
+use app\models\database\AuthDatabase;
 
 abstract class Session {
     //put your code here
@@ -67,7 +68,7 @@ abstract class Session {
      */
     public static function updateTimeout() {
 
-        $nextTimeout = \app\models\Auth::getSessionTimeout() + time();
+        $nextTimeout = AuthDatabase::getSessionTimeout() + time();
         $_SESSION[self::TIMEOUT] = $nextTimeout;
     }
 

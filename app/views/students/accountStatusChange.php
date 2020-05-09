@@ -32,14 +32,14 @@ $form = new Form("/students/account-status-change", "StudentAccountStatusChange"
 $button = new FormButton("Submit");
 $button->small();
 $textBox = new FormText("Username", "Can also enter first or last name to search for username.", "username");
-$textBox->autoCompleteUsername()
+$textBox->autoCompleteStudentUsername()
         ->appendIcon('<i class="fas fa-search"></i>');
-$action = new FormDropdown("Action", "action");
+$action = new FormDropdown("Action", '', "action");
 $action->createOption("Unlock", "unlock")
         ->createOption("Lock", "lock");
-if($this->user->privilege >= \app\models\user\Privilege::ADMIN){
+if ($this->user->privilege >= \app\models\user\Privilege::ADMIN) {
     $action->createOption("Enable", "enable")
-        ->createOption("Disable", "disable");
+            ->createOption("Disable", "disable");
 }
 $form->addElementToNewRow($textBox)
         ->addElementToNewRow($action)

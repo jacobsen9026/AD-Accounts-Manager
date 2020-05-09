@@ -34,6 +34,7 @@ namespace system\app\auth;
 use system\app\auth\AuthException;
 use app\config\MasterConfig;
 use app\models\user\User;
+use app\models\database\AuthDatabase;
 
 abstract class Local {
 //put your code here
@@ -42,7 +43,7 @@ abstract class Local {
     public static function authenticate($username = null, $password = null) {
         $password = hash('sha256', $password);
         //$config = \app\config\MasterConfig::get();
-        $adminPassword = \app\models\AppConfig::getAdminPassword();
+        $adminPassword = AuthDatabase::getAdminPassword();
 
         if (strtolower($username) == "admin") {
             if (isset($adminPassword) and $adminPassword != '') {

@@ -1,9 +1,27 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The MIT License
+ *
+ * Copyright 2020 cjacobsen.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 namespace app\models\district;
@@ -13,9 +31,13 @@ namespace app\models\district;
  *
  * @author cjacobsen
  */
-use app\models\DatabaseModel;
+use app\models\Model;
+use system\Encryption;
+use app\models\database\DistrictDatabase;
 
-class District extends DatabaseModel {
+class District extends Model {
+
+    use \system\traits\DomainTools;
 
     private $id;
     private $name;
@@ -32,13 +54,14 @@ class District extends DatabaseModel {
     private $adStaffGroupName;
     private $gsFQDN;
     private $parentEmailGroup;
+    private $rootOU;
 
     /**
      *
      * @param type $LDAPReponse
      * @return $this
      */
-    public function importFromAD($LDAPReponse) {
+    public function importFromDatabase($LDAPReponse) {
         $this->setId($LDAPReponse["ID"])
                 ->setName($LDAPReponse["Name"])
                 ->setGradeMin($LDAPReponse["Grade_Span_From"])
@@ -49,7 +72,7 @@ class District extends DatabaseModel {
                 ->setAdBaseDN($LDAPReponse["AD_BaseDN"])
                 ->setAdNetBIOS($LDAPReponse["AD_NetBIOS"])
                 ->setAdUsername($LDAPReponse["AD_Username"])
-                ->setAdPassword($LDAPReponse["AD_Password"])
+                ->setAdPassword(Encryption::decrypt($LDAPReponse["AD_Password"]))
                 ->setAdStudentGroupName($LDAPReponse["AD_Student_Group"])
                 ->setAdStaffGroupName($LDAPReponse["AD_Staff_Group"])
                 ->setGsFQDN($LDAPReponse["GA_FQDN"]);
@@ -86,7 +109,11 @@ class District extends DatabaseModel {
     }
 
     public function getAdBaseDN() {
-        return $this->adBaseDN;
+        if (is_null($this->adBaseDN)or $this->adBaseDN == '' and $this->adFQDN != '') {
+            return $this->FQDNtoDN($this->adFQDN);
+        } else {
+            return $this->adBaseDN;
+        }
     }
 
     public function getAdStaffGroupName() {
@@ -96,6 +123,10 @@ class District extends DatabaseModel {
     public function setAdStaffGroupName($adStaffGroupName) {
         $this->adStaffGroupName = $adStaffGroupName;
         return $this;
+    }
+
+    public function getRootOU() {
+        return $this->rootOU;
     }
 
     public function getAdNetBIOS() {
@@ -159,6 +190,7 @@ class District extends DatabaseModel {
 
     public function setAdBaseDN($adBaseDN) {
         $this->adBaseDN = $adBaseDN;
+        $this->rootOU = $adBaseDN;
         return $this;
     }
 
@@ -192,8 +224,29 @@ class District extends DatabaseModel {
         return $this;
     }
 
-    public function saveToDB() {
+    public function getSubOUs() {
+        $ad = \app\api\AD::get();
+        $rawOUs = $ad->getSubOUs($this->getId());
+        foreach ($rawOUs as $ou) {
+            $ous[] = $ou['distinguishedname'];
+        }
+        return $ous;
+    }
 
+    public function getDirectoryTree() {
+        $ad = \app\api\AD::get();
+        return $ad->getAllSubOUs($this->getRootOU());
+    }
+
+    public function saveToDB() {
+        //var_dump("saving to db");
+        DistrictDatabase::setAD_FQDN(1, $this->adFQDN);
+        DistrictDatabase::setADPassword(1, $this->adPassword);
+        DistrictDatabase::setADUsername(1, $this->adUsername);
+        DistrictDatabase::setADBaseDN(1, $this->getAdBaseDN());
+        DistrictDatabase::setADStudentGroup(1, $this->adStudentGroupName);
+        DistrictDatabase::setADStaffGroup(1, $this->adStaffGroupName);
+        DistrictDatabase::setName(1, $this->name);
     }
 
 }

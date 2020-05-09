@@ -34,10 +34,11 @@ namespace app\controllers;
 use system\common\CommonController;
 use app\models\user\User;
 use app\config\MasterConfig;
+use system\app\AppLogger;
 use app\database\Schema;
 use app\models\district\Grade;
-use app\models\district\SchoolDatabase;
-use app\models\district\DistrictDatabase;
+use app\models\database\SchoolDatabase;
+use app\models\database\DistrictDatabase;
 use app\models\district\Team;
 use app\models\district\Department;
 use system\app\App;
@@ -59,6 +60,12 @@ class Controller extends CommonController {
     /** @var District The district */
     public $district;
 
+    /**
+     *
+     * @var AppLogger
+     */
+    protected $logger;
+
     /* @var $app App */
 
     function __construct(App $app) {
@@ -67,6 +74,7 @@ class Controller extends CommonController {
         //$this->config = MasterConfig::get();
         //$this->controller = $app->route->getControler();
         $this->user = $app->user;
+        $this->logger = $app->logger;
         $this->layout = "default";
     }
 

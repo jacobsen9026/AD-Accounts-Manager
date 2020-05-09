@@ -1,9 +1,27 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The MIT License
+ *
+ * Copyright 2020 cjacobsen.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 namespace system\app\forms;
@@ -23,7 +41,6 @@ use app\database\Schema;
 use app\models\district\ActiveDirectory;
 use app\models\district\GoogleApps;
 use system\app\AppLogger;
-use app\models\user\User;
 
 class Form {
 
@@ -60,7 +77,7 @@ class Form {
      *
      * @var String
      */
-    private $csrfToken;
+    public static $csrfToken;
 
     /**
      *
@@ -86,12 +103,12 @@ class Form {
         $this->action = $action;
         $this->method = $method;
         $this->name = $name;
-        $this->id = $name;
+        $this->id = $name . 'Form';
 // Build form opening tag from construct parameters
         $this->formHTML = '<form class="pb-3" name="' . $this->name . '" method="' . $this->method . '" action="' . $this->action . '" enctype="multipart/form-data">';
 // Initialize form row to 0
         $this->currentRow = 0;
-        $this->csrfToken = \system\Encryption::encrypt(\system\app\Session::getID());
+        self::$csrfToken = \system\Encryption::encrypt(\system\app\Session::getID());
     }
 
     public function setStyle($style) {
@@ -125,7 +142,16 @@ class Form {
         return $this;
     }
 
+    public function getId() {
+        return $this->id;
+    }
+
+    public function setId($id) {
+        return $this->id = $id;
+    }
+
     public function setActionVariable(FormElement $element) {
+        //var_dump($element);
         $elementName = $element->getName();
         $attribute = 'name="' . $elementName . '"';
         $jsFunction = ' new function(){
@@ -155,19 +181,32 @@ console.log(inputVal);
         //var_dump($arrayOfElements);
 
         foreach ($arrayOfElements as $element) {
+
             if (is_array($element)) {
 
 
                 $this->printArrayOfElements($element, $html);
             } else {
 
-
-                $html .= $element->getHTML();
+                $html .= $this->printElement($element);
             }
-            //var_dump($html);
         }
 
         return $html;
+    }
+
+    private function printElement(FormElement $element) {
+
+        $html = $element->getHTML();
+        $this->modals .= $element->printModal();
+        return $html;
+    }
+
+    public static function getCsrfToken(): String {
+        if (self::$csrfToken == null) {
+            new self();
+        }
+        return self::$csrfToken;
     }
 
     /**
@@ -176,9 +215,9 @@ console.log(inputVal);
      * @return string
      */
     public function print() {
-
+        $this->modals = '';
         $html = "<form action='$this->action' method='$this->method' name='$this->name' id='$this->id' style='$this->style' onclick='$this->onSubmit'>";
-        $html .= '<input type="hidden" name="csrfToken" value="' . $this->csrfToken . '"/>';
+        $html .= '<input type="hidden" name="csrfToken" value="' . self::$csrfToken . '"/>';
         foreach ($this->rowsOfElements as $rowOfElements) {
 
             $html .= '<div class="row">';
@@ -186,12 +225,14 @@ console.log(inputVal);
                 $html .= $this->printArrayOfElements($rowOfElements);
             } else {
 
-                $html .= $rowOfElements->getHTML();
+                $html .= $this->printElement($element);
             }
+
             $html .= '</div>';
         }
+
         $html .= "</form>";
-        return $html;
+        return $html . $this->modals;
     }
 
     /**
@@ -450,7 +491,7 @@ console.log(inputVal);
 });
 
 </script>';
-        $this->logger->debug(htmlspecialchars($this->lastComponentBuilt));
+        //$this->logger->debug(htmlspecialchars($this->lastComponentBuilt));
 
         if (strpos($this->lastComponentBuilt, '</div>')) {
             $this->lastComponentBuilt = str_replace('</div>', '</div>' . $jsScript, $this->lastComponentBuilt);
@@ -541,9 +582,9 @@ console.log(inputVal);
         $this->buildTextInput('Username', 'username', null, \system\Lang::getHelp('User Search'))
                 ->addID("username");
         if ($searchStudents) {
-            $this->addAutoComplete("/api/ldap/autocompleteStudent/", 2);
+            $this->addAutoComplete("/api/district/autocompleteStudent/", 2);
         } else {
-            $this->addAutoComplete("/api/ldap/autocompleteStaff/", 2);
+            $this->addAutoComplete("/api/district/autocompleteStaff/", 2);
         }
         $this->medium()
                 ->prependInput('<i class="fas fa-search"></i>');
@@ -647,52 +688,6 @@ console.log(inputVal);
 
         $formComponent .= '</div>';
         $formComponent .= $this->componentEnd;
-        $this->lastComponentBuilt = $formComponent;
-        return $this;
-    }
-
-    /**
-     *
-     * @param string $label
-     * @param const $name
-     * @param string $value
-     * @param string $helpText
-     * @param string $placeholder
-     * @return Form
-     * @deprecated since version number
-     */
-    public function buildAJAXStatusCheck($label, $target, $data = null, $helpText = null) {
-//var_dump($value);
-        $formComponent = $this->startInput(null, $label, $helpText);
-        $label = strtolower(str_replace(" ", "", $label));
-
-        $formComponent .= '<div class="col-md text-center" id="' . $label . 'ajaxOutput">';
-        $formComponent .= '<button type="button" class="btn btn-primary" id="' . $label . 'button">Perorm Check</button>';
-        $formComponent .= '</div>';
-
-
-        $formComponent .= $this->componentEnd;
-        $postData = '';
-        if (!is_null($data)) {
-            foreach ($data as $entry) {
-                $postData .= $entry[0] . ': ' . $entry[1];
-            }
-        }
-        $formComponent .= "<script>
-                    $('#" . $label . "button').on('click', function () {
-                        console.log('works');
-                        $('#" . $label . "ajaxOutput').html(" . '"' . "<span class='spinner-border text-primary'>" . '"' . ");
-                        $.post('$target', {" . $postData . "},
-                                function (data) {
-                                    //request completed
-                                    //now update the div with the new data
-                                    $('#" . $label . "ajaxOutput').html(data);
-                }
-                );
-                //$('#" . $label . "ajaxOutput').slideDown('slow');
-                });
-
-        </script>";
         $this->lastComponentBuilt = $formComponent;
         return $this;
     }

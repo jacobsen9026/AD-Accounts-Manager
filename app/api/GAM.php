@@ -210,13 +210,15 @@ class GAM {
             'email' => $username,
             'orderBy' => 'email',
         );
-        $service = new \Google_Service_Directory($this->googleClient);
-        $user = $service->users->get($username);
+        if ($this->googleClient != null) {
+            $service = new \Google_Service_Directory($this->googleClient);
+            $user = $service->users->get($username);
 
-
-        //$users = $service->getUsers($username);
+            //$users = $service->getUsers($username);
 //var_dump($user);
-        return $user;
+            return $user;
+        }
+        return false;
     }
 
     public function getUserGroups($username) {

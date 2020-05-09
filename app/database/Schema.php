@@ -33,18 +33,22 @@ class Schema {
     const ACTIVEDIRECTORY_LOGON_SCRIPT = array('table' => 'ActiveDirectory', 'column' => 'Logon_Script', 'name' => 'ActiveDirectory_Logon_Script');
     const ACTIVEDIRECTORY_DESCRIPTION = array('table' => 'ActiveDirectory', 'column' => 'Description', 'name' => 'ActiveDirectory_Description');
     const ACTIVEDIRECTORY_FORCE_PASSWORD_CHANGE = array('table' => 'ActiveDirectory', 'column' => 'Force_Password_Change', 'name' => 'ActiveDirectory_Force_Password_Change');
-    const APP_ID = array('table' => 'App', 'column' => 'ID', 'name' => 'App_ID');
-    const APP_NAME = array('table' => 'App', 'column' => 'Name', 'name' => 'App_Name');
-    const APP_FORCE_HTTPS = array('table' => 'App', 'column' => 'Force_HTTPS', 'name' => 'App_Force_HTTPS');
-    const APP_MOTD = array('table' => 'App', 'column' => 'MOTD', 'name' => 'App_MOTD');
-    const APP_DEBUG_MODE = array('table' => 'App', 'column' => 'Debug_Mode', 'name' => 'App_Debug_Mode');
+
+    /**
+      const APP_ID = array('table' => 'App', 'column' => 'ID', 'name' => 'App_ID');
+      const APP_NAME = array('table' => 'App', 'column' => 'Name', 'name' => 'App_Name');
+      const APP_FORCE_HTTPS = array('table' => 'App', 'column' => 'Force_HTTPS', 'name' => 'App_Force_HTTPS');
+      const APP_MOTD = array('table' => 'App', 'column' => 'MOTD', 'name' => 'App_MOTD');
+      const APP_DEBUG_MODE = array('table' => 'App', 'column' => 'Debug_Mode', 'name' => 'App_Debug_Mode');
+      const APP_PROTECTED_ADMIN_USERNAMES = array('table' => 'App', 'column' => 'Protected_Admin_Usernames', 'name' => 'App_Protected_Admin_Usernames');
+      const APP_WEBSITIE_FQDN = array('table' => 'App', 'column' => 'Websitie_FQDN', 'name' => 'App_Websitie_FQDN');
+      const APP_APP_VERSION = array('table' => 'App', 'column' => 'App_Version', 'name' => 'App_App_Version');
+      const APP_DATABASE_VERSION = array('table' => 'App', 'column' => 'Database_Version', 'name' => 'App_Database_Version');
+      const APP_USER_HELPDESK_URL = array('table' => 'App', 'column' => 'User_Helpdesk_URL', 'name' => 'App_User_Helpdesk_URL');
+      const APP_UPDATE_CHECK_URL = array('table' => 'App', 'column' => 'Update_Check_URL', 'name' => 'App_Update_Check_URL');
+     *
+     */
     const APP_ADMIN_PASSWORD = array('table' => 'App', 'column' => 'Admin_Password', 'name' => 'App_Admin_Password');
-    const APP_PROTECTED_ADMIN_USERNAMES = array('table' => 'App', 'column' => 'Protected_Admin_Usernames', 'name' => 'App_Protected_Admin_Usernames');
-    const APP_WEBSITIE_FQDN = array('table' => 'App', 'column' => 'Websitie_FQDN', 'name' => 'App_Websitie_FQDN');
-    const APP_APP_VERSION = array('table' => 'App', 'column' => 'App_Version', 'name' => 'App_App_Version');
-    const APP_DATABASE_VERSION = array('table' => 'App', 'column' => 'Database_Version', 'name' => 'App_Database_Version');
-    const APP_USER_HELPDESK_URL = array('table' => 'App', 'column' => 'User_Helpdesk_URL', 'name' => 'App_User_Helpdesk_URL');
-    const APP_UPDATE_CHECK_URL = array('table' => 'App', 'column' => 'Update_Check_URL', 'name' => 'App_Update_Check_URL');
     const DEPARTMENT_ID = array('table' => 'Department', 'column' => 'ID', 'name' => 'Department_ID');
     const DEPARTMENT_SCHOOL_ID = array('table' => 'Department', 'column' => 'School_ID', 'name' => 'Department_School_ID');
     const DEPARTMENT_NAME = array('table' => 'Department', 'column' => 'Name', 'name' => 'Department_Name');
@@ -133,6 +137,7 @@ class Schema {
     const DISTRICT_AD_USERNAME = array('table' => 'District', 'column' => 'AD_Username', 'name' => 'District_AD_Username');
     const DISTRICT_AD_PASSWORD = array('table' => 'District', 'column' => 'AD_Password', 'name' => 'District_AD_Password');
     const DISTRICT_AD_STUDENT_GROUP = array('table' => 'District', 'column' => 'AD_Student_Group', 'name' => 'District_AD_Student_Group');
+    const DISTRICT_AD_STAFF_GROUP = array('table' => 'District', 'column' => 'AD_Staff_Group', 'name' => 'District_AD_Staff_Group');
     const DISTRICT_GA_FQDN = array('table' => 'District', 'column' => 'GA_FQDN', 'name' => 'District_GA_FQDN');
     const DISTRICT_PARENT_EMAIL_GROUP = array('table' => 'District', 'column' => 'Parent_Email_Group', 'name' => 'District_Parent_Email_Group');
     const DISTRICT_STAFF_USERNAME_FORMAT = array('table' => 'District', 'column' => 'Staff_Username_Format', 'name' => 'District_Staff_Username_Format');

@@ -25,36 +25,22 @@
  */
 
 use app\database\Schema;
-use app\models\AppConfig;
-use app\models\Email;
+use app\models\database\AppDatabase;
+use app\models\database\EmailDatabase;
 use system\app\forms\Form;
+use system\app\forms\FormTextArea;
 
-$this->email = Email::get();
+$this->email = EmailDatabase::get();
 //var_dump($this->email);
 
-
-
-$form = new Form(null, 'email');
-
-$form->buildTextAreaInput('Admin Email Addresses',
-                Schema::EMAIL_ADMIN_EMAIL_ADDRESSES,
-                $this->email[Schema::EMAIL_ADMIN_EMAIL_ADDRESSES[Schema::COLUMN]],
-                'Read only user for authentication',
-                'samAuthUser')
-        ->addToRow()
-        ->buildTextAreaInput('Staff Welcome Email Blind Recipients',
-                Schema::EMAIL_WELCOME_EMAIL_BCC,
-                $this->email[Schema::EMAIL_WELCOME_EMAIL_BCC[Schema::COLUMN]],
-                'Allow authentication by LDAP')
-        ->center()
-        ->addToRow()
-        ->buildTextAreaInput('Staff Welcome Email',
-                Schema::EMAIL_WELCOME_EMAIL,
-                $this->email[Schema::EMAIL_WELCOME_EMAIL[Schema::COLUMN]],
-                'Allow authentication by LDAP')
-        ->addToNewRow()
-        ->buildUpdateButton()
-        ->addToNewRow();
-echo $form->getFormHTML();
+$form = new Form('', 'notification');
+$adminEmails = new FormTextArea('Admin Email Addresses', 'Recieves important system notifications', 'adminEmails');
+//$staffBlind = new FormTextArea('', $subLabel, $name)
+$save = new \system\app\forms\FormButton("Save");
+$save->small()
+        ->addAJAXRequest('/api/settings/notification', 'settingsOutput', $form);
+$form->addElementToCurrentRow($adminEmails)
+        ->addElementToNewRow($save);
+echo $form->print();
 ?>
 

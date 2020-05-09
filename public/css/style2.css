@@ -45,7 +45,20 @@ and open the template in the editor.
 .log-nav{
     top:2.5rem!important;
 }
-
+.shadow-lg-hover{
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+    -webkit-transition: box-shadow 1.0s;
+    -webkit-transition-delay: 0.1s;
+    -o-transition: box-shadow 1.0s;
+    -o-transition-delay: 0.1s;
+    -moz-transition: box-shadow 1.0s;
+    -moz-transition-delay: 0.1s;
+    transition: box-shadow 1.0s;
+    transition-delay: 0s;
+}
+.shadow-lg-hover:hover{
+    box-shadow: 0 0rem 10rem rgba(0,0,0,.375)!important;
+}
 
 .bg-primary,.btn-primary,.text-primary, .active{
  #background-color: #a32430!important;

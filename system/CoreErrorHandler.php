@@ -41,9 +41,17 @@ class CoreErrorHandler {
 
     public static $instance;
 
+    /**
+     * Set PHP Error and Exception handlers to functions in this object
+     *
+     * Returns a static instance of this object
+     *
+     * @return self
+     */
     function __construct() {
         set_error_handler(array($this, 'handleError'));
         set_exception_handler(array($this, 'handleException'));
+
         if (isset(self::$instance)) {
             return self::$instance;
         } else {
@@ -109,16 +117,21 @@ class CoreErrorHandler {
         $surroundingCode .= $lineNumber + 2 . file($file)[$lineNumber + 1];
         $surroundingCode .= $lineNumber + 3 . file($file)[$lineNumber + 2];
         $surroundingCode = str_replace("'", '"', $surroundingCode);
-        //Send a 500 internal server error to the browser.
-        header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-        $logMessage = $file . ':' . $lineNumber . ' ' . $message;
-        $errorMessage = '<div class="alert alert-danger">Fatal Errror <br/><br/>' . $message . '<br/><br/>' . $file
-                . ':' . $lineNumber . '<br/><pre>'
-                . $surroundingCode . '</pre></div>';
+
+
+
+        if (Core::get()->inDebugMode()) {
+            //Send a 500 internal server error to the browser.
+            header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+            $logMessage = $file . ':' . $lineNumber . ' ' . $message;
+            $errorMessage = '<div class="alert alert-danger">Fatal Errror <br/><br/>' . $message . '<br/><br/>' . $file
+                    . ':' . $lineNumber . '<br/><pre>'
+                    . $surroundingCode . '</pre></div>';
+            echo $errorMessage;
+        }
         /*
          * Kill the core execution.
          */
-        echo $errorMessage;
         Core::get()->abort($logMessage);
     }
 

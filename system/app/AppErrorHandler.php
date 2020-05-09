@@ -33,6 +33,7 @@ namespace system\app;
  */
 use app\App;
 use system\SystemLogger;
+use system\AppException;
 
 class AppErrorHandler {
 
@@ -62,11 +63,12 @@ class AppErrorHandler {
     //put your code here
 
     public function handleError($code, $description, $file = null, $line = null, $context = null) {
-        $output = "Error: [$code] $description";
+        $label = $output = "Error: [$code] $description";
         if ($file != null and $line != null) {
             $output = "Error: $file:$line [$code] $description";
         }
         AppLogger::get()->error($output);
+        //die();
     }
 
 }

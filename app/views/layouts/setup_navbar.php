@@ -13,7 +13,7 @@ use app\database\Schema;
 
 <nav class="navbar navbar-expand-md navbar-dark sticky-top district-nav bg-success shadow-sm w-100">
     <!-- Brand -->
-    <a class="nav-link text-weight-bold text-light" href="/settings/districts">District Setup</a>
+    <a class="nav-link text-weight-bold text-light" href="/settings/district">District Setup</a>
     <?php
     if (isset($this->schoolID)) {
         ?>

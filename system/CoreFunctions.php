@@ -31,7 +31,7 @@ if (!function_exists('enablePHPErrors')) {
           $bt = debug_backtrace(1);
           $caller = array_shift($bt);
           echo $caller['file'] . ":" . $caller["line"]; */
-        //error_reporting(E_ALL);
+        error_reporting(E_ALL);
         ini_set('display_errors', TRUE);
         ini_set('display_startup_errors', TRUE);
     }
@@ -41,7 +41,7 @@ if (!function_exists('disablePHPErrors')) {
 
     function disablePHPErrors() {
 
-        //error_reporting(0);
+        error_reporting(0);
         ini_set('display_errors', FALSE);
         ini_set('display_startup_errors', FALSE);
     }
@@ -64,6 +64,21 @@ if (!function_exists('backTrace')) {
         //var_dump($caller);
         //$caller = array_shift($caller);
         return $caller;
+    }
+
+}
+if (!function_exists("array_flatten")) {
+
+    function array_flatten($array) {
+        if (is_array($array)) {
+            $it = new RecursiveIteratorIterator(new RecursiveArrayIterator($array));
+            foreach ($it as $v) {
+                $flat[] = $v;
+            }
+            return $flat;
+        } else {
+            return $array;
+        }
     }
 
 }

@@ -1,9 +1,27 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The MIT License
+ *
+ * Copyright 2020 cjacobsen.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 namespace system;
@@ -17,7 +35,6 @@ namespace system;
  * should be funneled into this class.
  * @author cjacobsen
  */
-use SQLite3;
 use PDO;
 
 class Database extends Parser {
@@ -51,14 +68,14 @@ class Database extends Parser {
         /*
          * If the db file doesn't exist we want to seed it after we connect
          */
-        if (!file_exists(DBPATH)) {
+        if (!file_exists(APPCONFIGDBPATH)) {
             $seedDatabse = true;
         }
-        SystemLogger::get()->info("connecting " . DBPATH);
+        SystemLogger::get()->info("connecting " . APPCONFIGDBPATH);
         /**
          * Connect to database, will create file if it doesn't already exist
          */
-        $this->db = new \PDO("sqlite:" . DBPATH, null, null, array(
+        $this->db = new \PDO("sqlite:" . APPCONFIGDBPATH, null, null, array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false
@@ -194,6 +211,7 @@ class Database extends Parser {
      * for all tables and columns in database
      *
      * @return array ["TABLE_COLUMN"=>COLUMN,...]
+     * @deprecated
      */
     public function getConstants() {
         $tables = $this->getAllTables();

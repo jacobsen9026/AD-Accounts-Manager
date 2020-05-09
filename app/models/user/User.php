@@ -32,25 +32,45 @@ namespace app\models\user;
  * @author cjacobsen
  */
 use system\app\auth\CoreUser;
-use system\app\Cookie;
 use system\app\Session;
 use system\app\App;
+use system\app\AppLogger;
+use app\models\database\UserDatabase;
+use app\models\user\PrivilegeLevel;
+use app\models\database\PermissionMapDatabase;
+use app\models\database\PrivilegeLevelDatabase;
 
 class User extends CoreUser {
 
-    const THEME = "theme";
     const FULL_NAME = "fullName";
     const USER = "user";
 
+    /**
+     *
+     * @var array<PrivilegeLevel>
+     */
+    public $privilegeLevels;
+    public $adGroupName;
+    public $superUser = false;
+
+    /**
+     *
+     * @var string
+     */
     public $theme = \app\config\Theme::DEFAULT_THEME;
+
+    /**
+     *
+     * @var string
+     */
     public $fullName;
 
     /**
      *
-     * @param type $username
-     * @return type
+     * @param string $username
+     * @return self
      */
-    function __construct($username = null) {
+    function __construct(string $username = null) {
         //set_error_handler(array($this, 'handleError'));
         //set_exception_handler(array($this, 'handleException'));
 
@@ -59,16 +79,24 @@ class User extends CoreUser {
         } else {
             $this->privilege = Privilege::UNAUTHENTICATED;
         }
-
+        $this->theme = \app\config\Theme::DEFAULT_THEME;
+        \system\app\AppLogger::get()->debug($this->theme);
         return $this;
 
         //$this->save();
     }
 
+    /**
+     * Sets this user as the local administrator
+     * @return self $this
+     */
     private function setAsAdministrator() {
         $this->privilege = Privilege::TECH;
         $this->fullName = \system\Lang::get('Administrator Full Name');
         $this->username = "admin";
+        $this->privilegeLevels = new PrivilegeLevel();
+        $this->privilegeLevels->setSuperAdmin(true);
+        return $this;
     }
 
     /**
@@ -83,8 +111,8 @@ class User extends CoreUser {
     }
 
     /**
-     *
-     * @return type
+     * Get the users chosen theme
+     * @return string
      */
     public function getTheme() {
 
@@ -93,7 +121,7 @@ class User extends CoreUser {
 
     /**
      *
-     * @return type
+     * @return string
      */
     public function getFullName() {
         return $this->fullName;
@@ -101,10 +129,25 @@ class User extends CoreUser {
 
     /**
      *
+     * @return array <Permissions>
+     */
+    public function getPermissions(string $ou) {
+        $levelIDs = array();
+        foreach ($this->privilegeLevels as $level) {
+            /* @var $level PrivilegeLevel */
+            $levelIDs[] = $level->getId();
+        }
+        $permissions = PermissionMapDatabase::getRelevantPermissions($levelIDs, $ou);
+
+        return $permissions;
+    }
+
+    /**
+     *
      * @param type $theme
      * @return User
      */
-    public function setTheme($theme) {
+    public function setTheme(string $theme) {
         \system\app\AppLogger::get()->debug("Changing theme to " . $theme);
         $this->theme = $theme;
 
@@ -114,56 +157,87 @@ class User extends CoreUser {
 
     /**
      *
-     * @param type $fullName
+     * @param string $fullName
      * @return User
      */
-    public function setFullName($fullName) {
+    public function setFullName(string $fullName) {
         $this->fullName = $fullName;
         return $this;
     }
 
-    public function setToken($token) {
+    public function setSuperUser($superUser) {
+        $this->superUser = $superUser;
+        return $this;
+    }
+
+    /**
+     *
+     * @param string $token
+     * @return $this
+     */
+    public function setToken(string $token) {
         $this->apiToken = $token;
         return $this;
     }
 
-    public function save() {
-        if ($this->getApiToken() == null or $this->getApiToken() == '')
-            $this->generateAPIToken();
-        \system\app\AppLogger::get()->debug("Changing theme to " . $this->theme);
-        //var_dump("saving user");
-        //var_dump($this);
-        \system\app\Session::setUser($this);
-        Cookie::set(self::USER . '_' . $this->username, \system\Encryption::encrypt(serialize($this)));
-        UserDatabase::setUserToken($this->username, $this->apiToken);
-        UserDatabase::setUserTheme($this->username, $this->theme);
-        UserDatabase::setUserPrivilege($this->username, $this->privilege);
+    public function addPrivilegeLevel(PrivilegeLevel $privilegeLevel) {
+        $this->privilegeLevels[] = $privilegeLevel;
+        return $this;
     }
 
+    public function getPrivilegeLevels() {
+        return $this->privilegeLevels;
+    }
+
+    /**
+     *
+     * @param type $privilegeLevelArray
+     * @return $this
+     */
+    public function setPrivilegeLevels($privilegeLevelArray) {
+        $this->privilegeLevels = $privilegeLevelArray;
+        return $this;
+    }
+
+    public function loadPrivilegeLevel($adGroupName) {
+        AppLogger::get()->debug($adGroupName);
+
+        $this->addPrivilegeLevel(PrivilegeLevelDatabase::getPrivilegeLevel($adGroupName));
+        return $this;
+    }
+
+    /**
+     * Save this user to the database
+     *
+     */
+    public function save() {
+        try {
+            if ($this->getApiToken() == null or $this->getApiToken() == '')
+                $this->generateAPIToken();
+            AppLogger::get()->debug("Changing theme to " . $this->theme);
+            Session::setUser($this);
+            //Cookie::set(self::USER . '_' . $this->username, \system\Encryption::encrypt(serialize($this)));
+            UserDatabase::setUserToken($this->username, $this->apiToken);
+            //var_dump($this->theme);
+            UserDatabase::setUserTheme($this->username, $this->theme);
+            UserDatabase::setUserPrivilege($this->username, $this->privilege);
+            return true;
+        } catch (Exception $ex) {
+            return false;
+        }
+    }
+
+    /**
+     * Loads user data from Session and Database into the App instance
+     * @param App $app
+     */
     public static function load(App $app) {
         $app->user = Session::getUser();
-        if ($app->user->username != null) {
+        if ($app->user != null and $app->user->username != null) {
             $app->user->setToken(UserDatabase::getToken($app->user->username));
             $app->user->setTheme(UserDatabase::getTheme($app->user->username));
         }
-        /**
-          $cookieName = User::USER . '_' . $app->user->username;
-          $cookieData = Cookie::get($cookieName);
-          //var_dump($cookieData);
-          if ($cookieData != false) {
-          $app->logger->info("Loading user from cookie");
-          $cookieUser = unserialize(\system\Encryption::decrypt($cookieData));
-          if ($cookieUser instanceof self) {
-          $app->user = $cookieUser;
-          } else {
-          Cookie::delete($cookieName);
-          $app->user->save();
-          }
-          } else {
-          $app->logger->warning("Cookie not found");
-          }
-         *
-         */
+
         $app->logger->info($app->user);
     }
 

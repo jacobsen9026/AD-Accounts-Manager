@@ -31,10 +31,11 @@ namespace app\controllers\settings;
  *
  * @author cjacobsen
  */
-use system\Post;
-use app\models\district\DistrictDatabase;
-use app\database\Schema;
 use app\controllers\Controller;
+use system\app\AppLogger;
+use app\models\database\AppDatabase;
+use app\models\database\AuthDatabase;
+use app\models\database\EmailDatabase;
 
 class Application extends Controller {
 
@@ -56,11 +57,11 @@ class Application extends Controller {
     }
 
     public function indexPost() {
-        \system\app\AppLogger::get()->debug('Edit Post');
+        AppLogger::get()->info('Editing Settings');
         $post = \system\Post::getAll();
-        var_dump($post);
-        \app\models\DatabasePost::setPost(Schema::APP, \system\app\App::getID(), $post);
-        //var_dump($post);
+        AppDatabase::saveSettings($post);
+
+        EmailDatabase::saveSettings($post);
         $this->redirect('/settings/application');
     }
 

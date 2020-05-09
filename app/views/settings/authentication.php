@@ -24,142 +24,63 @@
  * THE SOFTWARE.
  */
 
-use app\database\Schema;
-use app\models\AppConfig;
-use app\models\Auth;
+use app\models\database\AuthDatabase;
 use system\app\forms\Form;
-use app\auth\LDAP;
+use app\auth\ADAuth;
+use system\app\forms\FormText;
 
-$this->auth = Auth::get();
-//var_dump($this->auth);
-//var_dump($this->auth[Schema::AUTH_LDAP_ENABLED[Schema::COLUMN]]);
+$auth = new AuthDatabase();
 
-$server = $this->auth[Schema::AUTH_LDAP_SERVER[Schema::COLUMN]];
-$username = $this->auth[Schema::AUTH_LDAP_USERNAME[Schema::COLUMN]];
-$password = $this->auth[Schema::AUTH_LDAP_PASSWORD[Schema::COLUMN]];
-if (!empty($server)) {
-    $adTestResult = LDAP::testConnection($server, $username, $password);
+$server = $auth->getLDAPServer();
+$username = $auth->getLDAPUsername();
+$password = $auth->getLDAPPassword();
+if (!empty($server) and $auth->getLDAPEnabled()) {
+    $adTestResult = ADAuth::testConnection($server, $username, $password);
 }
-//var_dump($adTestResult);
-$form = new Form(null, 'authentication');
-
-$form->buildTextInput('Session Timeout',
-                Schema::AUTH_SESSION_TIMEOUT,
-                Auth::getSessionTimeout(),
-                'The length of time a session can remain idle in seconds',
-                '1200')
-        ->small()
-        ->addToNewRow()
-        ->buildPasswordInput('Admin Password',
-                Schema::APP_ADMIN_PASSWORD,
-                AppConfig::getAdminPassword(),
-                'Set a new admin password')
-        ->addToRow();
 
 
-$form->addSeperator();
 
-$form->buildBinaryInput('LDAP Enabled',
-                Schema::AUTH_LDAP_ENABLED,
-                Auth::getLDAPEnabled(),
-                'Allow authentication by LDAP')
-        ->center()
-        ->addToNewRow();
-if (Auth::getLDAPEnabled()) {
-    $form->buildStatusCheck('LDAP Connection Status',
-                    $adTestResult)
-            ->addToRow();
-}
-$form->buildBinaryInput('Use SSL with LDAP',
-                Schema::AUTH_LDAP_USE_SSL,
-                $this->auth[Schema::AUTH_LDAP_USE_SSL[Schema::COLUMN]],
-                'Requires web server setup.')
-        ->addToRow()
-        ->buildTextInput('LDAP Server',
-                Schema::AUTH_LDAP_SERVER,
-                $this->auth[Schema::AUTH_LDAP_SERVER[Schema::COLUMN]],
-                'Can also be the domain name in most environments.',
-                'ldap.constoso.com / ldap / contoso.com')
-        ->addToNewRow()
-        ->buildTextInput('LDAP FQDN',
-                Schema::AUTH_LDAP_FQDN,
-                $this->auth[Schema::AUTH_LDAP_FQDN[Schema::COLUMN]],
-                'This will be appended to usenames on log on.',
-                'contoso.com')
-        ->addToRow()
-        ->buildTextInput('LDAP Server Port',
-                Schema::AUTH_LDAP_PORT,
-                $this->auth[Schema::AUTH_LDAP_PORT[Schema::COLUMN]],
-                'The port to connect to (389 for ldap, 636 for ldaps)',
-                '389')
-        ->addToRow()
-        ->buildTextInput('LDAP Username',
-                Schema::AUTH_LDAP_USERNAME,
-                $this->auth[Schema::AUTH_LDAP_USERNAME[Schema::COLUMN]],
-                'User for binding (leave blank for annonymous)',
-                'annonymous')
-        ->addToNewRow()
-        ->buildPasswordInput('LDAP Password',
-                Schema::AUTH_LDAP_PASSWORD,
-                $this->auth[Schema::AUTH_LDAP_PASSWORD[Schema::COLUMN]],
-                'Bind user\'s password')
-        ->addToRow()
-        ->buildTextInput('LDAP Basic User Permission Group',
-                Schema::AUTH_BASIC_AD_GROUP,
-                $this->auth[Schema::AUTH_BASIC_AD_GROUP[Schema::COLUMN]],
-                'Enter group name')
-        ->addToNewRow()
-        ->buildTextInput('LDAP Power User Permission Group',
-                Schema::AUTH_POWER_AD_GROUP,
-                $this->auth[Schema::AUTH_POWER_AD_GROUP[Schema::COLUMN]],
-                'Enter group name')
-        ->addToRow()
-        ->buildTextInput('LDAP Admin User Permission Group',
-                Schema::AUTH_ADMIN_AD_GROUP,
-                $this->auth[Schema::AUTH_ADMIN_AD_GROUP[Schema::COLUMN]],
-                'Enter group name')
-        ->addToNewRow()
-        ->buildTextInput('LDAP Tech User Permission Group',
-                Schema::AUTH_TECH_AD_GROUP,
-                $this->auth[Schema::AUTH_TECH_AD_GROUP[Schema::COLUMN]],
-                'Enter group name')
-        ->addToRow()
-        /*
-          ->addSeperator()
-          ->buildBinaryInput('OAuth Enabled',
-          Schema::AUTH_OAUTH_ENABLED,
-          $this->auth[Schema::AUTH_OAUTH_ENABLED[Schema::COLUMN]],
-          'Allow authentication by OAuth2')
-          ->disable()
-          ->addToNewRow()
-          ->buildTextInput('Google Apps Basic User Permission Group',
-          Schema::AUTH_BASIC_GA_GROUP,
-          $this->auth[Schema::AUTH_BASIC_GA_GROUP[Schema::COLUMN]],
-          'Enter group name',
-          'SAM Basic Users')
-          ->addToNewRow()
-          ->buildTextInput('Google Apps Power User Permission Group',
-          Schema::AUTH_POWER_GA_GROUP,
-          $this->auth[Schema::AUTH_POWER_GA_GROUP[Schema::COLUMN]],
-          'Enter group name',
-          'SAM Power Users')
-          ->addToRow()
-          ->buildTextInput('Google Apps Admin User Permission Group',
-          Schema::AUTH_ADMIN_GA_GROUP,
-          $this->auth[Schema::AUTH_ADMIN_GA_GROUP[Schema::COLUMN]],
-          'Enter group name',
-          'SAM Admin Users')
-          ->addToNewRow()
-          ->buildTextInput('Google Apps Tech User Permission Group',
-          Schema::AUTH_TECH_GA_GROUP,
-          $this->auth[Schema::AUTH_TECH_GA_GROUP[Schema::COLUMN]],
-          'Enter group name',
-          'SAM Tech Users')
-          ->addToRow()
+$form = new Form('/settings/authentication', "authentication");
+$sessionTimeout = new FormText("Session Timeout", "The length of time a session can remain idle in seconds", "sessionTimeout", $auth->getSessionTimeout());
+$adminPassword = new FormText("Admin Password", "Set a new admin password", "adminPassword", $auth->getAdminPassword());
+$adminPassword->isPassword();
+$ldapEnabled = new system\app\forms\FormRadio("AD Logon Enabled", "Allow logon with Active Directory accounts", "ldapEnabled");
+$ldapEnabled->addOption("False", 0, !$auth->getLDAPEnabled())
+        ->addOption("True", 1, $auth->getLDAPEnabled());
+$ldapSSL = new system\app\forms\FormRadio("Use SSL with AD", "Requires web server configuration", "ldapSSL");
+$ldapSSL->addOption("False", 0, !$auth->getLDAPUseSSL())
+        ->addOption("True", 1, $auth->getLDAPUseSSL());
+$ldapServerName = new FormText("LDAP Server", "Can also be the domain name in most environments.", "ldapServer", $auth->getLDAPServer());
+$ldapFQDN = new FormText("LDAP FQDN", "This will be appended to usenames on log on.", "ldapFQDN", $auth->getLDAP_FQDN());
+$ldapPort = new FormText("LDAP Server Port", "The port to connect to (389 for ldap, 636 for ldaps)", "ldapPort", $auth->getLDAP_Port());
+$ldapUsername = new FormText("LDAP Username", "User for authentication binding (leave blank for annonymous)", "ldapUsername", $auth->getLDAPUsername());
+$ldapPassword = new FormText("LDAP Password", "Bind user's password", "ldapPassword", $auth->getLDAPPassword());
+$ldapBasicGroup = new FormText("LDAP Basic User Permission Group", null, "ldapBasic", $auth->getBasicADGroup());
+$ldapPowerGroup = new FormText("LDAP Power User Permission Group", null, "ldapPower", $auth->getPowerADGroup());
+$ldapAdminGroup = new FormText("LDAP Admin User Permission Group", null, "ldapAdmin", $auth->getAdminADGroup());
+$ldapTechGroup = new FormText("Active Directory Super User Group", null, "ldapTech", $auth->getSuperUserADGroup());
+$ldapTechGroup->medium();
+$button = new \system\app\forms\FormButton("Save");
+$button->small()->addAJAXRequest('/api/settings/authentication', 'settingsOutput', $form);
+
+
+$form->addElementToNewRow($sessionTimeout)
+        ->addElementToCurrentRow($adminPassword)
+        ->addElementToNewRow($ldapEnabled)
+        ->addElementToCurrentRow($ldapSSL)
+        ->addElementToNewRow($ldapTechGroup)
+        /**
+          ->addElementToNewRow($ldapServerName)
+          ->addElementToCurrentRow($ldapFQDN)
+          ->addElementToCurrentRow($ldapPort)
+          ->addElementToNewRow($ldapUsername)
+          ->addElementToCurrentRow($ldapPassword)
+          /**
+          ->addElementToNewRow($ldapBasicGroup)
+          ->addElementToCurrentRow($ldapPowerGroup)
+          ->addElementToNewRow($ldapAdminGroup)
          *
          */
-        ->buildUpdateButton()
-        ->addToNewRow();
-echo $form->getFormHTML();
+        ->addElementToNewRow($button);
+echo $form->print();
 ?>
-

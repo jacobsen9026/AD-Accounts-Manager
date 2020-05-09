@@ -1,15 +1,33 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The MIT License
+ *
+ * Copyright 2020 cjacobsen.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 namespace system\app\forms;
 
 /**
- * Description of FormSelect
+ * Description of FormDropdown
  *
  * @author cjacobsen
  */
@@ -23,16 +41,6 @@ class FormDropdown extends FormElement {
     private $options;
     private $name;
 
-    /**
-     *
-     * @param string $label
-     * @param string $name
-     */
-    function __construct($label, $name) {
-        $this->setLabel($label);
-        $this->name = $name;
-    }
-
     public function createOption($label, $value) {
         $this->options[] = new FormDropdownOption($label, $value);
         return $this;
@@ -43,21 +51,20 @@ class FormDropdown extends FormElement {
         return $this;
     }
 
-    function getOptions() {
+    public function getOptions() {
         return $this->options;
     }
 
-    function getHTML() {
-        $output = '<div class="col-md">'
-                . '<label class="font-weight-bold mb-0" for="' . $this->name . '">' . $this->getLabel() . '</label>'
-                . '<br/>'
-                . '<select class="col-md-6 col-lg-4 col-xl-2 form-control mx-auto custom-select text-center" name="' . $this->name . '">';
+    function getElementHTML() {
+        $disable = '';
+        if ($this->isDisabled())
+            $disable = ' disabled ';
+        $output = '<select class="form-control mx-auto custom-select text-center" name="' . $this->getName() . '" ' . $disable . '>';
 
-        foreach ($this->options as $option) {
+        foreach ($this->getOptions() as $option) {
             $output .= '<option value="' . $option->getValue() . '" ' . $option->getSelected() . '>' . $option->getLabel() . '</option>';
         }
-        $output .= '</select>'
-                . '</div>';
+        $output .= '</select>';
         return $output;
     }
 

@@ -190,42 +190,7 @@ class Router {
 
             $this->route->setMethod($this->preProcess($this->route->getMethod()));
         }
-        /**
-         * We need to handle api calls going to the /api/... uri
-         * All those controllers are under the same directory so
-         * we are actually looking for controller and method and
-         * data in the wrong spot. They are all shifted right one.
-         *
-         */
-        if (strtolower($this->route->getControler()) == "api") {
-            /**
-             * First we shift everything left, method->controller data->method
-             * while maintaining the integrity of the data
-             */
-            $this->route->unfoldLeft();
-            /**
-             * We tell PHP where the controller is by appending the controller
-             * api directory to it.
-             */
-            $this->route->setControler("api\\" . $this->route->getControler());
-            $this->logger->debug($this->route->getControler());
-            $this->logger->debug($this->route->getMethod());
-            $this->logger->debug($this->route->getData());
-
-            /**
-             * There is currently no settings api so I don't think this is needed
-             *
-              if (strtolower($this->route->getControler()) == "api\\settings") {
-              $this->shiftLeft();
-              $this->route->setControler("api\\settings\\" . $this->route->getControler());
-
-              $this->logger->debug($this->route->getControler());
-              $this->logger->debug($this->route->getMethod());
-              $this->logger->debug($this->route->getData());
-              }
-             *
-             */
-        }
+        $this->handleAPIRequests();
         /**
          * Similar to the api we handle settings controllers the same way
          */
@@ -309,6 +274,49 @@ class Router {
         $this->controller = $string;
 
         return $this->controller;
+    }
+
+    private function handleAPIRequests() {
+        /**
+         * We need to handle api calls going to the /api/... uri
+         * All those controllers are under the same directory so
+         * we are actually looking for controller and method and
+         * data in the wrong spot. They are all shifted right one.
+         *
+         */
+        if (strtolower($this->route->getControler()) == "api") {
+            /**
+             * First we shift everything left, method->controller data->method
+             * while maintaining the integrity of the data
+             */
+            $this->route->unfoldLeft();
+            /**
+             * We tell PHP where the controller is by appending the controller
+             * api directory to it.
+             */
+            $this->route->setControler("api\\" . $this->route->getControler());
+            $this->logger->debug($this->route->getControler());
+            $this->logger->debug($this->route->getMethod());
+            $this->logger->debug($this->route->getData());
+
+            /**
+             * There is currently no settings api so I don't think this is needed
+             *
+             * /
+             *
+             */
+            if (strtolower($this->route->getControler()) == "api\\settings") {
+                $this->route->unfoldLeft();
+                $this->route->setControler("api\\settings\\" . $this->route->getControler());
+
+                $this->logger->debug($this->route->getControler());
+                $this->logger->debug($this->route->getMethod());
+                $this->logger->debug($this->route->getData());
+                //var_dump($this->route);
+            }
+            /**
+             */
+        }
     }
 
 }

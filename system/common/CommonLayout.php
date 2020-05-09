@@ -35,10 +35,17 @@ use system\app\App;
 use system\Parser;
 use app\models\user\User;
 use app\controllers\Menu;
+use system\app\AppLogger;
 
 class CommonLayout extends Parser {
 
     const DEFAULT_LAYOUT_NAME = 'default';
+
+    /**
+     *
+     * @var AppLogger
+     */
+    protected $logger;
 
     /** @var string|null The view parser */
     public $layoutName;
@@ -52,9 +59,13 @@ class CommonLayout extends Parser {
     /** @var string|null The view parser */
     private $layoutOutput;
 
-//put your code here
+    /**
+     *
+     * @param App $app
+     */
     function __construct($app) {
         $this->app = $app;
+        $this->logger = $app->logger;
         $this->user = $app->user;
         if (isset($app->controller) and $app->controller != null) {
             if (isset($app->controller->layout)) {
@@ -65,11 +76,10 @@ class CommonLayout extends Parser {
         } else {
             $this->layoutName = $this::DEFAULT_LAYOUT_NAME;
         }
-//$this->app->debug($app->outputBody);
     }
 
     public function apply() {
-        //var_dump($this->app->request->type);
+        $this->logger->info($this->app->request->type);
         if ($this->app->request->type == 'http') {
             $this->layoutOutput = $this->getHeader();
         }
@@ -96,7 +106,7 @@ class CommonLayout extends Parser {
     public function getNavigation() {
         // var_dump($this->user);
         $menu = new Menu($this->user);
-        return $menu->getMenu();
+        return $menu->getMenu($this->layoutName);
     }
 
 }

@@ -14,10 +14,11 @@ use system\app\forms\FormText;
 $form = new Form("/students/search", "StudentAccountStatus");
 $button = new FormButton("Search");
 $button->small();
-$textBox = new FormText("Username", "Can also enter first or last name to search for username.", "username");
-$textBox->autoCompleteUsername()
-        ->setId("username")
-        ->appendIcon('<i class="fas fa-search"></i>');
+$textBox = new FormText("Username", "Can also enter first or last name to search for username.", "usernameInput");
+$textBox->autoCompleteStudentUsername()
+        ->setId("usernameInput")
+        ->appendIcon('<i class="fas fa-search"></i>')
+        ->medium();
 $form->addElementToNewRow($textBox)
         ->addElementToNewRow($button)
         ->setActionVariable($textBox);

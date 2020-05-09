@@ -39,14 +39,16 @@ namespace system\app;
 use system\app\Route;
 use system\app\AppErrorHandler;
 use system\SystemLogger;
-use system\Factory;
+use system\app\ControllerFactory;
 use system\Request;
 use system\app\Router;
 use system\Parser;
 use app\config\MasterConfig;
 use app\models\user\User;
 use app\models\user\Privilege;
-use system\app\auth\PermissionHandler;
+use system\app\auth\Permission;
+use app\models\database\AppDatabase;
+use system\AppOutput;
 
 class App extends Parser {
 
@@ -66,9 +68,6 @@ class App extends Parser {
 
     /** @var SystemLogger|null The system logger */
     private $coreLogger;
-
-    /** @var Controller|null The system logger */
-    public $controller;
 
     /** @var string|null The system logger */
     public $debugLog;
@@ -90,6 +89,12 @@ class App extends Parser {
 
     /** @var AppOutput The application output */
     public $appOutput;
+
+    /**
+     *
+     * @var Controller
+     */
+    public $controller;
 
     /** @var User|null The system logger */
     public $user;
@@ -117,12 +122,6 @@ class App extends Parser {
         $this->loadConfig();
         $this->appOutput = new AppOutput();
         $this->request = $req;
-        /*
-         * Define the Grade Codes
-         * @DEPRECATED
-         * Use Grade Definitions Table in database
-         */
-        define('GRADE_CODES', array('PK3', 'PK4', 'K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'));
     }
 
     /**
@@ -151,34 +150,13 @@ class App extends Parser {
         $this->setErrorMode();
     }
 
-    public function loadUser() {
-
-        $this->user = Session::getUser();
-        $cookieName = User::USER . '_' . $this->user->username;
-        $cookieData = Cookie::get($cookieName);
-        //var_dump($cookieData);
-        if ($cookieData != false) {
-            $this->logger->info("Loading user from cookie");
-            $cookieUser = unserialize(\system\Encryption::decrypt($cookieData));
-            if ($cookieUser instanceof User) {
-                $this->user = $cookieUser;
-            } else {
-                Cookie::delete($cookieName);
-                $this->user->save();
-            }
-        } else {
-            $this->logger->warning("Cookie not found");
-        }
-        $this->logger->info($this->user);
-    }
-
     /**
      * Run the application
      * @return AppOutput
      */
     public function run() {
 
-        $this->logger->debug("Creating Session");
+        $this->logger->info("Creating Session");
         User::load($this);
         try {
             $this->route();
@@ -216,7 +194,6 @@ class App extends Parser {
         /**
          * We need to inject the logs into the appOutput so the core can handle it.
          */
-        //$this->appOutput->setBody($this->output);
         $this->appOutput->setLogs($this->logger);
         return $this->appOutput;
     }
@@ -253,9 +230,12 @@ class App extends Parser {
      * required privilege to access this uri
      */
     private function checkPermission() {
-
+        /**
+         * Until the Permission Mapping system is complete, let's not do anything yet
+         */
+        return;
         try {
-            $required = PermissionHandler::handleRequest($this->route, $this->user);
+            $required = Permission::handleRequest($this->route, $this->user);
             if ($this->user->privilege < $required) {
                 $hasPermission = false;
                 $this->route = array('Home', 'show403');
@@ -265,27 +245,32 @@ class App extends Parser {
         } catch (Exception $ex) {
 
         }
-        $this->logger->debug('Has Permission: ' . $hasPermission);
+        $this->logger->info('Has Permission: ' . $hasPermission);
     }
 
     /**
      * Checks if request should be redirected to HTTPS based on app settings
+     *
+     *
+     * @todo Should use Request Object
      */
     private function handleHttpsRedirect() {
-        $this->logger->debug("Protocol: " . $this->request->protocol);
-        $this->logger->debug("Hostname: " . ($_SERVER["SERVER_NAME"]));
-        if ($this->request->protocol == "http" && \app\models\AppConfig::getForceHTTPS()) {
+        $this->logger->info("Protocol: " . $this->request->getProtocol());
+        $this->logger->info("Hostname: " . ($_SERVER["SERVER_NAME"]));
+        if ($this->request->getProtocol() == "http" && AppDatabase::getForceHTTPS()) {
             $this->redirect("https://" . $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"]);
         }
     }
 
     /**
      * Checks if request should be redirected to a different FQDN based on app settings
+     *
+     * @todo Should use Request Object
      */
     private function handleHostnameRedirect() {
-        $this->logger->debug("Hostname: " . ($_SERVER["SERVER_NAME"]));
-        if (strtolower($_SERVER["SERVER_NAME"]) != strtolower(\app\models\AppConfig::getWebsiteFQDN()) and \app\models\AppConfig::getWebsiteFQDN() != "") {
-            $this->redirect($this->request->protocol . "://" . strtolower(\app\models\AppConfig::getWebsiteFQDN()) . $_SERVER["REQUEST_URI"]);
+        $this->logger->info("Hostname: " . ($_SERVER["SERVER_NAME"]));
+        if (strtolower($_SERVER["SERVER_NAME"]) != strtolower(AppDatabase::getWebsiteFQDN()) and AppDatabase::getWebsiteFQDN() != "") {
+            $this->redirect($this->request->getProtocol() . "://" . strtolower(AppDatabase::getWebsiteFQDN()) . $_SERVER["REQUEST_URI"]);
         }
     }
 
@@ -294,17 +279,16 @@ class App extends Parser {
      *
      * @return null
      */
-    public function control() {
+    protected function control() {
         /*
          * Check that the user is logged on and if not, set the route to the login screen
          */
-        //var_dump($_SESSION);
         if (!isset($this->user) or $this->user == null or $this->user->privilege <= Privilege::UNAUTHENTICATED) {
             $this->logger->warning('user not logged in');
             // Change route to login if not logged in.
             //$this->route;
-            $login = new \app\controllers\Login($this);
-            $this->appOutput->appendBody($login->index());
+            $this->controller = new \app\controllers\Login($this);
+            $this->appOutput->appendBody($this->controller->index());
             return;
         } else {
             /*
@@ -315,23 +299,23 @@ class App extends Parser {
         /*
          * Build the controller based on the previously computed settings
          */
-        if ($this->controller = Factory::buildController($this)) {
+        if ($this->controller = ControllerFactory::buildController($this)) {
 
-            $this->logger->debug($this->route);
+            $this->logger->info($this->route);
             $method = $this->route->getMethod();
             if (method_exists($this->controller, $method)) {
                 // Check if there is a parameter set from the request
 
-                $this->logger->debug($this->route->getMethod());
-                if (empty($this->route->getData())) {
+                $this->logger->info($method);
+                $data = $this->route->getData();
+                if (empty($data)) {
                     $this->appOutput->appendBody($this->controller->$method());
                 } else {
-                    $this->logger->debug($this->route->getData());
-                    $this->appOutput->appendBody($this->controller->$method($this->route->getData()));
+                    $this->logger->info($data);
+                    $this->appOutput->appendBody($this->controller->$method($data));
                 }
-                //var_dump($this->outputBody);
             } else {
-                $this->logger->warning("No method found by name of " . $this->route->getMethod() . ' in the controller ' . $this->route->getControler());
+                $this->logger->warning("No method found by name of " . $method . ' in the controller ' . $this->route->getControler());
 
                 $this->appOutput->appendBody($this->view('errors/405'));
             }
@@ -340,7 +324,7 @@ class App extends Parser {
              * Show 404
              */
         } else {
-            $this->logger->warning("No Controller found by name of " . $this->router->controller);
+            $this->logger->warning("No Controller found by name of " . $this->route->getControler());
             $this->appOutput->appendBody($this->view('errors/404'));
         }
     }
@@ -373,7 +357,7 @@ class App extends Parser {
      */
     public function inDebugMode() {
 
-        if (\app\models\AppConfig::getDebugMode()) {
+        if (AppDatabase::getDebugMode()) {
             return true;
         } else {
             return false;

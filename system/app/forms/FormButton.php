@@ -1,9 +1,27 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The MIT License
+ *
+ * Copyright 2020 cjacobsen.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 namespace system\app\forms;
@@ -13,13 +31,15 @@ namespace system\app\forms;
  *
  * @author cjacobsen
  */
+use app\models\view\Javascript;
+use system\app\forms\ajax\AJAXRequest;
+
 class FormButton extends FormElement implements FormElementInterface {
 
-    private $target = '';
     private $theme = "primary";
     private $type = 'submit';
 
-    //put your code here
+//put your code here
 
     /**
      *
@@ -27,7 +47,9 @@ class FormButton extends FormElement implements FormElementInterface {
      * @param type $subLabel
      * @param type $size Must be one of: small,medium,large
      */
-    function __construct(string $name, $size = "medium") {
+    function __construct(string $name, $size = "auto") {
+        parent::__construct(null, null, $name);
+
         $this->setName($name);
         $this->setSize($size);
     }
@@ -50,77 +72,83 @@ class FormButton extends FormElement implements FormElementInterface {
         return $this;
     }
 
-    public function getTarget() {
-        return $this->target;
-    }
-
     public function getId() {
-        if (parent::getId() == null) {
+        $id = parent::getId();
+        if ($id == null) {
             return str_replace(" ", "", $this->getName()) . "Button";
+        } else {
+            return $id;
         }
     }
 
-    public function setTarget($target) {
-        $this->target = $target;
+    /**
+     *
+     * @return string
+     */
+    public function getElementHTML() {
+        $textClass = '';
+        if ($this->getTheme() == 'warning') {
+            $textClass = ' text-light ';
+        }
+        $html = '<div id="' . $this->getId() . '">
+        <button id="' . $this->getId() . '_Button" type="' . $this->getType() . '" class=" my-3 w-100 btn btn-' . $this->getTheme() . ' ' . $textClass . '"';
+        if ($this->getModal() != null) {
+
+            $html .= ' data-toggle="modal" data-target="#' . $this->getModal()->getId() . '" ';
+            //$html .= ' data-toggle="modal" data-target="#exampleModal" ';
+        }
+        $html .= '>'
+                . $this->getName() .
+                '</button></div>';
+        //var_dump($html);
+        return $html;
+    }
+
+    public function addModal($modalTitle, $modalBody, $modalTheme) {
+        $modal = new \app\models\view\Modal();
+        $modal->setTitle($modalTitle)
+                ->setBody($modalBody)
+                ->setID($this->getId() . 'Modal')
+                ->setTheme($modalTheme);
+        $this->setModal($modal);
+        $this->setType("button");
+        \system\app\AppLogger::get()->info("Added modal to " . $this->getName());
         return $this;
     }
 
     /**
-      public function getHTML() {
-      switch ($this->getSize()) {
-      case "large":
-
-
-      break;
-      case "medium":
-
-      $html = '<div class="col-md-5 mx-auto"><div class="nav justify-content-center nav-pills h-100 p-3">';
-      break;
-      case "small":
-      $html = '<div class="col-sm-3 mx-auto"><div class="nav justify-content-center nav-pills h-100 p-3">';
-      break;
-
-      default:
-      break;
-      }
-      $html .= '
-      <button type="' . $this->getType() . '" class="nav-link w-100 btn btn-' . $this->getTheme() . '">'
-      . $this->getLabel() .
-      '</button>
-      </div></div>';
-      $html .= $this->printScript();
-      return $html;
-      }
-     *
+     *  Converts the button to a background AJAX call
+     * @param string $url The target URL of the AJAX request
+     * @param string $outputID The ID of the HTML element to place the response
+     * @param mixed $data Can be a prepared array, a Form object, or a JQuery string
      */
-    public function getElementHTML() {
-        $html = '
-        <button id="' . $this->getID() . '" type="' . $this->getType() . '" class="nav-link my-3 w-100 btn btn-' . $this->getTheme() . '">'
-                . $this->getName() .
-                '</button>';
-        return $html;
+    public function addAJAXRequest($url, $outputID = null, $data = null, $showLoading = false, $outputElement = 'html') {
+
+        $this->ajaxRequest = new AJAXRequest($url, $data);
+        if ($outputID != null)
+            $this->ajaxRequest->setOutputID($outputID);
+        if ($outputElement != null)
+            $this->ajaxRequest->setOutputElement($outputElement);
+        if ($data != null)
+            $this->ajaxRequest->setData($data);
+        $this->setType('button');
+
+
+
+        return $this;
     }
 
     /**
-     *
+     * Turns the button into a link that can post data if provided
      * @param type $url
-     * @param type $outputID
-     * @param array $data
+     * @param type $data
      */
-    public function addAJAXRequest($url, $outputID = '', array $data = null) {
-        $spinner = "<span class='spinner-border text-primary'>";
-        $this->setScript('     $("#' . $this->getId() . '").on("click", function () {
-                        console.log("works");
-                        $("#' . $outputID . '").html("' . $spinner . '");
-                        $.get("' . $url . '", function (data) {
-                                    console.log("request completed");
-                                    console.log(data);
-                                    //now update the div with the new data
-                                    $("#' . $outputID . '").attr("value",data);
-                }
-                );
-                //$("#ldappermissiontestajaxOutput").slideDown("slow");
-                });');
+    public function addClientRequest($url, $data = null) {
+        $this->setType('button');
+        $function = Javascript::buildClientRequest($url, $data);
+        $script = Javascript::onClick($this->getId(), $function);
+        //var_dump($script);
+        $this->setScript($script);
         return $this;
     }
 

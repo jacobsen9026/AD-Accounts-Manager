@@ -1,9 +1,27 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The MIT License
+ *
+ * Copyright 2020 cjacobsen.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 namespace system\app\forms;
@@ -31,18 +49,45 @@ class FormText extends FormElement implements FormElementInterface {
      * @param type $value
      */
     function __construct($label = '', $subLabel = '', $name = '', $value = '') {
-        $this->setLabel($label);
-        $this->setSubLabel($subLabel);
-        $this->setName($name);
+        parent::__construct($label, $subLabel, $name);
         $this->value = $value;
     }
 
-    public function autoCompleteUsername() {
+    public function autoCompleteStudentUsername() {
+        $this->autocomplete = true;
+        $script = ' $(function () {
+        var getData = function (request, response) {
+            $.getJSON("/api/district/autocompleteStudent/" + request.term,
+                function (data) {
+                    response(data);
+                });
+        };
+
+        var selectItem = function (event, ui) {
+
+            $("#' . $this->getId() . '").val(ui.item.value);
+            return false;
+        }
+
+        $("#' . $this->getId() . '").autocomplete({
+            source: getData,
+            select: selectItem,
+            minLength: 2,
+            change: function() {
+                $("#' . $this->getId() . '").css("display", 2);
+            }
+        });
+    });';
+        $this->setScript($script);
+        return $this;
+    }
+
+    public function autoCompleteStaffUsername() {
         $this->autocomplete = true;
         $script = ' $(function () {
         var getData = function (request, response) {
             $.getJSON(
-                "/api/ldap/autocompleteStudent/" + request.term,
+                "/api/district/autocompleteStaff/" + request.term,
                 function (data) {
                     response(data);
                 });
@@ -75,7 +120,40 @@ class FormText extends FormElement implements FormElementInterface {
         $script = ' $(function () {
         var getGroup = function (request, response) {
             $.getJSON(
-                "/api/ldap/autocompleteStudentGroup/" + request.term,
+                "/api/district/autocompleteGroup/" + request.term,
+                function (data) {
+                    response(data);
+                });
+        };
+
+        var selectItem = function (event, ui) {
+        console.log("select");
+        console.log(ui);
+        console.log(event);
+
+            $("#' . $this->getName() . '").val(ui.item.value);
+            return false;
+        }
+
+        $("#' . $this->getName() . '").autocomplete({
+            source: getGroup,
+            select: selectItem,
+            minLength: 1,
+            change: function() {
+                $("#' . $this->getName() . '").css("display", 2);
+            }
+        });
+    });';
+        $this->setScript($script);
+        return $this;
+    }
+
+    public function autoCompleteDomainGroupName() {
+        $this->autocomplete = true;
+        $script = ' $(function () {
+        var getGroup = function (request, response) {
+            $.getJSON(
+                "/api/district/autocompleteDomainGroup/" + request.term,
                 function (data) {
                     response(data);
                 });
@@ -165,7 +243,7 @@ class FormText extends FormElement implements FormElementInterface {
     /**
      * Sets the input type to "password"
      */
-    public function password() {
+    public function isPassword() {
         $this->type = "password";
         return $this;
     }

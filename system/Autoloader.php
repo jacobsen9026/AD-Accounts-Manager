@@ -42,7 +42,7 @@ namespace system;
  */
 abstract class Autoloader {
 
-    public static function run(Core $core) {
+    public static function run() {
         /*
          * Load Composers Autoloader to include Composer packages
          */

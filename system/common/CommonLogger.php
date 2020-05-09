@@ -254,7 +254,7 @@ class CommonLogger extends Parser {
         $entry = new CommonLogEntry();
         $entry->setLevel($level);
         $entry->setBacktrace($backTrace);
-        $entry->setDeltaTime($et);
+        $entry->setElapsedTime($et);
         $entry->setMessage($message);
         return array($et, $level, $this->preProcessMessage($message), $backTrace);
     }

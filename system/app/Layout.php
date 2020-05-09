@@ -33,6 +33,7 @@ namespace system\app;
  */
 use system\common\CommonLayout;
 use app\config\MasterConfig;
+use app\models\database\AppDatabase;
 
 class Layout extends CommonLayout {
 
@@ -43,7 +44,7 @@ class Layout extends CommonLayout {
     function __construct($app) {
         parent::__construct($app);
         //$this->config = MasterConfig::get();
-        $this->title = \app\models\AppConfig::getAppName();
+        $this->title = AppDatabase::getAppName();
         AppLogger::get()->debug("Active Layout: " . $this->layoutName);
     }
 
