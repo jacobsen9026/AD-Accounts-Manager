@@ -24,25 +24,23 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\api\settings;
+namespace App\Controllers\Api\settings;
 
 /**
  * Description of Application
  *
  * @author cjacobsen
  */
-use app\controllers\api\APIController;
+use App\Controllers\Api\APIController;
 
 class Authentication extends APIController {
 
     //put your code here
 
     public function indexPost() {
-        $authentication = new \app\controllers\settings\Authentication($this->app);
+        $authentication = new \App\Controllers\Settings\Authentication($this->app);
         $authentication->indexPost();
-
-        echo "Saved Settings<br><br>";
-        return $this->view('settings/authentication');
+        return $this->returnHTML($this->view('settings/authentication'));
     }
 
 }

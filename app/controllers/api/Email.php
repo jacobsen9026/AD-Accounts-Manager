@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\api;
+namespace App\Controllers\Api;
 
 /**
  * Description of Email
  *
  * @author cjacobsen
  */
-use system\Post;
+use System\Post;
 
 class Email extends APIController {
 
@@ -44,8 +44,8 @@ class Email extends APIController {
         if ($to == null) {
             $to = Post::get('to');
         }
-        if ($this->user->privilege >= \app\models\user\Privilege::ADMIN) {
-            return \system\app\Email::sendTest($to);
+        if ($this->user->privilege >= \App\Models\User\Privilege::ADMIN) {
+            return \System\App\Email::sendTest($to);
         }
     }
 

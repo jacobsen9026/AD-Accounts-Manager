@@ -24,12 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\api;
+namespace App\Controllers\Api;
 
 /**
- * Description of User
+ * Description of App
+ *
  *
  * @author cjacobsen
+ * @deprecated
  */
 class App extends APIController {
 
@@ -40,23 +42,23 @@ class App extends APIController {
     const GET_CONFIG = "getConfiguration";
 
     protected function getApplicationSettings() {
-        return $this->view('settings/application');
+        return $this->returnHTML($this->view('settings/application'));
     }
 
     protected function getAuthenticationSettings() {
-        return $this->view('settings/authentication');
+        return $this->returnHTML($this->view('settings/authentication'));
     }
 
     protected function getEmailSettings() {
-        return $this->view('settings/email');
+        return $this->returnHTML($this->view('settings/email'));
     }
 
     protected function getNotificationSettings() {
-        return $this->view('settings/notification');
+        return $this->returnHTML($this->view('settings/notification'));
     }
 
     private function printConfig() {
-        if ($this->user->privilege >= \app\models\user\Privilege::ADMIN) {
+        if ($this->user->privilege >= \App\Models\User\Privilege::ADMIN) {
             $output = "<h1>Configuration Database</h1>";
             foreach (\system\Database::get()->getAllTables()as $table) {
                 $output .= "<h3>" . $table . "</h3>";
@@ -66,7 +68,7 @@ class App extends APIController {
                 //$this->output .= ob_get_clean();
             }
         }
-        return $output;
+        return $this->returnHTML($output);
     }
 
     public function getConfiguration() {

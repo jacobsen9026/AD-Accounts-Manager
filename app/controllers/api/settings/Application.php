@@ -46,24 +46,23 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\api\settings;
+namespace App\Controllers\Api\settings;
 
 /**
  * Description of Application
  *
  * @author cjacobsen
  */
-use app\controllers\api\APIController;
+use App\Controllers\Api\APIController;
 
 class Application extends APIController {
 
     //put your code here
 
     public function indexPost() {
-        $application = new \app\controllers\settings\Application($this->app);
+        $application = new \App\Controllers\Settings\Application($this->app);
         $application->indexPost();
-        echo "Saved Settings<br><br>";
-        return $this->view('settings/application');
+        return $this->returnHTML($this->view('settings/application'));
     }
 
 }
