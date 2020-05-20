@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\common;
+namespace System\Common;
 
 /**
  * Description of CoreInstaller

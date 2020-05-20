@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\user;
+namespace App\Models\User;
 
 /**
  * Description of PermissionType
@@ -33,11 +33,16 @@ namespace app\models\user;
  */
 class PermissionLevel {
 
-    const USERS = "User";
+    const USERS = "User_Perm";
     const USER_READ = 1;
+    const USER_CHANGE = 2;
+    const USER_UNLOCK = 3;
     const USER_DISABLE = 4;
-    const GROUPS = "Group";
+    const GROUPS = "Group_Perm";
     const GROUP_READ = 1;
+    const GROUP_CHANGE = 2;
+    const GROUP_ADD = 3;
+    const GROUP_DELETE = 4;
 
     private $name;
     private $id;

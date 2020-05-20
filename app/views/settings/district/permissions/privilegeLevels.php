@@ -25,21 +25,24 @@
 
 $district = $this->district;
 
-use app\models\view\PermissionMapPrinter;
+use App\Models\View\PermissionMapPrinter;
+
 ?>
-<h4>
+<h4 class="mb-3">
     Manage Privilege Levels
 </h4>
 
 <div class="row p-2">
     <div class="col">
         Privilege levels can be assigned at the District or OU level with propagation. So a group with
-        permission for a School OU will have that same permission for all sub-OU's, unless explicitly set at a lower level.
+        permission for a School OU will have that same permission for all sub-OU's, unless explicitly set at a lower
+        level.
     </div>
 </div>
 <div class="row p-2 m-3">
     <div class="col">
-        Permissions are different for users or groups, but they both are successive levels of access that inherit the previous level.
+        Permissions are different for users or groups, but they both are successive levels of access that inherit the
+        previous level.
         A group with Change permission can also Read, but can not Add or Delete (for groups).
     </div>
 </div>

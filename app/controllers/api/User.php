@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\api;
+namespace App\Controllers\Api;
 
 /**
  * Description of User
  *
  * @author cjacobsen
  */
-use system\Post;
+use System\Post;
 
 class User extends APIController {
 
@@ -40,7 +40,7 @@ class User extends APIController {
         //return hash("sha256", random_bytes(256));
         $this->user->generateAPIToken();
         $this->user->save();
-        return $this->user->getApiToken();
+        return ['val' => $this->user->getApiToken()];
     }
 
 }

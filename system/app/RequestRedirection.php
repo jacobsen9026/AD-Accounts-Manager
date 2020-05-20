@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace System\App;
 
 /**
  *
@@ -35,7 +35,8 @@ trait RequestRedirection {
     //put your code here
 
     public function redirect($url) {
-        $app = App::get();
+        $app = \System\Core::getAppClass()::get();
+        //$app = App::get();
         if ($app->request->getType() != 'ajax') {
             if ($app->inDebugMode()) {
                 $app->appOutput->appendBody("In Debug Mode<br/>Would have redirected<br/>"

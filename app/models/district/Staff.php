@@ -24,21 +24,16 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\district;
+namespace App\Models\District;
 
 /**
  * Description of Students
  *
  * @author cjacobsen
  */
-use app\models\district\DistrictUser;
-use app\api\AD;
+use App\Models\District\DistrictUser;
+use App\Api\AD;
 
 class Staff extends DistrictUser {
-
-    function __construct($username) {
-        //parent::__construct($username);
-        $this->importFromAD(AD::get()->getStaffUser($username));
-    }
 
 }

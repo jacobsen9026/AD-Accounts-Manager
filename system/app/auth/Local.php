@@ -24,17 +24,17 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\auth;
+namespace System\App\Auth;
 
 /**
  * Description of Local
  *
  * @author cjacobsen
  */
-use system\app\auth\AuthException;
+use System\App\Auth\AuthException;
 use app\config\MasterConfig;
-use app\models\user\User;
-use app\models\database\AuthDatabase;
+use App\Models\User\User;
+use App\Models\Database\AuthDatabase;
 
 abstract class Local {
 //put your code here

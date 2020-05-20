@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\database;
+namespace App\Models\Database;
 
 /**
  * Description of School
@@ -32,7 +32,7 @@ namespace app\models\database;
  * @author cjacobsen
  */
 use app\database\Schema;
-use app\models\Query;
+use App\Models\Query;
 
 class SchoolDatabase {
 
@@ -49,7 +49,7 @@ class SchoolDatabase {
     }
 
     public static function createSchool($name, $abbr, $ou, $districtID) {
-        \system\app\AppLogger::get()->debug("Creating new district named: " . $name);
+        \System\App\AppLogger::get()->debug("Creating new district named: " . $name);
         return \system\Database::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (' . Schema::SCHOOL_NAME[Schema::COLUMN] . ',' . Schema::SCHOOL_ABBREVIATION[Schema::COLUMN] . ',' . Schema::SCHOOL_OU[Schema::COLUMN] . ',' . Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN] . ') VALUES ("' . $name . '","' . $abbr . '","' . $ou . '","' . $districtID . '")');
     }
 
@@ -64,12 +64,12 @@ class SchoolDatabase {
         $query->where(Schema::SCHOOL_ID, $schoolID);
 
         return $query->run()[0];
-        \system\app\AppLogger::get()->debug("Get school by id: " . $schoolID);
+        \System\App\AppLogger::get()->debug("Get school by id: " . $schoolID);
         return(\system\Database::get()->query('SELECT * From ' . self::TABLE_NAME . ' Where ' . Schema::SCHOOL_ID[Schema::COLUMN] . '=' . $schoolID)[0]);
     }
 
     public static function deleteSchool($schoolID) {
-        \system\app\AppLogger::get()->debug("Delete school id: " . $schoolID);
+        \System\App\AppLogger::get()->debug("Delete school id: " . $schoolID);
         return \system\Database::get()->query('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::SCHOOL_ID[Schema::COLUMN] . '=' . $schoolID);
     }
 

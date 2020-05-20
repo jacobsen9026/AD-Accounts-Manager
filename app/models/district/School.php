@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\district;
+namespace App\Models\District;
 
 /**
  * Description of School
  *
  * @author cjacobsen
  */
-use app\models\Model;
+use App\Models\Model;
 
 class School extends Model {
 
@@ -41,7 +41,7 @@ class School extends Model {
     private $id;
 
     public function importFromAD($LDAPResponse) {
-        \system\app\AppLogger::get()->debug($LDAPResponse);
+        \System\App\AppLogger::get()->debug($LDAPResponse);
 
         if (key_exists("displayname", $LDAPResponse))
             $this->setName($LDAPResponse["displayname"][0]);

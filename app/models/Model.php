@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace app\models;
+namespace App\Models;
 
 /**
  * Description of Model
  *
  * @author cjacobsen
  */
-use system\app\AppLogger;
+use System\App\AppLogger;
 
 class Model {
 

@@ -1,7 +1,7 @@
 <?php
 echo $this->view("/layouts/head");
 
-use app\models\database\AppDatabase;
+use App\Models\Database\AppDatabase;
 ?>
 
 

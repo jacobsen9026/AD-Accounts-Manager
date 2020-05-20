@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\district;
+namespace App\Models\District;
 
 /**
  * Description of Grade
@@ -32,7 +32,7 @@ namespace app\models\district;
  * @author cjacobsen
  */
 use app\database\Schema;
-use app\models\Query;
+use App\Models\Query;
 
 class Team {
 
@@ -58,12 +58,12 @@ class Team {
     }
 
     public static function createTeam($gradeID, $post) {
-        \system\app\AppLogger::get()->debug("Creating new team for grade: " . $gradeID);
+        \System\App\AppLogger::get()->debug("Creating new team for grade: " . $gradeID);
         return \system\Database::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (' . Schema::TEAM_NAME[Schema::COLUMN] . ',' . Schema::TEAM_GRADE_ID[Schema::COLUMN] . ') VALUES ("' . $post[Schema::TEAM_NAME[Schema::COLUMN]] . '", "' . $gradeID . '")');
     }
 
     public static function deleteTeam($teamID) {
-        \system\app\AppLogger::get()->debug("Delete grade id: " . $teamID);
+        \System\App\AppLogger::get()->debug("Delete grade id: " . $teamID);
         return \system\Database::get()->query('DELETE FROM  ' . self::TABLE_NAME . '  WHERE ID=' . $teamID);
     }
 

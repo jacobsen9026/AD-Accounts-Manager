@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\district;
+namespace App\Models\District;
 
 /**
  * Description of UsernameFormat

@@ -1,6 +1,6 @@
 <?php
 
-namespace system;
+namespace System;
 
 chdir("../");
 require('./system/Core.php');

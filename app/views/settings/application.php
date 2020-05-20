@@ -24,11 +24,11 @@
  * THE SOFTWARE.
  */
 
-use app\models\database\AppDatabase;
-use system\app\forms\Form;
-use system\app\forms\FormButton;
-use system\app\forms\FormText;
-use system\app\forms\FormRadio;
+use App\Models\Database\AppDatabase;
+use System\App\Forms\Form;
+use System\App\Forms\FormButton;
+use System\App\Forms\FormText;
+use System\App\Forms\FormRadio;
 
 $form = new Form('/settings/application', 'application');
 
@@ -48,7 +48,7 @@ $forceHTTPS->addOption("True", '1', AppDatabase::getForceHTTPS());
 $debugMode = new FormRadio("Debug Mode", "Caution: Enabling debug mode is a security risk and should only be used on development systems.", "debugMode");
 $debugMode->addOption("False", '0', !AppDatabase::getDebugMode());
 $debugMode->addOption("True", '1', AppDatabase::getDebugMode());
-$homepageMessage = new system\app\forms\FormTextArea();
+$homepageMessage = new System\App\Forms\FormTextArea();
 $homepageMessage->setLabel("Homepage Message")
         ->setSubLabel("Accepts HTML and inline style")
         ->setName("webMOTD")

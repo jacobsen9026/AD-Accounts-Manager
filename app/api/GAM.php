@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\api;
+namespace App\Api;
 
 /**
  * Description of GAM
@@ -57,7 +57,7 @@ class GAM {
             return self::$instance;
         } else {
             self::$instance = $this;
-            $this->logger = \system\app\AppLogger::get();
+            $this->logger = \System\App\AppLogger::get();
             $this->clientSecretFile = GAMPATH . DIRECTORY_SEPARATOR . 'client_secret.json';
             $this->tokenPath = GAMPATH . DIRECTORY_SEPARATOR . 'token.json';
             $this->customerID = "my_customer";

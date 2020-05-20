@@ -24,49 +24,53 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\database;
+namespace App\Models\Database;
 
 /**
  * Description of PrivilegeLevelDatabase
  *
  * @author cjacobsen
  */
-use app\models\user\PrivilegeLevel;
-use app\models\user\Permission;
-use system\app\forms\FormDropdown;
-use system\app\forms\FormDropdownOption;
-use app\models\user\PermissionLevel;
-use system\app\AppException;
-use system\Encryption;
 
-abstract class PermissionMapDatabase extends DatabaseModel {
+use App\Models\User\PrivilegeLevel;
+use App\Models\User\Permission;
+use System\App\AppException;
+use System\Traits\DomainTools;
+
+abstract class PermissionMapDatabase extends DatabaseModel
+{
+    use DomainTools;
 
     const TABLE_NAME = 'PermissionMap';
 
     /**
      *
      * @param string $groupName
+     *
      * @return PrivilegeLevel
      */
-    public static function getPermission(PrivilegeLevel $privilegeLevel, string $referenceColumn, int $referenceID) {
+    public static function getPermission(PrivilegeLevel $privilegeLevel, string $referenceColumn, int $referenceID)
+    {
         $query = new Query(self::TABLE_NAME, Query::SELECT);
         $query->where('Privilege_ID', $privilegeLevel->getId())
-                ->where($referenceColumn, $referenceID)
-                ->leftJoin(PrivilegeLevelDatabase::TABLE_NAME, 'Privilege_ID', 'ID');
+            ->where($referenceColumn, $referenceID)
+            ->leftJoin(PrivilegeLevelDatabase::TABLE_NAME, 'Privilege_ID', 'ID');
         $result = $query->run()[0];
         var_dump($result);
-        echo self::buildPrivilegeLevelDropdown()->getHTML();
+        echo self::buildPrivilegeLevelDropdown()->print();
     }
 
     /**
      *
      * @param string $groupName
+     *
      * @return PrivilegeLevel
      */
-    public static function getPermissionsByOU(string $ou) {
+    public static function getPermissionsByOU(string $ou)
+    {
         $query = new Query(self::TABLE_NAME, Query::SELECT);
         $query->where(self::TABLE_NAME . '.' . 'OU', $ou)
-                ->leftJoin(PrivilegeLevelDatabase::TABLE_NAME, 'Privilege_ID', 'ID');
+            ->leftJoin(PrivilegeLevelDatabase::TABLE_NAME, 'Privilege_ID', 'ID');
         $result = $query->run();
         //var_dump($result);
         return $result;
@@ -75,12 +79,14 @@ abstract class PermissionMapDatabase extends DatabaseModel {
     /**
      *
      * @param string $groupName
+     *
      * @return PrivilegeLevel
      */
-    public static function getPermissionByID(int $id) {
+    public static function getPermissionByID(int $id)
+    {
         $query = new Query(self::TABLE_NAME, Query::SELECT);
         $query->where(self::TABLE_NAME . '.' . 'ID', $id)
-                ->leftJoin(PrivilegeLevelDatabase::TABLE_NAME, 'Privilege_ID', 'ID');
+            ->leftJoin(PrivilegeLevelDatabase::TABLE_NAME, 'Privilege_ID', 'ID');
         $result = $query->run();
         //var_dump($result);
         return $result[0];
@@ -89,15 +95,17 @@ abstract class PermissionMapDatabase extends DatabaseModel {
     /**
      *
      * @param string $groupName
+     *
      * @return PrivilegeLevel
      */
-    public static function getPrivilegeIDsByOU(string $ou) {
+    public static function getPrivilegeIDsByOU(string $ou)
+    {
         $query = new Query(self::TABLE_NAME, Query::SELECT, 'Privilege_ID');
         $query->where(self::TABLE_NAME . '.' . 'OU', $ou);
 
         $result = array_flatten($query->run());
         if (!is_array($result)) {
-            $result = array($result);
+            $result = [$result];
         }
         //var_dump($result);
         return $result;
@@ -107,7 +115,8 @@ abstract class PermissionMapDatabase extends DatabaseModel {
      *
      * @param type $id
      */
-    public static function removePermissionByID($id) {
+    public static function removePermissionByID($id)
+    {
         $query = new Query(self::TABLE_NAME, Query::DELETE);
         $query->where('ID', $id);
         return $query->run();
@@ -116,61 +125,66 @@ abstract class PermissionMapDatabase extends DatabaseModel {
     /**
      *
      * @param PrivilegeLevel $level
+     *
      * @todo Move to PrivilegeLevelDatabase class
      */
-    public static function addPrivilegeLevel(string $adGroupName) {
+    public static function addPrivilegeLevel(string $adGroupName)
+    {
         $query = new Query(self::TABLE_NAME, Query::INSERT);
         $query->insert('AD_Group_Name', $adGroupName);
 
         return $query->run();
     }
 
-    public static function addPermission(Permission$permission) {
+    public static function addPermission(Permission $permission)
+    {
         $query = new Query(self::TABLE_NAME, Query::INSERT);
 
         $query->insert('OU', $permission->getOU())
-                ->insert('Ref_ID', $permission->getRefID())
-                ->insert('Privilege_ID', $permission->getPrivilegeID())
-                ->insert('User_Perm', $permission->getUserPermissionLevel())
-                ->insert('Group_Perm', $permission->getGroupPermissionLevel());
+            ->insert('Ref_ID', $permission->getRefID())
+            ->insert('Privilege_ID', $permission->getPrivilegeID())
+            ->insert('User_Perm', $permission->getUserPermissionLevel())
+            ->insert('Group_Perm', $permission->getGroupPermissionLevel());
 
         try {
             $response = $query->run();
         } catch (\PDOException $ex) {
-            //var_dump($ex);
+            var_dump($ex);
             if ($ex->getCode() == 23000) {
-                \system\app\AppLogger::get()->error($ex);
+                \System\App\AppLogger::get()->error($ex);
                 throw new AppException("Permission already exists", 1, $ex);
             } else
                 throw $ex;
         }
     }
 
-    public static function modifyPermission(Permission$permission) {
+    public static function modifyPermission(Permission $permission)
+    {
         $query = new Query(self::TABLE_NAME, Query::UPDATE);
         $query->where('ID', $permission->getId())
-                ->set('User_Perm', $permission->getUserPermissionLevel())
-                ->set('Group_Perm', $permission->getGroupPermissionLevel());
+            ->set('User_Perm', $permission->getUserPermissionLevel())
+            ->set('Group_Perm', $permission->getGroupPermissionLevel());
         //var_dump($query);
         try {
             $response = $query->run();
         } catch (\PDOException $ex) {
             //var_dump($ex);
             if ($ex->getCode() == 23000) {
-                \system\app\AppLogger::get()->error($ex);
+                \System\App\AppLogger::get()->error($ex);
                 throw new AppException("Permission already exists", 1, $ex);
             } else
                 throw $ex;
         }
     }
 
-    public static function get() {
+    public static function get()
+    {
         $dbTable = parent::get();
         foreach ($dbTable as $row) {
             $level = new PrivilegeLevel();
             $level->setId($row['ID'])
-                    ->setAdGroup($row['AD_Group_Name'])
-                    ->setSuperAdmin($row['Super_Admin']);
+                ->setAdGroup($row['AD_Group_Name'])
+                ->setSuperAdmin($row['Super_Admin']);
             $levels[] = $level;
         }
         return $levels;
@@ -179,35 +193,22 @@ abstract class PermissionMapDatabase extends DatabaseModel {
     /**
      *
      * @param array<int>|null $privilegeLevelID
+     *
      * @return array
      */
-    public static function getRelevantPermissions(array $privilegeLevelIDs, string $ou) {
+    public static function getRelevantPermissions(array $privilegeLevelIDs, string $ou)
+    {
         if (!empty($privilegeLevelIDs)) {
-            $tree = array();
-
-            $parts = explode(',', $ou);
-
-            for ($y = 0; $y < count($parts); $y++) {
-                $branch = '';
-                for ($x = $y; $x < count($parts); $x++) {
-                    $branch .= $parts[$x];
-                    if ($x != count($parts) - 1) {
-                        $branch .= ',';
-                    }
-                }
-                if (substr($branch, 0, 2) != "DC") {
-                    $tree[] = $branch;
-                }
-            }
+            $tree = self::getOUTree($ou);
 
             //var_dump($tree);
             $query = new Query(self::TABLE_NAME, Query::SELECT);
             //return;
 
             $query->orWhere('Privilege_ID', $privilegeLevelIDs)
-                    ->orWhere('OU', $tree)
-                    ->sort(Query::DESC, self::TABLE_NAME . '.OU');
-            $permissions = array();
+                ->orWhere('OU', $tree)
+                ->sort(Query::DESC, self::TABLE_NAME . '.OU');
+            $permissions = [];
             if ($rawPermissions = ($query->run())) {
                 //var_dump($rawPermissions);
 
@@ -222,7 +223,43 @@ abstract class PermissionMapDatabase extends DatabaseModel {
             //var_dump($permissions);
             return $permissions;
         }
-        return array();
+        return [];
     }
 
+    /**
+     *
+     * @param string $permissionType
+     * @param array $privilegeLevels An array of PrivilegeLevels
+     */
+    public static function hasPermissionType(string $permissionType, array $privilegeLevels)
+    {
+        \System\App\UserLogger::get()->info('Checking if user has any defined permissions for ' . $permissionType);
+        $ids = [];
+        foreach ($privilegeLevels as $level) {
+            $ids[] = $level->getId();
+        }
+        $query = new Query(self::TABLE_NAME, Query::SELECT);
+        //return;
+
+        $query->orWhere('Privilege_ID', $ids)
+            ->orWhere($permissionType, [1, 2, 3, 4])
+            ->sort(Query::DESC, self::TABLE_NAME . '.OU');
+        $result = $query->run();
+        if (count($result) > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function getOUPermissionsCount(string $ou, $subOus = false)
+    {
+        $query = new Query(self::TABLE_NAME, Query::COUNT, 'ID');
+        $query->where('OU', $ou, $subOus);
+        return $query->run();
+    }
+
+    public static function getSubOUPermissionsCount(string $ou)
+    {
+        return self::getOUPermissionsCount("," . $ou, true);
+    }
 }

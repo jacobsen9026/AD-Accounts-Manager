@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\forms;
+namespace System\App\Forms;
 
 /**
  * Description of FormElementInterface
@@ -33,6 +33,5 @@ namespace system\app\forms;
  */
 interface FormElementInterface {
 
-    //put your code here
     public function getElementHTML();
 }

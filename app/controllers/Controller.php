@@ -24,30 +24,30 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers;
+namespace App\Controllers;
 
 /**
  * Description of Default
  *
  * @author cjacobsen
  */
-use system\common\CommonController;
-use app\models\user\User;
+use System\Common\CommonController;
+use App\Models\User\User;
 use app\config\MasterConfig;
-use system\app\AppLogger;
+use System\App\AppLogger;
 use app\database\Schema;
-use app\models\district\Grade;
-use app\models\database\SchoolDatabase;
-use app\models\database\DistrictDatabase;
-use app\models\district\Team;
-use app\models\district\Department;
-use system\app\App;
-use app\models\Query;
-use app\models\district\District;
+use App\Models\District\Grade;
+use App\Models\Database\SchoolDatabase;
+use App\Models\Database\DistrictDatabase;
+use App\Models\District\Team;
+use App\Models\District\Department;
+use System\App\App;
+use App\Models\Query;
+use App\Models\District\District;
 
 class Controller extends CommonController {
 
-    use \system\app\RequestRedirection;
+    use \System\App\RequestRedirection;
 
     //put your code here
 

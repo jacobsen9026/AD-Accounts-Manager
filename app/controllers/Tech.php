@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers;
+namespace App\Controllers;
 
 /**
  * Description of Tech
  *
  * @author cjacobsen
  */
-use app\api\WindowsRM;
+use App\Api\WindowsRM;
 
 class Tech extends Controller {
 
@@ -39,11 +39,15 @@ class Tech extends Controller {
         //return "hi";
         $win = new WindowsRM();
         $workstationReachable = $win->testConnection($computer);
-        if ($workstationReachable) {
-            return "$computer is reachable";
-        } else {
-            return "$computer is not reachable";
-        }
+        /*         * if ($workstationReachable) {
+          return "$computer is reachable";
+          } else {
+          return "$computer is not reachable";
+          }
+         *
+         */
+
+        return $return;
     }
 
 }

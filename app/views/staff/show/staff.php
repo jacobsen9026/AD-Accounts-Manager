@@ -1,5 +1,5 @@
 <?php
 
-use app\models\view\CardPrinter;
+use App\Models\View\CardPrinter;
 
 echo CardPrinter::printCard($this->staff, $this->user);

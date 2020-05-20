@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\database;
+namespace App\Models\Database;
 
 /**
  * Description of UserDatabase

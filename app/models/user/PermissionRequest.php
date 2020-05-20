@@ -24,15 +24,15 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\user;
+namespace App\Models\User;
 
 /**
  * Description of PermissionRequest
  *
  * @author cjacobsen
  */
-use app\models\user\User;
-use app\models\user\PermissionLevel;
+use App\Models\User\User;
+use App\Models\User\PermissionLevel;
 
 class PermissionRequest {
 

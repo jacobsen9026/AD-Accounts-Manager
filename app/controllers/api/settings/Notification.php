@@ -24,25 +24,24 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\api\settings;
+namespace App\Controllers\Api\settings;
 
 /**
  * Description of Application
  *
  * @author cjacobsen
  */
-use app\controllers\api\APIController;
+use App\Controllers\Api\APIController;
 
 class Notification extends APIController {
 
     //put your code here
 
     public function indexPost() {
-        //$notification = new \app\controllers\settings\Notification($this->app);
+        //$notification = new \App\Controllers\Settings\Notification($this->app);
         //$notification->indexPost();
 
-        echo "Saved Settings<br><br>";
-        return $this->view('settings/notification');
+        return $this->returnHTML($this->view('settings/notification'));
     }
 
 }

@@ -24,38 +24,40 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers;
+namespace App\Controllers;
 
 /**
  * Description of Home
  *
  * @author cjacobsen
  */
-use app\models\database\AppDatabase;
-use app\models\database\DistrictDatabase;
-use app\models\user\PermissionLevel;
-use app\models\user\PermissionHandler;
+use App\Models\Database\AppDatabase;
+use App\Models\Database\DistrictDatabase;
+use App\Models\User\PermissionLevel;
+use App\Models\User\PermissionHandler;
 
 class Home extends Controller {
 
     public function index() {
         $this->motd = AppDatabase::getMOTD();
         $this->applicationName = AppDatabase::getAppName();
-        echo "<br/><br/><br/><br/><br/><br/>";
-        //var_dump($this->user);
+//echo "<br/><br/><br/><br/><br/><br/>";
+//var_dump($this->user);
         $testOUs = ['OU=Staff,OU=Admin Building,OU=SAM Test OU,DC=sandbox,DC=local',
             "OU=Admin Building,OU=SAM Test OU,DC=sandbox,DC=local",
             "OU=Staff,OU=Admin Building,OU=SAM Test OU,DC=sandbox,DC=local",
             "OU=School 2,OU=SAM Test OU,DC=sandbox,DC=local",
             "OU=Instructional Services,OU=Staff,OU=Admin Building,OU=SAM Test OU,DC=sandbox,DC=local",
             "OU=Grade 5,OU=Students,OU=School 2,OU=SAM Test OU,DC=sandbox,DC=local"];
-        //$testOUs = ["OU=School 2,OU=SAM Test OU,DC=sandbox,DC=local"];
+//$testOUs = ["OU=School 2,OU=SAM Test OU,DC=sandbox,DC=local"];
+        /*
+          foreach ($testOUs as $ou) {
+          echo "Permission Test For Group Read<br/>";
+          echo $ou;
+          var_dump(PermissionHandler::hasPermission($ou, PermissionLevel::GROUPS, 1));
+          }
 
-        foreach ($testOUs as $ou) {
-            echo "Permission Test For Group Read<br/>";
-            echo $ou;
-            var_dump(PermissionHandler::hasPermission($ou, PermissionLevel::GROUPS, 1));
-        }
+         */
 
 
         return $this->view('homepage');
@@ -74,5 +76,5 @@ class Home extends Controller {
     }
 
 }
-
 ?>
+

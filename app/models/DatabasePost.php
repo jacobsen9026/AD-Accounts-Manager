@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\models;
+namespace App\Models;
 
 /**
  * Description of DatabaseInterface
@@ -33,9 +33,9 @@ namespace app\models;
  * @deprecated since version number
  */
 use app\database\Schema;
-use system\Database;
-use system\app\AppLogger;
-use app\models\Query;
+use System\Database;
+use System\App\AppLogger;
+use App\Models\Query;
 
 abstract class DatabasePost {
     //put your code here

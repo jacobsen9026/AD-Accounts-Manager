@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace System\App;
 
 /**
  * Description of Email
  *
  * @author cjacobsen
  */
-use app\models\database\EmailDatabase as EmailConfig;
+use App\Models\Database\EmailDatabase as EmailConfig;
 
 class Email extends \system\Parser {
 

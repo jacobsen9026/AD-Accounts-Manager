@@ -24,15 +24,15 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers;
+namespace App\Controllers;
 
 /**
  * Description of Students
  *
  * @author cjacobsen
  */
-use app\models\district\Student;
-use app\models\district\Staff as StaffModel;
+use App\Models\District\Student;
+use App\Models\District\Staff as StaffModel;
 
 class Staff extends Controller {
 
@@ -103,14 +103,14 @@ class Staff extends Controller {
         $staff = new StaffModel($username);
         //var_dump($staff);
         return $staff;
-//$gaUser = \app\api\GAM::getUser($username);
+//$gaUser = \App\Api\GAM::getUser($username);
     }
 
     private function unlockStudent($username) {
-        $adUser = \app\api\AD::get()->unlockUser($username);
+        $adUser = \App\Api\AD::get()->unlockUser($username);
         var_dump($adUser);
         return $adUser;
-//$gaUser = \app\api\GAM::getUser($username);
+//$gaUser = \App\Api\GAM::getUser($username);
     }
 
     public function accountStatusChange() {

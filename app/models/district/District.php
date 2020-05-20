@@ -24,20 +24,20 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\district;
+namespace App\Models\District;
 
 /**
  * Description of District
  *
  * @author cjacobsen
  */
-use app\models\Model;
-use system\Encryption;
-use app\models\database\DistrictDatabase;
+use App\Models\Model;
+use System\Encryption;
+use App\Models\Database\DistrictDatabase;
 
 class District extends Model {
 
-    use \system\traits\DomainTools;
+    use \System\Traits\DomainTools;
 
     private $id;
     private $name;
@@ -109,10 +109,11 @@ class District extends Model {
     }
 
     public function getAdBaseDN() {
-        if (is_null($this->adBaseDN)or $this->adBaseDN == '' and $this->adFQDN != '') {
-            return $this->FQDNtoDN($this->adFQDN);
-        } else {
+        $this->logger->debug($this->adFQDN);
+        if (!is_null($this->adBaseDN) and $this->adBaseDN != '') {
             return $this->adBaseDN;
+        } elseif ($this->adFQDN !== null and $this->adFQDN != '') {
+            return $this->FQDNtoDN($this->adFQDN);
         }
     }
 
@@ -225,7 +226,7 @@ class District extends Model {
     }
 
     public function getSubOUs() {
-        $ad = \app\api\AD::get();
+        $ad = \App\Api\AD::get();
         $rawOUs = $ad->getSubOUs($this->getId());
         foreach ($rawOUs as $ou) {
             $ous[] = $ou['distinguishedname'];
@@ -234,16 +235,18 @@ class District extends Model {
     }
 
     public function getDirectoryTree() {
-        $ad = \app\api\AD::get();
+        $ad = \App\Api\AD::get();
         return $ad->getAllSubOUs($this->getRootOU());
     }
 
     public function saveToDB() {
         //var_dump("saving to db");
         DistrictDatabase::setAD_FQDN(1, $this->adFQDN);
+        DistrictDatabase::setAbbreviation(1, $this->abbr);
         DistrictDatabase::setADPassword(1, $this->adPassword);
         DistrictDatabase::setADUsername(1, $this->adUsername);
         DistrictDatabase::setADBaseDN(1, $this->getAdBaseDN());
+        DistrictDatabase::setADNetBIOS(1, $this->adNetBIOS);
         DistrictDatabase::setADStudentGroup(1, $this->adStudentGroupName);
         DistrictDatabase::setADStaffGroup(1, $this->adStaffGroupName);
         DistrictDatabase::setName(1, $this->name);

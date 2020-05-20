@@ -24,19 +24,19 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\api;
+namespace App\Controllers\Api;
 
 /**
  * Description of APIController
  *
  * @author cjacobsen
  */
-use app\controllers\Controller;
+use App\Controllers\Controller;
 
 class APIController extends Controller {
 
     //put your code here
-    public function __construct(\system\app\App $app) {
+    public function __construct(\System\App\App $app) {
         parent::__construct($app);
         $this->app->request->setType('ajax');
     }
@@ -58,6 +58,18 @@ class APIController extends Controller {
             //var_dump("Method Exists");
             return $this->$action();
         }
+    }
+
+    public function returnHTML($html) {
+        return ["html" => $html];
+    }
+
+    public function returnValue($html) {
+        return ["val" => $html];
+    }
+
+    public function returnAutoComplete($autoCompletionArray) {
+        return ["autocomplete" => $autoCompletionArray];
     }
 
 }

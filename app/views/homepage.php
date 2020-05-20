@@ -1,24 +1,18 @@
+<?php
 
-<div class="mb-4">
-    <h3>
-        <?php
+namespace App\Views;
+class Homepage
+{
+
+
+    public function getDabaseConnection()
+    {
         //echo "<br/><br/><br/><br/><br/><br/><br/>test";
         //echo $this->view('install/index');
         echo $this->applicationName;
         //echo $appConfig["webAppName"];
-        ?>
 
-    </h3>
-</div>
+        echo $this->motd;
+    }
 
-<div>
-
-    <?php
-    echo $this->motd;
-    ?>
-    <br/><br/>
-
-    This site is mobile friendly
-
-
-</div>
+}

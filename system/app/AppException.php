@@ -24,22 +24,28 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace System\App;
 
 /**
  * Description of AppException
  *
  * @author cjacobsen
  */
-use system\CoreException;
+use System\CoreException;
 
 class AppException extends \Exception {
 
-    //put your code here
     const PERMISSION_MISSING_ID = '701';
     const PERMISSION_MISSING_OU = '702';
     const FAIL_USER_READ_PERM = '401';
-    const FAIL_GROUP_READ_PERM = '402';
+    const FAIL_USER_CHANGE_PERM = '402';
+    const FAIL_USER_UNLOCK_PERM = '403';
+    const FAIL_USER_DISABLE_PERM = '404';
+    const FAIL_GROUP_READ_PERM = '411';
+    const FAIL_GROUP_CHANGE_PERM = '412';
+    const FAIL_GROUP_ADD_PERM = '413';
+    const FAIL_GROUP_DELETE_PERM = '414';
+    const GROUP_ADD_EXISTS = '703';
 
 }
 

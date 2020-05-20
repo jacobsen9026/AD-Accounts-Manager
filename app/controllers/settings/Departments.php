@@ -24,17 +24,17 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\settings;
+namespace App\Controllers\Settings;
 
 /**
  * Description of District
  *
  * @author cjacobsen
  */
-use app\controllers\Controller;
-use app\models\database\DistrictDatabase;
-use app\models\database\SchoolDatabase;
-use app\models\district\Department;
+use App\Controllers\Controller;
+use App\Models\Database\DistrictDatabase;
+use App\Models\Database\SchoolDatabase;
+use App\Models\District\Department;
 use app\database\Schema;
 
 class Departments extends Controller {
@@ -46,7 +46,7 @@ class Departments extends Controller {
       }
      *
      */
-    function __construct(\system\app\App $app) {
+    function __construct(\System\App\App $app) {
         parent::__construct($app);
         $this->layout = 'setup';
     }
@@ -74,10 +74,10 @@ class Departments extends Controller {
     }
 
     public function editPost($departmentID) {
-        \system\app\AppLogger::get()->debug('Edit Post');
+        \System\App\AppLogger::get()->debug('Edit Post');
         $post = \system\Post::getAll();
         //var_dump($post);
-        //\app\models\DatabasePost::setPost(Schema::DEPARTMENT, $departmentID, $post);
+        //\App\Models\DatabasePost::setPost(Schema::DEPARTMENT, $departmentID, $post);
         //var_dump($post);
         $this->redirect('/departments/edit/' . $departmentID);
     }

@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\district;
+namespace App\Models\District;
 
 /**
  * Description of GoogleApps
@@ -41,7 +41,7 @@ class GoogleApps {
     public static function getField($table, $id, $schema, $type) {
         $column = strtoupper($schema[Schema::COLUMN]);
 
-        //\system\app\AppLogger::get()->debug($table . ' ' . $id . ' ' . $column . ' ' . $type);
+        //\System\App\AppLogger::get()->debug($table . ' ' . $id . ' ' . $column . ' ' . $type);
         switch ($table) {
             case Schema::DISTRICT:
                 return self::getDistrictField($id, $column, $type);
@@ -71,26 +71,26 @@ class GoogleApps {
 
     private static function getDistrictField($id, $column, $type) {
         $district = DistrictDatabase::getGASettings($id, $type);
-        //\system\app\AppLogger::get()->debug($district);
+        //\System\App\AppLogger::get()->debug($district);
         $schema = 'GOOGLEAPPS_' . $column;
         $constant = self::getSchemaColumn($schema);
-        //\system\app\AppLogger::get()->debug($constant);
+        //\System\App\AppLogger::get()->debug($constant);
         $return = $district[$constant];
         return $return;
     }
 
     private static function getSchoolField($id, $column, $type) {
 
-        \system\app\AppLogger::get()->info('Getting School ' . $id . ' Field ' . $column);
+        \System\App\AppLogger::get()->info('Getting School ' . $id . ' Field ' . $column);
         $school = SchoolDatabase::getGASettings($id, $type);
         $districtID = SchoolDatabase::getDistrictID($id);
-        //\system\app\AppLogger::get()->debug($school);
+        //\System\App\AppLogger::get()->debug($school);
         $schema = 'GOOGLEAPPS_' . $column;
         $constant = self::getSchemaColumn($schema);
-        //\system\app\AppLogger::get()->debug($constant);
+        //\System\App\AppLogger::get()->debug($constant);
         $return = $school[$constant];
         if ($return == false or $return == null or $return == '') {
-            \system\app\AppLogger::get()->warning('Couldn\'t find school ' . $type . ' ' . $constant . ' will check district.');
+            \System\App\AppLogger::get()->warning('Couldn\'t find school ' . $type . ' ' . $constant . ' will check district.');
             $return = self::getDistrictField($districtID, $column, $type);
         }
         return $return;
@@ -98,16 +98,16 @@ class GoogleApps {
 
     private static function getDepartmentField($id, $column, $type) {
 
-        \system\app\AppLogger::get()->info('Getting Department ' . $id . ' Field ' . $column);
+        \System\App\AppLogger::get()->info('Getting Department ' . $id . ' Field ' . $column);
         $department = Department::getGASettings($id, $type);
         $schoolID = Department::getSchoolID($id);
-        //\system\app\AppLogger::get()->debug($school);
+        //\System\App\AppLogger::get()->debug($school);
         $schema = 'GOOGLEAPPS_' . $column;
         $constant = self::getSchemaColumn($schema);
-        //\system\app\AppLogger::get()->debug($constant);
+        //\System\App\AppLogger::get()->debug($constant);
         $return = $department[$constant];
         if ($return == false or $return == null or $return == '') {
-            \system\app\AppLogger::get()->warning('Couldn\'t find school ' . $type . ' ' . $constant . ' will check district.');
+            \System\App\AppLogger::get()->warning('Couldn\'t find school ' . $type . ' ' . $constant . ' will check district.');
             $return = self::getSchoolField($schoolID, $column, $type);
         }
         return $return;
@@ -120,14 +120,14 @@ class GoogleApps {
         //var_dump($grade);
         $schema = 'GOOGLEAPPS_' . $column;
         $constant = self::getSchemaColumn($schema);
-        //\system\app\AppLogger::get()->debug($constant);
+        //\System\App\AppLogger::get()->debug($constant);
         $return = $grade[$constant];
         if ($return == false or $return == null or $return == '') {
             if ($type == "Staff") {
-                \system\app\AppLogger::get()->warning('Couldn\'t find grade ' . $type . ' ' . $constant . ' will check school.');
+                \System\App\AppLogger::get()->warning('Couldn\'t find grade ' . $type . ' ' . $constant . ' will check school.');
                 $return = self::getSchoolField($schoolID, $column, $type);
             }if ($type == "Student") {
-                \system\app\AppLogger::get()->warning('Couldn\'t find grade ' . $type . ' ' . $constant . ' will check staff grade settings.');
+                \System\App\AppLogger::get()->warning('Couldn\'t find grade ' . $type . ' ' . $constant . ' will check staff grade settings.');
                 $return = self::getSchoolField($id, $column, "Staff");
             }
         }
@@ -141,10 +141,10 @@ class GoogleApps {
         var_dump($team);
         $schema = 'GOOGLEAPPS_' . $column;
         $constant = self::getSchemaColumn($schema);
-        //\system\app\AppLogger::get()->debug($constant);
+        //\System\App\AppLogger::get()->debug($constant);
         $return = $team[$constant];
         if ($return == false or $return == null or $return == '') {
-            \system\app\AppLogger::get()->warning('Couldn\'t find team ' . $type . ' ' . $constant . ' will check grade.');
+            \System\App\AppLogger::get()->warning('Couldn\'t find team ' . $type . ' ' . $constant . ' will check grade.');
             $return = self::getGradeField($gradeID, $column, $type);
         }
         return $return;
@@ -152,12 +152,12 @@ class GoogleApps {
 
     private static function getSchemaColumn($schema) {
         $schemaClass = new \ReflectionClass('app\database\Schema');
-        //\system\app\AppLogger::get()->debug($schema);
+        //\System\App\AppLogger::get()->debug($schema);
 
         $constant = $schemaClass->getConstant($schema);
-        //\system\app\AppLogger::get()->debug($constant);
+        //\System\App\AppLogger::get()->debug($constant);
         $column = $constant[Schema::COLUMN];
-        //\system\app\AppLogger::get()->debug($column);
+        //\System\App\AppLogger::get()->debug($column);
         return $column;
     }
 

@@ -24,17 +24,17 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\settings;
+namespace App\Controllers\Settings;
 
 /**
  * Description of District
  *
  * @author cjacobsen
  */
-use app\controllers\Controller;
-use app\models\database\DistrictDatabase;
-use app\models\database\SchoolDatabase;
-use app\api\AD;
+use App\Controllers\Controller;
+use App\Models\Database\DistrictDatabase;
+use App\Models\Database\SchoolDatabase;
+use App\Api\AD;
 
 class Schools extends Controller {
 
@@ -75,10 +75,10 @@ class Schools extends Controller {
     }
 
     public function editPost($schoolID) {
-        \system\app\AppLogger::get()->debug('Edit Post');
+        \System\App\AppLogger::get()->debug('Edit Post');
         $post = \system\Post::getAll();
         //var_dump($post);
-        //\app\models\DatabasePost::setPost(Schema::SCHOOL, $schoolID, $post);
+        //\App\Models\DatabasePost::setPost(Schema::SCHOOL, $schoolID, $post);
         //var_dump($post);
         $this->redirect('/schools/edit/' . $schoolID);
     }

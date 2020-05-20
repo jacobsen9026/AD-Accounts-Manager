@@ -1,11 +1,12 @@
 <?php
 
-use system\app\forms\Form;
-use system\app\forms\FormText;
-use system\app\forms\FormDropdown;
-use system\app\forms\FormDropdownOption;
-use system\app\forms\FormButton;
-use app\models\view\Javascript;
+use System\App\Forms\Form;
+use System\App\Forms\FormText;
+use System\App\Forms\FormDropdown;
+use System\App\Forms\FormDropdownOption;
+use System\App\Forms\FormButton;
+use App\Models\View\Javascript;
+use App\Models\User\User;
 ?>
 <div>
     <h3>
@@ -16,6 +17,8 @@ use app\models\view\Javascript;
 
 <div>
     <?php
+    /* @var $user User */
+    $user = $this->user;
     $profileForm = new Form('/settings/profile');
     $themeDropDown = new FormDropdown("Theme", 'Set display theme', "theme");
     //$themeDropDown->medium();
@@ -23,22 +26,22 @@ use app\models\view\Javascript;
         $option = new FormDropdownOption($theme, $theme);
 
 
-        if ($theme == $this->user->theme) {
+        if ($theme == $user->theme) {
             $option->selected();
         }
         $themeDropDown->addOption($option);
     }
 
-    $apiKey = new FormText('API Key', '', 'apiKey', $this->user->getApiToken());
+    $apiKey = new FormText('API Key', '', 'apiKey', $user->getApiToken());
     $apiKey->disable()
             ->setId('apiKey')
             //->medium()
             ->setScript(Javascript::onClick('apiKey', Javascript::copyToClipboard('apiKey')));
     $saveButton = new FormButton("Save Profile");
     $saveButton->large();
-    $privilegeLevel = new FormText("Privilege", "Maximum is " . app\models\user\Privilege::TECH);
-    $privilegeLevel->setValue($this->user->privilege)
-            ->disable();
+    //$privilegeLevel = new FormText("Privilege");
+    //$privilegeLevel->setValue(var_export($user->getPrivilegeLevels(), true))
+    //       ->disable();
     //->medium();
 
     $updateAPIKey = new FormButton("Update API Key");
@@ -48,7 +51,7 @@ use app\models\view\Javascript;
             ->setSubLabel("Updating will overwrite existing API key. You're old key will no longer work.");
 
     $profileForm->addElementToNewRow($themeDropDown)
-            ->addElementToNewRow($privilegeLevel)
+            //     ->addElementToNewRow($privilegeLevel)
             ->addElementToNewRow($apiKey)
             ->addElementToNewRow($updateAPIKey)
             ->addElementToNewRow($saveButton);

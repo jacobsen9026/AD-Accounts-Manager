@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of Parser
@@ -32,10 +32,7 @@ namespace system;
  *
  * @author cjacobsen
  */
-use system\SystemLogger;
-use system\app\App;
-use system\app\AppLogger;
-use app\models\user\Privilege;
+use System\App\AppLogger;
 
 class Parser {
 
@@ -44,7 +41,7 @@ class Parser {
      * @param string $view
      * @return boolean
      */
-    public function view($view) {
+    public function view(string $view, array $params = null) {
 
         //var_dump($view);
         $view = $this->sanitize($view);
@@ -55,8 +52,9 @@ class Parser {
 
             ob_start();
             try {
+                AppLogger::get()->info("Rendering view file: " . $path);
                 if (include $path) {
-                    AppLogger::get()->info("Rendering view file: " . $path);
+
                     return ob_get_clean();
                 } else {
 
@@ -79,7 +77,7 @@ class Parser {
      * @param stirng $modal
      * @return boolean
      */
-    public function modal($modal) {
+    public function modal(string $modal) {
 
         //var_dump($modal);
         $modal = $this->sanitize($modal);

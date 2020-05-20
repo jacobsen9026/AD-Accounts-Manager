@@ -24,16 +24,16 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\user;
+namespace App\Models\User;
 
 /**
  * Description of Permission
  *
  * @author cjacobsen
  */
-use app\models\Model;
-use app\models\database\PermissionMapDatabase;
-use system\Encryption;
+use App\Models\Model;
+use App\Models\Database\PermissionMapDatabase;
+use System\Encryption;
 
 class Permission extends Model {
 
@@ -56,7 +56,7 @@ class Permission extends Model {
 
     public function getGroupName() {
         $privilege = new PrivilegeLevel();
-        $privilege->importFromDatabase(\app\models\database\PrivilegeLevelDatabase::get($this->getPrivilegeID()));
+        $privilege->importFromDatabase(\App\Models\Database\PrivilegeLevelDatabase::get($this->getPrivilegeID()));
         return $privilege->getAdGroup();
     }
 

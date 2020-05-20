@@ -24,15 +24,15 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of Post
  *
  * @author cjacobsen
  */
-use system\app\Session;
-use system\app\AppException;
+use System\App\Session;
+use System\App\AppException;
 
 abstract class Post {
 
@@ -91,6 +91,19 @@ abstract class Post {
         }
         throw new AppException("CSRF Invalid");
         //return false;
+    }
+
+    public static function getFile($inputID) {
+
+        $files = $_FILES;
+        //var_dump($files);
+        if (!empty($files)) {
+            foreach ($files as $id => $file) {
+                if ($id == $inputID) {
+                    return $file;
+                }
+            }
+        }
     }
 
 }

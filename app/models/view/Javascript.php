@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\view;
+namespace App\Models\View;
 
 /**
  * Description of Javascript
@@ -32,9 +32,20 @@ namespace app\models\view;
  *
  * @author cjacobsen
  */
-use system\app\forms\Form;
 
-abstract class Javascript extends ViewModel {
+use System\App\Forms\Form;
+
+abstract class Javascript extends ViewModel
+{
+
+    public static $logInjectionScript = '  $.each(data.output.ajax.logs, function(key, value){
+                                     console.log(key+"_AJAX_Log_Panel");
+                                    $("#"+key+"_AJAX_Log_Panel").append(value);
+                                    });
+                                    if(data.output.ajax.logs !=null && data.output.ajax.logs.hasErrors){
+                                    $("#showDebugButton").removeClass("btn-primary");
+                                    $("#showDebugButton").addClass("btn-danger");
+                                    }';
 
     /**
      *
@@ -42,27 +53,45 @@ abstract class Javascript extends ViewModel {
      * @param type $outputID
      * @param array $data
      * @param type $showLoading
+     *
      * @return string
      */
-    public static function buildAJAXRequest($url, $outputID = '', $data = null, $showLoading = false, $outputElement = 'html') {
+    public static function buildAJAXRequest($url, $outputID = '', $data = null, $showLoading = false, $outputElement = 'html')
+    {
         $ajaxCommand = '';
-        $spinner = '\'<span class="spinner-border text-primary" role="status"></span>\'';
+        //$spinner = '\'<div class="round-loader text-secondary"></div>\'';
+        $spinner = '\'<div class="round-loader text-secondary"></div>\'';
+
+
+        $jsonObject = 'data.output.ajax.' . $outputElement;
+
+
         if (is_array($data)) {
             $data['csrfToken'] = Form::getCSRFToken();
             $data = json_encode($data);
         }
+
+
         if ($outputID != '' and $showLoading) {
             $ajaxCommand .= '$("#' . $outputID . '").' . $outputElement . '(' . $spinner . ');';
         }
+
+
         if ($data != null) {
             $ajaxCommand .= '$.post("' . $url . '", ' . $data . ', function (data) {
-                                    $("#' . $outputID . '").' . $outputElement . '(data);
-                                    }
-                            );';
+                                    data = JSON.parse(data);
+
+                                    $("#' . $outputID . '").' . $outputElement . '(' . $jsonObject . ');
+                                    //console.log(data.output.ajax.logs);
+                                    ' . self::$logInjectionScript . '
+
+                            });';
         } else {
             $ajaxCommand .= '$.get("' . $url . '", function (data) {
-                                    $("#' . $outputID . '").' . $outputElement . '(data);
-                                    }
+                                    data = JSON.parse(data);
+                                    $("#' . $outputID . '").' . $outputElement . '(' . $jsonObject . ');
+                                    ' . self::$logInjectionScript . '
+}
                             );';
         }
         return $ajaxCommand;
@@ -72,9 +101,11 @@ abstract class Javascript extends ViewModel {
      *
      * @param type $url
      * @param array $data
+     *
      * @return string
      */
-    public static function buildClientRequest($url, array $data = null) {
+    public static function buildClientRequest($url, array $data = null)
+    {
         $command = '';
         if (is_array($data)) {
 
@@ -87,21 +118,33 @@ abstract class Javascript extends ViewModel {
         return $command;
     }
 
+    public static function onChange(string $listeningID, string $function)
+    {
+        $script = '$("#' . $listeningID . '").change(function () {
+                        '
+            . $function .
+            '});';
+        return $script;
+    }
+
     /**
      *
      * @param type $inputID
      * @param type $function
+     *
      * @return string
      */
-    public static function onClick(string $inputID, string $function) {
+    public static function onClick(string $inputID, string $function)
+    {
         $script = '     $("#' . $inputID . '").on("click", function () {
                         '
-                . $function .
-                '});';
+            . $function .
+            '});';
         return $script;
     }
 
-    public static function copyToClipboard($id) {
+    public static function copyToClipboard($id)
+    {
         $script = 'console.log("click");
             var $temp = $("<input>");
   $("body").append($temp);
@@ -109,6 +152,50 @@ abstract class Javascript extends ViewModel {
   $temp.val($("#' . $id . '").val()).select();
   document.execCommand("copy");
   $temp.remove();';
+        return $script;
+    }
+
+    public static function onPageLoad($function)
+    {
+        return "$(document).ready(function () {" . $function . "});";
+    }
+
+    /**
+     *
+     * @param string $requestURL
+     * @param string $targetID
+     *
+     * @return string
+     */
+    public static function buildAutocomplete(string $requestURL, string $targetID)
+    {
+        $script = ' $(function () {
+        var ' . $targetID . ' = function (request, response) {
+            $.getJSON(
+                "' . $requestURL . '" + request.term,
+                function (data) {
+                    response(data.output.ajax.autocomplete);
+                    ' . self::$logInjectionScript . '
+                });
+        };
+
+        var selectItem = function (event, ui) {
+
+            $("#' . $targetID . '").val(ui.item.value);
+            return false;
+        }
+
+        $("#' . $targetID . '").autocomplete({
+            source: ' . $targetID . ',
+            select: selectItem,
+            minLength: 1,
+            change: function() {
+                $("#' . $targetID . '").css("display", 2);
+            }
+
+        });
+
+    });';
         return $script;
     }
 

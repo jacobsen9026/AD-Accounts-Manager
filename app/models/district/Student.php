@@ -24,16 +24,16 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\district;
+namespace App\Models\District;
 
 /**
  * Description of Student
  *
  * @author cjacobsen
  */
-use app\models\district\DistrictUser;
-use app\api\AD;
-use app\models\view\CardPrinter;
+use App\Models\District\DistrictUser;
+use App\Api\AD;
+use App\Models\View\CardPrinter;
 
 class Student extends DistrictUser {
 

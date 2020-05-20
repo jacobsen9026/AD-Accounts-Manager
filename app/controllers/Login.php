@@ -24,22 +24,22 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers;
+namespace App\Controllers;
 
 /**
  * Description of Login
  *
  * @author cjacobsen
  */
-use system\app\auth\Local;
-use system\app\App;
-use app\models\user\User;
-use system\app\Session;
-use system\app\auth\AuthException;
-use system\app\AppLogger;
-use system\Post;
-use app\auth\ADAuth;
-use app\models\database\AuthDatabase;
+use System\App\Auth\Local;
+use System\App\App;
+use App\Models\User\User;
+use System\App\Session;
+use System\App\Auth\AuthException;
+use System\App\AppLogger;
+use System\Post;
+use App\Auth\ADAuth;
+use App\Models\Database\AuthDatabase;
 
 class Login extends Controller {
 

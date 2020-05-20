@@ -24,26 +24,26 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\settings;
+namespace App\Controllers\Settings;
 
 /**
  * Description of District
  *
  * @author cjacobsen
  */
-use app\controllers\Controller;
-use app\models\database\DistrictDatabase;
+use App\Controllers\Controller;
+use App\Models\Database\DistrictDatabase;
 use app\database\Schema;
-use system\Post;
-use app\models\database\PermissionMapDatabase;
-use app\models\database\PrivilegeLevelDatabase;
-use system\app\AppException;
+use System\Post;
+use App\Models\Database\PermissionMapDatabase;
+use App\Models\Database\PrivilegeLevelDatabase;
+use System\App\AppException;
 
 class District extends Controller {
 
-    function __construct(\system\app\App $app) {
+    function __construct(\System\App\App $app) {
         parent::__construct($app);
-//$this->layout = 'setup';
+        $this->layout = 'default_blank';
     }
 
 //put your code here
@@ -66,7 +66,6 @@ class District extends Controller {
     }
 
     public function permissions($districtID = 1) {
-
         $this->district = DistrictDatabase::getDistrict($districtID);
         return $this->view('settings/district/permissions');
     }
@@ -79,9 +78,7 @@ class District extends Controller {
                 $this->updateDistrict(Post::getAll());
                 break;
             case 'deletePrivilege':
-                $id = Post::get('privilegeID');
-                $this->logger->info('Removing Privilege ' . $id);
-                PrivilegeLevelDatabase::removePrivilegeLevel($id);
+                $this->deletePrivilegeLevel();
                 break;
 
             case 'addDistrictPermission':
@@ -101,14 +98,10 @@ class District extends Controller {
                 $this->updatePrivilege($id);
                 break;
             case 'addPrivilege':
-                if (Post::get("ldapGroupName")) {
-                    PrivilegeLevelDatabase::addPrivilegeLevel(Post::get("ldapGroupName"), $districtID);
-                }
+                $this->addDistrictPrivilegeLevel();
                 break;
             case 'removePermission':
-
-                $id = Post::get('id');
-                PermissionMapDatabase::removePermissionByID($id);
+                $this->removeOUPermission();
                 break;
             default:
                 break;
@@ -118,7 +111,12 @@ class District extends Controller {
     }
 
     public function edit($districtID = 1) {
-        return $this->show($districtID);
+        $this->districts = DistrictDatabase::getDistricts();
+        if (!empty($this->districts)) {
+            return $this->show($districtID);
+        } else {
+            return $this->view('settings/district/create');
+        }
     }
 
     public function show($districtID = 1) {
@@ -165,7 +163,7 @@ class District extends Controller {
     }
 
     private function updateDistrict($post) {
-        //var_dump($post);
+//var_dump($post);
         $this->logger->info("Updating district");
         $this->district->setName($post['name']);
         $this->district->setAbbr($post['abbr']);
@@ -179,7 +177,7 @@ class District extends Controller {
         $this->district->setAdUsername($post['adUsername']);
 //$this->district->setGsFQDN($post['gsFQDN']);
 //$this->district->setParentEmailGroup($post['parentEmailGroup']);
-        //var_dump($this->district);
+//var_dump($this->district);
         $this->district->saveToDB();
 //DatabasePost::setPost(Schema::DISTRICT, $districtID, $post);
 
@@ -191,6 +189,12 @@ class District extends Controller {
         $this->redirect('/district/edit');
     }
 
+    /**
+     *
+     * @param type $districtID
+     * @return boolean
+     * @deprecated since version number
+     */
     public function hasSchools($districtID) {
 //$schools = DistrictDatabase::getSchools($districtID);
         return false;
@@ -209,11 +213,11 @@ class District extends Controller {
 //return true;
     }
 
-    private function addOUPermission() {
+    public function addOUPermission() {
         $ou = Post::get('ou');
         if ($ou != '' and $ou != null) {
-            $permission = new \app\models\user\Permission();
-            var_dump(Post::get());
+            $permission = new \App\Models\User\Permission();
+//var_dump(Post::get());
             $permission->setPrivilegeID(Post::get("privilegeID"))
                     ->setOu($ou)
                     ->setUserPermissionLevel(Post::get("userPermissionType"))
@@ -226,13 +230,13 @@ class District extends Controller {
 //return true;
     }
 
-    private function modifyPermission() {
+    public function modifyPermission() {
         $id = Post::get('id');
-        var_dump(Post::get());
+//var_dump(Post::get());
         if ($id != '' and $id != null) {
-            $permission = new \app\models\user\Permission();
+            $permission = new \App\Models\User\Permission();
             $permission->importFromDatabase(PermissionMapDatabase::getPermissionById($id));
-            //var_dump(Post::get());
+//var_dump(Post::get());
             $permission->setPrivilegeID(Post::get("privilegeID"))
                     ->setId($id)
                     ->setUserPermissionLevel(Post::get("userPermissionType"))
@@ -246,10 +250,29 @@ class District extends Controller {
     }
 
     public function updatePrivilege($privilegeID) {
-        $privilege = new \app\models\user\PrivilegeLevel();
+        $privilege = new \App\Models\User\PrivilegeLevel();
         $privilege->importFromDatabase(PrivilegeLevelDatabase::get($privilegeID));
-        $privilege->setAdGroup(Post::get('groupName'));
+//var_dump(Post::get('superAdmin'));
+        $privilege->setAdGroup(Post::get('groupName'))
+                ->setSuperAdmin(Post::get('superAdmin'));
         $privilege->saveToDatabase();
+    }
+
+    public function removeOUPermission() {
+        $id = Post::get('id');
+        return PermissionMapDatabase::removePermissionByID($id);
+    }
+
+    public function addDistrictPrivilegeLevel($districtID = 1) {
+        if (Post::get("ldapGroupName")) {
+            return PrivilegeLevelDatabase::addPrivilegeLevel(Post::get("ldapGroupName"), $districtID);
+        }
+    }
+
+    public function deletePrivilegeLevel() {
+        $id = Post::get('privilegeID');
+        $this->logger->info('Removing Privilege ' . $id);
+        return PrivilegeLevelDatabase::removePrivilegeLevel($id);
     }
 
 }

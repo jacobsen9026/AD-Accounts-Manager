@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\settings;
+namespace App\Controllers\Settings;
 
 /**
  * Description of Settings
  *
  * @author cjacobsen
  */
-use app\controllers\Controller;
+use App\Controllers\Controller;
 
 class Index extends Controller {
 

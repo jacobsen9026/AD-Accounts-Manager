@@ -1,7 +1,7 @@
 <a class="text-decoration-none fas fa-arrow-circle-left mb-3" href="/students"></a>
 <?php
 
-use app\models\view\CardPrinter;
+use App\Models\View\CardPrinter;
 
 echo CardPrinter::printCard($this->student, $this->user);
 ?>

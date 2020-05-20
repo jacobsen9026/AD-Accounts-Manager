@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of Request
@@ -43,6 +43,7 @@ class Request {
     public $serverName;
     public $protocol = "http";
     private $logger;
+    private $id;
 
     /**
      *
@@ -50,7 +51,7 @@ class Request {
      */
     public function __construct() {
         $this->logger = SystemLogger::get();
-
+        $this->id = substr(hash("sha256", rand()), 0, 5);
         /*
          * Store the referer
          */
@@ -90,6 +91,10 @@ class Request {
         if (isset($_SERVER["HTTPS"])) {
             $this->setProtocol("https");
         }
+    }
+
+    public function getId() {
+        return $this->id;
     }
 
     public function getUri(): string {

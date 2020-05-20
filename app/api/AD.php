@@ -24,23 +24,25 @@
  * THE SOFTWARE.
  */
 
-namespace app\api;
+namespace App\Api;
 
 /**
  * Description of LDAP
  *
  * @author cjacobsen
  */
-use app\models\database\DistrictDatabase;
-use app\models\district\District;
-use system\app\AppLogger;
-use app\models\user\PermissionLevel;
-use app\models\user\PermissionHandler;
-use system\app\AppException;
 
-class AD {
+use App\Models\Database\DistrictDatabase;
+use App\Models\District\District;
+use System\App\LDAPLogger;
+use App\Models\User\PermissionLevel;
+use App\Models\User\PermissionHandler;
+use System\App\AppException;
 
-    use \system\traits\DomainTools;
+class AD
+{
+
+    use \System\Traits\DomainTools;
 
 //put your code here
 // Create a configuration array.
@@ -66,13 +68,14 @@ class AD {
      */
     private $district;
 
-    /** @var AppLogger The application logger */
+    /** @var LDAPLogger The application logger */
     private $logger;
 
     /** @var AD|null */
     public static $instance;
 
-    function __construct($districtID, $fqdn = null, $username = null, $password = null) {
+    function __construct($districtID, $fqdn = null, $username = null, $password = null)
+    {
 
         if (isset(self::$instance)) {
             return self::$instance;
@@ -81,16 +84,15 @@ class AD {
         }
     }
 
-    private function initialize($districtID, $fqdn, $username, $password) {
-
-
+    private function initialize($districtID, $fqdn, $username, $password)
+    {
 
 
         $this->districtID = $districtID;
 
         $this->district = DistrictDatabase::getDistrict();
         self::$instance = $this;
-        $this->logger = AppLogger::get();
+        $this->logger = LDAPLogger::get();
         $this->fqdn = DistrictDatabase::getAD_FQDN($this->districtID);
         if (!is_null($fqdn)) {
             $this->fqdn = $fqdn;
@@ -103,24 +105,23 @@ class AD {
             $this->testUserDN = "CN=" . $this->testUserName . "," . $baseDN;
 
             if ((is_null($username))) {
-                if (strpos($username, "\\") > 0 or strpos($username, "@") > 0) {
-                    $this->username = DistrictDatabase::getADUsername($this->districtID) .
-                            "@" . DistrictDatabase::getAD_FQDN($this->districtID);
-                } else {
-                    $this->username = DistrictDatabase::getADUsername($this->districtID);
+                $username = DistrictDatabase::getADUsername($this->districtID);
+                if (strpos($username, "\\") === false and strpos($username, "@") === false) {
+                    $username = $username .
+                        "@" . DistrictDatabase::getAD_FQDN($this->districtID);
                 }
-            } else {
-                $this->username = $username;
             }
+            $this->username = $username;
+
 
             $this->password = DistrictDatabase::getADPassword($this->districtID);
             if (!is_null($password)) {
                 $this->password = $password;
             }
-            if (!empty($this->username) and!empty($this->password)) {
+            if (!empty($this->username) and !empty($this->password)) {
 //var_dump($this->connection);
                 $this->connection = $this->connect($this->fqdn, $this->username, $this->password);
-                if (!is_resource($this->connection) or!get_resource_type($this->connection) == 'ldap link') {
+                if (!is_resource($this->connection) or !get_resource_type($this->connection) == 'ldap link') {
                     $this->connectionStatus = $this->connection;
 //var_dump($this->connection);
                 }
@@ -132,15 +133,17 @@ class AD {
      *
      * @return AD
      */
-    public static function get() {
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self(1);
         }
         return self::$instance;
     }
 
-    public function ouExists($dn) {
-        $this->logger->debug("Testing if " . $dn . " exists");
+    public function ouExists($dn)
+    {
+        //$this->logger->debug("Testing if " . $dn . " exists");
 //$test = $this->query('(distinguishedName="' . $dn . '")');
         $test = $this->read('(&(objectClass=organizationalUnit))', $dn);
 //var_dump($test);
@@ -152,7 +155,8 @@ class AD {
         return true;
     }
 
-    private function hashPassword($newPassword) {
+    private function hashPassword($newPassword)
+    {
         $newPassword = "\"" . $newPassword . "\"";
         $len = strlen($newPassword);
         $newPassw = "";
@@ -162,12 +166,13 @@ class AD {
         return $newPassw;
     }
 
-    public function setPassword($username, $password) {
+    public function setPassword($username, $password)
+    {
         $userDN = $this->getUserDN($username);
         $newpw = $this->hashPassword($password);
 
 //$encoded_newPassword = "{SHA}" . base64_encode(pack("H*", sha1($password)));
-        $entry = array();
+        $entry = [];
         $entry["unicodePwd"] = $newpw;
         $this->logger->debug($userDN);
         $this->logger->debug($entry);
@@ -189,11 +194,13 @@ class AD {
      * @param type $fqdn
      * @param type $username
      * @param type $password
+     *
      * @return resource|string Returns the connection resource or the error message
      */
-    public static function connect($fqdn, $username, $password) {
+    public static function connect($fqdn, $username, $password)
+    {
 
-        $logger = AppLogger::get();
+        $logger = LDAPLogger::get();
         $connection = ldap_connect("ldap://" . $fqdn);
         $logger->info(ldap_error($connection));
         if ($connection) {
@@ -231,12 +238,17 @@ class AD {
      *
      * @param string $filter
      * @param type $base_dn
+     *
      * @return boolean
      */
-    public function query($filter = null, $base_dn = null) {
-        if (is_null($filter)) {
-            $filter = "(&(objectClass=person)(objectClass=user))";
-        }
+    public function query($filter, $base_dn = null)
+    {
+        /*
+          if (is_null($filter)) {
+          $filter = "(&(objectClass=person)(objectClass=user))";
+          }
+         *
+         */
         if (is_null($base_dn)) {
             $base_dn = $this->baseDN;
         }
@@ -247,13 +259,15 @@ class AD {
         $this->logger->info($result);
         if ($result != false) {
             $info = ldap_get_entries($this->connection, $result);
-//$this->logger->info($info);
+
+            $this->logger->info($info);
             return $info;
         }
         return false;
     }
 
-    private static function setLDAPOptions($connection) {
+    private static function setLDAPOptions($connection)
+    {
         ldap_set_option(null, LDAP_OPT_DEBUG_LEVEL, 7);
         ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
         ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
@@ -261,61 +275,96 @@ class AD {
 //ldap_set_option($this->connection, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
     }
 
-    public function getPhoto($username) {
+    public function getPhoto($username)
+    {
         $studentGroupDN = $this->getGroupDN("Students");
         $filter = '(&(objectClass=person)(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . ')(objectClass=user)(sAMAccountName=' . $username . '))';
         $studentResult = $this->queryObject($filter);
     }
 
-    public function read($filter = null, $base_dn = null) {
+    public function read($filter = null, $base_dn = null)
+    {
         if (is_null($filter)) {
             $filter = "(&(objectClass=person)(objectClass=user))";
         }
         if (is_null($base_dn)) {
             $base_dn = $this->baseDN;
         }
-        $this->logger->info($base_dn);
-        $this->logger->info($filter);
+        //$this->logger->info($base_dn);
+        //$this->logger->info($filter);
 
         $result = ldap_read($this->connection, $base_dn, $filter, ["*"], 0, 50, 10);
         if ($result != false) {
             $info = ldap_get_entries($this->connection, $result);
-            $this->logger->info($info);
+            //$this->logger->info($info);
 
             return $info;
         }
-
         return false;
     }
 
-    public function list($filter = null, $base_dn = null) {
+    public function list($filter = null, $base_dn = null)
+    {
         if (is_null($filter)) {
             $filter = "(&(objectClass=person)(objectClass=user))";
         }
         if (is_null($base_dn)) {
             $base_dn = $this->baseDN;
         }
+        // var_dump($filter);
+        // var_dump($base_dn);
         $this->logger->info($base_dn);
         $this->logger->info($filter);
         $result = ldap_list($this->connection, $base_dn, $filter, ["*"], 0, 50, 10);
+
         if ($result != false) {
+
+
+            //echo "wtf";
+            //var_dump($this->connection);
+            //var_dump($result);
+            //var_dump(ldap_get_entries($this->connection, $result));
+            //return;
             $info = ldap_get_entries($this->connection, $result);
-            $this->logger->info($info);
+            //var_dump(ldap_error($this->connection));
+            //var_dump(ldap_get_entries($this->connection, $result));
+            //return;
+            //echo "wtf";
+            //var_dump($info);
+            //  return;
+            // $this->logger->info($info);
             return $info;
         }
         return false;
     }
 
-    public function getConnectionResult() {
-        if (is_resource($this->connection)and get_resource_type($this->connection) == 'ldap link') {
+    public function getConnectionResult()
+    {
+        if (is_resource($this->connection) and get_resource_type($this->connection) == 'ldap link') {
             return true;
         }
         return $this->connectionStatus;
     }
 
-    public function removeUserFromGroup($groupDN, $userDN) {
-        \system\app\AppLogger::get()->debug(ldap_mod_del($this->connection, $groupDN, ['member' => $userDN]));
-        \system\app\AppLogger::get()->debug(ldap_errno($this->connection));
+    public function addUserToGroup($groupDN, $userDN)
+    {
+        if (PermissionHandler::hasPermission($this->getOUFromDN($groupDN), PermissionLevel::GROUPS, PermissionLevel::GROUP_CHANGE)) {
+            $this->logger->debug(ldap_mod_add($this->connection, $groupDN, ['member' => $userDN]));
+            $this->logger->debug(ldap_errno($this->connection));
+            if (!ldap_errno($this->connection)) {
+                return true;
+            }
+            throw new AppException(ldap_error($this->connection));
+        } else {
+            throw new AppException("You do not have permission to modify this group.", AppException::FAIL_GROUP_CHANGE_PERM);
+        }
+        return false;
+    }
+
+    public function removeUserFromGroup($groupDN, $userDN)
+    {
+        $this->logger->debug(ldap_mod_del($this->connection, $groupDN, ['member' => $userDN]));
+        $this->logger->debug(ldap_errno($this->connection));
         if (!ldap_errno($this->connection)) {
             return true;
         }
@@ -323,7 +372,50 @@ class AD {
         return false;
     }
 
-    public function deleteTestUser() {
+    public function createGroup($name, $dn, $email)
+    {
+        $addgroup_ad['cn'] = "$name";
+        $addgroup_ad['objectClass'][0] = "top";
+        $addgroup_ad['objectClass'][1] = "group";
+        $addgroup_ad['groupType'] = "2";
+        //$addgroup_ad['member'] = $members;
+        $addgroup_ad["sAMAccountName"] = $name;
+        $this->logger->info($addgroup_ad);
+        $this->logger->info($dn);
+        ldap_add($this->connection, $dn, $addgroup_ad);
+        if (!ldap_errno($this->connection)) {
+            return true;
+        } else {
+            /*
+             * @todo check for proper error
+             */
+            throw new AppException("That group already exists", AppException::GROUP_ADD_EXISTS);
+        }
+        $this->logger->warning(ldap_error($this->connection));
+        return false;
+    }
+
+    public function deleteGroup($dn)
+    {
+        $ou = $this->getOUFromDN($dn);
+        if ($this->hasPermission($ou, PermissionLevel::GROUPS, PermissionLevel::GROUP_DELETE)) {
+
+            $delgroup_ad["distinguishedName"] = $dn;
+            //$this->logger->info($addgroup_ad);
+            $this->logger->info($dn);
+
+
+            ldap_delete($this->connection, $dn);
+            if (!ldap_errno($this->connection)) {
+                return true;
+            }
+            $this->logger->warning(ldap_error($this->connection));
+        }
+        return false;
+    }
+
+    public function deleteTestUser()
+    {
 
 //var_dump("Deleting test user");
         try {
@@ -341,7 +433,8 @@ class AD {
         }
     }
 
-    public function createTestUser() {
+    public function createTestUser()
+    {
         if ($this->testUserExists()) {
             $this->deleteTestUser();
         }
@@ -371,7 +464,8 @@ class AD {
         }
     }
 
-    private function testUserExists() {
+    private function testUserExists()
+    {
         $filter = '(objectclass=user)';
         $result = $this->query($filter, $this->testUserDN);
 
@@ -381,10 +475,11 @@ class AD {
         return false;
     }
 
-    public function getUser($username) {
-        $filter = '(&(objectClass=person)(objectClass=user)(sAMAccountName=' . $username . '))';
+    public function getUser($username, $baseDN = null)
+    {
+        $filter = '(&(objectClass=user)(sAMAccountName=' . $username . '))';
 
-        $user = $this->queryObject($filter);
+        $user = $this->queryObject($filter, $baseDN);
         $enabledFilter = '(&(userAccountControl:1.2.840.113556.1.4.803:=2)(sAMAccountName=' . $username . '))';
         $enabled = ['enabled' => false];
 //var_dump($enabledResult);
@@ -396,13 +491,21 @@ class AD {
         return $user;
     }
 
+    public function getDomainUser($username)
+    {
+        return $this->getUser($username, self::FQDNtoDN(DistrictDatabase::getAD_FQDN(1)));
+    }
+
     /**
      * Same as getUser but applies App permissions
+     *
      * @param type $username
+     *
      * @return array Raw LDAP response of user
      * @throws AppException If the user does not have permission to view
      */
-    public function searchUser($username) {
+    public function searchUser($username)
+    {
         $user = self::getUser($username);
         if (self::hasPermission($user, PermissionLevel::USERS, PermissionLevel::USER_READ)) {
             return $user;
@@ -411,15 +514,20 @@ class AD {
         }
     }
 
-    public function isUserInGroup($username, $groupName) {
+    public function isUserInGroup($username, $groupName)
+    {
 
         $groupDN = $this->getGroupDN($groupName);
         $filter = '(&(objectClass=user)(memberOf:1.2.840.113556.1.4.1941:=' . $groupDN . ')(sAMAccountName=' . $username . '))';
 
         $result = $this->query($filter, $this->FQDNtoDN($this->fqdn));
-
-        if (is_array($result) and key_exists('count', $result) and $result['count']) {
-            return true;
+        //var_dump($result);
+        if (is_array($result) and key_exists('count', $result) and $result['count'] > 0) {
+            if (key_exists('samaccountname', $result[0])) {
+                if ($result[0]['samaccountname'][0] == $username) {
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -427,38 +535,46 @@ class AD {
     /**
      * Return raw AD data of all users in group
      * No permission filtering is applied, caution
+     *
      * @param type $groupName
+     *
      * @return type
      */
-    public function getGroupMembers($groupName) {
+    public function getGroupMembers($groupName)
+    {
         $groupDN = $this->getGroupDN($groupName);
         return $this->listGroupMembers($groupDN);
     }
 
-    public function getGroup($groupName) {
+    public function getGroup($groupName)
+    {
 
 // var_dump($groupName);
         $studentGroupDN = $this->getGroupDN($this->district->getAdStudentGroupName());
-        $filter = '(&(objectClass=group)(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . ')(|(sAMAccountName=' . $groupName . ')(mail=' . $groupName . ')(description=' . $groupName . ')))';
+        $staffGroupDN = $this->getGroupDN($this->district->getAdStaffGroupName());
+        $filter = '(&(objectClass=group)(|(sAMAccountName=' . $groupName . ')(mail=' . $groupName . ')(description=' . $groupName . ')))';
 //var_dump($filter);
         $result = $this->queryObject($filter);
-        $user = \system\app\App::get()->user;
-        if ($result == false and $user->privilege >= \app\models\user\Privilege::ADMIN) {
-            $staffGroupDN = $this->getGroupDN($this->district->getAdStaffGroupName());
-            $filter = '(&(objectClass=group)(memberOf:1.2.840.113556.1.4.1941:=' . $staffGroupDN . ')(|(sAMAccountName=' . $groupName . ')(mail=' . $groupName . ')(description=' . $groupName . ')))';
+        $user = \System\App\App::get()->user;
+        //if ($result == false and $user->privilege >= \App\Models\User\Privilege::ADMIN) {
+        //
+        //     $filter = '(&(objectClass=group)(memberOf:1.2.840.113556.1.4.1941:=' . $staffGroupDN . ')(|(sAMAccountName=' . $groupName . ')(mail=' . $groupName . ')(description=' . $groupName . ')))';
 //var_dump($filter);
-            $result = $this->queryObject($filter);
-        }
+        //    $result = $this->queryObject($filter);
+        // }
         return $result;
     }
 
     /**
      * Same as getGroup but applies App permissions
+     *
      * @param type $groupName
+     *
      * @return array Raw LDAP response of user
      * @throws AppException If the user does not have permission to view
      */
-    public function searchGroup($groupName) {
+    public function searchGroup($groupName)
+    {
         $group = self::getGroup($groupName);
         if (self::hasPermission($group, PermissionLevel::GROUPS, PermissionLevel::GROUP_READ)) {
             return $group;
@@ -467,21 +583,24 @@ class AD {
         }
     }
 
-    public function getStaffGroup($groupName) {
+    public function getStaffGroup($groupName)
+    {
         $staffGroupDN = $this->getGroupDN($this->district->getAdStaffGroupName());
 
         $filter = '(&(objectClass=group)(memberOf:1.2.840.113556.1.4.1941:=' . $staffGroupDN . ')(|(cn=' . $groupName . ')(mail=' . $groupName . ')(description=' . $groupName . ')))';
         return $this->queryObject($filter);
     }
 
-    public function getStudentGroup($groupName) {
+    public function getStudentGroup($groupName)
+    {
         $studentGroupDN = $this->getGroupDN($this->district->getAdStudentGroupName());
 
         $filter = '(&(objectClass=group)(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . ')(|(cn=' . $groupName . ')(mail=' . $groupName . ')(description=' . $groupName . ')))';
         return $this->queryObject($filter);
     }
 
-    public function getStudentUser($username) {
+    public function getStudentUser($username)
+    {
 
         $studentGroupDN = $this->getGroupDN($this->district->getAdStudentGroupName());
         $filter = '(&(objectClass=person)(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . ')(objectClass=user)(sAMAccountName=' . $username . '))';
@@ -498,7 +617,8 @@ class AD {
         return array_merge($studentResult, $enabled);
     }
 
-    public function getStaffUser($username) {
+    public function getStaffUser($username)
+    {
 
         $staffGroupDN = $this->getGroupDN($this->district->getAdStaffGroupName());
         $filter = '(&(objectClass=person)(memberOf:1.2.840.113556.1.4.1941:=' . $staffGroupDN . ')(objectClass=user)(sAMAccountName=' . $username . '))';
@@ -514,18 +634,21 @@ class AD {
         return array_merge($staffResult, $enabled);
     }
 
-    public function unlockUser($username) {
-        $entry = array("lockoutTime" => 0);
+    public function unlockUser($username)
+    {
+        $entry = ["lockoutTime" => 0];
 //var_dump($this->getUserDN($username));
         ldap_mod_replace($this->connection, $this->getUserDN($username), $entry);
     }
 
-    public function enableUser($username) {
+    public function enableUser($username)
+    {
         $this->setEnabledStatus($username, true);
 //exit;
     }
 
-    private function setEnabledStatus($username, $enable = true) {
+    private function setEnabledStatus($username, $enable = true)
+    {
         $filter = "(&(samaccountname=$username))";
 //echo "<br><br><br>";
         $useraccountcontrol = $this->queryObject($filter)["useraccountcontrol"][0];
@@ -546,11 +669,12 @@ class AD {
                 $new = $disabled; //enable or disable?
         }
 //var_dump($new);
-        $entry = array("userAccountControl" => $new);
+        $entry = ["userAccountControl" => $new];
         ldap_mod_replace($this->connection, $this->getUserDN($username), $entry);
     }
 
-    public function disableUser($username) {
+    public function disableUser($username)
+    {
         $this->setEnabledStatus($username, false);
 //exit;
     }
@@ -561,15 +685,17 @@ class AD {
      * or last name.
      *
      * @param type $searchTerm
+     *
      * @return type
      */
-    public function listStudentUsers($searchTerm) {
+    public function listStudentUsers($searchTerm)
+    {
 
         $studentGroupDN = $this->getGroupDN($this->district->getAdStudentGroupName());
 //var_dump($studentGroupDN);
         $filter = '(&(objectClass=person)(objectClass=user)'
-                . '(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . ')'
-                . '(|(sAMAccountName=*' . $searchTerm . '*)(givenname=' . $searchTerm . '*)(sn=' . $searchTerm . '*)))';
+            . '(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . ')'
+            . '(|(sAMAccountName=*' . $searchTerm . '*)(givenname=' . $searchTerm . '*)(sn=' . $searchTerm . '*)))';
 //var_dump($filter);
         return $this->listUsers($filter);
     }
@@ -580,14 +706,16 @@ class AD {
      * or last name.
      *
      * @param type $searchTerm
+     *
      * @return type
      */
-    public function listStudentGroups($searchTerm) {
+    public function listStudentGroups($searchTerm)
+    {
         $studentGroupDN = $this->getGroupDN($this->district->getAdStudentGroupName());
 //var_dump($studentGroupDN);
         $filter = '(&(objectClass=group)'
-                . '(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . ')'
-                . '(|(sAMAccountName=*' . $searchTerm . '*)(description=*' . $searchTerm . '*)(mail=*' . $searchTerm . '*)))';
+            //. '(memberOf:1.2.840.113556.1.4.1941:=' . $studentGroupDN . ')'
+            . '(|(sAMAccountName=*' . $searchTerm . '*)(description=*' . $searchTerm . '*)(mail=*' . $searchTerm . '*)))';
         return $this->listGroups($filter);
     }
 
@@ -597,14 +725,16 @@ class AD {
      * or last name.
      *
      * @param type $searchTerm
+     *
      * @return type
      */
-    public function listStaffGroups($searchTerm) {
+    public function listStaffGroups($searchTerm)
+    {
         $staffGroupDN = $this->getGroupDN($this->district->getAdStaffGroupName());
 //var_dump($staffGroupDN);
         $filter = '(&(objectClass=group)'
-                . '(memberOf:1.2.840.113556.1.4.1941:=' . $staffGroupDN . ')'
-                . '(|(sAMAccountName=*' . $searchTerm . '*)(description=*' . $searchTerm . '*)(mail=*' . $searchTerm . '*)))';
+            . '(memberOf:1.2.840.113556.1.4.1941:=' . $staffGroupDN . ')'
+            . '(|(sAMAccountName=*' . $searchTerm . '*)(description=*' . $searchTerm . '*)(mail=*' . $searchTerm . '*)))';
 //var_dump($filter);
         return $this->listGroups($filter);
     }
@@ -615,22 +745,44 @@ class AD {
      * or last name.
      *
      * @param type $searchTerm
+     *
      * @return type
      */
-    public function listDomainGroups($searchTerm) {
+    public function listDomainGroups($searchTerm)
+    {
 //var_dump($searchTerm);
 
 
-
         $filter = '(&(objectClass=group)'
-                . '(|(cn=*' . $searchTerm . '*)(sAMAccountName=*' . $searchTerm . '*)(description=*' . $searchTerm . '*)(mail=*' . $searchTerm . '*)))';
+            . '(|(cn=*' . $searchTerm . '*)(sAMAccountName=*' . $searchTerm . '*)(description=*' . $searchTerm . '*)(mail=*' . $searchTerm . '*)))';
 //var_dump($filter);
         return $this->listGroups($filter);
     }
 
-    public function listGroupMembers($groupDN) {
+    /**
+     * Returns an array of usernames that match
+     * the search term for username, first name,
+     * or last name.
+     *
+     * @param type $searchTerm
+     *
+     * @return type
+     */
+    public function listDomainUsers($searchTerm)
+    {
+//var_dump($searchTerm);
+
+
         $filter = '(&(objectClass=user)'
-                . '(memberOf:1.2.840.113556.1.4.1941:=' . $groupDN . '))';
+            . '(|(cn=*' . $searchTerm . '*)(sAMAccountName=*' . $searchTerm . '*)(description=*' . $searchTerm . '*)(mail=*' . $searchTerm . '*)))';
+//var_dump($filter);
+        return $this->listUsers($filter);
+    }
+
+    public function listGroupMembers($groupDN)
+    {
+        $filter = '(&(objectClass=user)'
+            . '(memberOf:1.2.840.113556.1.4.1941:=' . $groupDN . '))';
 //var_dump($filter);
         return $this->listUsers($filter);
     }
@@ -640,9 +792,11 @@ class AD {
      * Returns false if no users were found.
      *
      * @param type $filter
+     *
      * @return array|false
      */
-    private function listUsers($filter) {
+    private function listUsers($filter)
+    {
         //var_dump($filter);
         $result = $this->query($filter);
         //var_dump($result);
@@ -667,24 +821,63 @@ class AD {
             sort($usernames);
             return $usernames;
         }
-        return array();
+        return [];
     }
 
-    private function listGroups($filter) {
+    /**
+     * User requires Group Add permissions to list OU's
+     * Returns an array of OU's that match the input filter
+     * Returns false if no OU's were found.
+     *
+     * @param type $filter
+     *
+     * @return array|false
+     */
+    public function listOUs($searchTerm)
+    {
+        $this->logger->info($searchTerm);
+        $filter = '(&(objectClass=organizationalUnit)(|(name=*' . $searchTerm . '*)(ou=*' . $searchTerm . '*)))';
+
+        //$this->logger->info($filter);
         $result = $this->query($filter);
-//var_dump($filter);
-//var_dump($result);
+
+        //$this->logger->info($result);
+        //var_dump($result);
+        if ($result != false) {
+            if (key_exists("count", $result)) {
+                foreach ($result as $ou) {
+                    if (!is_int($ou)) {
+                        if (key_exists('distinguishedname', $ou)) {
+                            if (self::hasPermission($ou, PermissionLevel::GROUPS, PermissionLevel::GROUP_ADD)) {
+                                $ous[] = $ou["distinguishedname"][0];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (isset($ous)) {
+
+//var_dump($usernames);
+            sort($ous);
+            return $ous;
+        }
+        return [];
+    }
+
+    private function listGroups($filter)
+    {
+        $result = $this->query($filter);
         if ($result != false) {
             if (key_exists("count", $result)) {
                 foreach ($result as $group) {
-                    //var_dump($group);
-// var_dump($group["distinguishedname"][0]);
-                    if (key_exists("cn", $group)) {
-                        $insert["label"] = $group["cn"][0];
-                        $insert["value"] = $group["distinguishedname"][0];
-//$groups[]=$insert;
-                        if (self::hasPermission($group, PermissionLevel::GROUPS, PermissionLevel::GROUP_READ)) {
-                            $groups[] = $group["cn"][0];
+                    if (is_array($group)) {
+                        if (key_exists("cn", $group)) {
+                            $insert["label"] = $group["cn"][0];
+                            $insert["value"] = $group["distinguishedname"][0];
+                            if (self::hasPermission($group, PermissionLevel::GROUPS, PermissionLevel::GROUP_READ)) {
+                                $groups[] = $group["cn"][0];
+                            }
                         }
                     }
                 }
@@ -699,18 +892,20 @@ class AD {
         return false;
     }
 
-    public function listStaffUsers($usernameFragment) {
+    public function listStaffUsers($usernameFragment)
+    {
         $staffGroupDN = $this->getGroupDN($this->district->getAdStaffGroupName());
 //var_dump($staffGroupDN);
         $filter = '(&(objectClass=person)(objectClass=user)'
-                . '(!(objectClass=computer))'
-                . '(memberOf:1.2.840.113556.1.4.1941:=' . $staffGroupDN . ')'
-                . '(|(sAMAccountName=*' . $usernameFragment . '*)(givenname=*' . $usernameFragment . '*)(sn=*' . $usernameFragment . '*)))';
+            . '(!(objectClass=computer))'
+            . '(memberOf:1.2.840.113556.1.4.1941:=' . $staffGroupDN . ')'
+            . '(|(sAMAccountName=*' . $usernameFragment . '*)(givenname=*' . $usernameFragment . '*)(sn=*' . $usernameFragment . '*)))';
 //var_dump($filter);
         return $this->listUsers($filter);
     }
 
-    public function listUserGroups($groupFragment) {
+    public function listUserGroups($groupFragment)
+    {
 
 // var_dump($studentGroupDN);
         $filter = '(&(objectClass=group)(|(sAMAccountName=*' . $groupFragment . '*)(cn=*' . $groupFragment . '*)(mail=*' . $groupFragment . '*)(description=*' . $groupFragment . '*)))';
@@ -718,8 +913,9 @@ class AD {
         return $this->listGroups($filter);
     }
 
-    private function queryObject($filter) {
-        $result = $this->query($filter);
+    private function queryObject($filter, $baseDN = null)
+    {
+        $result = $this->query($filter, $baseDN);
 
         if ($result != false) {
             if (key_exists("count", $result) and $result["count"] == 1) {
@@ -736,15 +932,13 @@ class AD {
      * @param type $connection
      * @param type $baseDN
      * @param type $groupName
+     *
      * @return string
      */
-    public function getGroupDN($groupName) {
-//$this->logger->warning($groupName);
-
+    public function getGroupDN($groupName)
+    {
         $filter = "(&(objectClass=group)(cn=" . $groupName . "))";
-//var_dump($filter);
         $dn = $this->getObjectDN($filter);
-//var_dump($dn);
         return $dn;
     }
 
@@ -753,23 +947,19 @@ class AD {
      * @param type $connection
      * @param type $baseDN
      * @param type $user
+     *
      * @return string
      */
-    public function getUserDN($user) {
+    public function getUserDN($user)
+    {
         $filter = "(&(objectClass=person)(samaccountname=" . $user . "))";
         return $this->getObjectDN($filter);
     }
 
-    private function getObjectDN($filter) {
-//var_dump($filter);
-//var_dump($this->baseDN);
-//var_dump($this->connection);
+    private function getObjectDN($filter)
+    {
         $result = ldap_search($this->connection, $this->baseDN, $filter);
-//ldap_search($this->connection, $this->baseDN, '(objectClass=person)');
-//var_dump(ldap_error($this->connection));
         $info = ldap_get_entries($this->connection, $result);
-//var_dump($result);
-//var_dump($info);
         if (is_array($info)) {
             if (key_exists("count", $info)) {
                 if ($info["count"] == 1) {
@@ -781,19 +971,21 @@ class AD {
         }
     }
 
-    public function getSubOUs($dn) {
+    public function getSubOUs($dn)
+    {
         if ($this->ouExists($dn)) {
 
             $filter = '(&(objectClass=organizationalUnit))';
-            $buildingsRaw = $this->list($filter, $dn);
+            $subOUs = $this->list($filter, $dn);
 //var_dump($buildingsRaw);
-            return $buildingsRaw;
+            return $subOUs;
         }
         return false;
     }
 
-    public function getAllSubOUs($dn, $array = null) {
-        if ($this->ouExists($dn)) {
+    public function getAllSubOUs($dn, $array = null)
+    {
+        if ($this->ouExists($dn) or $dn == DistrictDatabase::getAD_BaseDN(1)) {
             $filter = '(objectClass=organizationalUnit)';
             $result = $this->list($filter, $dn);
             foreach ($result as $resultEntry) {
@@ -811,7 +1003,8 @@ class AD {
         return false;
     }
 
-    public function hasSubOUs($dn) {
+    public function hasSubOUs($dn)
+    {
         if ($this->ouExists($dn)) {
             $filter = '(objectClass=organizationalUnit)';
             $result = $this->list($filter, $dn);
@@ -825,14 +1018,16 @@ class AD {
     /**
      *
      * @param type $districtID
-     * @return array \app\models\district\School
+     *
+     * @return array \App\Models\District\School
      */
-    public static function getSchools($districtID) {
+    public static function getSchools($districtID)
+    {
         $districtOU = DistrictDatabase::getAD_BaseDN($districtID);
         $ous = $this->getSubOUs($districtOU);
 //var_dump($ous);
         foreach ($ous as $ou) {
-            \system\app\AppLogger::get()->debug($ou);
+            //$this->logger->debug($ou);
             if (is_array($ou)) {
                 $school = new School();
                 $school->importFromAD($ou);
@@ -843,11 +1038,28 @@ class AD {
         return $schools;
     }
 
-    private static function hasPermission($ldapResponse, $permissionType, $requiredLevel) {
+    private static function hasPermission($target, $permissionType, $requiredLevel)
+    {
         //var_dump($ldapResponse);
-        $ou = substr($ldapResponse['distinguishedname'][0], strpos($ldapResponse['distinguishedname'][0], ',') + 1);
-        //var_dump($ou);
+        if (is_array($target)) {
+            $ou = substr($target['distinguishedname'][0], strpos($target['distinguishedname'][0], ',') + 1);
+        } else {
+            $ou = $target;
+        }
         return PermissionHandler::hasPermission($ou, $permissionType, $requiredLevel);
+        //var_dump($ou);
+        //var_dump($ou);
+    }
+
+    public function setUserThumbnailPhoto($userDN, $photo)
+    {
+        if ($this->hasPermission($this->getOUFromDN($userDN), PermissionLevel::USERS, PermissionLevel::USER_CHANGE)) {
+            $attr = ["thumbnailPhoto" => $photo];
+            $this->logger->info(ldap_mod_replace($this->connection, $userDN, $attr));
+            $this->logger->info(ldap_error($this->connection));
+            return;
+        }
+        return false;
     }
 
 }

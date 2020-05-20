@@ -24,14 +24,23 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of Renderer
  *
  * @author cjacobsen
  */
-class Renderer extends Parser {
+
+use System\AppOutput;
+use System\Models\View\DebugViewer;
+use System\Models\Ajax\AJAXResponse;
+use System\DatabaseLogger;
+use System\App\UserLogger;
+use System\PostLogger;
+
+class Renderer extends Parser
+{
 
 //put your code here
     public $output;
@@ -42,52 +51,78 @@ class Renderer extends Parser {
     /** @var SystemLogger|null */
     public $logger;
 
-    /** @var AppLogger|null */
+    /** @var AppLogger|null
+     * @deprecated since version number
+     *  */
     public $appLogger = null;
 
-    function __construct(Core $core) {
+    /** @var AppOutput */
+    private $appOutput;
+
+    function __construct(Core $core)
+    {
         $this->core = $core;
-        $this->logger = $core->logger;
-        $this->appLogger = $core->appLogger;
+        $this->logger = $core::$systemLogger;
+        $this->appOutput = $core->appOutput;
     }
 
-    public function draw() {
-        if ($this->core->appOutput != null) {
-            $appBody = $this->core->appOutput->getBody();
-        }
-//var_dump($appBody);
-        if ($this->core->request->type == 'http') {
-            $this->include('system/views/HTML_start');
-            $this->logger->info("Drawing of app started");
-        }
-        if (isset($appBody) and $appBody != '') {
-            //var_dump('output');
-            echo $appBody;
-        } elseif ($this->core->request->type == 'http') {
-            $this->showNoAppOutputWarning();
-        }
+    public function draw()
+    {
+        switch ($this->core->request->type) {
+            case 'http':
+                //var_dump($this->appOutput);
+                $this->include('system/views/HTML_start');
+                $this->logger->info("Drawing of app started");
+                if ($this->appOutput->getBody() !== null and $this->appOutput->getBody() != '') {
+                    echo $this->appOutput->getBody();
+                } else {
+                    $this->showNoAppOutputWarning();
+                }
+                $this->logger->info("Drawing of app finished");
+                $loggers = $this->getLoggers();
+                if (!empty($loggers)) {
+                    echo DebugViewer::printDebugTools($loggers);
+                }
+                $this->include('system/views/HTML_end');
 
-        if ($this->core->request->type == 'http') {
-            $this->logger->info("Drawing of app finished");
-            $this->include('system/views/debugToolbar');
-            $this->include('system/views/HTML_end');
+
+                break;
+            case 'ajax':
+                $ajaxResponse = new AJAXResponse();
+                $ajaxResponse->importAppOutput($this->appOutput);
+                $ajaxResponse->addLogger($this->logger)
+                    ->addLogger(DatabaseLogger::get())
+                    ->addLogger(PostLogger::get())
+                    ->addLogger(UserLogger::get());
+
+                //var_dump($this->appOutput);
+                $json = $ajaxResponse->jsonSerialize();
+                //var_export($json);
+                echo $json;
+
+                break;
+
+            default:
+                break;
         }
     }
 
-    private function showNoAppOutputWarning() {
+    private function showNoAppOutputWarning()
+    {
         $this->include('system/views/noAppOutput');
     }
 
-    public function errors_exist() {
-        if (isset($this->appLogger)) {
-            if ($this->appLogger->getLog('error') !== null and sizeof($this->appLogger->getLog('error')) > 0) {
-                return true;
-            }
-            if ($this->logger->getLog('error') !== null and sizeof($this->logger->getLog('error')) > 0) {
-                return true;
-            }
+
+    private function getLoggers()
+    {
+
+        $appLoggers = $this->appOutput->getLoggers();
+        $loggers = [];
+        if ($this->core->inDebugMode()) {
+            $loggers = [SystemLogger::get(), PostLogger::get(), DatabaseLogger::get()];
         }
-        return false;
+        $loggers = array_merge($loggers, $appLoggers);
+        return $loggers;
     }
 
 }

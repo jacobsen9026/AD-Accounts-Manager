@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace System\App;
 
 /**
  * Description of Route
  *
  * @author cjacobsen
  */
-use system\app\Router;
+use System\App\Router;
 
 class Route {
 

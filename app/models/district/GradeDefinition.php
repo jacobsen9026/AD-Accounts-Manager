@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\district;
+namespace App\Models\District;
 
 /**
  * Description of GradeDefinition
@@ -32,7 +32,7 @@ namespace app\models\district;
  * @author cjacobsen
  * @deprecated
  */
-use app\models\Query;
+use App\Models\Query;
 
 class GradeDefinition {
 

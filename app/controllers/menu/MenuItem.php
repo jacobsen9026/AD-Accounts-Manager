@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\menu;
+namespace App\Controllers\Menu;
 
 /**
  * Description of MenuItem
  *
  * @author cjacobsen
  */
-class MenuItem extends \app\models\Model {
+class MenuItem extends \App\Models\Model {
 
     public $displayText;
     public $targetURL;

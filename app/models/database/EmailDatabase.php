@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\database;
+namespace App\Models\Database;
 
 /**
  * Description of Auth
@@ -174,8 +174,8 @@ class EmailDatabase extends DatabaseModel {
      */
     public static function saveSettings(array $postedData) {
         foreach ($postedData as $key => $data) {
-            \system\app\AppLogger::get()->debug($key);
-            \system\app\AppLogger::get()->debug($data);
+            \System\App\AppLogger::get()->debug($key);
+            \System\App\AppLogger::get()->debug($data);
             switch ($key) {
                 case "fromAddress":
                     self::setFromAddress($data);

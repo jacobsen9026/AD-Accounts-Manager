@@ -7,9 +7,9 @@
 
 <?php
 
-use system\app\forms\Form;
+use System\App\Forms\Form;
 
-$grades = \app\models\district\GradeDefinition::getDropdownArray();
+$grades = \App\Models\District\GradeDefinition::getDropdownArray();
 $form = new Form();
 $form->buildTextInput('First Name', 'firstName')
         ->addToNewRow()

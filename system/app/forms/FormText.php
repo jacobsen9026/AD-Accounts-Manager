@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\forms;
+namespace System\App\Forms;
 
 /**
  * Description of FormInput
@@ -42,145 +42,69 @@ class FormText extends FormElement implements FormElementInterface {
     private $disabled = false;
 
     /**
-     *
-     * @param type $label
-     * @param type $subLabel
-     * @param type $name
-     * @param type $value
+     * Autocomplete for users who fall into either
+     * of the defined user groups (Student/Staff) on the district setup
+     * @return $this
      */
-    function __construct($label = '', $subLabel = '', $name = '', $value = '') {
-        parent::__construct($label, $subLabel, $name);
-        $this->value = $value;
-    }
-
-    public function autoCompleteStudentUsername() {
+    public function autoCompleteUsername() {
         $this->autocomplete = true;
-        $script = ' $(function () {
-        var getData = function (request, response) {
-            $.getJSON("/api/district/autocompleteStudent/" + request.term,
-                function (data) {
-                    response(data);
-                });
-        };
-
-        var selectItem = function (event, ui) {
-
-            $("#' . $this->getId() . '").val(ui.item.value);
-            return false;
-        }
-
-        $("#' . $this->getId() . '").autocomplete({
-            source: getData,
-            select: selectItem,
-            minLength: 2,
-            change: function() {
-                $("#' . $this->getId() . '").css("display", 2);
-            }
-        });
-    });';
+        $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteUser/', $this->getName());
         $this->setScript($script);
         return $this;
     }
 
-    public function autoCompleteStaffUsername() {
+    /**
+     * Autocomplete for users who fall into either
+     * of the defined user groups (Student/Staff) on the district setup
+     * @return $this
+     */
+    public function autoCompleteOU() {
         $this->autocomplete = true;
-        $script = ' $(function () {
-        var getData = function (request, response) {
-            $.getJSON(
-                "/api/district/autocompleteStaff/" + request.term,
-                function (data) {
-                    response(data);
-                });
-        };
-
-        var selectItem = function (event, ui) {
-        console.log("select");
-        console.log(ui);
-        console.log(event);
-
-            $("#username").val(ui.item.value);
-            return false;
-        }
-
-        $("#username").autocomplete({
-            source: getData,
-            select: selectItem,
-            minLength: 2,
-            change: function() {
-                $("#username").css("display", 2);
-            }
-        });
-    });';
+        $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteOU/', $this->getId());
         $this->setScript($script);
         return $this;
     }
 
+    /**
+     * Autocomplete for groups who fall into either
+     * of the defined user groups (Student/Staff) on the district setup
+     * @return $this
+     */
     public function autoCompleteGroupName() {
         $this->autocomplete = true;
-        $script = ' $(function () {
-        var getGroup = function (request, response) {
-            $.getJSON(
-                "/api/district/autocompleteGroup/" + request.term,
-                function (data) {
-                    response(data);
-                });
-        };
-
-        var selectItem = function (event, ui) {
-        console.log("select");
-        console.log(ui);
-        console.log(event);
-
-            $("#' . $this->getName() . '").val(ui.item.value);
-            return false;
-        }
-
-        $("#' . $this->getName() . '").autocomplete({
-            source: getGroup,
-            select: selectItem,
-            minLength: 1,
-            change: function() {
-                $("#' . $this->getName() . '").css("display", 2);
-            }
-        });
-    });';
+        $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteGroup/', $this->getName());
         $this->setScript($script);
         return $this;
     }
 
+    /**
+     * Autocomplete for all users in domain (permissions apply)
+     * @return $this
+     */
+    public function autoCompleteDomainUsername() {
+        $this->autocomplete = true;
+        $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteDomainUser/', $this->getName());
+        $this->setScript($script);
+        return $this;
+    }
+
+    /**
+     * Autocomplete for all groups in domain (permissions apply)
+     * @return $this
+     */
     public function autoCompleteDomainGroupName() {
         $this->autocomplete = true;
-        $script = ' $(function () {
-        var getGroup = function (request, response) {
-            $.getJSON(
-                "/api/district/autocompleteDomainGroup/" + request.term,
-                function (data) {
-                    response(data);
-                });
-        };
-
-        var selectItem = function (event, ui) {
-        console.log("select");
-        console.log(ui);
-        console.log(event);
-
-            $("#' . $this->getName() . '").val(ui.item.value);
-            return false;
-        }
-
-        $("#' . $this->getName() . '").autocomplete({
-            source: getGroup,
-            select: selectItem,
-            minLength: 1,
-            change: function() {
-                $("#' . $this->getName() . '").css("display", 2);
-            }
-        });
-    });';
+        $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteDomainGroup/', $this->getName());
         $this->setScript($script);
         return $this;
     }
 
+    /**
+     *
+     * @param string $iconHTML
+     * @return $this
+     *
+     */
     public function appendIcon($iconHTML) {
         $this->appendIcon = $iconHTML;
         return $this;
@@ -217,26 +141,13 @@ class FormText extends FormElement implements FormElementInterface {
         return $this;
     }
 
-    function getAutocomplete() {
-        return $this->autocomplete;
-    }
-
-    function getAppendIcon() {
-        return $this->appendIcon;
-    }
-
+    /**
+     *
+     * @param boolean $disable
+     * @return $this
+     */
     public function disable($disable = true) {
         $this->disabled = $disable;
-        return $this;
-    }
-
-    function setAutocomplete($autocomplete): self {
-        $this->autocomplete = $autocomplete;
-        return $this;
-    }
-
-    function setAppendIcon($appendIcon): self {
-        $this->appendIcon = $appendIcon;
         return $this;
     }
 

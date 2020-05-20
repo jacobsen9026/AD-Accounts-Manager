@@ -34,6 +34,8 @@
 
     <link rel="stylesheet" href="/css/style2.css">
 
+    <link rel="stylesheet" href="/css/loaders.css">
+
     <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
@@ -46,7 +48,7 @@
      * Handle Themes
      */
     if ($this->app->user->theme != \app\config\Theme::DEFAULT_THEME and $this->app->user->theme != \app\config\Theme::BLUE_THEME) {
-        system\app\AppLogger::get()->debug("theme is " . $this->app->user->theme);
+        System\App\AppLogger::get()->debug("theme is " . $this->app->user->theme);
         $theme = explode("_", $this->app->user->theme);
         $theme = $theme[0] . ucfirst($theme[1]);
 
@@ -54,11 +56,11 @@
     }
     /**
       if ($this->app->user->theme == \app\config\Theme::RED_THEME) {
-      system\app\AppLogger::get()->debug("theme is red");
+      System\App\AppLogger::get()->debug("theme is red");
       echo ' <link rel="stylesheet" href="/css/redTheme.css">';
       }
       if ($this->app->user->theme == \app\config\Theme::GREEN_THEME) {
-      system\app\AppLogger::get()->debug("theme is green");
+      System\App\AppLogger::get()->debug("theme is green");
       echo ' <link rel="stylesheet" href="/css/greenTheme.css">';
       }
      *

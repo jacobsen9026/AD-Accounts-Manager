@@ -24,17 +24,17 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers;
+namespace App\Controllers;
 
 /**
  * Description of Students
  *
  * @author cjacobsen
  */
-use app\models\district\Student;
-use app\api\AD;
-use system\Post;
-use system\Get;
+use App\Models\District\Student;
+use App\Api\AD;
+use System\Post;
+use System\Get;
 
 class Students extends Controller {
 

@@ -24,18 +24,18 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\settings;
+namespace App\Controllers\Settings;
 
 /**
  * Description of Authentication
  *
  * @author cjacobsen
  */
-use system\Post;
-use app\models\user\PrivilegeLevel;
-use app\models\database\PrivilegeLevelDatabase;
-use app\controllers\Controller;
-use app\models\database\EmailDatabase;
+use System\Post;
+use App\Models\User\PrivilegeLevel;
+use App\Models\Database\PrivilegeLevelDatabase;
+use App\Controllers\Controller;
+use App\Models\Database\EmailDatabase;
 
 class Email extends Controller {
 

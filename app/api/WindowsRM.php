@@ -24,15 +24,15 @@
  * THE SOFTWARE.
  */
 
-namespace app\api;
+namespace App\Api;
 
 /**
  * Description of WindowsRM
  *
  * @author cjacobsen
  */
-use system\app\AppLogger;
-use system\app\AppException;
+use System\App\AppLogger;
+use System\App\AppException;
 
 class WindowsRM {
 
@@ -87,6 +87,13 @@ class WindowsRM {
         }
 
         //return $this->portReachable($computer, 5985);
+    }
+
+    public function rebootWorkstation($hostname) {
+
+        $cmd = new WindowsCommand();
+        $cmd->setCmd("shutdown /r /t 30")
+                ->setHostname($hostname);
     }
 
     public function DNSLookup($hostname) {

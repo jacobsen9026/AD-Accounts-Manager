@@ -24,15 +24,15 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\settings;
+namespace App\Controllers\Settings;
 
 /**
  * Description of District
  *
  * @author cjacobsen
  */
-use app\controllers\Controller;
-use app\models\district\Team;
+use App\Controllers\Controller;
+use App\Models\District\Team;
 
 class Teams extends Controller {
 
@@ -44,7 +44,7 @@ class Teams extends Controller {
      *
      */
 
-    function __construct(\system\app\App $app) {
+    function __construct(\System\App\App $app) {
         parent::__construct($app);
         $this->layout = 'setup';
     }
@@ -71,7 +71,7 @@ class Teams extends Controller {
     public function editPost($teamId) {
         $post = \system\Post::getAll();
         var_dump($post);
-        //\app\models\DatabasePost::setPost($teamID, $post);
+        //\App\Models\DatabasePost::setPost($teamID, $post);
         //var_dump($post);
         $this->redirect('/teams/edit/' . $teamID);
     }
@@ -83,9 +83,9 @@ class Teams extends Controller {
     }
 
     public function delete($teamId) {
-        $this->gradeID = \app\models\district\Team::getGradeID($teamId);
+        $this->gradeID = \App\Models\District\Team::getGradeID($teamId);
 
-        \app\models\district\Team::deleteTeam($teamId);
+        \App\Models\District\Team::deleteTeam($teamId);
         $this->redirect('/teams/show/' . $this->gradeID);
     }
 

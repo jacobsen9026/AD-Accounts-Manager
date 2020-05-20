@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of Database
@@ -33,11 +33,15 @@ namespace system;
  *
  * This class is the bottom layer of database access, all queries
  * should be funneled into this class.
+ *
  * @author cjacobsen
+ * @todo   Generalize class
  */
+
 use PDO;
 
-class Database extends Parser {
+class Database extends Parser
+{
     /*
      * Database Scheme as Contansts
      */
@@ -50,36 +54,46 @@ class Database extends Parser {
 
     /**
      *
+     * @var DatabaseLogger
+     */
+    public static $logger;
+
+    /**
+     *
      * @return Database
      */
-    public static function get() {
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }
         return self::$instance;
     }
 
-    function __construct() {
+    function __construct()
+    {
         self::$instance = $this;
+        self::$logger = DatabaseLogger::get();
         $this->connect();
     }
 
-    public function connect() {
+    public function connect()
+    {
         /*
          * If the db file doesn't exist we want to seed it after we connect
          */
         if (!file_exists(APPCONFIGDBPATH)) {
             $seedDatabse = true;
         }
-        SystemLogger::get()->info("connecting " . APPCONFIGDBPATH);
+        self::$logger->info("connecting " . APPCONFIGDBPATH);
         /**
          * Connect to database, will create file if it doesn't already exist
          */
-        $this->db = new \PDO("sqlite:" . APPCONFIGDBPATH, null, null, array(
+        $this->db = new \PDO("sqlite:" . APPCONFIGDBPATH, null, null, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false
-        ));
+        ]);
         /*
          * Seed if first connection
          */
@@ -92,8 +106,9 @@ class Database extends Parser {
         $this->db->exec('PRAGMA foreign_keys = ON;');
     }
 
-    private function seedDatabase() {
-        app\AppLogger::get()->debug("Seeding the configuration database.");
+    private function seedDatabase()
+    {
+        self::$logger->debug("Seeding the configuration database.");
         /*
          * Load in DB Schema from file
          */
@@ -116,13 +131,16 @@ class Database extends Parser {
      * Should be in the form of a standard SQL query
      *
      * @param string $query
+     *
      * @return boolean
      */
-    public function query($query) {
+    public function query($query)
+    {
 
         //var_dump($query);
         /* @var $db PDO */
-        app\AppLogger::get()->query("Query: " . $query);
+
+        self::$logger->query("Query: " . $query);
         //var_dump($query);
         try {
             $result = $this->db->query($query);
@@ -130,7 +148,7 @@ class Database extends Parser {
              * Check that the SQL statement completed successfully, log any errors
              */
             if ($this->db->errorCode()[0] != '00000') {
-                app\AppLogger::get()->error($this->db->errorInfo());
+                self::$logger->error($this->db->errorInfo());
                 return false;
             }
             /*
@@ -156,12 +174,12 @@ class Database extends Parser {
             }
 
             //Return Array
-            app\AppLogger::get()->query("Response: " . var_export($return, true));
+            self::$logger->query("Response: " . var_export($return, true));
 
             //var_dump($return);
             return $return;
         } catch (Exception $ex) {
-            app\AppLogger::get()->error($ex);
+            self::$logger->error($ex);
             return false;
         }
     }
@@ -172,7 +190,8 @@ class Database extends Parser {
      *
      * @return array A list of table names
      */
-    public function getAllTables() {
+    public function getAllTables()
+    {
         /*
          * Generic get all tables function for SQLite3
          */
@@ -188,9 +207,11 @@ class Database extends Parser {
      * Returns all columns for a table as an array
      *
      * @param string $table The table name
+     *
      * @return array A list of column names
      */
-    public function getAllColumns($table) {
+    public function getAllColumns($table)
+    {
         /*
          * Generic get all columns function for SQLite3
          */
@@ -201,27 +222,6 @@ class Database extends Parser {
             $tables[] = $tableName["name"];
         }
         return $tables;
-    }
-
-    /**
-     * getConstants
-     *
-     * Get all Database constants to match Schema constant,
-     * creates an array of DATABASE_FIELD,Field
-     * for all tables and columns in database
-     *
-     * @return array ["TABLE_COLUMN"=>COLUMN,...]
-     * @deprecated
-     */
-    public function getConstants() {
-        $tables = $this->getAllTables();
-        foreach ($tables as $table) {
-            $columns = $this->getAllColumns($table);
-            foreach ($columns as $column) {
-                $constants[$table . '_' . $column] = $column;
-            }
-        }
-        return $constants;
     }
 
 }

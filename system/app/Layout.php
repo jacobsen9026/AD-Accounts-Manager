@@ -24,16 +24,15 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace System\App;
 
 /**
  * Description of Layout
  *
  * @author cjacobsen
  */
-use system\common\CommonLayout;
-use app\config\MasterConfig;
-use app\models\database\AppDatabase;
+use System\Common\CommonLayout;
+use App\Models\Database\AppDatabase;
 
 class Layout extends CommonLayout {
 

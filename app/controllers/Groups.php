@@ -24,29 +24,74 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers;
+namespace App\Controllers;
 
 /**
  * Description of Groups
  *
  * @author cjacobsen
  */
-use system\Post;
+use System\Post;
+use App\Models\District\DistrictUser;
+use App\Models\District\Group;
+use App\Api\AD;
 
 class Groups extends Controller {
 
     public function index() {
+        $return = $this->view('/groups/search');
+        //$return .= $this->view('/groups/create');
 
-        return $this->view('/groups/search');
+
+        return $return;
     }
 
+    public function createPost() {
+        /**
+          $validator = new \System\App\Forms\Validators\GroupValidator();
+          $validator->setMethod(\System\App\Forms\Validators\GroupValidator::ADD_GROUP);
+          $validator->setName(Post::get("name"))
+          ->setDescription(Post::get("description"))
+          ->setEmail(Post::get("email"))
+          ->setOu(Post::get("ou"));
+          $filteredInput = $validator->validateInput();
+          return;
+         *
+         */
+        $name = Post::get("name");
+        $desc = Post::get("description");
+        $email = Post::get("email");
+        $ou = Post::get("ou");
+        if ($name != null and $ou != null) {
+            $newGroup = new Group();
+            $dn = "CN=" . Post::get("name") . ',' . Post::get("ou");
+            $newGroup->setName(Post::get("name"))
+                    ->setDistinguishedName($dn);
+            $newGroup->createInAD();
+        }
+    }
+
+    /**
+     * Searches for groups by name and returns a display view
+     * @param string $groupName
+     * @return type
+     */
     public function search(string $groupName) {
-        $ad = \app\api\AD::get();
-        $this->group = new \app\models\district\Group();
+        $ad = AD::get();
+        $this->group = new \App\Models\District\Group();
         $this->group->importFromAD($ad->searchGroup($groupName));
-        return $this->view('/groups/show');
+
+        //var_dump($this->group);
+        $return = $this->view('/groups/show');
+        //$return .= $this->view('/groups/create');
+        return $return;
     }
 
+    /**
+     * Search but by post
+     * @param type $groupName
+     * @return type
+     */
     public function searchPost($groupName = null) {
         $group = Post::get("group");
         if (!is_null($groupName)) {
@@ -59,6 +104,10 @@ class Groups extends Controller {
         }
     }
 
+    /**
+     * Handles all group changes by Post
+     * @return type
+     */
     public function editPost() {
         $action = Post::get('action');
         switch ($action) {
@@ -67,9 +116,9 @@ class Groups extends Controller {
                 $this->logger->info("removing member " . $username);
 
                 $groupName = Post::get('group');
-                $ad = \app\api\AD::get();
-                $adGroupRaw = $ad->getStudentGroup($groupName);
-                if ($this->user->privilege >= \app\models\user\Privilege::ADMIN) {
+                $ad = AD::get();
+                $adGroupRaw = $ad->getGroup($groupName);
+                if ($this->user->privilege >= \App\Models\User\Privilege::ADMIN) {
                     if ($adGroupRaw == false) {
                         $adGroupRaw = $ad->getStaffGroup($groupName);
                     }
@@ -77,7 +126,7 @@ class Groups extends Controller {
 
 
 
-                $group = new \app\models\district\Group();
+                $group = new \App\Models\District\Group();
                 $group->importFromAD($adGroupRaw);
                 $user = $group->hasMember($username);
                 if ($user != false) {
@@ -90,10 +139,30 @@ class Groups extends Controller {
                 $this->logger->debug($group);
 
                 break;
+            case 'addMember':
+                $username = Post::get('usernameToAdd');
 
+                $ad = AD::get();
+                $this->logger->info("adding member " . $username);
+                $groupName = Post::get('groupName');
+                $group = new Group();
+                $group->importFromAD($ad->getGroup($groupName));
+                $user = new DistrictUser($username);
+                if ($ad->addUserToGroup($group->getDistinguishedName(), $user->getDistinguishedName())) {
+                    $this->logger->debug("User was successfully removed");
+                    return $this->search($group->getName());
+                }
+
+                break;
             default:
                 break;
         }
+    }
+
+    public function deletePost() {
+        $groupDN = Post::get("groupDN");
+        $ad = AD::get();
+        $ad->deleteGroup($groupDN);
     }
 
 }

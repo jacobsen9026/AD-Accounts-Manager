@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of CoreErrorHandler
@@ -33,8 +33,8 @@ namespace system;
  *
  * @author cjacobsen
  */
-use system\Core;
-use system\SystemLogger;
+use System\Core;
+use System\SystemLogger;
 use Error;
 
 class CoreErrorHandler {

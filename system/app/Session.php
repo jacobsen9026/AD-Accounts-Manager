@@ -24,15 +24,15 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace System\App;
 
 /**
  * Description of Session
  *
  * @author cjacobsen
  */
-use app\models\user\User;
-use app\models\database\AuthDatabase;
+use App\Models\User\User;
+use App\Models\Database\AuthDatabase;
 
 abstract class Session {
     //put your code here

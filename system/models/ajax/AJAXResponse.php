@@ -1,0 +1,122 @@
+<?php
+
+/*
+ * The MIT License
+ *
+ * Copyright 2020 cjacobsen.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/**
+ * Description of AJAXResponse
+ *
+ * @author cjacobsen
+ */
+
+namespace System\Models\Ajax;
+
+use System\Models\View\LogPrinter;
+use System\Common\CommonLogger;
+use System\Common\CommonLogEntry;
+use System\Core;
+
+class AJAXResponse
+{
+
+    /**
+     *
+     * @var array [key]=>object array of JSON output
+     */
+    public $ajaxOutput;
+
+    /**
+     *
+     * @var array
+     */
+    public $loggers;
+
+    public function getRequestOutput()
+    {
+        //return mb_convert_encoding($this->ajaxOutput, 'UTF-8', 'UTF-8');
+        return $this->ajaxOutput;
+    }
+
+    public function getLogs()
+    {
+
+        $logs = [];
+        $hasErrors = false;
+        /* @var $logger CommonLogger */
+        foreach ($this->loggers as $logger) {
+            $loggerName = $logger->getName();
+            if ($logger->hasErrors()) {
+                $hasErrors = true;
+            }
+            /* @var $logEntry CommonLogEntry */
+            if ($logger->getLogEntries() !== null) {
+                $collapsedLogID = 'ajaxRequest_' . Core::get()->request->getId();
+                $logs[$logger->getName()] = '<div class="alert-info" data-toggle="collapse" data-target="#' . $collapsedLogID . '"  >AJAX<div id="' . $collapsedLogID . '" class="collapse">';
+                foreach ($logger->getLogEntries() as $logEntry) {
+
+                    if ($logEntry !== null) {
+
+                        $logs[$logger->getName()] .= mb_convert_encoding(LogPrinter::printLogEntry($logEntry), 'UTF-8', 'UTF-8');
+                    }
+                }
+                $logs[$logger->getName()] .= '</div></div>';
+            }
+        }
+        $logs["hasErrors"] = $hasErrors;
+        //var_dump($logs);
+        return $logs;
+    }
+
+    public function setAjaxOutput($requestOutput)
+    {
+        $this->ajaxOutput = $requestOutput;
+        return $this;
+    }
+
+    public function addLogger(CommonLogger $log)
+    {
+        $this->loggers[] = $log;
+        return $this;
+    }
+
+    public function importAppOutput(\System\AppOutput $appOutput)
+    {
+        $this->setAjaxOutput(["ajax" => $appOutput->getAjax()]);
+        foreach ($appOutput->getLoggers() as $logger) {
+            $this->addLogger($logger);
+        }
+    }
+
+    public function jsonSerialize()
+    {
+        $jsonResponse['output'] = $this->getRequestOutput();
+        $jsonResponse['output']['ajax']['logs'] = $this->getLogs();
+        //var_export($this->getLogs());
+        $json = json_encode($jsonResponse);
+        //var_dump(json_last_error());
+        //var_dump(json_last_error_msg());
+        return $json;
+    }
+
+}

@@ -14,9 +14,9 @@
                 <script>
 <?php
 
-use app\models\view\Javascript;
+use App\Models\View\Javascript;
 
-$ajax = Javascript::buildAJAXRequest('/api/app', 'ajaxOutput', ["action" => \app\controllers\api\App::GET_CONFIG], true);
+$ajax = Javascript::buildAJAXRequest('/api/app', 'ajaxOutput', ["action" => \App\Controllers\Api\App::GET_CONFIG], true);
 $onClick = Javascript::onClick("debugConfigButton", $ajax);
 echo $onClick;
 ?>

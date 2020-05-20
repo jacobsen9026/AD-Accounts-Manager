@@ -30,15 +30,16 @@
  * @author cjacobsen
  */
 
-namespace app\controllers;
+namespace App\Controllers;
 
-use app\controllers\menu\TopMenuItem;
-use app\controllers\menu\SubMenuItem;
-use system\app\AppLogger;
-use system\Parser;
-use app\models\user\Privilege;
-use app\models\user\User;
-use system\app\App;
+use App\Controllers\Menu\TopMenuItem;
+use App\Controllers\Menu\SubMenuItem;
+use System\App\AppLogger;
+use System\Parser;
+use App\Models\User\Privilege;
+use App\Models\User\User;
+use System\App\App;
+use App\Models\User\PermissionHandler;
 
 class Menu extends Parser {
 
@@ -68,40 +69,33 @@ class Menu extends Parser {
          * Create top level items
          */
 
-        if ($this->user->privilege > Privilege::UNAUTHENTICATED) {
-            $this->items[] = $this->buildStudentMenu();
-            if ($this->user->privilege > Privilege::POWER) {
-                $this->logger->debug("Building Parent and Staff Menus");
-                $this->items[] = $this->buildStaffMenu();
-                $this->items[] = $this->buildParentMenu();
-                $this->items[] = $this->buildGroupsMenu();
+        if (PermissionHandler::hasUserPermissions()) {
+            $this->items[] = $this->buildUserMenu();
+            //$this->items[] = $this->buildStudentMenu();
+            /** Combine these two buttons into a user button */
+            //$this->items[] = $this->buildStaffMenu();
+        }
+        if (PermissionHandler::hasGroupPermissions()) {
+            $this->items[] = $this->buildGroupsMenu();
+        }
+        if ($this->user->superAdmin) {
+            $this->logger->debug("Building Parent and Staff Menus");
+            $this->items[] = $this->buildParentMenu();
+        }
 
-                // Test of privilege
-                if ($this->user->privilege > \app\models\user\Privilege::TECH - 1) {
-                    $this->items[] = $this->buildTechMenu();
-                }
-            }
+
+        if ($this->user->superAdmin) {
+            $this->items[] = $this->buildTechMenu();
         }
     }
 
-    private function buildStudentMenu() {
+    private function buildUserMenu() {
         /*
          * Build Student Menu
          */
 
-        $students = new TopMenuItem('Students');
-        $students->setTargetURL('/students');
-        $students->addSubItem(new SubMenuItem('Account Status', '/' . strtolower($students->displayText) . '/account-status'));
-        if ($this->user->privilege > Privilege::BASIC) {
-            //$students->addSubItem(new SubMenuItem('Account Status Change', '/' . strtolower($students->displayText) . '/account-status-change'));
-            //$students->addSubItem(new SubMenuItem('Google Classroom', '/' . strtolower($students->displayText) . '/google-classroom'));
-            $students->addSubItem(new SubMenuItem('Email Groups', '/' . strtolower($students->displayText) . '/google-groups'));
-            //$students->addSubItem(new SubMenuItem('H-Drive', '/' . strtolower($students->displayText) . '/home-drive'));
-            $students->addSubItem(new SubMenuItem('New Password', '/' . strtolower($students->displayText) . '/reset-password'));
-        }
-        if ($this->user->privilege > Privilege::ADMIN) {
-            $students->addSubItem(new SubMenuItem('Create Acccounts', '/' . strtolower($students->displayText) . '/create-accounts'));
-        }
+        $students = new TopMenuItem('Users');
+        $students->setTargetURL('/users');
         return $students;
     }
 
@@ -112,40 +106,8 @@ class Menu extends Parser {
 
         $groups = new TopMenuItem('Groups');
         $groups->setTargetURL('/groups');
-        $groups->addSubItem(new SubMenuItem('Account Status', '/' . strtolower($groups->displayText) . '/account-status'));
-        if ($this->user->privilege > Privilege::BASIC) {
-            //$students->addSubItem(new SubMenuItem('Account Status Change', '/' . strtolower($students->displayText) . '/account-status-change'));
-            //$students->addSubItem(new SubMenuItem('Google Classroom', '/' . strtolower($students->displayText) . '/google-classroom'));
-            $groups->addSubItem(new SubMenuItem('Email Groups', '/' . strtolower($groups->displayText) . '/google-groups'));
-            //$students->addSubItem(new SubMenuItem('H-Drive', '/' . strtolower($students->displayText) . '/home-drive'));
-            //$groups->addSubItem(new SubMenuItem('New Password', '/' . strtolower($groups->displayText) . '/reset-password'));
-        }
-        if ($this->user->privilege > Privilege::ADMIN) {
-            //$groups->addSubItem(new SubMenuItem('Create Acccounts', '/' . strtolower($groups->displayText) . '/create-accounts'));
-        }
+
         return $groups;
-    }
-
-    private function buildStaffMenu() {
-        /*
-         * Build Staff Menu
-         */
-        $staff = new TopMenuItem('Staff');
-        $staff->setTargetURL('/staff');
-        if ($staff) {
-            /*
-              $staff->addSubItem(new SubMenuItem('Account Status', '/' . strtolower($staff->displayText) . '/account-status'));
-              $staff->addSubItem(new SubMenuItem('Account Change', '/' . strtolower($staff->displayText) . '/account-change'));
-              $staff->addSubItem(new SubMenuItem('Google Groups', '/' . strtolower($staff->displayText) . '/google-groups'));
-              $staff->addSubItem(new SubMenuItem('New Password', '/' . strtolower($staff->displayText) . '/reset-password'));
-              $staff->addSubItem(new SubMenuItem('Create Acccounts', '/' . strtolower($staff->displayText) . '/create-accounts'));
-              $staff->addSubItem(new SubMenuItem('Send Welcome Email', '/' . strtolower($staff->displayText) . '/welcome-email'));
-
-             *
-             */
-        }
-
-        return $staff;
     }
 
     private function buildParentMenu() {
@@ -183,7 +145,7 @@ class Menu extends Parser {
 
 
         //$this->logger->debug($this->items);
-        return $this->view('/layouts/' . $layoutName . '_navbar');
+        return $this->view('/layouts/navbar');
     }
 
 }

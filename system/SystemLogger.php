@@ -24,18 +24,18 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of Debugger
  *
  * @author cjacobsen
  */
-use system\common\CommonLogger;
+use System\Common\CommonLogger;
 
 class SystemLogger extends CommonLogger {
 
-    /** @var SystemLogger|null */
+    /** @var DatabaseLogger|null */
     public static $instance;
 
     function __construct() {
@@ -43,6 +43,7 @@ class SystemLogger extends CommonLogger {
         parent::__construct();
         self::$instance = $this;
         $this->info('Rootpath: ' . ROOTPATH);
+        $this->setName("system");
     }
 
     /**

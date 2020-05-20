@@ -24,18 +24,18 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\settings;
+namespace App\Controllers\Settings;
 
 /**
  * Description of User
  *
  * @author cjacobsen
  */
-use app\controllers\Controller;
+use App\Controllers\Controller;
 
 class Profile extends Controller {
 
-    public function __construct(\system\app\App $app) {
+    public function __construct(\System\App\App $app) {
         parent::__construct($app);
         $this->layout = "thin";
     }

@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\forms;
+namespace System\App\Forms;
 
 /**
  * Description of FormRadio
@@ -51,6 +51,15 @@ class FormRadio extends FormElement implements FormElementInterface {
             $id = str_replace(" ", '_', $this->getLabel());
         }
         $this->options[] = new FormRadioOption($this->getName(), $displayName, $value, boolval($selected), $id);
+        return $this;
+    }
+
+    public function getOptions() {
+        return $this->options;
+    }
+
+    public function setOptions($options) {
+        $this->options = $options;
         return $this;
     }
 

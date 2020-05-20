@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\view;
+namespace App\Models\View;
 
 /**
  * Description of ViewModel
  *
  * @author cjacobsen
  */
-use app\models\Model;
+use App\Models\Model;
 
 class ViewModel extends Model {
     //put your code here

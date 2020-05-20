@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace System\App;
 
 /**
  * Description of ErrorHandler
@@ -32,8 +32,8 @@ namespace system\app;
  * @author cjacobsen
  */
 use app\App;
-use system\SystemLogger;
-use system\AppException;
+use System\SystemLogger;
+use System\AppException;
 
 class AppErrorHandler {
 

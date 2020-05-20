@@ -7,9 +7,9 @@
 
 <?php
 
-use system\app\forms\Form;
-use system\app\forms\FormButton;
-use system\app\forms\FormText;
+use System\App\Forms\Form;
+use System\App\Forms\FormButton;
+use System\App\Forms\FormText;
 
 $form = new Form("/staff/search", "StaffAccountStatus");
 $button = new FormButton("Search");

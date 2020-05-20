@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace System\App;
 
 /**
  * Description of App
@@ -36,41 +36,32 @@ namespace system\app;
  *
  * No application specific data/functions should be present in this class. That should be utilized in classes within the App namespace.
  */
-use system\app\Route;
-use system\app\AppErrorHandler;
-use system\SystemLogger;
-use system\app\ControllerFactory;
-use system\Request;
-use system\app\Router;
-use system\Parser;
-use app\config\MasterConfig;
-use app\models\user\User;
-use app\models\user\Privilege;
-use system\app\auth\Permission;
-use app\models\database\AppDatabase;
-use system\AppOutput;
+use System\App\Route;
+use System\App\AppErrorHandler;
+use System\Common\CommonLogger;
+use System\App\ControllerFactory;
+use System\Request;
+use System\App\Router;
+use App\Models\User\User;
+use App\Models\Database\AppDatabase;
+use System\AppOutput;
+use System\App\Interfaces\AppInterface;
+use System\Common\CommonApp;
+use System\App\WindowsLogger;
 
-class App extends Parser {
+;
+
+class App extends CommonApp implements AppInterface {
 
     use RequestRedirection;
+    use \System\Traits\Parser;
 
-    /** @var MasterConfig|null The system logger */
+    /** @var MasterConfig|null The system logger
+      @deprecated since version number */
     public $config;
-
-    /** @var Request|null The system logger */
-    public $request;
-
-    /** @var Session|null The system logger */
-    public $session;
-
-    /** @var Router|null The system logger */
-    public $router;
 
     /** @var SystemLogger|null The system logger */
     private $coreLogger;
-
-    /** @var string|null The system logger */
-    public $debugLog;
 
     /** @var AppLogger|null The system logger */
     public $logger;
@@ -90,17 +81,36 @@ class App extends Parser {
     /** @var AppOutput The application output */
     public $appOutput;
 
+    /** @var LDAPLogger */
+    public $ldapLogger;
+
+    /** @var WindowsLogger */
+    public $windowsLogger;
+
+    /** @var UserLogger */
+    public $userLogger;
+
     /**
      *
      * @var Controller
      */
     public $controller;
 
-    /** @var User|null The system logger */
+    /** @var User|null The web user object */
     public $user;
+
+    /**
+     *
+     * @var App
+     */
     public static $instance;
 
-    function __construct(Request $req, SystemLogger $cLogger) {
+    /**
+     *
+     * @param Request $req
+     * @param SystemLogger $cLogger
+     */
+    function __construct(Request $req, CommonLogger $cLogger) {
 
         //session_destroy();
         //$this->user = "this";
@@ -111,17 +121,37 @@ class App extends Parser {
          */
         new AppErrorHandler();
         $this->coreLogger = $cLogger;
+
+
+        $this->request = $req;
         /*
          * Set up the appLogger
          */
         $this->logger = new AppLogger;
         $this->coreLogger->info("The app logger has been created");
+
+        /*
+         * Set up the AD API LDAP Logger
+         */
+        $this->ldapLogger = new LDAPLogger();
+        $this->logger->info("LDAP logger started");
+        /*
+         * Set up the AD API LDAP Logger
+         */
+        $this->windowsLogger = new WindowsLogger();
+        $this->logger->info("Windows logger started");
+
+        /*
+         * Set up the AD API LDAP Logger
+         */
+        $this->userLogger = new UserLogger();
+        $this->logger->info("User logger started");
+
         /*
          * Load the request into the app
          */
         $this->loadConfig();
-        $this->appOutput = new AppOutput();
-        $this->request = $req;
+        $this->appOutput = new AppOutput($this);
     }
 
     /**
@@ -154,7 +184,7 @@ class App extends Parser {
      * Run the application
      * @return AppOutput
      */
-    public function run() {
+    public function run(): AppOutput {
 
         $this->logger->info("Creating Session");
         User::load($this);
@@ -163,9 +193,11 @@ class App extends Parser {
             /**
              * Is the current user allowed to access this uri?
              * If not, this function changes the route to 403 error page
+             * @deprecated
+             *
+             *
+              $this->checkPermission();
              */
-            $this->checkPermission();
-
             /**
              * This is where the magic happens. The control function calls the class and method
              * determined by the routing.
@@ -188,16 +220,24 @@ class App extends Parser {
          * Lets destroy the app logger if the app isn't in debug mode.
          * We don't want to risk sending any private information.
          */
-        if (!$this->inDebugMode()) {
-            $this->logger = null;
+        if ($this->inDebugMode()) {
+            /**
+             * We need to inject the logs into the appOutput so the core can handle it.
+             */
+            $this->appOutput->addLogger($this->logger)
+                    ->addLogger($this->ldapLogger)
+                    ->addLogger($this->windowsLogger)
+                    ->addLogger($this->userLogger);
         }
-        /**
-         * We need to inject the logs into the appOutput so the core can handle it.
-         */
-        $this->appOutput->setLogs($this->logger);
+
         return $this->appOutput;
     }
 
+    /**
+     * Processes the incoming request by utilizing
+     * the Router to determine a controller, method,
+     * and data to be executed this run.
+     */
     public function route() {
         /*
          * HTTPS redirect check
@@ -223,29 +263,6 @@ class App extends Parser {
          */
         $this->route = $this->router->route();
         $this->logger->debug($this->route);
-    }
-
-    /**
-     * Check against the config database's permission table that the current user has the
-     * required privilege to access this uri
-     */
-    private function checkPermission() {
-        /**
-         * Until the Permission Mapping system is complete, let's not do anything yet
-         */
-        return;
-        try {
-            $required = Permission::handleRequest($this->route, $this->user);
-            if ($this->user->privilege < $required) {
-                $hasPermission = false;
-                $this->route = array('Home', 'show403');
-            } else {
-                $hasPermission = true;
-            }
-        } catch (Exception $ex) {
-
-        }
-        $this->logger->info('Has Permission: ' . $hasPermission);
     }
 
     /**
@@ -283,11 +300,11 @@ class App extends Parser {
         /*
          * Check that the user is logged on and if not, set the route to the login screen
          */
-        if (!isset($this->user) or $this->user == null or $this->user->privilege <= Privilege::UNAUTHENTICATED) {
+        if (!isset($this->user) or $this->user == null or $this->user->authenticated === false) {
             $this->logger->warning('user not logged in');
             // Change route to login if not logged in.
             //$this->route;
-            $this->controller = new \app\controllers\Login($this);
+            $this->controller = new \App\Controllers\Login($this);
             $this->appOutput->appendBody($this->controller->index());
             return;
         } else {
@@ -331,11 +348,14 @@ class App extends Parser {
 
     /**
      * Applies theming, menus, modals, and styling
+     *  to the controller output as a final preparation for the core
      */
     public function layout() {
         $this->layout = new Layout($this);
-        $this->appOutput->setBody($this->layout->apply());
-        //var_dump($this->output);
+        //var_dump($this->request);
+        if ($this->request->getType() == 'http') {
+            $this->appOutput->setBody($this->layout->apply());
+        }
     }
 
     /*

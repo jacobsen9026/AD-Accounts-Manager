@@ -25,10 +25,10 @@
  */
 
 use app\database\Schema;
-use app\models\database\AppDatabase;
-use app\models\database\EmailDatabase;
-use system\app\forms\Form;
-use system\app\forms\FormTextArea;
+use App\Models\Database\AppDatabase;
+use App\Models\Database\EmailDatabase;
+use System\App\Forms\Form;
+use System\App\Forms\FormTextArea;
 
 $this->email = EmailDatabase::get();
 //var_dump($this->email);
@@ -36,7 +36,7 @@ $this->email = EmailDatabase::get();
 $form = new Form('', 'notification');
 $adminEmails = new FormTextArea('Admin Email Addresses', 'Recieves important system notifications', 'adminEmails');
 //$staffBlind = new FormTextArea('', $subLabel, $name)
-$save = new \system\app\forms\FormButton("Save");
+$save = new \System\App\Forms\FormButton("Save");
 $save->small()
         ->addAJAXRequest('/api/settings/notification', 'settingsOutput', $form);
 $form->addElementToCurrentRow($adminEmails)

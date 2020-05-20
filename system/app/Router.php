@@ -24,17 +24,17 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace System\App;
 
 /**
  * Description of Router
  *
  * @author cjacobsen
  */
-use system\app\App;
-use system\Post;
-use system\Get;
-use system\app\Route;
+use System\App\App;
+use System\Post;
+use System\Get;
+use System\App\Route;
 
 /**
  * @name CoreRouter

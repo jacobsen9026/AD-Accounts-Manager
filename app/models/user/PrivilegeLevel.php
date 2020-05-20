@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\user;
+namespace App\Models\User;
 
 /**
  * Description of PrivilegeLevel
  *
  * @author cjacobsen
  */
-use app\models\database\PrivilegeLevelDatabase;
+use App\Models\Database\PrivilegeLevelDatabase;
 
 class PrivilegeLevel {
 
@@ -74,7 +74,7 @@ class PrivilegeLevel {
     }
 
     public function saveToDatabase() {
-        PrivilegeLevelDatabase::updatePrivilegeLevel($this->getId(), $this->getAdGroup());
+        PrivilegeLevelDatabase::updatePrivilegeLevel($this->getId(), $this->getAdGroup(), $this->getSuperAdmin());
     }
 
 }

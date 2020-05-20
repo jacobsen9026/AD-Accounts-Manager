@@ -24,17 +24,19 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\database;
+namespace App\Models\Database;
 
 /**
  * Description of Query
  *
  * @author cjacobsen
  */
-use app\database\Schema;
-use system\app\AppLogger;
 
-class Query {
+use app\database\Schema;
+use System\App\AppLogger;
+
+class Query
+{
 
 //put your code here
     const SELECT = "SELECT";
@@ -44,6 +46,7 @@ class Query {
     const INSERT = "INSERT";
     const DESC = "DESC";
     const ASC = "ASC";
+    const COUNT = "SELECT COUNT";
 
     private $query;
     private $queryType;
@@ -58,9 +61,11 @@ class Query {
     /**
      *
      * @param type $columns
+     *
      * @return string|array
      */
-    private function preProcessColumns($table, $columns) {
+    private function preProcessColumns($table, $columns)
+    {
         if (is_array($columns)) {
             if (key_exists(Schema::COLUMN, $columns)) {
                 return $columns[Schema::COLUMN];
@@ -79,22 +84,58 @@ class Query {
 
     /**
      *
-     * @param const $table Target Table
-     * @param const $type If not supplied will be a SELECT
+     * @param const $table    Target Table
+     * @param const $type     If not supplied will be a SELECT
      * @param stirng $columns If not supplied will be '*'
      */
-    function __construct($table, $type = self::SELECT, $columns = '*') {
+    function __construct($table, $type = self::SELECT, $columns = '*')
+    {
         $this->targetTable = $table;
         $this->targetColumns = $this->preProcessColumns($table, $columns);
         $this->queryType = $type;
     }
 
+    private function prepareSelect()
+    {
+        if (is_array($this->targetColumns)) {
+            $targetColumns = "";
+            $firstColumn = true;
+            foreach ($this->targetColumns as $column) {
+                if ($firstColumn) {
+                    $firstColumn = false;
+                    $targetColumns .= $column;
+                } else {
+
+                    $targetColumns .= ', ' . $column;
+                }
+            }
+            $this->targetColumns = $targetColumns;
+        }
+//var_dump($this->targetColumns);
+        $this->query = $this->queryType .
+            ' ' .
+            $this->targetColumns .
+            ' FROM ' .
+            $this->targetTable;
+    }
+
+    private function prepareCount()
+    {
+        if (is_array($this->targetColumns)) {
+            $this->targetColumns = $this->targetColumns[0];
+        }
+//var_dump($this->targetColumns);
+        $this->query = $this->queryType . ' (' . $this->targetColumns . ') FROM ' . $this->targetTable;
+    }
+
     /**
      *
      * @param type $whereArray
+     *
      * @return Query
      */
-    public function where($column, $value, $like = false) {
+    public function where($column, $value, $like = false)
+    {
 
         $operator = "=";
         $wildcard = '';
@@ -103,7 +144,7 @@ class Query {
             $wildcard = '%';
         }
         $value = $wildcard . $value . $wildcard;
-//\system\app\AppLogger::get()->debug($column);
+//\System\App\AppLogger::get()->debug($column);
         if (!is_int($value) and is_string($value)) {
             $value = "'" . $value . "'";
         }
@@ -120,17 +161,20 @@ class Query {
      * @param type $joinTable
      * @param type $srcMatchColumn
      * @param type $dstMatchColumn
+     *
      * @return Query
      */
-    public function leftJoin($joinTable, $srcMatchColumn, $dstMatchColumn) {
+    public function leftJoin($joinTable, $srcMatchColumn, $dstMatchColumn)
+    {
         $this->targetJoin .= ' LEFT JOIN ' . $joinTable . ' ON '
-                . $this->targetTable . '.' . $srcMatchColumn . ' = '
-                . $joinTable . '.' . $dstMatchColumn;
+            . $this->targetTable . '.' . $srcMatchColumn . ' = '
+            . $joinTable . '.' . $dstMatchColumn;
 //var_dump($this);
         return $this;
     }
 
-    public function insert($Schema, $value) {
+    public function insert($Schema, $value)
+    {
         if (is_array($Schema)) {
             $column = "'" . $Schema[Schema::COLUMN] . "'";
         } else {
@@ -143,7 +187,8 @@ class Query {
         return $this;
     }
 
-    public function set($Schema, $value) {
+    public function set($Schema, $value)
+    {
         $column = "'" . $Schema . "'";
 //var_dump($column);
 //var_dump($value);
@@ -151,30 +196,12 @@ class Query {
         return $this;
     }
 
-    public function run() {
+    public function run()
+    {
 
         switch ($this->queryType) {
             case self::SELECT:
-                if (is_array($this->targetColumns)) {
-                    $targetColumns = "";
-                    $firstColumn = true;
-                    foreach ($this->targetColumns as $column) {
-                        if ($firstColumn) {
-                            $firstColumn = false;
-                            $targetColumns .= $column;
-                        } else {
-
-                            $targetColumns .= ', ' . $column;
-                        }
-                    }
-                    $this->targetColumns = $targetColumns;
-                }
-//var_dump($this->targetColumns);
-                $this->query = $this->queryType .
-                        ' ' .
-                        $this->targetColumns .
-                        ' FROM ' .
-                        $this->targetTable;
+                $this->prepareSelect();
 
                 break;
             case self::INSERT:
@@ -185,6 +212,8 @@ class Query {
                 break;
             case self::DELETE:
                 $this->prepareDelete();
+            case self::COUNT:
+                $this->prepareCount();
             default:
                 break;
         }
@@ -220,11 +249,12 @@ class Query {
         return \system\Database::get()->query($this->query . ';');
     }
 
-    public function orWhere($column, $value) {
+    public function orWhere($column, $value)
+    {
         if (!is_int($value) and is_string($value)) {
             $value = "'" . $value . "'";
         }
-//\system\app\AppLogger::get()->debug($column);
+//\System\App\AppLogger::get()->debug($column);
         if (is_array($value)) {
             $where = '(';
             $first = true;
@@ -245,7 +275,8 @@ class Query {
         return $this;
     }
 
-    private function prepareInsert() {
+    private function prepareInsert()
+    {
         $firstAction = true;
 
 //var_dump($this->targetInserts);
@@ -274,7 +305,8 @@ class Query {
 //exit;
     }
 
-    private function prepareDelete() {
+    private function prepareDelete()
+    {
         $firstAction = true;
 
         $this->query = $this->queryType . ' FROM ' . $this->targetTable . ' ';
@@ -282,7 +314,8 @@ class Query {
         $firstAction = true;
     }
 
-    private function prepareUpdate() {
+    private function prepareUpdate()
+    {
         $firstAction = true;
 
         $this->query = $this->queryType . ' ' . $this->targetTable . ' SET ';
@@ -296,7 +329,8 @@ class Query {
         $firstAction = true;
     }
 
-    public function sort(string $direction, string $column) {
+    public function sort(string $direction, string $column)
+    {
         $this->sort[] = [$direction => $column];
     }
 

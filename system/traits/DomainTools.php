@@ -24,14 +24,15 @@
  * THE SOFTWARE.
  */
 
-namespace system\traits;
+namespace System\Traits;
 
 /**
  * Description of Domain
  *
  * @author cjacobsen
  */
-trait DomainTools {
+trait DomainTools
+{
 
     /**
      * Breaks up a FQDN into a DistiguishedName
@@ -39,9 +40,11 @@ trait DomainTools {
      * EG: contoso.com -> dc=contoso,dc=com
      *
      * @param type $fqdn
+     *
      * @return string
      */
-    public static function FQDNtoDN($fqdn) {
+    public static function FQDNtoDN($fqdn)
+    {
         $baseDN = '';
         $afterFirst = false;
         foreach (explode(".", $fqdn) as $part) {
@@ -52,6 +55,53 @@ trait DomainTools {
             $afterFirst = true;
         }
         return $baseDN;
+    }
+
+    public static function getOUFromDN($dn)
+    {
+        $ous = explode("OU=", $dn);
+        $fullOU = '';
+        $first = true;
+        foreach ($ous as $ou) {
+            if (!$first) {
+                $fullOU .= "OU=" . $ou;
+            }
+            $first = false;
+        }
+        return $fullOU;
+    }
+
+    /**
+     * Returns the first OU element of a Distinguished Name
+     *
+     * @param type $dn
+     *
+     * @return type
+     */
+    public static function leftOU($dn)
+    {
+        return explode(',', str_replace('OU=', '', $dn))[0];
+    }
+
+    public static function getOuTree($ou)
+    {
+        $tree = [];
+
+        $parts = explode(',', $ou);
+
+        for ($y = 0; $y < count($parts); $y++) {
+            $branch = '';
+            for ($x = $y; $x < count($parts); $x++) {
+                $branch .= $parts[$x];
+                if ($x != count($parts) - 1) {
+                    $branch .= ',';
+                }
+            }
+            if (substr($branch, 0, 2) != "DC") {
+                $tree[] = $branch;
+            }
+        }
+        return $tree;
     }
 
 }

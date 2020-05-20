@@ -64,11 +64,12 @@ define('APPAUDITDBPATH', APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_
 /*
  * The Class name with namespace to launch
  */
-define('APPCLASS', "system\app\App");
+define('APPCLASS', "System\App\App");
+//define('APPCLASS', "App\Lib\TestApp");
 /*
  * Toggle for core debug mode. Has no effect on app debug, but does allow App output directly.
  */
-define('DEBUG_MODE', TRUE);
+define('DEBUG_MODE', false);
 
 $this->include('system/schema.php');
 

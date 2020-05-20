@@ -24,14 +24,14 @@
  */
 
 use app\database\Schema;
-use app\models\database\AppDatabase;
-use app\models\database\EmailDatabase;
-use system\app\forms\Form;
+use App\Models\Database\AppDatabase;
+use App\Models\Database\EmailDatabase;
+use System\App\Forms\Form;
 
 $this->email = EmailDatabase::get();
 //var_dump($this->email);
-$clientSecretExists = \app\api\GAM::get()->clientSecretExists();
-$google = \app\api\GAM::get();
+$clientSecretExists = \App\Api\GAM::get()->clientSecretExists();
+$google = \App\Api\GAM::get();
 //var_dump($google);
 if (!$clientSecretExists) {
 

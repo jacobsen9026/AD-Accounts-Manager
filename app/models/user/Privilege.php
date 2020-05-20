@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\user;
+namespace App\Models\User;
 
 /**
  * Description of Privilege
  *
  * @author cjacobsen
  */
-use system\app\auth\CorePrivilege;
+use System\App\Auth\CorePrivilege;
 
 abstract class Privilege extends CorePrivilege {
 

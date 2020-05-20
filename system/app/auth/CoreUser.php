@@ -24,23 +24,35 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\auth;
+namespace System\App\Auth;
 
 /**
  * Description of CoreUser
  *
  * @author cjacobsen
  */
+use System\App\UserLogger;
+
 class CoreUser {
 
-    const ADMINISTRATOR = "ADMIN";
+    const ADMINISTRATOR = "admin";
     const USERNAME = "username";
     const PRIVILEGE = "privilege";
 
     //put your code here
     public $username;
     public $privilege;
+
+    /**
+     *
+     * @var bool
+     */
+    public $authenticated = false;
     public $apiToken;
+
+    public function __construct() {
+
+    }
 
     /**
      *
@@ -48,6 +60,12 @@ class CoreUser {
      */
     public function getUsername() {
         return $this->username;
+    }
+
+    public function authenticated($status = true) {
+        UserLogger::get()->info('Setting Authenticated to: ' . $status);
+        $this->authenticated = $status;
+        return $this;
     }
 
     /**
@@ -63,7 +81,9 @@ class CoreUser {
      * @param type $username
      * @return $this
      */
-    public function setUsername($username) {
+    public function setUsername(string $username) {
+
+        UserLogger::get()->info('Setting Username to: ' . $username);
         $this->username = $username;
         return $this;
     }
@@ -72,29 +92,22 @@ class CoreUser {
      *
      * @param type $privilege
      * @return $this
+     * @deprecated since version number
      */
     public function setPrivilege($privilege) {
         $this->privilege = $privilege;
         return $this;
     }
 
+    /**
+     *
+     */
     public function generateAPIToken() {
-        //$user = new self();
-        //$user->setUsername($this->username);
-        //$user->setPrivilege($this->getPrivilege());
         $user = gzcompress($this);
         $this->apiToken = \system\Encryption::encrypt(serialize($user));
-
-        //$this->apiToken = hash("sha256", serialize($user));
     }
 
     public function getApiToken() {
-        /**
-          if ($this->apiToken == null) {
-          $this->generateAPIToken();
-          }
-         *
-         */
         return $this->apiToken;
     }
 

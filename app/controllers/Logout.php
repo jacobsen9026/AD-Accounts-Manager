@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers;
+namespace App\Controllers;
 
 /**
  * Description of Logout
@@ -34,7 +34,7 @@ namespace app\controllers;
 class Logout extends Controller {
 
     public function index() {
-        \system\app\Session::end();
+        \System\App\Session::end();
         //session_destroy();
         header("Location: /");
     }

@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\database;
+namespace App\Models\Database;
 
 /**
  * Description of DatabaseModel
  *
  * @author cjacobsen
  */
-use app\models\Model;
+use App\Models\Model;
 
 abstract class DatabaseModel extends Model implements DatabaseModelInterface {
 

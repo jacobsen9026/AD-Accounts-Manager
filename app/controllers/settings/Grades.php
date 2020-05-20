@@ -24,19 +24,19 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\settings;
+namespace App\Controllers\Settings;
 
 /**
  * Description of District
  *
  * @author cjacobsen
  */
-use app\controllers\Controller;
-use app\models\district\Grade;
-use system\Post;
+use App\Controllers\Controller;
+use App\Models\District\Grade;
+use System\Post;
 use app\database\Schema;
-use system\app\AppLogger;
-use app\models\DatabasePost;
+use System\App\AppLogger;
+use App\Models\DatabasePost;
 
 class Grades extends Controller {
 
@@ -47,7 +47,7 @@ class Grades extends Controller {
       }
      *
      */
-    function __construct(\system\app\App $app) {
+    function __construct(\System\App\App $app) {
         parent::__construct($app);
         $this->layout = 'setup';
     }
@@ -112,9 +112,9 @@ class Grades extends Controller {
     }
 
     public function delete($gradeID) {
-        $this->schoolID = \app\models\district\Grade::getSchoolID($gradeID);
+        $this->schoolID = \App\Models\District\Grade::getSchoolID($gradeID);
 
-        \app\models\district\Grade::deleteGrade($gradeID);
+        \App\Models\District\Grade::deleteGrade($gradeID);
         $this->redirect('/grades/show/' . $this->schoolID);
     }
 

@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of Encryption
@@ -38,7 +38,9 @@ abstract class Encryption {
     const KEY_PATH = CONFIGPATH . DIRECTORY_SEPARATOR . "private.key";
 
     public static function encrypt($plaintext) {
-
+        if ($plaintext == '') {
+            return $plaintext;
+        }
 
         if (in_array(self::CIPHER, openssl_get_cipher_methods())) {
             $ivlength = openssl_cipher_iv_length(self::CIPHER);
@@ -52,6 +54,9 @@ abstract class Encryption {
     }
 
     public static function decrypt($ciphertext) {
+        if ($ciphertext == '') {
+            return $ciphertext;
+        }
         $ciphertext = hex2bin($ciphertext);
         $args = explode("_", $ciphertext);
         $plaintext = openssl_decrypt($args[0], self::CIPHER, self::getKey(), $options = 0, hex2bin($args[1]));

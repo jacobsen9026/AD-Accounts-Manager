@@ -24,27 +24,27 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\database;
+namespace App\Models\Database;
 
 /**
  * Description of District
  *
  * @author cjacobsen
  */
-use system\Database;
+use System\Database;
 use app\database\Schema;
-use app\models\district\School;
-use app\models\district\District;
-use system\Encryption;
+use App\Models\District\School;
+use App\Models\District\District;
+use System\Encryption;
 
 class DistrictDatabase extends DatabaseModel {
 
-    use \system\traits\DomainTools;
+    use \System\Traits\DomainTools;
 
     const TABLE_NAME = "District";
 
     public static function createDistrict($name) {
-        \system\app\AppLogger::get()->debug("Creating new district named: " . $name);
+        \System\App\AppLogger::get()->debug("Creating new district named: " . $name);
         return Database::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (Name) VALUES ("' . $name . '")');
     }
 
@@ -91,6 +91,23 @@ class DistrictDatabase extends DatabaseModel {
         return $district->importFromDatabase($result);
     }
 
+    /**
+     *  Gets all districts in the database
+     * @param type $districtID
+     * @return District
+     */
+    public static function getDistricts() {
+        $result = DistrictDatabase::get();
+        $districts = array();
+        if (!empty($result)) {
+            foreach ($result as $rawDistrict) {
+                $district = new District();
+                $districts[] = $district->importFromDatabase($rawDistrict);
+            }
+        }
+        return $districts;
+    }
+
     public static function deleteDistrict($districtID) {
         return Database::get()->query('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . 'ID'[Schema::COLUMN] . ' = ' . $districtID);
     }
@@ -119,14 +136,14 @@ class DistrictDatabase extends DatabaseModel {
     /**
      *
      * @param type $districtID
-     * @return array \app\models\district\School
+     * @return array \App\Models\District\School
      */
     public static function getSchools($districtID) {
         $districtOU = self::getAD_BaseDN($districtID);
 
 //var_dump($ous);
         foreach (self::getSubOUs($district) as $ou) {
-            \system\app\AppLogger::get()->debug($ou);
+            \System\App\AppLogger::get()->debug($ou);
             if (is_array($ou)) {
                 $school = new School();
                 $school->importFromAD($ou);
@@ -141,8 +158,16 @@ class DistrictDatabase extends DatabaseModel {
         return self::updateDatabaseValue('AD_FQDN', $fqdn);
     }
 
+    public static function setAbbreviation($districtID, $abbr) {
+        return self::updateDatabaseValue('Abbreviation', $abbr);
+    }
+
     public static function setADBaseDN($districtID, $baseDN) {
         return self::updateDatabaseValue('AD_BaseDN', $baseDN);
+    }
+
+    public static function setADNetBIOS($districtID, $netBIOS) {
+        return self::updateDatabaseValue('AD_NetBIOS', $netBIOS);
     }
 
     public static function setADUsername($districtID, $username) {
@@ -159,28 +184,6 @@ class DistrictDatabase extends DatabaseModel {
             $result = self::updateDatabaseValue('AD_Password', $password);
         }
         return $result;
-    }
-
-    /**
-     *
-     * @param type $districtID
-     * @return array \app\models\district\School
-     */
-    public static function setSchools($districtID) {
-        $districtOU = self::getAD_BaseDN($districtID);
-        $ad = \app\api\AD::get();
-        $ous = $ad->getSubOUs($districtOU);
-//var_dump($ous);
-        foreach ($ous as $ou) {
-            \system\app\AppLogger::get()->debug($ou);
-            if (is_array($ou)) {
-                $school = new School();
-                $school->importFromAD($ou);
-                $schools[] = $school;
-            }
-//echo $ou["ou"][0] . "<br>" . $ou["distinguishedname"][0] . "<br>";
-        }
-        return $schools;
     }
 
     public static function setADStudentGroup($districtID, $studentGroup) {

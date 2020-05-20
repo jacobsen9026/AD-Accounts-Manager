@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\database;
+namespace App\Models\Database;
 
 /**
  * Description of AppConfig
@@ -160,8 +160,8 @@ abstract class AppDatabase extends DatabaseModel {
     public static function saveSettings($postedData) {
         foreach ($postedData as $key => $data) {
             $data = trim($data);
-            \system\app\AppLogger::get()->debug($key);
-            \system\app\AppLogger::get()->debug($data);
+            \System\App\AppLogger::get()->debug($key);
+            \System\App\AppLogger::get()->debug($data);
             switch ($key) {
                 case "webAppName":
                     self::setAppName($data);

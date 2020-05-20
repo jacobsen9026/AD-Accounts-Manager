@@ -23,49 +23,54 @@
  * THE SOFTWARE.
  */
 
-use app\models\view\PermissionMapPrinter;
-use app\models\database\PrivilegeLevelDatabase;
+use App\Models\Database\PrivilegeLevelDatabase;
+use App\Models\View\Javascript;
+use App\Models\View\PermissionMapPrinter;
+use App\Models\District\District;
 
-/* @var $district District  */
+/* @var $district District */
 /** @var District $district */
 $district = $this->district;
 
 //echo $this->view('layouts/setup_navbar');
+
+$cleanOu = PermissionMapPrinter::cleanOU($district->getAdBaseDN());
 ?>
-
-<div id="managePrivilegeLevels" class='shadow p-5 '>
-    <?= $this->view('settings/district/permissions/privilegeLevels') ?>
-
-</div>
-
-<?php
-if (PrivilegeLevelDatabase::get() !== false) {
-    ?>
-    <div class='shadow p-5 mt-5'>
-        <h4>
-            District Level Permissions
-        </h4>
-
-        <h5>
-            Current Permissions
-        </h5>
+<div id="permissionSettingsContainer">
+    <div id="managePrivilegeLevelsContainer" class='shadow p-5 bg-white'>
         <?php
-        echo PermissionMapPrinter::printDistrictPermissions($district->getId());
+
+        $showPrivilegeLevelsCommand = Javascript::buildAJAXRequest('/api/settings/district/permissions', "managePrivilegeLevelsContainer", ['action' => 'getManagePrivilegeLevels'], true);
+        echo "<script>" . Javascript::onPageLoad($showPrivilegeLevelsCommand) . "</script>";
         ?>
-        <h5>
-            Add New Permission
-        </h5>
-        <?= PermissionMapPrinter::printAddDistrictPermission($district->getId()); ?>
-    </div>
-    <div class='shadow p-5 mt-5'>
-        <h4>
-            OU Level Permissions
-        </h4>
 
-
-        <?= PermissionMapPrinter::printOUPermissionTree($district->getADBaseDN()); ?>
 
     </div>
+
     <?php
-}
-?>
+    if (PrivilegeLevelDatabase::get() !== false) {
+        ?>
+
+
+        <div id="<?= $cleanOu ?>" class='shadow p-5 mt-5 bg-white'>
+            <?php
+            $showDistrictLevelPermissionsCommand = Javascript::buildAJAXRequest('/api/settings/district/permissions', $cleanOu, ['action' => 'getDistrictLevelPermissions'], true);
+            echo "<script>" . Javascript::onPageLoad($showDistrictLevelPermissionsCommand) . "</script>";
+            ?>
+
+        </div>
+
+
+        <div id="ouLevelPermissionsContainer" class='shadow p-5 mt-5 mb-5 bg-white '>
+            <?php
+            $showOuLevelPermissionsCommand = Javascript::buildAJAXRequest('/api/settings/district/permissions', "ouLevelPermissionsContainer", ['action' => 'getOULevelPermissions'], true);
+            echo "<script>" . Javascript::onPageLoad($showOuLevelPermissionsCommand) . "</script>";
+            ?>
+        </div>
+        <div class="my-5">
+            &nbsp;
+        </div>
+        <?php
+    }
+    ?>
+</div>

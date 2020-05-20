@@ -23,9 +23,9 @@
  * THE SOFTWARE.
  */
 
-use system\app\forms\Form;
-use app\controllers\api\App;
-use app\models\view\Javascript;
+use System\App\Forms\Form;
+use App\Controllers\Api\App;
+use App\Models\View\Javascript;
 
 //$form = new Form();
 $showApplicationSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_APP_SETTINGS]);
@@ -69,7 +69,7 @@ switch ($this->tab) {
         });
 
         $('select').change(function () {
-            console.log("wpsdafdsa");
+
             $(this).addClass('border-danger text-danger');
 
         });

@@ -24,25 +24,24 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\api\settings;
+namespace App\Controllers\Api\settings;
 
 /**
  * Description of Application
  *
  * @author cjacobsen
  */
-use app\controllers\api\APIController;
+use App\Controllers\Api\APIController;
 
 class Email extends APIController {
 
     //put your code here
 
     public function indexPost() {
-        $email = new \app\controllers\settings\Email($this->app);
+        $email = new \App\Controllers\Settings\Email($this->app);
         $email->indexPost();
 
-        echo "Saved Settings<br><br>";
-        return $this->view('settings/email');
+        return $this->returnHTML($this->view('settings/email'));
     }
 
 }

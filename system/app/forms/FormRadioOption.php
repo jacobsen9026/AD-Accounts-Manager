@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\forms;
+namespace System\App\Forms;
 
 /**
  * Description of FormRadioOption
@@ -60,7 +60,7 @@ class FormRadioOption extends FormElement implements FormElementInterface {
         return $this->selected;
     }
 
-    public function setValue(string $value) {
+    public function setValue($value) {
         $this->value = $value;
         return $this;
     }

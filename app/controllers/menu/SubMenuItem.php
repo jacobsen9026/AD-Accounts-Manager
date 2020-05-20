@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\menu;
+namespace App\Controllers\Menu;
 
 /**
  * Description of SubMenuItem

@@ -12,10 +12,10 @@ if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != n
     <div class='content'>
 
         <button type="button" id = "showDebugButton" class="mx-auto btn btn-primary dark-shadow <?php
-        if ($this->errors_exist()) {
-            echo 'btn-danger';
-        }
-        ?> " data-toggle="modal" data-target="#logsModal">Logs</button>
+    if ($this->errors_exist()) {
+        echo 'btn-danger';
+    }
+    ?> " data-toggle="modal" data-target="#logsModal">Logs</button>
 
         <div id = "logsModal" class = "modal fade" role = "dialog">
             <div class = "modal-dialog modal-dialog-centered  modal-xl modal-dialog-scrollable">

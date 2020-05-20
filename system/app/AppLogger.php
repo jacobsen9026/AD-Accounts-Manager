@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace System\App;
 
 /**
  * Description of AppLogger
  *
  * @author cjacobsen
  */
-use system\common\CommonLogger;
+use System\Common\CommonLogger;
 
 class AppLogger extends CommonLogger {
 
@@ -41,7 +41,7 @@ class AppLogger extends CommonLogger {
     function __construct() {
         parent::__construct();
         self::$instance = $this;
-        ;
+        $this->setName('app');
     }
 
     /**

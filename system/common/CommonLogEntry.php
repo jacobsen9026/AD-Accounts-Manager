@@ -24,49 +24,85 @@
  * THE SOFTWARE.
  */
 
-namespace system\common;
+namespace System\Common;
 
 /**
  * Description of CommonLogEntry
  *
+ *
+ *
  * @author cjacobsen
  */
+use System\Common\CommonLogger;
+
 class CommonLogEntry {
 
-    //put your code here
+    const ERROR = "error";
+    const INFO = "info";
+    const DEBUG = "debug";
+    const WARNING = "warning";
+
     private $elapsedTime;
     private $level;
     private $message;
     private $backtrace;
+    private $id;
+
+    /**
+     *
+     * @var CommonLogger
+     */
+    private $logger;
 
     public function __construct(CommonLogger $logger) {
         $this->elapsedTime = floatval(microtime()) - $logger->getStartTime();
+        $this->backtrace = $this->traceBack();
+        $this->logger = $logger;
+        //var_dump($this->backtrace);
+        $this->id = str_replace(".", "", $this->elapsedTime) . substr(hash("sha256", $this->backtrace[0]['file']), 0, 10);
+        //var_dump($this);
+    }
+
+    private function traceBack() {
+        $traceCursor = 4;
+        $cursor = 0;
+        while (backTrace($traceCursor)) {
+            $caller = backTrace($traceCursor);
+
+            if (key_exists('file', $caller)) {
+                $backTrace[$cursor] = ['file' => $caller["file"], 'line' => $caller["line"]];
+            }
+            $cursor++;
+            $traceCursor++;
+        }
+
+        ksort($backTrace);
+        return $backTrace;
     }
 
     public function getElapsedTime() {
-        return $this->elapsedTime;
+        return htmlspecialchars($this->elapsedTime);
     }
 
+    public function getId() {
+        return 'LogEntry_' . $this->id;
+    }
+
+    /**
+     * Returns one of the following
+     * @return type
+     */
     public function getLevel() {
         return $this->level;
     }
 
     public function getMessage() {
         return $this->message;
+        return htmlspecialchars($this->message);
     }
 
     public function getBacktrace() {
         return $this->backtrace;
-    }
-
-    /**
-     *
-     * @param type $elapsedTime
-     * @return
-     */
-    public function setElapsedTime($elapsedTime) {
-        $this->elapsedTime = $elapsedTime;
-        return $this;
     }
 
     /**
@@ -85,18 +121,61 @@ class CommonLogEntry {
      * @return $this
      */
     public function setMessage($message) {
-        $this->message = $message;
+        $this->message = $this->preProcessMessage($message);
         return $this;
     }
 
     /**
      *
-     * @param type $backtrace
-     * @return $this
+     * @param mixed $message
+     * @return string
+     *
      */
-    public function setBacktrace($backtrace) {
-        $this->backtrace = $backtrace;
-        return $this;
+    private function preProcessMessage($message) {
+
+        if (is_array($message)) {
+            $message = var_export($message, true);
+        }
+        if (is_object($message)) {
+            $message = $this->debugObject($message);
+        }
+        $message = str_replace("\n", "", $message);
+        return $message;
+    }
+
+    /**
+     *
+     * @param type $object
+     * @return type
+     */
+    private function debugObject($object) {
+        ob_start();
+        if (isset($object->xdebug_message)) {
+            ob_clean();
+            return "<div class='jumbotron'>" . $object->xdebug_message . "</div>";
+        }
+        var_dump($object);
+        return ob_get_clean();
+        //return htmlspecialchars(print_r($object, true));
+    }
+
+    public function getAlertLevel() {
+        switch ($this->getLevel()) {
+            case self::ERROR:
+                return 'danger';
+            case self::DEBUG:
+                return 'success';
+
+            default:
+                return $this->getLevel();
+        }
+    }
+
+    public function isError() {
+        if ($this->getLevel() == self::ERROR) {
+            return true;
+        }
+        return false;
     }
 
 }

@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\district;
+namespace App\Models\District;
 
 /**
  * Description of School
@@ -32,7 +32,7 @@ namespace app\models\district;
  * @author cjacobsen
  */
 use app\database\Schema;
-use app\models\Query;
+use App\Models\Query;
 
 class Department {
 
@@ -59,7 +59,7 @@ class Department {
     }
 
     public static function createDepartment($name, $schoolID) {
-        \system\app\AppLogger::get()->debug("Creating new department named: " . $name);
+        \System\App\AppLogger::get()->debug("Creating new department named: " . $name);
         return \system\Database::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (' . Schema::DEPARTMENT_NAME[Schema::COLUMN] . ',' . Schema::DEPARTMENT_SCHOOL_ID[Schema::COLUMN] . ') VALUES ("' . $name . '", "' . $schoolID . '")');
     }
 
@@ -77,7 +77,7 @@ class Department {
     }
 
     public static function deleteSchool($departmentID) {
-        \system\app\AppLogger::get()->debug("Delete department id: " . $departmentID);
+        \System\App\AppLogger::get()->debug("Delete department id: " . $departmentID);
         return \system\Database::get()->query('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::DEPARTMENT_ID[Schema::COLUMN] . '=' . $departmentID);
     }
 

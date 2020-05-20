@@ -24,21 +24,33 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\user;
+namespace App\Models\User;
 
 /**
  * Description of PermissionHandler
  *
  * @author cjacobsen
  */
-use app\models\user\User;
-use app\models\user\PrivilegeLevel;
-use app\models\user\Permission;
-use system\app\AppLogger;
+use App\Models\User\User;
+use App\Models\User\PrivilegeLevel;
+use App\Models\User\Permission;
+use System\App\AppLogger;
+use App\Models\Database\PermissionMapDatabase;
+use System\App\UserLogger;
 
 abstract class PermissionHandler {
 
-    private static $superUser;
+    /**
+     *
+     * @var User
+     */
+    private static $user;
+
+    /**
+     *
+     * @var array <PrivilegeLevels>
+     */
+    private static $privilegeLevels;
 
     /**
      *
@@ -46,60 +58,105 @@ abstract class PermissionHandler {
      */
     private static $logger;
 
+    private static function loadUser() {
+
+        if (self::$user == null) {
+            UserLogger::get()->info('Trying to load user for permission handling');
+            $appClass = APPCLASS;
+            self::$logger = $appClass::get()->logger;
+            self::$user = $appClass::get()->user;
+            UserLogger::get()->info('Loaded User:');
+            UserLogger::get()->info(self::$user);
+        }
+    }
+
     /**
      * Determines if a user has the necessary permission to match the request
-     * @param string $requestedType Outions are "user" or "group"
+     * @param string $requestedType Options are "user" or "group"
      * @param int $requestedLevel Options are int(0-4) Meaning differs based on permission type, but generally (Read,Change,Write,Delete)
      */
     public static function hasPermission(string $ou, string $requestedType, int $requestedLevel) {
         $testResults = array();
 
-        if (self::$superUser) {
+
+
+        self::loadUser();
+        if (self::$user->superAdmin) {
             return true;
         }
-        $appClass = APPCLASS;
-        /* @var $user User */
-        $user = $appClass::get()->user;
-        self::$logger = $appClass::get()->logger;
         self::$logger->info("Loading user permissions");
 
+        $userPermissions = self::$user->getPermissions($ou);
 
-        $privlegeLevels = $user->getPrivilegeLevels();
-        if (self::$superUser == null) {
-            /* For backward compat until Privilege is deprecated */
-            if ($user->privilege >= Privilege::TECH) {
-                self::$superUser = true;
+
+
+
+        /* @var $permission Permission */
+        $testResults = self::testPermissions($userPermissions, $ou, $requestedType, $requestedLevel);
+
+        if (empty($testResults)) {
+            return false;
+        } else {
+
+            ksort($testResults);
+            self::$logger->debug("Permission Test Results");
+            self::$logger->debug($testResults);
+            return $testResults[array_key_first($testResults)];
+        }
+    }
+
+    /**
+     * Checks if the user has any group permissions
+     * defined anywhere within the permission mappings
+     * @return boolean
+     */
+    public static function hasGroupPermissions() {
+        self::loadUser();
+        if (self::$user->superAdmin) {
+            return true;
+        }
+        if (self::$user->getPrivilegeLevels() !== null) {
+            return PermissionMapDatabase::hasPermissionType(PermissionLevel::GROUPS, self::$user->getPrivilegeLevels(),);
+        }
+        UserLogger::get()->info("The user has no group permissions found.");
+        return false;
+    }
+
+    /**
+     * Checks if the user has any group permissions
+     * defined anywhere within the permission mappings
+     * @return boolean
+     */
+    public static function hasUserPermissions() {
+        self::loadUser();
+        if (self::$user !== null) {
+            if (self::$user->superAdmin) {
                 return true;
             }
-            foreach ($privlegeLevels as $level) {
-                /* @var $level  PrivilegeLevel */
-                if ($level->getSuperAdmin()) {
-                    if ($user->privilege >= Privilege::TECH)
-                        self::$superUser = true;
-                }
-            }
-            if (self::$superUser == null) {
-                self::$superUser = false;
+            if (self::$user->getPrivilegeLevels() !== null) {
+                return PermissionMapDatabase::hasPermissionType(PermissionLevel::USERS, self::$user->getPrivilegeLevels(),);
             }
         }
-        $userPermissions = $user->getPermissions($ou);
+        return false;
+    }
 
-
-        //self::$logger->info($userPermissions);
-        //var_dump($userPermissions);
-        /* @var $permission Permission */
+    /**
+     *
+     * @param array $userPermissions An array of all the users relevant permissions for the requested OU
+     * @param string $ou The OU to find permission for
+     * @param string $requestedType Can be PermissionLevel::GROUPS or PermissionLevel::USERS
+     * @param int $requestedLevel
+     */
+    private static function testPermissions(array $userPermissions, string $ou, string $requestedType, int $requestedLevel) {
+        $testResults = array();
         foreach ($userPermissions as $permission) {
-
-            //var_dump($permission->getOu());
-            //var_dump($ou);
             $distanceFromOU = strpos($ou, $permission->getOu());
             self::$logger->info($permission->getId() . " Distance: " . $permission->getOu() . ' -> ' . $ou . ' = ' . $distanceFromOU);
             if (is_int($distanceFromOU)) {
 
-                $method = 'get' . ucfirst(str_replace("_", '', $requestedType)) . "PermissionLevel";
+                $method = 'get' . ucfirst(str_replace("_Perm", '', $requestedType)) . "PermissionLevel";
 
                 $usersPermissionLevel = $permission->$method();
-                //var_dump($usersPermissionLevel);
                 self::$logger->info("Checking permission: " . $requestedLevel . " -> " . $usersPermissionLevel);
                 if ($usersPermissionLevel >= $requestedLevel) {
                     if (!key_exists($distanceFromOU, $testResults) or $testResults[$distanceFromOU] !== false) {
@@ -112,16 +169,7 @@ abstract class PermissionHandler {
                 }
             }
         }
-        //var_dump($testResults);
-        if (empty($testResults)) {
-            return false;
-        } else {
-
-            ksort($testResults);
-            self::$logger->debug("Permission Test Results");
-            self::$logger->debug($testResults);
-            return $testResults[array_key_first($testResults)];
-        }
+        return $testResults;
     }
 
 }

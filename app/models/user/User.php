@@ -24,21 +24,21 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\user;
+namespace App\Models\User;
 
 /**
  * Description of User
  *
  * @author cjacobsen
  */
-use system\app\auth\CoreUser;
-use system\app\Session;
-use system\app\App;
-use system\app\AppLogger;
-use app\models\database\UserDatabase;
-use app\models\user\PrivilegeLevel;
-use app\models\database\PermissionMapDatabase;
-use app\models\database\PrivilegeLevelDatabase;
+use System\App\Auth\CoreUser;
+use System\App\Session;
+use System\App\App;
+use App\Models\Database\UserDatabase;
+use System\App\UserLogger;
+use App\Models\User\PrivilegeLevel;
+use App\Models\Database\PermissionMapDatabase;
+use App\Models\Database\PrivilegeLevelDatabase;
 
 class User extends CoreUser {
 
@@ -51,7 +51,7 @@ class User extends CoreUser {
      */
     public $privilegeLevels;
     public $adGroupName;
-    public $superUser = false;
+    public $superAdmin = false;
 
     /**
      *
@@ -67,20 +67,28 @@ class User extends CoreUser {
 
     /**
      *
+     * @var UserLogger
+     */
+    protected $logger;
+
+    /**
+     *
      * @param string $username
      * @return self
      */
-    function __construct(string $username = null) {
+    public function __construct(string $username = null) {
         //set_error_handler(array($this, 'handleError'));
         //set_exception_handler(array($this, 'handleException'));
 
+        $this->logger = UserLogger::get();
+        //var_dump($this->logger);
         if ($username == self::ADMINISTRATOR) {
             $this->setAsAdministrator();
         } else {
             $this->privilege = Privilege::UNAUTHENTICATED;
         }
         $this->theme = \app\config\Theme::DEFAULT_THEME;
-        \system\app\AppLogger::get()->debug($this->theme);
+        \System\App\AppLogger::get()->debug($this->theme);
         return $this;
 
         //$this->save();
@@ -91,11 +99,17 @@ class User extends CoreUser {
      * @return self $this
      */
     private function setAsAdministrator() {
-        $this->privilege = Privilege::TECH;
+        //$this->privilege = Privilege::TECH;
         $this->fullName = \system\Lang::get('Administrator Full Name');
         $this->username = "admin";
-        $this->privilegeLevels = new PrivilegeLevel();
-        $this->privilegeLevels->setSuperAdmin(true);
+        $privilegeLevel = new PrivilegeLevel();
+        $privilegeLevel->setId(-1);
+        $privilegeLevel->setSuperAdmin(true);
+        $this->authenticated = true;
+        $this->superAdmin = true;
+        $this->privilegeLevels = array($privilegeLevel);
+        //var_dump($this->privilegeLevels);
+
         return $this;
     }
 
@@ -148,7 +162,7 @@ class User extends CoreUser {
      * @return User
      */
     public function setTheme(string $theme) {
-        \system\app\AppLogger::get()->debug("Changing theme to " . $theme);
+        \System\App\AppLogger::get()->debug("Changing theme to " . $theme);
         $this->theme = $theme;
 
         // $this->save();
@@ -166,7 +180,7 @@ class User extends CoreUser {
     }
 
     public function setSuperUser($superUser) {
-        $this->superUser = $superUser;
+        $this->superAdmin = $superUser;
         return $this;
     }
 
@@ -181,6 +195,9 @@ class User extends CoreUser {
     }
 
     public function addPrivilegeLevel(PrivilegeLevel $privilegeLevel) {
+
+        $this->logger->info('Adding privileg: ');
+        $this->logger->info($privilegeLevel);
         $this->privilegeLevels[] = $privilegeLevel;
         return $this;
     }
@@ -195,12 +212,20 @@ class User extends CoreUser {
      * @return $this
      */
     public function setPrivilegeLevels($privilegeLevelArray) {
+        if (!is_array($privilegeLevelArray)) {
+            $privilegeLevelArray = array($privilegeLevelArray);
+        }
         $this->privilegeLevels = $privilegeLevelArray;
         return $this;
     }
 
+    /**
+     *
+     * @param type $adGroupName
+     * @return $this
+     */
     public function loadPrivilegeLevel($adGroupName) {
-        AppLogger::get()->debug($adGroupName);
+        $this->logger->debug($adGroupName);
 
         $this->addPrivilegeLevel(PrivilegeLevelDatabase::getPrivilegeLevel($adGroupName));
         return $this;
@@ -214,13 +239,15 @@ class User extends CoreUser {
         try {
             if ($this->getApiToken() == null or $this->getApiToken() == '')
                 $this->generateAPIToken();
-            AppLogger::get()->debug("Changing theme to " . $this->theme);
+            $this->logger->debug("Changing theme to " . $this->theme);
             Session::setUser($this);
             //Cookie::set(self::USER . '_' . $this->username, \system\Encryption::encrypt(serialize($this)));
             UserDatabase::setUserToken($this->username, $this->apiToken);
             //var_dump($this->theme);
             UserDatabase::setUserTheme($this->username, $this->theme);
-            UserDatabase::setUserPrivilege($this->username, $this->privilege);
+            if ($this->username != CoreUser::ADMINISTRATOR) {
+                UserDatabase::setUserPrivilege($this->username, $this->privilege);
+            }
             return true;
         } catch (Exception $ex) {
             return false;

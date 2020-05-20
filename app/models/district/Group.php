@@ -24,20 +24,22 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\district;
+namespace App\Models\District;
 
 /**
  * Description of Group
  *
  * @author cjacobsen
  */
-use app\models\district\DistrictUser;
+use App\Models\District\DistrictUser;
+use App\Api\AD;
 
 class Group {
 
     private $distinguishedName;
     private $name;
     private $email;
+    private $description;
 
     /**
      *
@@ -55,6 +57,15 @@ class Group {
 
     public function getEmail() {
         return $this->email;
+    }
+
+    public function getDescription() {
+        return $this->description;
+    }
+
+    public function setDescription($description) {
+        $this->description = $description;
+        return $this;
     }
 
     public function getMembers() {
@@ -81,8 +92,13 @@ class Group {
         return $this;
     }
 
+    /**
+     * Checks if this groups has a user by username or DistrictUser object
+     * @param type $member
+     * @return boolean
+     */
     public function hasMember($member) {
-        if (is_string($member)) {
+        if (is_string($member) and $this->getMembers() !== null) {
             foreach ($this->getMembers() as $mem) {
                 if ($member == $mem->getUsername()) {
                     return $mem;
@@ -100,37 +116,66 @@ class Group {
         return false;
     }
 
+    /**
+     * Loads all group members from AD
+     * @return $this
+     */
     public function fillMembers() {
-        $ad = \app\api\AD::get();
+        $ad = AD::get();
         $members = array();
         $members = $ad->listGroupMembers($this->distinguishedName);
 
         $users = array();
         foreach ($members as $member) {
-            $user = new DistrictUser();
-            $user->importFromAD($ad->searchUser($member));
-            $users[] = $user;
+            $users[] = new DistrictUser($member);
         }
         $this->setMembers($users);
         return $this;
 //var_dump($this);
     }
 
+    /**
+     * Imports raw AD response
+     * @param type $rawADResponse
+     */
     public function importFromAD($rawADResponse) {
 //var_dump($rawADResponse);
-        $this->setDistinguishedName($rawADResponse['distinguishedname'][0]);
-        if (key_exists('mail', $rawADResponse))
-            $this->setEmail($rawADResponse['mail']);
-        if (key_exists('name', $rawADResponse))
-            $this->setName($rawADResponse['name'][0]);
-        $this->fillMembers();
+        if (is_array($rawADResponse)) {
+            $this->setDistinguishedName($rawADResponse['distinguishedname'][0]);
+            if (key_exists('mail', $rawADResponse))
+                $this->setEmail($rawADResponse['mail']);
+            if (key_exists('name', $rawADResponse))
+                $this->setName($rawADResponse['name'][0]);
+            $this->fillMembers();
+        }
     }
 
+    /**
+     *
+     * @param DistrictUser $user
+     * @return type
+     */
+    public function addMember(DistrictUser $user) {
+
+        $ad = AD::get();
+        return $ad->addUserToGroup($this->distinguishedName, $user->getDistinguishedName());
+    }
+
+    /**
+     *
+     * @param DistrictUser $user
+     * @return type
+     */
     public function removeMember(DistrictUser $user) {
 
 
-        $ad = \app\api\AD::get();
+        $ad = AD::get();
         return $ad->removeUserFromGroup($this->distinguishedName, $user->getDistinguishedName());
+    }
+
+    public function createInAD() {
+        $ad = AD::get();
+        return $ad->createGroup($this->getName(), $this->distinguishedName, $this->email);
     }
 
 }

@@ -24,20 +24,20 @@
  * THE SOFTWARE.
  */
 
-namespace app\auth;
+namespace App\Auth;
 
 /**
  * Description of LDAP
  *
  * @author cjacobsen
  */
-use app\models\database\AuthDatabase;
-use app\models\user\User;
-use system\app\auth\AuthException;
-use app\models\user\Privilege;
-use app\api\AD;
-use app\models\database\PrivilegeLevelDatabase;
-use system\app\AppLogger;
+use App\Models\Database\AuthDatabase;
+use App\Models\User\User;
+use System\App\Auth\AuthException;
+use App\Models\User\Privilege;
+use App\Api\AD;
+use App\Models\Database\PrivilegeLevelDatabase;
+use System\App\AppLogger;
 
 class ADAuth {
 
@@ -45,7 +45,7 @@ class ADAuth {
      * Load Domain Tools Trait
      *
      */
-    use \system\traits\DomainTools;
+    use \System\Traits\DomainTools;
 
     private $connection;
 
@@ -54,7 +54,7 @@ class ADAuth {
 
         $passed = false;
         $username = strtolower($username);
-        $logger = \system\app\AppLogger::get();
+        $logger = \System\App\AppLogger::get();
         $server = AuthDatabase::getLDAPServer();
         $domain = AuthDatabase::getLDAP_FQDN();
 // Prepare connection username by appending domain name if not already provided
@@ -66,14 +66,17 @@ class ADAuth {
 
 
         if (is_resource($this->connection)) {
+            $superAdmin = false;
             $userLevels = array();
             $adAPI = AD::get();
-            echo "<br/><br/><br/><br/><br/><br/><br/><br/>";
+            //echo "<br/><br/><br/><br/><br/><br/><br/><br/>";
             $allPrivilegeLevels = PrivilegeLevelDatabase::get();
             foreach ($allPrivilegeLevels as $privilegeLevel) {
                 AppLogger::get()->info($privilegeLevel->getAdGroup());
                 if ($adAPI->isUserInGroup($username, $privilegeLevel->getAdGroup())) {
-
+                    if ($privilegeLevel->getSuperAdmin()) {
+                        $superAdmin = true;
+                    }
                     $userLevels[] = $privilegeLevel;
                     $passed = true;
                 }
@@ -93,33 +96,32 @@ class ADAuth {
             $baseDN = self::FQDNtoDN($domain);
 
             $adGroupName = '';
-            $superAdmin = false;
-            if ($adAPI->isUserInGroup($username, AuthDatabase::getSuperUserADGroup())) {
-                $passed = true;
+            /**
+              if ($adAPI->isUserInGroup($username, AuthDatabase::getSuperUserADGroup())) {
+              $passed = true;
 
-                //$fullName = $superUserInfo[$i]["name"][0];
-                // $fullName = "Finish me line 114 ADAuth";
-                $privilege = Privilege::TECH;
-                $superAdmin = true;
-                $adGroupName = AuthDatabase::getSuperUserADGroup();
-            }
-
-
+              //$fullName = $superUserInfo[$i]["name"][0];
+              // $fullName = "Finish me line 114 ADAuth";
+              $privilege = Privilege::TECH;
+              $superAdmin = true;
+              $adGroupName = AuthDatabase::getSuperUserADGroup();
+              }
+             *
+             *
+             */
             if ($passed) {
 
                 //var_dump("here");
-                $adUser = $adAPI->getUser($username);
+                $adUser = $adAPI->getDomainUser($username);
                 // var_dump($adUser);
                 AppLogger::get()->info($username . " successfully logged in");
-                if (!isset($privilege)) {
-                    $privilege = Privilege::BASIC;
-                }
+
                 if (!$fullName = $adUser['displayname'][0]) {
                     $fullName = $username;
                 }
                 $user = new User();
-                $user->setFullName($fullName)
-                        ->setPrivilege($privilege)
+                $user->authenticated()
+                        ->setFullName($fullName)
                         ->setUsername($username)
                         ->setPrivilegeLevels($userLevels)
                         ->setSuperUser($superAdmin);
@@ -159,7 +161,7 @@ class ADAuth {
     }
 
     public static function testConnection($server, $username, $password) {
-        $logger = \system\app\AppLogger::get();
+        $logger = \System\App\AppLogger::get();
         $ldapconn = ldap_connect("ldap://" . $server)
 
                 or die("Could not connect to LDAP server.");

@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\district;
+namespace App\Models\District;
 
 /**
  * Description of User
  *
  * @author cjacobsen
  */
-use app\api\AD;
+use App\Api\AD;
 
 class DistrictUser {
 
@@ -61,12 +61,18 @@ class DistrictUser {
     public $adContainerName;
     public $photo;
 
+    public function __construct($username = null) {
+        if ($username !== null) {
+            $this->importFromAD(AD::get()->searchUser($username));
+        }
+    }
+
     /**
-     *
+     *  Imports raw AD response
      * @param type $adUserRaw
      */
     public function importFromAD($adUserRaw) {
-        \system\app\AppLogger::get()->debug($adUserRaw);
+        \System\App\AppLogger::get()->debug($adUserRaw);
         if (key_exists("givenname", $adUserRaw)) {
             $this->firstName = $adUserRaw["givenname"][0];
         }
@@ -175,12 +181,17 @@ class DistrictUser {
         $this->gaEnabled = !$gaUserRaw->getSuspended();
 
         $this->gaUsername = $gaUserRaw->getEmails()[0]['address'];
-        $googleGroups = \app\api\GAM::get()->getUserGroups($this->gaUsername);
+        $googleGroups = \App\Api\GAM::get()->getUserGroups($this->gaUsername);
         foreach ($googleGroups as $group) {
             $this->gaGroups[$group["name"]] = $group["email"];
         }
     }
 
+    /**
+     * Returns the users full name [first](middle)[last]
+     * If not middle name is set it is ommitted
+     * @return type
+     */
     public function getFullName() {
         $middle = ' ';
         if ($this->getMiddleName() != '') {
@@ -244,12 +255,16 @@ class DistrictUser {
         return $this->photo;
     }
 
-    function setPhoto($photo): void {
+    function setPhoto($photo) {
         $this->photo = $photo;
+        $ad = AD::get();
+        $ad->setUserThumbnailPhoto($this->distinguishedName, $photo);
+        return $this;
     }
 
-    function setDescription($description): void {
+    function setDescription($description) {
         $this->description = $description;
+        return $this;
     }
 
     public function getGaEnabled() {
@@ -495,18 +510,31 @@ class DistrictUser {
         return $this;
     }
 
+    /**
+     * Unlocks this user in AD
+     */
     public function unlock() {
         $result = AD::get()->unlockUser($this->username);
     }
 
+    /**
+     * Disables this user in AD
+     */
     public function disable() {
         $result = AD::get()->disableUser($this->username);
     }
 
+    /**
+     * Enables this user in AD
+     */
     public function enable() {
         $result = AD::get()->enableUser($this->username);
     }
 
+    /**
+     * Returns the users OU location based on Distinguished Name
+     * @return type
+     */
     public function getOu() {
         return substr($this->distinguishedName, strpos($this->distinguishedName, ',') + 1);
     }

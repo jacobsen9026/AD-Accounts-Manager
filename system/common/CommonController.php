@@ -24,15 +24,15 @@
  * THE SOFTWARE.
  */
 
-namespace system\common;
+namespace System\Common;
 
 /**
  * Description of Controller
  *
  * @author cjacobsen
  */
-use system\Parser;
-use system\app\App;
+use System\Parser;
+use System\App\App;
 use app\config\MasterConfig;
 
 class CommonController extends Parser {

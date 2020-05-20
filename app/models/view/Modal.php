@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\view;
+namespace App\Models\View;
 
 /**
  * Description of Modal
@@ -37,6 +37,10 @@ class Modal extends ViewModel {
     private $title;
     private $body;
     private $theme;
+
+    public function __construct() {
+        $this->theme = 'primary';
+    }
 
     public function getId() {
         return $this->id;
@@ -60,8 +64,9 @@ class Modal extends ViewModel {
     }
 
     public function setId($id) {
-        $strip = ['_'];
-        $this->id = str_replace($strip, '', $id);
+        //$strip = ['_'];
+        //$this->id = str_replace($strip, '', $id);
+        $this->id = $id;
         return $this;
     }
 
@@ -76,7 +81,7 @@ class Modal extends ViewModel {
     }
 
     public function print() {
-        \system\app\AppLogger::get()->debug($this);
+        \System\App\AppLogger::get()->debug($this);
 
 
 

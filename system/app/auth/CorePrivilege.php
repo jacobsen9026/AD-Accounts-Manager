@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\auth;
+namespace System\App\Auth;
 
 /**
  * Description of CorePrivilege

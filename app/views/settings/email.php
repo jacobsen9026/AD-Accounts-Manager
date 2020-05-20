@@ -24,12 +24,12 @@
  * THE SOFTWARE.
  */
 
-use app\models\database\EmailDatabase;
-use system\app\forms\Form;
-use system\app\forms\FormText;
-use system\app\forms\FormRadio;
-use system\app\forms\FormButton;
-use system\app\forms\FormHTML;
+use App\Models\Database\EmailDatabase;
+use System\App\Forms\Form;
+use System\App\Forms\FormText;
+use System\App\Forms\FormRadio;
+use System\App\Forms\FormButton;
+use System\App\Forms\FormHTML;
 
 $email = new EmailDatabase();
 $form = new Form('/settings/email');

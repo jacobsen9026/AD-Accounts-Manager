@@ -24,15 +24,16 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\forms;
+namespace System\App\Forms;
 
 /**
  * Description of FormButton
  *
  * @author cjacobsen
  */
-use app\models\view\Javascript;
-use system\app\forms\ajax\AJAXRequest;
+use App\Models\View\Javascript;
+use System\Models\Ajax\AJAXRequest;
+use App\Models\View\Modal;
 
 class FormButton extends FormElement implements FormElementInterface {
 
@@ -47,11 +48,12 @@ class FormButton extends FormElement implements FormElementInterface {
      * @param type $subLabel
      * @param type $size Must be one of: small,medium,large
      */
-    function __construct(string $name, $size = "auto") {
+    function __construct(string $name, $size = "medium") {
         parent::__construct(null, null, $name);
 
         $this->setName($name);
         $this->setSize($size);
+        $this->setInputClasses("w-100 btn");
     }
 
     function getTheme() {
@@ -86,12 +88,14 @@ class FormButton extends FormElement implements FormElementInterface {
      * @return string
      */
     public function getElementHTML() {
+
         $textClass = '';
         if ($this->getTheme() == 'warning') {
-            $textClass = ' text-light ';
+            $textClass = 'text-light';
         }
-        $html = '<div id="' . $this->getId() . '">
-        <button id="' . $this->getId() . '_Button" type="' . $this->getType() . '" class=" my-3 w-100 btn btn-' . $this->getTheme() . ' ' . $textClass . '"';
+        $this->addInputClasses(['btn-' . $this->getTheme(), $textClass]);
+        $html = '<div id="' . $this->getId() . '_Button_container" class="' . $this->getElementClasses() . '">
+        <button id="' . $this->getId() . '" type="' . $this->getType() . '" class="' . $this->getInputClasses() . '"';
         if ($this->getModal() != null) {
 
             $html .= ' data-toggle="modal" data-target="#' . $this->getModal()->getId() . '" ';
@@ -105,14 +109,14 @@ class FormButton extends FormElement implements FormElementInterface {
     }
 
     public function addModal($modalTitle, $modalBody, $modalTheme) {
-        $modal = new \app\models\view\Modal();
+        $modal = new Modal();
         $modal->setTitle($modalTitle)
                 ->setBody($modalBody)
-                ->setID($this->getId() . 'Modal')
+                ->setID($this->getId() . '_Modal')
                 ->setTheme($modalTheme);
         $this->setModal($modal);
         $this->setType("button");
-        \system\app\AppLogger::get()->info("Added modal to " . $this->getName());
+        \System\App\AppLogger::get()->info("Added modal to " . $this->getName());
         return $this;
     }
 

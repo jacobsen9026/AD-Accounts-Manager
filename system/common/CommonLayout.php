@@ -24,18 +24,18 @@
  * THE SOFTWARE.
  */
 
-namespace system\common;
+namespace System\Common;
 
 /**
  * Description of CoreLayout
  *
  * @author cjacobsen
  */
-use system\app\App;
-use system\Parser;
-use app\models\user\User;
-use app\controllers\Menu;
-use system\app\AppLogger;
+use System\App\App;
+use System\Parser;
+use App\Models\User\User;
+use App\Controllers\Menu;
+use System\App\AppLogger;
 
 class CommonLayout extends Parser {
 
@@ -79,18 +79,20 @@ class CommonLayout extends Parser {
     }
 
     public function apply() {
+
         $this->logger->info($this->app->request->type);
-        if ($this->app->request->type == 'http') {
-            $this->layoutOutput = $this->getHeader();
-        }
+
+        $this->layoutOutput = $this->getHeader();
+        $this->layoutOutput .= $this->getNavigation();
+
         $this->layoutOutput .= $this->app->appOutput->getBody();
 
-        if ($this->app->request->type == 'http') {
-            $this->layoutOutput .= $this->getNavigation();
-            $this->layoutOutput .= $this->getFooter();
-        }
+        $this->layoutOutput .= $this->getFooter();
 
-        //var_dump($this->appOutput);
+
+        // var_dump($this->layoutOutput);
+
+
         return $this->layoutOutput;
     }
 
@@ -106,7 +108,10 @@ class CommonLayout extends Parser {
     public function getNavigation() {
         // var_dump($this->user);
         $menu = new Menu($this->user);
-        return $menu->getMenu($this->layoutName);
+        if ($this->user->authenticated) {
+
+            return $menu->getMenu($this->layoutName);
+        }
     }
 
 }

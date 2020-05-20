@@ -24,18 +24,18 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\settings;
+namespace App\Controllers\Settings;
 
 /**
  * Description of Home
  *
  * @author cjacobsen
  */
-use app\controllers\Controller;
-use system\app\AppLogger;
-use app\models\database\AppDatabase;
-use app\models\database\AuthDatabase;
-use app\models\database\EmailDatabase;
+use App\Controllers\Controller;
+use System\App\AppLogger;
+use App\Models\Database\AppDatabase;
+use App\Models\Database\AuthDatabase;
+use App\Models\Database\EmailDatabase;
 
 class Application extends Controller {
 
@@ -63,18 +63,6 @@ class Application extends Controller {
 
         EmailDatabase::saveSettings($post);
         $this->redirect('/settings/application');
-    }
-
-    /**
-     * Write the database schema as constants to a file for the IDE
-     */
-    public function updateSchema() {
-
-        $constantsTable = \system\Database::get()->getConstants();
-        //var_dump($constantsTable);
-        if (!empty($constantsTable)) {
-            \system\File::refreshSchemaDefinitions($constantsTable);
-        }
     }
 
 }

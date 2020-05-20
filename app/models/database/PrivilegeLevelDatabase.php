@@ -24,14 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\database;
+namespace App\Models\Database;
 
 /**
  * Description of PrivilegeLevelDatabase
  *
  * @author cjacobsen
  */
-use app\models\user\PrivilegeLevel;
+use App\Models\User\PrivilegeLevel;
 
 abstract class PrivilegeLevelDatabase extends DatabaseModel {
 
@@ -80,10 +80,11 @@ abstract class PrivilegeLevelDatabase extends DatabaseModel {
      * @param string $adGroupName
      * @param bool $superAdmin
      */
-    public static function updatePrivilegeLevel(int $id, string $adGroupName) {
+    public static function updatePrivilegeLevel(int $id, string $adGroupName, $superAdmin) {
         $query = new Query(self::TABLE_NAME, Query::UPDATE);
         $query->where('ID', $id)
-                ->set('AD_Group_Name', $adGroupName);
+                ->set('AD_Group_Name', $adGroupName)
+                ->set('Super_Admin', $superAdmin);
         return $query->run();
     }
 
