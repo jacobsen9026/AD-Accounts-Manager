@@ -1,55 +1,54 @@
 
-.responseContainer button, .copyButtonsContainer button, #container button, .container button, #userButton, #studentButton, #staffButton,#parentButton,#techButton{
-	border-color: #bf3200;
+.responseContainer button, .copyButtonsContainer button, #container button, .container button, #userButton, #studentButton, #staffButton, #parentButton, #techButton {
+    border-color: #bf3200;
 }
-button, #userButton, #studentButton, #staffButton,#parentButton,#techButton, .floatingButton, .configNavContainer, .floatingEditButton, .floatingDebugButton, .floatingConsoleButton, .floatingHelpButton, .floatingConfigButton, .floatingIncludeButton
-{
+
+button, #userButton, #studentButton, #staffButton, #parentButton, #techButton, .floatingButton, .configNavContainer, .floatingEditButton, .floatingDebugButton, .floatingConsoleButton, .floatingHelpButton, .floatingConfigButton, .floatingIncludeButton {
     background-color: #bf3200;
     box-shadow: 2px 2px 10px #888888;
 }
 
-.copyButtonsContainer button:hover, button:hover{
-	background-color: #7c2000;
+.copyButtonsContainer button:hover, button:hover {
+    background-color: #7c2000;
 }
-#container button:hover, .container button:hover, .copyButtonsContainer button:hover{
-	border-color: #7c2000;
+
+#container button:hover, .container button:hover, .copyButtonsContainer button:hover {
+    border-color: #7c2000;
 }
 
 button {
-	color: white;
-	overflow: visible
+    color: white;
+    overflow: visible
 }
-
 
 
 .navigation_selected, .navigationButton button:hover {
     background-color: #7c2000 !important;
-    color:white !important;
-    	border-color: #7c2000 !important;
+    color: white !important;
+    border-color: #7c2000 !important;
 }
 
 .subnavigation button {
-	color: black;
-	background-color: #ffffff;
-	border-color:#ffffff;
+    color: black;
+    background-color: #ffffff;
+    border-color: #ffffff;
 }
 
 
-.subnavigation button:hover{
-	background-color: #bf3200 !important;
-	border-color: #bf3200 !important;
-	color: white !important;
+.subnavigation button:hover {
+    background-color: #bf3200 !important;
+    border-color: #bf3200 !important;
+    color: white !important;
 }
 
 
-
-.highlightEditButton{
-		box-shadow: 0px 0px 50px #bf3200;
+.highlightEditButton {
+    box-shadow: 0px 0px 50px #bf3200;
 
 }
 
 .currentPageButtonHighlight {
-	background-color: #7c2000 !important;
-	color: white !important;
-	border-color:#7c2000 !important;
+    background-color: #7c2000 !important;
+    color: white !important;
+    border-color: #7c2000 !important;
 }

@@ -12,7 +12,7 @@ and open the template in the editor.
 }
 
 .dark-shadow {
-    box-shadow: 0.1em 0.2em 1em #000;
+    box-shadow: 0.1em 0.2em 0.75em #000;
 }
 
 
@@ -67,6 +67,20 @@ and open the template in the editor.
     box-shadow: 0 0rem 10rem rgba(0, 0, 0, .375) !important;
 }
 
+.floating-form-button {
+    right: 0;
+    bottom: -200;
+    -webkit-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    transition: all 0.2s;
+    transition-timing-function: cubic-bezier();
+}
+
+.floating-form-button.show {
+    bottom: 0;
+}
+
 
 .ui-autocomplete {
     overflow-y: auto;
@@ -108,10 +122,7 @@ and open the template in the editor.
 }
 
 .userPortrait {
-    border-top-left-radius: 30% 45%;
-    border-top-right-radius: 30% 45%;
-    border-bottom-left-radius: 30% 45%;
-    border-bottom-right-radius: 30% 45%;
+    border-radius: 1.75em;
 }
 
 .highlight {

@@ -27,26 +27,26 @@ THE SOFTWARE.
 */
 
 #sparkles > path {
-	animation: sparklyBits 1000ms infinite;
-	position: absolute;
+  animation: sparklyBits 1000ms infinite;
+  position: absolute;
 }
 
 #message {
-	margin-top: 20px;
-	text-align: center;
+  margin-top: 20px;
+  text-align: center;
 }
 
 @for $i from 1 through 29 {
-	#sparkles > path:nth-child(#{$i}) {
-		animation-delay: (35ms * $i);
-	}
+  #sparkles > path:nth-child(#{$i}) {
+    animation-delay: (35ms * $i);
+  }
 }
 
 @keyframes sparklyBits {
-	0% {
-		opacity: 0;
-	}
-	100% {
-		opacity: 1;
-	}
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
