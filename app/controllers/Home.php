@@ -24,37 +24,63 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers;
+namespace App\Controllers;
 
 /**
  * Description of Home
  *
  * @author cjacobsen
  */
-class Home extends Controller {
 
-    public function index() {
+use App\Models\Database\AppDatabase;
+use App\Models\Database\DistrictDatabase;
+use App\Models\User\PermissionLevel;
+use App\Models\User\PermissionHandler;
 
-        $this->motd = \app\models\AppConfig::getMOTD();
-        $this->applicationName = \app\models\AppConfig::getAppName();
-        $this->layout = "default";
+class Home extends Controller
+{
+
+    public function index()
+    {
+        $this->motd = AppDatabase::getMOTD();
+        $this->applicationName = AppDatabase::getAppName();
+//echo "<br/><br/><br/><br/><br/><br/>";
+//var_dump($this->user);
+        $testOUs = ['OU=Staff,OU=Admin Building,OU=SAM Test OU,DC=sandbox,DC=local',
+            "OU=Admin Building,OU=SAM Test OU,DC=sandbox,DC=local",
+            "OU=Staff,OU=Admin Building,OU=SAM Test OU,DC=sandbox,DC=local",
+            "OU=School 2,OU=SAM Test OU,DC=sandbox,DC=local",
+            "OU=Instructional Services,OU=Staff,OU=Admin Building,OU=SAM Test OU,DC=sandbox,DC=local",
+            "OU=Grade 5,OU=Students,OU=School 2,OU=SAM Test OU,DC=sandbox,DC=local"];
+//$testOUs = ["OU=School 2,OU=SAM Test OU,DC=sandbox,DC=local"];
+        /*
+          foreach ($testOUs as $ou) {
+          echo "Permission Test For Group Read<br/>";
+          echo $ou;
+          var_dump(PermissionHandler::hasPermission($ou, PermissionLevel::GROUPS, 1));
+          }
+
+         */
+
+
         return $this->view('homepage');
     }
 
-    public function indexPost() {
-        $this->motd = \app\models\AppConfig::getMOTD();
-        $this->applicationName = \app\models\AppConfig::getAppName();
-        $this->layout = "default";
-        return $this->view('homepage');
+    public function indexPost()
+    {
+        $this->index();
     }
 
-    public function show403() {
-        $this->motd = \app\models\AppConfig::getMOTD();
-        $this->applicationName = \app\models\AppConfig::getAppName();
-        $this->layout = "default";
+    public function show403()
+    {
+
+
+        $this->motd = AppDatabase::getMOTD();
+        $this->applicationName = AppDatabase::getAppName();
         return $this->view('errors/403');
     }
 
 }
 
 ?>
+

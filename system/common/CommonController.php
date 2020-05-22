@@ -24,19 +24,20 @@
  * THE SOFTWARE.
  */
 
-namespace system\common;
+namespace System\Common;
 
 /**
  * Description of Controller
  *
  * @author cjacobsen
  */
-use system\Parser;
-use system\app\App;
-use system\CoreApp;
+
+use System\Parser;
+use System\App\App;
 use app\config\MasterConfig;
 
-class CommonController extends Parser {
+class CommonController extends Parser
+{
 
     /** @var App|null The view parser */
     public $app;
@@ -46,35 +47,11 @@ class CommonController extends Parser {
 
     /** @var string|null The view parser */
     public $layout;
-    public $postSet = false;
-    public $getSet = false;
 
     //put your code here
-    function __construct($app) {
+    function __construct($app)
+    {
         $this->app = $app;
-        $this->config = $app->config;
-
-
-        if (isset($_POST) and $_POST != null) {
-
-            $this->postSet = true;
-        }
-
-        if (isset($_GET) and $_GET != null) {
-            $this->getSet = true;
-        }
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function unauthorized() {
-        return $this->view('errors/403');
-    }
-
-    public function redirect($url) {
-        header('Location: ' . $url);
     }
 
 }

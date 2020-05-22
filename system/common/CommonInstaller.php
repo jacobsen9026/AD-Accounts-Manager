@@ -24,13 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace system\common;
+namespace System\Common;
 
 /**
  * Description of CoreInstaller
  *
  * @author cjacobsen
  */
-class CommonInstaller {
+class CommonInstaller
+{
     //put your code here
 }

@@ -30,20 +30,23 @@
  * @author cjacobsen
  */
 
-namespace app\controllers;
+namespace App\Controllers;
 
-use app\controllers\menu\TopMenuItem;
-use app\controllers\menu\SubMenuItem;
-use system\app\AppLogger;
-use system\Parser;
-use app\models\user\Privilege;
-use app\models\user\User;
-use system\app\App;
-use app\config\MasterConfig;
+use App\Controllers\Menu\TopMenuItem;
+use App\Controllers\Menu\SubMenuItem;
+use System\App\AppLogger;
+use System\Parser;
+use App\Models\User\User;
+use System\App\App;
+use App\Models\User\PermissionHandler;
 
-class Menu extends Parser {
+class Menu extends Parser
+{
 
-//put your code here
+    /**
+     *
+     * @var TopMenuItem
+     */
     public $items;
     public $layout;
     public $config;
@@ -53,74 +56,65 @@ class Menu extends Parser {
 
     /** @var AppLogger|null The app logger */
     public $logger;
-    public $userPrivs;
 
-    function __construct($user, $layout = 'default') {
+    function __construct($user, $layout = 'default')
+    {
 
         $this->user = $user;
         //$this->config = MasterConfig::get();
         $this->layout = $layout;
         $this->logger = AppLogger::get();
 
-        $this->userPrivs = $this->user->privilege;
-
-        $this->logger->info('Menu Creation Started UserPrivilege:' . $this->userPrivs);
+        $this->logger->info('Menu Creation Started UserPrivilege:' . $this->user->privilege);
         /*
          * Create top level items
          */
 
-        if ($this->userPrivs > Privilege::UNAUTHENTICATED) {
-            $this->items[] = $this->buildStudentMenu();
-            if ($this->userPrivs > Privilege::POWER) {
-                $this->logger->debug("Building Parent and Staff Menus");
-                $this->items[] = $this->buildStaffMenu();
-                $this->items[] = $this->buildParentMenu();
+        if (PermissionHandler::hasUserPermissions()) {
+            $this->items[] = $this->buildUserMenu();
+            //$this->items[] = $this->buildStudentMenu();
+            /** Combine these two buttons into a user button */
+            //$this->items[] = $this->buildStaffMenu();
+        }
+        if (PermissionHandler::hasGroupPermissions()) {
+            $this->items[] = $this->buildGroupsMenu();
+        }
+        if ($this->user->superAdmin) {
+            $this->logger->debug("Building Parent and Staff Menus");
+            $this->items[] = $this->buildParentMenu();
+        }
 
-                // Test of privilege
-                if ($this->userPrivs > \app\models\user\Privilege::TECH - 1) {
-                    $this->items[] = $this->buildTechMenu();
-                }
-            }
+
+        if ($this->user->superAdmin) {
+            $this->items[] = $this->buildTechMenu();
         }
     }
 
-    private function buildStudentMenu() {
+    private function buildUserMenu()
+    {
         /*
          * Build Student Menu
          */
 
-        $students = new TopMenuItem('Students');
-        $students->addSubItem(new SubMenuItem('Account Status', '/' . strtolower($students->displayText) . '/account-status'));
-        if ($this->userPrivs > Privilege::BASIC) {
-            //$students->addSubItem(new SubMenuItem('Account Status Change', '/' . strtolower($students->displayText) . '/account-status-change'));
-            //$students->addSubItem(new SubMenuItem('Google Classroom', '/' . strtolower($students->displayText) . '/google-classroom'));
-            $students->addSubItem(new SubMenuItem('Email Groups', '/' . strtolower($students->displayText) . '/google-groups'));
-            //$students->addSubItem(new SubMenuItem('H-Drive', '/' . strtolower($students->displayText) . '/home-drive'));
-            $students->addSubItem(new SubMenuItem('New Password', '/' . strtolower($students->displayText) . '/reset-password'));
-        }
-        if ($this->userPrivs > Privilege::ADMIN) {
-            $students->addSubItem(new SubMenuItem('Create Acccounts', '/' . strtolower($students->displayText) . '/create-accounts'));
-        }
+        $students = new TopMenuItem('Users');
+        $students->setTargetURL('/users');
         return $students;
     }
 
-    private function buildStaffMenu() {
+    private function buildGroupsMenu()
+    {
         /*
-         * Build Staff Menu
+         * Build Student Menu
          */
-        $staff = new TopMenuItem('Staff');
-        if ($staff) {
-            $staff->addSubItem(new SubMenuItem('Account Status', '/' . strtolower($staff->displayText) . '/account-status'));
-            $staff->addSubItem(new SubMenuItem('Account Change', '/' . strtolower($staff->displayText) . '/account-change'));
-            $staff->addSubItem(new SubMenuItem('Google Groups', '/' . strtolower($staff->displayText) . '/google-groups'));
-            $staff->addSubItem(new SubMenuItem('New Password', '/' . strtolower($staff->displayText) . '/reset-password'));
-            $staff->addSubItem(new SubMenuItem('Create Acccounts', '/' . strtolower($staff->displayText) . '/create-accounts'));
-            $staff->addSubItem(new SubMenuItem('Send Welcome Email', '/' . strtolower($staff->displayText) . '/welcome-email'));
-        }
-        return $staff;
+
+        $groups = new TopMenuItem('Groups');
+        $groups->setTargetURL('/groups');
+
+        return $groups;
     }
 
-    private function buildParentMenu() {
+    private function buildParentMenu()
+    {
         /*
          * Build Parent Menu
          */
@@ -132,7 +126,8 @@ class Menu extends Parser {
         return $parents;
     }
 
-    private function buildTechMenu() {
+    private function buildTechMenu()
+    {
         /*
          * Build Tech Menu
          */
@@ -145,10 +140,20 @@ class Menu extends Parser {
         return $tech;
     }
 
-    public function getMenu() {
+    /**
+     * The layout name referring to the prefix of the layout file
+     *
+     * @param string $layoutName
+     *
+     * @return type
+     */
+    public function getMenu(string $layoutName)
+    {
         $this->app = App::get();
+
+
         //$this->logger->debug($this->items);
-        return $this->view('/layouts/' . $this->layout . '_navbar');
+        return $this->view('/layouts/navbar');
     }
 
 }

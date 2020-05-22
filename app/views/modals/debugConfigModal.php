@@ -9,34 +9,31 @@
 
             </div>
             <div class="modal-body">
-                <div id="ajaxOutput"><span class="spinner-border text-primary" role="status"></span><br/>Loading Configuration Data... </div>
-                <p class="text-break "><script>
-                    $('#debugConfigButton').on('click', function () {
-                        var queryString = 'debugConfig';
-                        //$('#ajaxOutput').hide();
-                        $.post('/api/draw', {query: queryString},
-                                function (data) {
-                                    //request completed
-                                    //now update the div with the new data
-                                    $('#ajaxOutput').html(data);
-                                }
-                        );
-                        //$('#ajaxOutput').slideDown('slow');
-                    });
-
-                    </script>
-
+                <div id="ajaxOutput">
+                    <!--<span class="spinner-border text-primary" role="status"></span><br/>Loading Configuration Data... --></div>
+                <script>
                     <?php
-                    /**
-                      foreach (\system\Database::get()->getAllTables()as $table) {
-                      echo $table;
-                      var_dump(\system\Database::get()->query('SELECT * FROM ' . $table)[0]);
-                      }
-                     *
-                     */
+
+                    use App\Models\View\Javascript;
+
+                    $ajax = Javascript::buildAJAXRequest('/api/app', 'ajaxOutput', ["action" => \App\Controllers\Api\App::GET_CONFIG], true);
+                    $onClick = Javascript::onClick("debugConfigButton", $ajax);
+                    echo $onClick;
                     ?>
 
-                </p>
+
+                </script>
+
+                <?php
+                /**
+                 * foreach (\system\Database::get()->getAllTables()as $table) {
+                 * echo $table;
+                 * var_dump(\system\Database::get()->query('SELECT * FROM ' . $table)[0]);
+                 * }
+                 *
+                 */
+                ?>
+
             </div>
 
         </div>

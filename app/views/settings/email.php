@@ -24,77 +24,80 @@
  * THE SOFTWARE.
  */
 
-use app\database\Schema;
-use app\models\AppConfig;
-use app\models\Email;
-use system\app\forms\Form;
+use App\Models\Database\EmailDatabase;
+use System\App\Forms\Form;
+use System\App\Forms\FormFloatingButton;
+use System\App\Forms\FormText;
+use System\App\Forms\FormRadio;
+use System\App\Forms\FormButton;
+use System\App\Forms\FormHTML;
 
-$this->email = Email::get();
-//var_dump($this->email);
+$email = new EmailDatabase();
+$form = new Form('/settings/email');
+
+$smtpServer = new FormText("SMTP Server", 'Enter the SMTP server address',
+    'smtpServer', $email->getSMTPServer());
+
+$smtpPort = new FormText('SMTP Port', 'Enter the SMTP server port', 'smtpPort', $email->getSMTPPort());
+
+$useSMTPAuth = new FormRadio('Use SMTP Auth', 'Use SMTP user authentication', 'useSMTPAuth');
+$useSMTPAuth->addOption('False', 0, !$email->getUseSMTPAuth());
+$useSMTPAuth->addOption('True', 1, $email->getUseSMTPAuth());
+
+$smtpUsername = new FormText("SMTP Username", 'SMTP Auth username',
+    'smtpUsername', $email->getSMTPUsername());
+
+$smtpPassword = new FormText("SMTP Password", 'SMTP Auth password',
+    'smtpPassword', $email->getSMTPPassword());
+
+$useSMTPSSL = new FormRadio('Use SMTP over SSL', 'Sends emails securly', 'useSMTPSSL');
+$useSMTPSSL->addOption('False', 0, !$email->getUseSMTPSSL());
+$useSMTPSSL->addOption('True', 1, $email->getUseSMTPSSL());
+
+$replyAddress = new FormText("Reply-To Address", 'The reply-to address for emails sent from this app',
+    'replyAddress', $email->getReplyToAddress());
+
+$replyName = new FormText("Reply-To Name", 'The reply-to display name for emails sent from this app',
+    'replyName', $email->getReplyToName());
+
+$fromAddress = new FormText("From Address", 'The from address for emails sent from this app',
+    'fromAddress', $email->getFromAddress());
+
+$fromName = new FormText("From Name", 'The from display name for emails sent from this app',
+    'fromName', $email->getFromName());
 
 
+$saveButton = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
+$saveButton->setId('floatingSaveButton')
+    ->addAJAXRequest('/api/settings/email', 'settingsOutput', $form);
 
-$form = new Form(null, 'email');
+$form->addElementToNewRow($smtpServer)
+    ->addElementToCurrentRow($smtpPort)
+    ->addElementToNewRow($smtpUsername)
+    ->addElementToCurrentRow($smtpPassword)
+    ->addElementToNewRow($useSMTPAuth)
+    ->addElementToCurrentRow($useSMTPSSL)
+    ->addElementToNewRow($fromAddress)
+    ->addElementToCurrentRow($fromName)
+    ->addElementToNewRow($replyAddress)
+    ->addElementToCurrentRow($replyName)
+    ->addElementToNewRow($saveButton);
+echo $form->print();
 
-$form->buildTextInput('SMTP Server',
-                Schema::EMAIL_SMTP_SERVER,
-                $this->email[Schema::EMAIL_SMTP_SERVER[Schema::COLUMN]],
-                'Read only user for authentication',
-                'samAuthUser')
-        ->addToRow()
-        ->buildTextInput('SMTP Port',
-                Schema::EMAIL_SMTP_PORT,
-                $this->email[Schema::EMAIL_SMTP_PORT[Schema::COLUMN]],
-                'Allow authentication by LDAP')
-        ->center()
-        ->addToRow()
-        ->buildBinaryInput('Use SMTP Auth',
-                Schema::EMAIL_USE_SMTP_AUTH,
-                $this->email[Schema::EMAIL_USE_SMTP_AUTH[Schema::COLUMN]],
-                '')
-        ->addToNewRow()
-        ->buildTextInput('SMTP Username',
-                Schema::EMAIL_SMTP_USERNAME,
-                $this->email[Schema::EMAIL_SMTP_USERNAME[Schema::COLUMN]],
-                'Can also be the domain name in most environments.',
-                'ldap.constoso.com')
-        ->addToRow()
-        ->buildTextInput('SMTP Password',
-                Schema::EMAIL_SMTP_PASSWORD,
-                $this->email[Schema::EMAIL_SMTP_PASSWORD[Schema::COLUMN]],
-                'Non-SSL:389  SSL:',
-                '389')
-        ->addToNewRow()
-        ->buildBinaryInput('Use SMTP over SSL',
-                Schema::EMAIL_USE_SMTP_SSL,
-                $this->email[Schema::EMAIL_USE_SMTP_SSL[Schema::COLUMN]],
-                'Read only user for authentication')
-        ->addToRow()
-        ->buildPasswordInput('From Address',
-                Schema::EMAIL_FROM_ADDRESS,
-                $this->email[Schema::EMAIL_FROM_ADDRESS[Schema::COLUMN]],
-                'Read only user\'s password')
-        ->addToNewRow()
-        ->buildTextInput('From Name',
-                Schema::EMAIL_FROM_NAME,
-                $this->email[Schema::EMAIL_FROM_NAME[Schema::COLUMN]],
-                'Read only user for authentication',
-                AppConfig::getAppName())
-        ->addToRow()
-        ->buildPasswordInput('Reply-To Address',
-                Schema::EMAIL_REPLY_TO_ADDRESS,
-                $this->email[Schema::EMAIL_REPLY_TO_ADDRESS[Schema::COLUMN]],
-                'Read only user\'s password')
-        ->addToNewRow()
-        ->buildTextInput('Reply-To Name',
-                Schema::EMAIL_REPLY_TO_NAME,
-                $this->email[Schema::EMAIL_REPLY_TO_NAME[Schema::COLUMN]],
-                'Read only user for authentication',
-                AppConfig::getAppName())
-        ->addToRow()
-        ->buildUpdateButton()
-        ->addToNewRow();
-echo $form->getFormHTML();
-//\system\app\Email::sendTest();
+$form = new Form('', 'testEmail');
+$action = new FormText('', '', 'action', 'test');
+$action->hidden();
+$testRecipient = new FormText("<br><br>Send Test Email", "Enter an address to send a test to.", "to");
+$testResult = new FormHTML('', '', 'result');
+$testResult->setId('emailTestOutput');
+$testEmail = new FormButton("Test Email");
+$testEmail->setType("button")
+    ->small()
+    ->addAJAXRequest('/api/email', $testResult, $form, true);
+$form->addElementToNewRow($testResult)
+    ->addElementToNewRow($action)
+    ->addElementToNewRow($testRecipient)
+    ->addElementToNewRow($testEmail);
+echo $form->print();
 ?>
 

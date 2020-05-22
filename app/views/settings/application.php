@@ -24,94 +24,53 @@
  * THE SOFTWARE.
  */
 
-use app\database\Schema;
-use app\models\AppConfig;
-use app\models\Auth;
-use system\app\forms\Form;
-use system\app\forms\FormButton;
-use system\app\forms\FormText;
+use App\Models\Database\AppDatabase;
+use System\App\Forms\Form;
+use System\App\Forms\FormButton;
+use System\App\Forms\FormFloatingButton;
+use System\App\Forms\FormText;
+use System\App\Forms\FormRadio;
 
-$form = new Form('/settings/application', 'authentication');
-$form->buildTextInput('Web App Name', Schema::APP_NAME, AppConfig::getAppName())
-        ->addToRow()
-        ->buildTextAreaInput('Admin Usernames',
-                Schema::APP_PROTECTED_ADMIN_USERNAMES,
-                AppConfig::getAdminUsernames(),
-                'Users in this list will not be able to be modified via the tools on this site.',
-                'Enter one username per line')
-        ->addToNewRow()
-        ->buildTextAreaInput('Homepage Message',
-                Schema::APP_MOTD,
-                AppConfig::getMOTD(),
-                'Accepts HTML and inline style',
-                'Enter a message to display to all users.')
-        ->addToNewRow()
-        ->buildTextInput('Website FQDN',
-                Schema::APP_WEBSITIE_FQDN,
-                AppConfig::getWebsiteFQDN(),
-                'If this is set all requests are redirected to this address. Be sure it is correct and stays available.',
-                'Enter the public FQDN that users use to access this application.')
-        ->addToNewRow()
-        ->buildBinaryInput('Force HTTPS',
-                Schema::APP_FORCE_HTTPS,
-                AppConfig::getForceHTTPS(),
-                'Reditect all HTTP requests to HTTPS')
-        ->addToNewRow()
-        ->buildBinaryInput('Debug Mode',
-                Schema::APP_DEBUG_MODE,
-                AppConfig::getDebugMode(),
-                'Caution: Enabling debug mode is a security risk and should only be used on development systems.')
-        ->addToRow()
-        ->buildTextInput('User Helpdesk URL',
-                Schema::APP_USER_HELPDESK_URL,
-                AppConfig::getUserHelpdeskURL(),
-                'The url that users should use to access your help portal.',
-                'https://helpdesk.com/')
-        ->addToNewRow()
-        ->buildUpdateButton('Save Settings')
-        ->addToNewRow();
-echo $form->getFormHTML();
+$form = new Form('/settings/application', 'application');
 
-$form = new Form('/settings/application', 'authentication');
-$button = new FormButton("Submit");
-$button->small();
-$webAppName = new FormText("Web App Name",null,Schema::APP_NAME, AppConfig::getAppName());
+$webAppName = new FormText("Web App Name", null, "webAppName", AppDatabase::getAppName());
 $webAppName->large();
-$webFQDN = new FormText("Website FQDN","If this is set all requests are redirected to this address. Be sure it is correct and stays available.",Schema::APP_WEBSITIE_FQDN, AppConfig::getWebsiteFQDN());
+$webFQDN = new FormText("Website FQDN", "If this is set all requests are redirected to this address. Be sure it is correct and stays available.", "webAppFQDN", AppDatabase::getWebsiteFQDN());
 $webFQDN->large()
-        ->setPlaceholder("Enter the public FQDN that users use to access this applicaiton.");
-$webHelpDesk = new FormText("User Helpdesk URL","The url that users should use to access your help portal.",Schema::APP_USER_HELPDESK_URL, AppConfig::getUserHelpdeskURL());
+    ->setPlaceholder("Enter the public FQDN that users use to access this applicaiton.");
+$webHelpDesk = new FormText("user Helpdesk URL", "The url that users should use to access your help portal.", "webHelpdeskURL", AppDatabase::getUserHelpdeskURL());
 $webHelpDesk->large()
-        ->setPlaceholder("https://helpdesk.company.com");
-//$adminUsernames = new FormTextArea ();
-$findGroups= new FormText("Find Groups Test", "Search for groups", "group");
-$findGroups->autoCompleteGroupName();
+    ->setPlaceholder("https://helpdesk.company.com");
+
+
+$forceHTTPS = new FormRadio("Force HTTPS", "Redirect all HTTP requests to HTTPS", "forceHTTPS");
+$forceHTTPS->addOption("False", '0', !AppDatabase::getForceHTTPS());
+$forceHTTPS->addOption("True", '1', AppDatabase::getForceHTTPS());
+$debugMode = new FormRadio("Debug Mode", "Caution: Enabling debug mode is a security risk and should only be used on development systems.", "debugMode");
+$debugMode->addOption("False", '0', !AppDatabase::getDebugMode());
+$debugMode->addOption("True", '1', AppDatabase::getDebugMode());
+$homepageMessage = new System\App\Forms\FormTextArea();
+$homepageMessage->setLabel("Homepage Message")
+    ->setSubLabel("Accepts HTML and inline style")
+    ->setName("webMOTD")
+    ->setValue(AppDatabase::getMOTD());
+
+$submitButton = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
+$submitButton->setId('floatingSaveButton')
+    ->addAJAXRequest('/api/settings/application', 'settingsOutput', $form);
+
 
 $form->addElementToNewRow($webAppName)
-        ->addElementToNewRow($webFQDN)
-        ->addElementToNewRow($webHelpDesk)
-        ->addElementToNewRow($findGroups)
-        ->addElementToNewRow($button);
+    ->addElementToNewRow($homepageMessage)
+    ->addElementToNewRow($webFQDN)
+    ->addElementToNewRow($forceHTTPS)
+    ->addElementToCurrentRow($debugMode)
+    ->addElementToNewRow($webHelpDesk)
+    ->addElementToNewRow($submitButton);
 echo $form->print();
-
 ?>
 
-<?php
 
-$function = function() {
-    if (isset($appConfig["redirectHTTP"])) {
-        if ($appConfig["redirectHTTP"]) {
-            if (strtolower(explode("=", $_SERVER['HTTPS_SERVER_ISSUER'])[1]) == strtolower($_SERVER['SERVER_NAME'])) {
-                echo "You are using a self-signed certificate.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
-            }
-        } else {
-            echo "You are not using HTTPS.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
-        }
-    } else {
-        echo "You are not using HTTPS.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
-    }
-};
-?>
 
 
 

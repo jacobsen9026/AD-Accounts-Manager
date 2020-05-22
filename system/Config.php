@@ -33,11 +33,14 @@
  */
 
 
-
 /*
  * The Language of the app. The value must be a valid folder with contents in the lang directory of the app.
  */
 define('DEFAULT_LANG', 'en');
+/*
+ * The System directory
+ */
+define('SYSTEMPATH', ROOTPATH . DIRECTORY_SEPARATOR . "system");
 /*
  * The Application directory
  */
@@ -53,15 +56,20 @@ define('CONFIGPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATO
 /*
  * The Database fie path under the application directory
  */
-define('DBPATH', APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "config.db");
+define('APPCONFIGDBPATH', APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "config.db");
+/*
+ * The Database fie path under the application directory
+ */
+define('APPAUDITDBPATH', APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "audit.db");
 /*
  * The Class name with namespace to launch
  */
-define('APPCLASS', "system\app\App");
+define('APPCLASS', "System\App\App");
+//define('APPCLASS', "App\Lib\TestApp");
 /*
  * Toggle for core debug mode. Has no effect on app debug, but does allow App output directly.
  */
-define('DEBUG_MODE', TRUE);
+define('DEBUG_MODE', true);
 
 $this->include('system/schema.php');
 

@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 cjacobsen.
+ * Copyright 2020 cjacobsen.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,18 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of CoreException
  *
  * @author cjacobsen
  */
-class CoreException extends \Exception {
+class CoreException extends \Exception
+{
+
+    const APP_MISSING = 1;
+    const APP_MISSING_RUN = 2;
 
     protected $message = 'Unknown exception';   // exception message
     private $string;                          // __toString cache
@@ -43,23 +47,34 @@ class CoreException extends \Exception {
 
     //
     // Redefine the exception so message isn't optional
-    public function __construct($message, $code = 0, Exception $previous = null) {
+    public function __construct($message, $code = 0, $previous = null)
+    {
         // some code
         // make sure everything is assigned properly
         parent::__construct($message, $code, $previous);
         $that = $this;
-        set_error_handler(function() use ($that) {
-            $that->handleError();
+        set_error_handler(function () use ($that) {
+            $that->handleError($that->code, $that->message, $that->file, $that->line);
         });
     }
 
-    public function handleError($errno, $errstr, $errfile, $errline) {
+    /**
+     *
+     * @param type $errno
+     * @param type $errstr
+     * @param type $errfile
+     * @param type $errline
+     *
+     * @return boolean
+     */
+    public function handleError($errno, $errstr, $errfile, $errline)
+    {
         if (!(error_reporting() & $errno)) {
             // This error code is not included in error_reporting, so let it fall
             // through to the standard PHP error handler
             return false;
         }
-
+        $message = '';
         switch ($errno) {
             case E_USER_ERROR:
                 $message .= "<b>My ERROR</b> [$errno] $errstr<br />\n";
@@ -80,17 +95,19 @@ class CoreException extends \Exception {
                 $message .= "Unknown error type: [$errno] $errstr<br />\n";
                 break;
         }
-        CoreLogger::get()->error($message);
+        SystemLogger::get()->error($message);
         /* Don't execute PHP internal error handler */
         return true;
     }
 
     // custom string representation of object
-    public function __toString() {
+    public function __toString()
+    {
         return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
     }
 
-    public function customFunction() {
+    public function customFunction()
+    {
         echo "A custom function for this type of exception\n";
     }
 

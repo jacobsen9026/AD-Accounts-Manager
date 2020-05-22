@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 cjacobsen.
+ * Copyright 2020 cjacobsen.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\district;
+namespace App\Models\District;
 
 /**
  * Description of Grade
@@ -32,7 +32,7 @@ namespace app\models\district;
  * @author cjacobsen
  */
 use app\database\Schema;
-use app\models\Query;
+use App\Models\Query;
 
 class Grade {
 
@@ -72,7 +72,7 @@ class Grade {
     }
 
     public static function createGrade($schoolID, $post) {
-        \system\app\AppLogger::get()->debug("Creating new grade for school: " . $schoolID);
+        \System\App\AppLogger::get()->debug("Creating new grade for school: " . $schoolID);
 
         $post = \system\Post::getAll();
         var_dump($post);
@@ -84,7 +84,7 @@ class Grade {
     }
 
     public static function deleteGrade($gradeID) {
-        \system\app\AppLogger::get()->debug("Delete grade id: " . $gradeID);
+        \System\App\AppLogger::get()->debug("Delete grade id: " . $gradeID);
         return \system\Database::get()->query('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::GRADE_ID[Schema::COLUMN] . '=' . $gradeID);
     }
 

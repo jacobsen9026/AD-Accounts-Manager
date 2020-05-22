@@ -24,47 +24,45 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace System\App;
 
 /**
  * Description of Session
  *
  * @author cjacobsen
  */
-use app\models\user\User;
 
-abstract class Session {
+use App\Models\User\User;
+use App\Models\Database\AuthDatabase;
+
+abstract class Session
+{
     //put your code here
 
     /** @var User|null */
     const TIMEOUT = 'timeout';
+    const USER = 'user';
 
-    /**
-     *
-     * @return Session
-     */
-    public static function get() {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
-    public static function getUser() {
-        if (isset($_SESSION['user']) and $_SESSION['user'] != '') {
+    public static function getUser()
+    {
+        if (isset($_SESSION[self::USER]) and $_SESSION[self::USER] != '') {
             if (Session::getTimeoutStatus()) {
-                //session_destroy();
                 return new User();
             } else {
-                return unserialize($_SESSION['user']);
+                return unserialize($_SESSION[self::USER]);
             }
         }
         return new User();
     }
 
-    public static function setUser($user) {
-        var_dump($user);
-        if ($_SESSION['user'] = serialize($user)) {
+    public static function getID()
+    {
+        return session_id();
+    }
+
+    public static function setUser($user)
+    {
+        if ($_SESSION[self::USER] = serialize($user)) {
             return true;
         }
         return false;
@@ -73,18 +71,25 @@ abstract class Session {
     /**
      * Update the user timeout with the value set in the application settings
      */
-    public static function updateTimeout() {
+    public static function updateTimeout()
+    {
 
-        $nextTimeout = \app\models\Auth::getSessionTimeout() + time();
-        //$nextTimeout = 1;
-        $_SESSION['timeout'] = $nextTimeout;
+        $nextTimeout = AuthDatabase::getSessionTimeout() + time();
+        $_SESSION[self::TIMEOUT] = $nextTimeout;
     }
 
-    public static function getTimeoutStatus() {
-        if (time() > $_SESSION['timeout']) {
+    public static function getTimeoutStatus()
+    {
+        if (time() > $_SESSION[self::TIMEOUT]) {
             return true;
         }
         return false;
+    }
+
+    public static function end()
+    {
+        session_unset();
+        Cookie::delete("PHPSESSID");
     }
 
 }

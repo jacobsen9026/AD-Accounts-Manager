@@ -24,31 +24,35 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace System\App;
 
 /**
  * Description of AppLogger
  *
  * @author cjacobsen
  */
-use system\common\CommonLogger;
 
-class AppLogger extends CommonLogger {
+use System\Common\CommonLogger;
+
+class AppLogger extends CommonLogger
+{
 
     /** @var AppLogger|null */
     public static $instance;
 
-    function __construct() {
+    function __construct()
+    {
         parent::__construct();
         self::$instance = $this;
-        ;
+        $this->setName('app');
     }
 
     /**
      *
      * @return AppLogger
      */
-    public static function get() {
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }

@@ -42,3 +42,6 @@ app/lib/gam/token.json
 app.zip
 app/config/activedirectory/ad.crt
 app/config/activedirectory/ad.pem
+*.key
+app/database/seeds/0-1-0 - Copy.sql
+app/database/config - Copy (2).db

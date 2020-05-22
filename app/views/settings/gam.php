@@ -24,34 +24,33 @@
  */
 
 use app\database\Schema;
-use app\models\AppConfig;
-use app\models\Email;
-use system\app\forms\Form;
+use App\Models\Database\AppDatabase;
+use App\Models\Database\EmailDatabase;
+use System\App\Forms\Form;
 
-$this->email = Email::get();
+$this->email = EmailDatabase::get();
 //var_dump($this->email);
-$clientSecretExists = \app\api\GAM::get()->clientSecretExists();
-$google = \app\api\GAM::get();
+$clientSecretExists = \App\Api\GAM::get()->clientSecretExists();
+$google = \App\Api\GAM::get();
 //var_dump($google);
 if (!$clientSecretExists) {
 
 
-
     $jsonInstructions = 'If you do not have a json you will need to make/download it from the '
-            . '<a href="https://console.developers.google.com/apis/dashboard">Google Developers Console</a>'
-            . '<br/>You can create a new project or add an Oauth credential to an existing one.';
+        . '<a href="https://console.developers.google.com/apis/dashboard">Google Developers Console</a>'
+        . '<br/>You can create a new project or add an Oauth credential to an existing one.';
     $form = new Form('/settings/application', 'gam');
     $form->buildFileInput("client_secret",
-                    'Upload a client_secret.json',
-                    'Choose your client_secret.json',
-                    'application/JSON')
-            ->addToRow()
-            ->addToForm($jsonInstructions)
-            //->buildCustomButton('Check OAuth Validity', 'primary', 'api/gam/test')
-            //->addOnClickListenerFunction($onClick)
-            // ->addToNewRow()
-            ->buildUpdateButton()
-            ->addToNewRow();
+        'Upload a client_secret.json',
+        'Choose your client_secret.json',
+        'application/JSON')
+        ->addToRow()
+        ->addToForm($jsonInstructions)
+        //->buildCustomButton('Check OAuth Validity', 'primary', 'api/gam/test')
+        //->addOnClickListenerFunction($onClick)
+        // ->addToNewRow()
+        ->buildUpdateButton()
+        ->addToNewRow();
     echo $form->getFormHTML();
 }
 ?>
@@ -70,4 +69,4 @@ if (!$clientSecretExists) {
     foreach ($google->getScopes() as $scope) {
         echo $scope . "<br>";
     }
- endif ?>
+endif ?>

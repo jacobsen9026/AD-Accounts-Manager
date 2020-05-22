@@ -24,21 +24,30 @@
  * THE SOFTWARE.
  */
 
-namespace system\common;
+namespace System\Common;
 
 /**
  * Description of CoreLayout
  *
  * @author cjacobsen
  */
-use system\app\App;
-use system\Parser;
-use app\models\user\User;
-use app\controllers\Menu;
 
-class CommonLayout extends Parser {
+use System\App\App;
+use System\Parser;
+use App\Models\User\User;
+use App\Controllers\Menu;
+use System\App\AppLogger;
+
+class CommonLayout extends Parser
+{
 
     const DEFAULT_LAYOUT_NAME = 'default';
+
+    /**
+     *
+     * @var AppLogger
+     */
+    protected $logger;
 
     /** @var string|null The view parser */
     public $layoutName;
@@ -50,11 +59,16 @@ class CommonLayout extends Parser {
     public $user;
 
     /** @var string|null The view parser */
-    private $appOutput;
+    private $layoutOutput;
 
-//put your code here
-    function __construct($app) {
+    /**
+     *
+     * @param App $app
+     */
+    function __construct($app)
+    {
         $this->app = $app;
+        $this->logger = $app->logger;
         $this->user = $app->user;
         if (isset($app->controller) and $app->controller != null) {
             if (isset($app->controller->layout)) {
@@ -65,38 +79,46 @@ class CommonLayout extends Parser {
         } else {
             $this->layoutName = $this::DEFAULT_LAYOUT_NAME;
         }
-//$this->app->debug($app->outputBody);
     }
 
-    public function apply() {
-        //var_dump($this->app->request->type);
-        if ($this->app->request->type == 'http') {
-            $this->appOutput = $this->getHeader();
-        }
-        $this->appOutput .= $this->app->outputBody;
+    public function apply()
+    {
 
-        if ($this->app->request->type == 'http') {
-            $this->appOutput .= $this->getNavigation();
-            $this->appOutput .= $this->getFooter();
-        }
+        $this->logger->info($this->app->request->type);
 
-        //var_dump($this->appOutput);
-        return $this->appOutput;
+        $this->layoutOutput = $this->getHeader();
+        $this->layoutOutput .= $this->getNavigation();
+
+        $this->layoutOutput .= $this->app->appOutput->getBody();
+
+        $this->layoutOutput .= $this->getFooter();
+
+
+        // var_dump($this->layoutOutput);
+
+
+        return $this->layoutOutput;
     }
 
-    public function getHeader() {
+    public function getHeader()
+    {
         $this->app->logger->debug('getting header');
         return $this->view('layouts/' . $this->layoutName . '_header');
     }
 
-    public function getFooter() {
+    public function getFooter()
+    {
         return $this->view('layouts/' . $this->layoutName . '_footer');
     }
 
-    public function getNavigation() {
+    public function getNavigation()
+    {
         // var_dump($this->user);
         $menu = new Menu($this->user);
-        return $menu->getMenu();
+        if ($this->user->authenticated) {
+
+            return $menu->getMenu($this->layoutName);
+        }
     }
 
 }

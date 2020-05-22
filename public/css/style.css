@@ -386,7 +386,7 @@ iframe {
     min-width:350px;
 }
 
-#debugConsoleMessageContainer, #debugConfigMessageContainer, #debugConfigMessageContainer, #debugIncludeMessageContainer{
+.configMessageContainer{
     display:inline;
     font-family:'Roboto',sans-serif;
 /*     margin-top:4em; */

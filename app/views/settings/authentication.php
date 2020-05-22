@@ -24,146 +24,45 @@
  * THE SOFTWARE.
  */
 
-use app\database\Schema;
-use app\models\AppConfig;
-use app\models\Auth;
-use system\app\forms\Form;
-use app\auth\LDAP;
+use App\Models\Database\AuthDatabase;
+use System\App\Forms\Form;
+use App\Auth\ADAuth;
+use System\App\Forms\FormFloatingButton;
+use System\App\Forms\FormText;
+use App\Api\Ad\ADConnection;
 
-$this->auth = Auth::get();
-//var_dump($this->auth);
-//var_dump($this->auth[Schema::AUTH_LDAP_ENABLED[Schema::COLUMN]]);
+$auth = new AuthDatabase();
 
-$server = $this->auth[Schema::AUTH_LDAP_SERVER[Schema::COLUMN]];
-$username = $this->auth[Schema::AUTH_LDAP_USERNAME[Schema::COLUMN]];
-$password = $this->auth[Schema::AUTH_LDAP_PASSWORD[Schema::COLUMN]];
-if (!empty($server)) {
-    $adTestResult = LDAP::testConnection($server, $username, $password);
+$server = $auth->getLDAPServer();
+$username = $auth->getLDAPUsername();
+$password = $auth->getLDAPPassword();
+if (!empty($server) and $auth->getLDAPEnabled()) {
+    $adTestResult = ADAuth::testConnection($server, $username, $password);
 }
-//var_dump($adTestResult);
-$form = new Form(null, 'authentication');
-
-$form->buildTextInput('Session Timeout',
-                Schema::AUTH_SESSION_TIMEOUT,
-                Auth::getSessionTimeout(),
-                'Read only user for authentication',
-                'samAuthUser')
-        ->small()
-        ->addToNewRow()
-        ->buildPasswordInput('Admin Password',
-                Schema::APP_ADMIN_PASSWORD,
-                AppConfig::getAdminPassword(),
-                'Set a new admin password')
-        ->addToRow();
 
 
-$form->addSeperator();
+$form = new Form('/settings/authentication', "authentication");
+$sessionTimeout = new FormText("Session Timeout", "The length of time a session can remain idle in seconds", "sessionTimeout", $auth->getSessionTimeout());
+$adminPassword = new FormText("Admin Password", "Set a new admin password", "adminPassword", $auth->getAdminPassword());
+$adminPassword->isPassword();
+$ldapEnabled = new System\App\Forms\FormRadio("AD Logon Enabled", "Allow logon with Active Directory accounts", "ldapEnabled");
 
-$form->buildBinaryInput('LDAP Enabled',
-                Schema::AUTH_LDAP_ENABLED,
-                Auth::getLDAPEnabled(),
-                'Allow authentication by LDAP')
-        ->center()
-        ->addToNewRow();
-if (Auth::getLDAPEnabled()) {
-    $form->buildStatusCheck('LDAP Connection Status',
-                    $adTestResult)
-            ->addToRow();
+
+$ldapConnected = false;
+if (ADConnection::isConnected()) {
+    $ldapConnected = true;
 }
-$form->buildBinaryInput('Use SSL with LDAP',
-                Schema::AUTH_LDAP_USE_SSL,
-                $this->auth[Schema::AUTH_LDAP_USE_SSL[Schema::COLUMN]],
-                'Required for password reset.')
-        ->addToRow()
-        ->buildTextInput('LDAP Server',
-                Schema::AUTH_LDAP_SERVER,
-                $this->auth[Schema::AUTH_LDAP_SERVER[Schema::COLUMN]],
-                'Can also be the domain name in most environments.',
-                'ldap.constoso.com / ldap / contoso.com')
-        ->addToNewRow()
-        ->buildTextInput('LDAP FQDN',
-                Schema::AUTH_LDAP_FQDN,
-                $this->auth[Schema::AUTH_LDAP_FQDN[Schema::COLUMN]],
-                'This will be appended to usenames on log on.',
-                'contoso.com')
-        ->addToRow()
-        ->buildTextInput('LDAP Server Port',
-                Schema::AUTH_LDAP_PORT,
-                $this->auth[Schema::AUTH_LDAP_PORT[Schema::COLUMN]],
-                '',
-                '389')
-        ->addToRow()
-        ->buildTextInput('LDAP Username',
-                Schema::AUTH_LDAP_USERNAME,
-                $this->auth[Schema::AUTH_LDAP_USERNAME[Schema::COLUMN]],
-                'User for binding (leave blank for annonymous)',
-                '')
-        ->addToNewRow()
-        ->buildPasswordInput('LDAP Password',
-                Schema::AUTH_LDAP_PASSWORD,
-                $this->auth[Schema::AUTH_LDAP_PASSWORD[Schema::COLUMN]],
-                'Bind user\'s password')
-        ->addToRow()
-        ->buildTextInput('LDAP Basic User Permission Group',
-                Schema::AUTH_BASIC_AD_GROUP,
-                $this->auth[Schema::AUTH_BASIC_AD_GROUP[Schema::COLUMN]],
-                'Enter group name',
-                'SAM Basic Users')
-        ->addToNewRow()
-        ->buildTextInput('LDAP Power User Permission Group',
-                Schema::AUTH_POWER_AD_GROUP,
-                $this->auth[Schema::AUTH_POWER_AD_GROUP[Schema::COLUMN]],
-                'Enter group name',
-                'SAM Power Users')
-        ->addToRow()
-        ->buildTextInput('LDAP Admin User Permission Group',
-                Schema::AUTH_ADMIN_AD_GROUP,
-                $this->auth[Schema::AUTH_ADMIN_AD_GROUP[Schema::COLUMN]],
-                'Enter group name',
-                'SAM Admin Users')
-        ->addToNewRow()
-        ->buildTextInput('LDAP Tech User Permission Group',
-                Schema::AUTH_TECH_AD_GROUP,
-                $this->auth[Schema::AUTH_TECH_AD_GROUP[Schema::COLUMN]],
-                'Enter group name',
-                'SAM Tech Users')
-        ->addToRow()
-        /*
-        ->addSeperator()
-        ->buildBinaryInput('OAuth Enabled',
-                Schema::AUTH_OAUTH_ENABLED,
-                $this->auth[Schema::AUTH_OAUTH_ENABLED[Schema::COLUMN]],
-                'Allow authentication by OAuth2')
-        ->disable()
-        ->addToNewRow()
-        ->buildTextInput('Google Apps Basic User Permission Group',
-                Schema::AUTH_BASIC_GA_GROUP,
-                $this->auth[Schema::AUTH_BASIC_GA_GROUP[Schema::COLUMN]],
-                'Enter group name',
-                'SAM Basic Users')
-        ->addToNewRow()
-        ->buildTextInput('Google Apps Power User Permission Group',
-                Schema::AUTH_POWER_GA_GROUP,
-                $this->auth[Schema::AUTH_POWER_GA_GROUP[Schema::COLUMN]],
-                'Enter group name',
-                'SAM Power Users')
-        ->addToRow()
-        ->buildTextInput('Google Apps Admin User Permission Group',
-                Schema::AUTH_ADMIN_GA_GROUP,
-                $this->auth[Schema::AUTH_ADMIN_GA_GROUP[Schema::COLUMN]],
-                'Enter group name',
-                'SAM Admin Users')
-        ->addToNewRow()
-        ->buildTextInput('Google Apps Tech User Permission Group',
-                Schema::AUTH_TECH_GA_GROUP,
-                $this->auth[Schema::AUTH_TECH_GA_GROUP[Schema::COLUMN]],
-                'Enter group name',
-                'SAM Tech Users')
-        ->addToRow()
-         * 
-         */
-        ->buildUpdateButton()
-        ->addToNewRow();
-echo $form->getFormHTML();
+$ldapEnabled->addOption("False", 0, !$auth->getLDAPEnabled(), $ldapConnected)
+    ->addOption("True", 1, $auth->getLDAPEnabled(), $ldapConnected);
+
+$button = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
+$button->setId('floatingSaveButton')
+    ->addAJAXRequest('/api/settings/authentication', 'settingsOutput', $form);
+
+
+$form->addElementToNewRow($sessionTimeout)
+    ->addElementToCurrentRow($adminPassword)
+    ->addElementToNewRow($ldapEnabled)
+    ->addElementToNewRow($button);
+echo $form->print();
 ?>
-

@@ -22,18 +22,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+use System\App\Forms\Form;
+use App\Controllers\Api\App;
+use App\Models\View\Javascript;
+
+//$form = new Form();
+$showApplicationSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_APP_SETTINGS]);
+$showAuthenticationSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_AUTH_SETTINGS]);
+$showEmailSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_EMAIL_SETTINGS]);
+$showNotificationSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_NOTIF_SETTINGS]);
+if (!isset($this->tab) or $this->tab == null) {
+    $this->tab = "application";
+}
+switch ($this->tab) {
+    case 'application':
+        $goto = '#nav-app-tab';
+
+
+        break;
+    case 'authentication':
+        $goto = '#nav-auth-tab';
+
+
+        break;
+    case 'email':
+        $goto = '#nav-email-tab';
+
+        break;
+    case 'notification':
+        $goto = '#nav-notification-tab';
+        break;
+    default:
+        $goto = '#nav-app-tab';
+        break;
+}
 ?>
 <script>
     //Highlight changed items on all forms
     $(document).ready(function () {
 
+        $('<?= $goto ?>').click();
         $('input').keyup(function () {
             $(this).addClass('text-danger border-danger');
 
         });
 
         $('select').change(function () {
-            console.log("wpsdafdsa");
+
             $(this).addClass('border-danger text-danger');
 
         });
@@ -45,15 +81,16 @@
 </h4>
 <nav>
     <div class="nav nav-tabs nav-fill nav-justified" id="nav-tab" role="tablist">
-        <a class="nav-item nav-link active" id="nav-app-tab" data-toggle="tab" href="#nav-app" role="tab" aria-controls="nav-app" aria-selected="true">Application</a>
-        <a class="nav-item nav-link" id="nav-auth-tab" data-toggle="tab" href="#nav-auth" role="tab" aria-controls="nav-auth" aria-selected="false">Authentication</a>
-        <a class="nav-item nav-link" id="nav-email-tab" data-toggle="tab" href="#nav-email" role="tab" aria-controls="nav-email" aria-selected="false">Email</a>
-        <a class="nav-item nav-link" id="nav-notification-tab" data-toggle="tab" href="#nav-notification" role="tab" aria-controls="nav-notification" aria-selected="false">Notification</a>
+        <a class="nav-item nav-link active" id="nav-app-tab" data-toggle="tab" href="#nav-app" role="tab"
+           aria-controls="nav-app" aria-selected="true" onclick='<?= $showApplicationSettingsCommand ?>'>Application</a>
+        <a class="nav-item nav-link" id="nav-auth-tab" data-toggle="tab" href="#nav-auth" role="tab"
+           aria-controls="nav-auth" aria-selected="false" onclick='<?= $showAuthenticationSettingsCommand ?>'>Authentication</a>
+        <a class="nav-item nav-link" id="nav-email-tab" data-toggle="tab" href="#nav-email" role="tab"
+           aria-controls="nav-email" aria-selected="false" onclick='<?= $showEmailSettingsCommand ?>'>Email</a>
+        <a class="nav-item nav-link" id="nav-notification-tab" data-toggle="tab" href="#nav-notification" role="tab"
+           aria-controls="nav-notification" aria-selected="false" onclick='<?= $showNotificationSettingsCommand ?>'>Notification</a>
     </div>
 </nav>
-<div class="tab-content pt-5" id="nav-tabContent">
-    <div class="tab-pane fade show active" id="nav-app" role="tabpanel" aria-labelledby="nav-home-tab"><?php echo $this->view('settings/application'); ?></div>
-    <div class="tab-pane fade" id="nav-auth" role="tabpanel" aria-labelledby="nav-auth-tab"><?php echo $this->view('settings/authentication'); ?></div>
-    <div class="tab-pane fade" id="nav-email" role="tabpanel" aria-labelledby="nav-email-tab"><?php echo $this->view('settings/email'); ?></div>
-    <div class="tab-pane fade" id="nav-notification" role="tabpanel" aria-labelledby="nav-notification-tab"><?php echo $this->view('settings/notification'); ?></div>
-</div>
+<div class="row"></div>
+<div class="col pt-4" id="settingsOutput"></div>
+

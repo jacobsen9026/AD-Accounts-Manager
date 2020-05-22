@@ -24,14 +24,15 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\auth;
+namespace System\App\Auth;
 
 /**
  * Description of CorePrivilege
  *
  * @author cjacobsen
  */
-class CorePrivilege {
+class CorePrivilege
+{
 
     //put your code here
     const UNAUTHENTICATED = 0;

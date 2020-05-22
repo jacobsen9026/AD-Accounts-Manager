@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace System\App;
 
 /**
  * Description of App
@@ -34,43 +34,38 @@ namespace system\app;
  * This is the main Application class. It manages all steps of app execution. The application flow is as follows.
  * AppLogger->Config->Routing->Controlling->Layout->Output back to core
  *
- * No application specific data/functions should be present in this class. That should be utilized in classes within the App namespace.
+ * No application specific data/functions should be present in this class. That should be utilized in classes within
+ * the App namespace.
  */
-use system\common\CommonApp;
-use system\app\AppErrorHandler;
-use system\Request;
-use system\SystemLogger;
-use system\Factory;
-use app\config\Router;
-use app\config\MasterConfig;
-use app\models\user\User;
-use app\models\user\Privilege;
-use system\app\auth\PermissionHandler;
 
-class App extends CommonApp {
+use System\App\Route;
+use System\App\AppErrorHandler;
+use System\Common\CommonLogger;
+use System\App\ControllerFactory;
+use System\Request;
+use System\App\Router;
+use App\Models\User\User;
+use App\Models\Database\AppDatabase;
+use System\AppOutput;
+use System\App\Interfaces\AppInterface;
+use System\Common\CommonApp;
+use System\App\WindowsLogger;
+
+;
+
+class App extends CommonApp implements AppInterface
+{
 
     use RequestRedirection;
+    use \System\Traits\Parser;
 
-    /** @var MasterConfig|null The system logger */
+    /** @var MasterConfig|null The system logger
+     * @deprecated since version number
+     */
     public $config;
-
-    /** @var Request|null The system logger */
-    public $request;
-
-    /** @var Session|null The system logger */
-    public $session;
-
-    /** @var Router|null The system logger */
-    public $router;
 
     /** @var SystemLogger|null The system logger */
     private $coreLogger;
-
-    /** @var Controller|null The system logger */
-    public $controller;
-
-    /** @var string|null The system logger */
-    public $debugLog;
 
     /** @var AppLogger|null The system logger */
     public $logger;
@@ -78,7 +73,7 @@ class App extends CommonApp {
     /** @var string|null The system logger */
     public $output;
 
-    /** @var Array|null The system logger */
+    /** @var Route|null The system logger */
     public $route;
 
     /** @var string|null The system logger */
@@ -87,11 +82,40 @@ class App extends CommonApp {
     /** @var Layout|null The system logger */
     public $layout;
 
-    /** @var User|null The system logger */
+    /** @var AppOutput The application output */
+    public $appOutput;
+
+    /** @var LDAPLogger */
+    public $ldapLogger;
+
+    /** @var WindowsLogger */
+    public $windowsLogger;
+
+    /** @var UserLogger */
+    public $userLogger;
+
+    /**
+     *
+     * @var Controller
+     */
+    public $controller;
+
+    /** @var User|null The web user object */
     public $user;
+
+    /**
+     *
+     * @var App
+     */
     public static $instance;
 
-    function __construct(\system\Request $req, \system\SystemLogger $cLogger) {
+    /**
+     *
+     * @param Request $req
+     * @param SystemLogger $cLogger
+     */
+    function __construct(Request $req, CommonLogger $cLogger)
+    {
 
         //session_destroy();
         //$this->user = "this";
@@ -102,29 +126,46 @@ class App extends CommonApp {
          */
         new AppErrorHandler();
         $this->coreLogger = $cLogger;
+
+
+        $this->request = $req;
         /*
          * Set up the appLogger
          */
         $this->logger = new AppLogger;
         $this->coreLogger->info("The app logger has been created");
+
+        /*
+         * Set up the ad API LDAP Logger
+         */
+        $this->ldapLogger = new LDAPLogger();
+        $this->logger->info("LDAP logger started");
+        /*
+         * Set up the ad API LDAP Logger
+         */
+        $this->windowsLogger = new WindowsLogger();
+        $this->logger->info("Windows logger started");
+
+        /*
+         * Set up the ad API LDAP Logger
+         */
+        $this->userLogger = new UserLogger();
+        $this->logger->info("user logger started");
+
         /*
          * Load the request into the app
          */
         $this->loadConfig();
-        $this->request = $req;
-        /*
-         * Define the Grade Codes
-         * @DEPRECATED
-         * Use Grade Definitions Table in database
-         */
-        define('GRADE_CODES', array('PK3', 'PK4', 'K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'));
+        $this->appOutput = new AppOutput($this);
     }
 
     /**
      * Get the current App instance
+     *
      * @return App
      */
-    public static function get() {
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -134,7 +175,8 @@ class App extends CommonApp {
     /**
      * Load the application configuration
      */
-    public function loadConfig() {
+    public function loadConfig()
+    {
         //$this->config = new MasterConfig();
         $this->coreLogger->info("The app config has been loaded");
         define('GAMPATH', CONFIGPATH . DIRECTORY_SEPARATOR . "google");
@@ -146,55 +188,69 @@ class App extends CommonApp {
         $this->setErrorMode();
     }
 
-    public function loadUser() {
+    /**
+     * Run the application
+     *
+     * @return AppOutput
+     */
+    public function run(): AppOutput
+    {
 
-        $this->user = Session::getUser();
-        $cookieData = Cookie::get(User::USER . '_' . $this->user->username);
-        //var_dump($cookieData);
-        if ($cookieData != false) {
-            $this->logger->info("Loading user from cookie");
-            $this->user = unserialize($cookieData);
-        } else {
-            $this->logger->warning("Cookie not found");
+        $this->logger->info("Creating Session");
+        User::load($this);
+        try {
+            $this->route();
+            /**
+             * Is the current user allowed to access this uri?
+             * If not, this function changes the route to 403 error page
+             *
+             * @deprecated
+             *
+             *
+             * $this->checkPermission();
+             */
+            /**
+             * This is where the magic happens. The control function calls the class and method
+             * determined by the routing.
+             */
+            $this->control();
+        } catch (\Exception $ex) {
+            /**
+             * If a minor error happens during routing or permission checks we get kick up to here.
+             * We log the error to the app logger so we can debug later.
+             */
+            $this->logger->error($ex);
+            $this->appOutput->setBody($ex->getMessage());
         }
-        $this->logger->info($this->user);
+        /**
+         * Now we need to apply the customized header/footer/styling for the
+         * current user and the current page.
+         */
+        $this->layout();
+        /**
+         * Lets destroy the app logger if the app isn't in debug mode.
+         * We don't want to risk sending any private information.
+         */
+        if ($this->inDebugMode()) {
+            /**
+             * We need to inject the logs into the appOutput so the core can handle it.
+             */
+            $this->appOutput->addLogger($this->logger)
+                ->addLogger($this->ldapLogger)
+                ->addLogger($this->windowsLogger)
+                ->addLogger($this->userLogger);
+        }
+
+        return $this->appOutput;
     }
 
     /**
-     * Run the application
-     * @return AppOutput
+     * Processes the incoming request by utilizing
+     * the Router to determine a controller, method,
+     * and data to be executed this run.
      */
-    public function run() {
-
-        $this->logger->debug("Creating Session");
-
-        $this->loadUser();
-        try {
-            $this->route();
-            $this->checkPermission();
-
-            try {
-                $this->control();
-            } catch (Exception $ex) {
-                $this->logger->error($ex);
-            }
-        } catch (\Exception $ex) {
-            $this->logger->error($ex);
-        }
-
-        $this->layout();
-        //var_dump($this->output);
-        if (!$this->inDebugMode()) {
-            $this->logger = null;
-        }
-        $appOutput = new AppOutput();
-        $appOutput->setBody($this->output);
-        $appOutput->setLogs($this->logger);
-        return $appOutput;
-//return array($this->output, $this->logger);
-    }
-
-    public function route() {
+    public function route()
+    {
         /*
          * HTTPS redirect check
          * If database setting for https redirect is set,
@@ -221,40 +277,31 @@ class App extends CommonApp {
         $this->logger->debug($this->route);
     }
 
-    private function checkPermission() {
-        $uri = $this->route;
-        try {
-            $required = PermissionHandler::handleRequest($uri, $this->user);
-            if ($this->user->privilege < $required) {
-                $hasPermission = false;
-                $this->route = array('Home', 'show403');
-            } else {
-                $hasPermission = true;
-            }
-        } catch (Exception $ex) {
-
-        }
-        $this->logger->debug('Has Permission: ' . $hasPermission);
-    }
-
     /**
      * Checks if request should be redirected to HTTPS based on app settings
+     *
+     *
+     * @todo Should use Request Object
      */
-    private function handleHttpsRedirect() {
-        $this->logger->debug("Protocol: " . $this->request->protocol);
-        $this->logger->debug("Hostname: " . ($_SERVER["SERVER_NAME"]));
-        if ($this->request->protocol == "http" && \app\models\AppConfig::getForceHTTPS()) {
+    private function handleHttpsRedirect()
+    {
+        $this->logger->info("Protocol: " . $this->request->getProtocol());
+        $this->logger->info("Hostname: " . ($_SERVER["SERVER_NAME"]));
+        if ($this->request->getProtocol() == "http" && AppDatabase::getForceHTTPS()) {
             $this->redirect("https://" . $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"]);
         }
     }
 
     /**
      * Checks if request should be redirected to a different FQDN based on app settings
+     *
+     * @todo Should use Request Object
      */
-    private function handleHostnameRedirect() {
-        $this->logger->debug("Hostname: " . ($_SERVER["SERVER_NAME"]));
-        if (strtolower($_SERVER["SERVER_NAME"]) != strtolower(\app\models\AppConfig::getWebsiteFQDN()) and \app\models\AppConfig::getWebsiteFQDN() != "") {
-            $this->redirect($this->request->protocol . "://" . strtolower(\app\models\AppConfig::getWebsiteFQDN()) . $_SERVER["REQUEST_URI"]);
+    private function handleHostnameRedirect()
+    {
+        $this->logger->info("Hostname: " . ($_SERVER["SERVER_NAME"]));
+        if (strtolower($_SERVER["SERVER_NAME"]) != strtolower(AppDatabase::getWebsiteFQDN()) and AppDatabase::getWebsiteFQDN() != "") {
+            $this->redirect($this->request->getProtocol() . "://" . strtolower(AppDatabase::getWebsiteFQDN()) . $_SERVER["REQUEST_URI"]);
         }
     }
 
@@ -263,64 +310,68 @@ class App extends CommonApp {
      *
      * @return null
      */
-    public function control() {
+    protected function control()
+    {
         /*
          * Check that the user is logged on and if not, set the route to the login screen
          */
-        //var_dump($_SESSION);
-        if (!isset($this->user) or $this->user == null or $this->user->privilege <= Privilege::UNAUTHENTICATED) {
+        if (!isset($this->user) or $this->user == null or $this->user->authenticated === false) {
             $this->logger->warning('user not logged in');
             // Change route to login if not logged in.
-            //$this->route = array('Login', 'index');
-            $login = new \app\controllers\Login($this);
-            $this->outputBody .= $login->index();
+            //$this->route;
+            $this->controller = new \App\Controllers\Login($this);
+            $this->appOutput->appendBody($this->controller->index());
             return;
         } else {
             /*
-             * User is logged in so update the timeout to reflect new activity
+             * user is logged in so update the timeout to reflect new activity
              */
             Session::updateTimeout();
         }
         /*
          * Build the controller based on the previously computed settings
          */
-        if ($this->controller = Factory::buildController($this)) {
+        if ($this->controller = ControllerFactory::buildController($this)) {
 
-            $this->logger->debug($this->route[0]);
-            $method = $this->route[1];
+            $this->logger->info($this->route);
+            $method = $this->route->getMethod();
             if (method_exists($this->controller, $method)) {
                 // Check if there is a parameter set from the request
 
-                $this->logger->debug($this->route[1]);
-                if (empty($this->route[2])) {
-                    $this->outputBody .= $this->controller->$method();
+                $this->logger->info($method);
+                $data = $this->route->getData();
+                if (empty($data)) {
+                    $this->appOutput->appendBody($this->controller->$method());
                 } else {
-                    $this->logger->debug($this->route[2]);
-                    $this->outputBody .= $this->controller->$method($this->route[2]);
+                    $this->logger->info($data);
+                    $this->appOutput->appendBody($this->controller->$method($data));
                 }
-                //var_dump($this->outputBody);
             } else {
-                $this->logger->warning("No method found by name of " . $this->route[1] . ' in the controller ' . $this->route[0]);
+                $this->logger->warning("No method found by name of " . $method . ' in the controller ' . $this->route->getControler());
 
-                $this->outputBody .= $this->view('errors/405');
+                $this->appOutput->appendBody($this->view('errors/405'));
             }
             /*
              * If no controller could be created, it's because the class doesnt exists or is setup wrong
              * Show 404
              */
         } else {
-            $this->logger->warning("No Controller found by name of " . $this->router->controller);
-            $this->outputBody .= $this->view('errors/404');
+            $this->logger->warning("No Controller found by name of " . $this->route->getControler());
+            $this->appOutput->appendBody($this->view('errors/404'));
         }
     }
 
     /**
      * Applies theming, menus, modals, and styling
+     *  to the controller output as a final preparation for the core
      */
-    public function layout() {
+    public function layout()
+    {
         $this->layout = new Layout($this);
-        $this->output = $this->layout->apply();
-        //var_dump($this->output);
+        //var_dump($this->request);
+        if ($this->request->getType() == 'http') {
+            $this->appOutput->setBody($this->layout->apply());
+        }
     }
 
     /*
@@ -328,7 +379,8 @@ class App extends CommonApp {
      * in the webConfig.
      */
 
-    private function setErrorMode() {
+    private function setErrorMode()
+    {
         if ($this->inDebugMode()) {
             enablePHPErrors();
         } else {
@@ -338,11 +390,13 @@ class App extends CommonApp {
 
     /**
      * Check if the application is currently in debug mode
+     *
      * @return boolean
      */
-    public function inDebugMode() {
+    public function inDebugMode()
+    {
 
-        if (\app\models\AppConfig::getDebugMode()) {
+        if (AppDatabase::getDebugMode()) {
             return true;
         } else {
             return false;
@@ -351,9 +405,11 @@ class App extends CommonApp {
 
     /**
      * Get the application database ID
+     *
      * @return int Always returns 1
      */
-    public static function getID() {
+    public static function getID()
+    {
         /**
          * We always return one because there is currently only one application running on this core.
          * It allows flexabillity if that ever changes.

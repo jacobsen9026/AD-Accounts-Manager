@@ -8,58 +8,169 @@ and open the template in the editor.
     Author     : cjacobsen
 */
 :root {
-  --light:#cbd3da;
+    --light: #cbd3da;
 }
-.dark-shadow{
+
+.dark-shadow {
     box-shadow: 0.1em 0.2em 1em #000;
 }
 
 
 .mt-8 {
-  margin-top: 6rem!important;
+    margin-top: 6rem !important;
 }
+
 .mt-md-8 {
-    }
+}
 
-@media all and (min-width:768px) {
+@media all and (min-width: 768px) {
     .mt-md-8 {
-      margin-top: 6rem!important;
+        margin-top: 6rem !important;
     }
 }
-.district-nav{
-   
-    top:3.5rem!important;
-    }
-.district-settings-nav{
-    z-index:1019;
-    top:7rem!important;
-    }
 
-    .minw-1{
-        width:1em;
-    }
-        .minw-5{
-        width:80%;
-    }
+.district-nav {
 
-.log-nav{
-    top:2.5rem!important;
+    top: 3.5rem !important;
+}
+
+.district-settings-nav {
+    z-index: 1019;
+    top: 7rem !important;
+}
+
+.minw-1 {
+    width: 1em;
+}
+
+.minw-5 {
+    width: 80%;
+}
+
+.log-nav {
+    top: 2.5rem !important;
+}
+
+.shadow-lg-hover {
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, .175) !important;
+    -webkit-transition: box-shadow 1.0s;
+    -webkit-transition-delay: 0.1s;
+    -o-transition: box-shadow 1.0s;
+    -o-transition-delay: 0.1s;
+    -moz-transition: box-shadow 1.0s;
+    -moz-transition-delay: 0.1s;
+    transition: box-shadow 1.0s;
+    transition-delay: 0s;
+}
+
+.shadow-lg-hover:hover {
+    box-shadow: 0 0rem 10rem rgba(0, 0, 0, .375) !important;
 }
 
 
-.bg-primary,.btn-primary,.text-primary, .active{
- #background-color: #a32430!important;
-}
-
-.ui-autocomplete{
+.ui-autocomplete {
     overflow-y: auto;
     overflow-x: hidden;
     max-height: 50%;
 }
-.hover-zoom{
-    
+
+.hover-zoom {
+
     transition: 0.25s;
 }
-.hover-zoom:hover{
-    width:100% !important;
+
+.hover-zoom:hover {
+    width: 100% !important;
 }
+
+.form-element {
+    margin-bottom: 2em !important;
+}
+
+@media only screen and (min-width: 576px) {
+    .form-element {
+        margin-bottom: 2em !important;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .form-element {
+
+        margin-bottom: 1em !important;
+    }
+}
+
+@media only screen and (min-width: 992px) {
+    .form-element {
+
+        margin-bottom: 1em !important;
+    }
+}
+
+.userPortrait {
+    border-top-left-radius: 30% 45%;
+    border-top-right-radius: 30% 45%;
+    border-bottom-left-radius: 30% 45%;
+    border-bottom-right-radius: 30% 45%;
+}
+
+.highlight {
+    transition: background-color 0.5s;
+    -webkit-transition: background-color 0.5s;
+    -moz-transition: background-color 0.5s;
+
+    border-radius: 0.75em;
+}
+
+.highlight:hover, .highlight.selected {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+
+.grow {
+    transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+}
+
+.grow:hover {
+    transform: scale(1.25, 1.25);
+}
+
+.badge.small {
+    font-size: 0.5em;
+}
+
+.permissionCountBadge {
+    margin-top: 0.20em;
+    margin-bottom: auto;
+    display: inline-block;
+    position: absolute;
+    color: white;
+    right: 0.15em;
+    height: 1.5em;
+    width: 1.5em;
+    min-width: 1.5em;
+    font-size: 0.75em;
+    font-weight: bold;
+    border-radius: 50%;
+    background-color: #34ce57;
+    border-color: #28a745;
+    border-width: 0.2em;
+    border-style: solid;
+    padding: 0.2em;
+    vertical-align: middle;
+    padding-left: 1em;
+}
+
+.permissionCountBadge.hidden {
+    display: none;
+}
+
+.permissionCountBadge p {
+    left: -0.75em;
+    top: 0px;
+    position: relative;
+    margin-top: -4.75;
+}
+

@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of Parser
@@ -32,19 +32,20 @@ namespace system;
  *
  * @author cjacobsen
  */
-use system\SystemLogger;
-use system\app\App;
-use system\app\AppLogger;
-use app\models\user\Privilege;
 
-class Parser {
+use System\App\AppLogger;
+
+class Parser
+{
 
     /**
      *
      * @param string $view
+     *
      * @return boolean
      */
-    public function view($view) {
+    public function view(string $view, array $params = null)
+    {
 
         //var_dump($view);
         $view = $this->sanitize($view);
@@ -54,14 +55,19 @@ class Parser {
         if (file_exists($path)) {
 
             ob_start();
-
-            if (include $path) {
+            try {
                 AppLogger::get()->info("Rendering view file: " . $path);
-                return ob_get_clean();
-            } else {
+                if (include $path) {
 
-                AppLogger::get()->warning("Could not include view file: " . $path);
+                    return ob_get_clean();
+                } else {
+
+                    AppLogger::get()->warning("Could not include view file: " . $path);
+                }
+            } catch (Exception $ex) {
+                var_dump($ex);
             }
+
             ob_get_clean();
         } else {
 
@@ -73,9 +79,11 @@ class Parser {
     /**
      *
      * @param stirng $modal
+     *
      * @return boolean
      */
-    public function modal($modal) {
+    public function modal(string $modal)
+    {
 
         //var_dump($modal);
         $modal = $this->sanitize($modal);
@@ -104,9 +112,11 @@ class Parser {
     /**
      *
      * @param string $file
+     *
      * @return boolean
      */
-    public function include($file) {
+    public function include($file)
+    {
 
         $file = $this->sanitize($file);
 
@@ -127,25 +137,34 @@ class Parser {
     /**
      *
      * @param string $path
+     *
      * @return string
      */
-    public function sanitize($path) {
+    public function sanitize($path)
+    {
         if ($path[0] == "/" or $path[0] == "\\") {
             $path = substr($path, 1);
         }
-        $path = str_replace(array('/', '\\'), strval(DIRECTORY_SEPARATOR), $path);
+        $path = str_replace(['/', '\\'], strval(DIRECTORY_SEPARATOR), $path);
         return $path;
     }
 
     /**
      *
      * @param array $object
+     *
      * @return string
      */
-    public function varDump($object) {
+    public function varDump($object)
+    {
         ob_start();
         var_dump($object);
         return ob_get_clean();
+    }
+
+    public static function get()
+    {
+        return new self();
     }
 
 }

@@ -1,4 +1,3 @@
-
 <script>lockSession();</script>
 <?php
 // remove all session variables

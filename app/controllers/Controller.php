@@ -24,28 +24,33 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers;
+namespace App\Controllers;
 
 /**
  * Description of Default
  *
  * @author cjacobsen
  */
-use system\common\CommonController;
-use app\models\user\User;
+
+use System\Common\CommonController;
+use App\Models\User\User;
 use app\config\MasterConfig;
+use System\App\AppLogger;
 use app\database\Schema;
-use app\models\district\Grade;
-use app\models\district\School;
-use app\models\district\District;
-use app\models\district\Team;
-use app\models\district\Department;
-use system\app\App;
-use app\models\Query;
+use App\Models\District\Grade;
+use App\Models\Database\SchoolDatabase;
+use App\Models\Database\DistrictDatabase;
+use App\Models\District\Team;
+use App\Models\District\Department;
+use System\App\App;
+use App\Models\Query;
+use App\Models\District\District;
 
-class Controller extends CommonController {
+class Controller extends CommonController
+{
 
-    use \system\app\RequestRedirection;
+    use \System\App\RequestRedirection;
+
     //put your code here
 
     /** @var User|null The system logger */
@@ -54,27 +59,36 @@ class Controller extends CommonController {
     /** @var MasterConfig Description */
     public $config;
 
-    /** @var string The controller string from the requested URL */
-    public $controller;
+    /** @var District The district */
+    public $district;
+
+    /**
+     *
+     * @var AppLogger
+     */
+    protected $logger;
 
     /* @var $app App */
 
-    function __construct(App $app) {
+    function __construct(App $app)
+    {
 
         parent::__construct($app);
         //$this->config = MasterConfig::get();
-        $this->controller = $app->request->controller;
+        //$this->controller = $app->route->getControler();
         $this->user = $app->user;
+        $this->logger = $app->logger;
         $this->layout = "default";
     }
 
-    public function preProcessSchoolID($schoolID) {
+    public function preProcessSchoolID($schoolID)
+    {
         $query = new Query(Schema::GRADEDEFINITION);
 
         $this->gradeDefinitions = $query->run();
         //var_dump($this->gradeDefinitions);
         $this->schoolID = $schoolID;
-        $this->school = School::getSchool($this->schoolID);
+        $this->school = SchoolDatabase::getSchool($this->schoolID);
 
         $this->schoolName = $this->school[Schema::SCHOOL_NAME[Schema::COLUMN]];
         $grades = Grade::getGrades($this->schoolID);
@@ -90,14 +104,16 @@ class Controller extends CommonController {
         $this->preProcessDistrictID($this->districtID);
     }
 
-    public function preProcessTeamID($teamID) {
+    public function preProcessTeamID($teamID)
+    {
         $this->teamID = $teamID;
         $this->team = Team::getTeam($this->teamID);
         $this->teamName = $this->team[Schema::TEAM_NAME[Schema::COLUMN]];
         $this->preProcessGradeID($this->team[Schema::TEAM_GRADE_ID[Schema::COLUMN]]);
     }
 
-    public function preProcessGradeID($gradeID) {
+    public function preProcessGradeID($gradeID)
+    {
 
         $this->gradeID = $gradeID;
         $this->grade = Grade::getGrade($this->gradeID);
@@ -107,7 +123,8 @@ class Controller extends CommonController {
         $this->preProcessSchoolID($schoolID);
     }
 
-    public function preProcessDepartmentID($departmentID) {
+    public function preProcessDepartmentID($departmentID)
+    {
 
         $this->departmentID = $departmentID;
         $this->department = Department::getDepartment($this->departmentID);
@@ -117,9 +134,19 @@ class Controller extends CommonController {
         $this->preProcessSchoolID($schoolID);
     }
 
-    public function preProcessDistrictID($districtID) {
+    public function preProcessDistrictID($districtID)
+    {
         $this->districtID = $districtID;
-        $this->district = District::getDistrict($this->districtID);
+        $this->district = DistrictDatabase::getDistrict($this->districtID);
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function unauthorized()
+    {
+        return $this->view('errors/403');
     }
 
 }

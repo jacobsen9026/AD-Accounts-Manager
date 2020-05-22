@@ -1,10 +1,10 @@
-
 <?php
 $log = $this->appLogger->getLogs();
 
 if (!function_exists('printLog')) {
 
-    function printAppLog($array) {
+    function printAppLog($array)
+    {
         $logIndex = 0;
         foreach ($array as $entry) {
 
@@ -36,7 +36,8 @@ if (!function_exists('printLog')) {
                 </div>
                 <div class='col-11 text-break'>
                     <?php //htmlspecialchars($message);     ?>
-                    <p data-toggle="collapse" data-target="#appLogBacktrace<?= $logIndex ?>" aria-expanded="false" aria-controls="appLogBacktrace<?= $logIndex ?>">
+                    <p data-toggle="collapse" data-target="#appLogBacktrace<?= $logIndex ?>" aria-expanded="false"
+                       aria-controls="appLogBacktrace<?= $logIndex ?>">
                         <?= $message; ?>
                     </p>
                     <div class="collapse" id="appLogBacktrace<?= $logIndex ?>">
@@ -56,21 +57,24 @@ if (!function_exists('printLog')) {
 ?>
 
 
-
-
-
-
-
 <div class="scroll">
     <?php
     if (isset($log) and sizeof($log) > 0) {
         ?>
 
-        <div class ="sticky-top log-nav row p-0 text-center mx-auto mb-0">
-            <button class = 'col rounded-0 btn btn-info' data-toggle = "collapse" data-target = '.infoAppLogEntry' data-text-alt="Show Info">Hide Info</button>
-            <button class = 'col rounded-0 btn btn-success' data-toggle = "collapse" data-target = '.debugAppLogEntry' data-text-alt="Show Debug">Hide Debug</button>
-            <button class = 'col rounded-0 btn btn-warning' data-toggle = "collapse" data-target = '.warningAppLogEntry' data-text-alt="Show Warning">Hide Warning</button>
-            <button class = 'col rounded-0 btn btn-danger' data-toggle = "collapse" data-target = '.errorAppLogEntry' data-text-alt="Show Error">Hide Error</button>
+        <div class="sticky-top log-nav row p-0 text-center mx-auto mb-0">
+            <button class='col rounded-0 btn btn-info' data-toggle="collapse" data-target='.infoAppLogEntry'
+                    data-text-alt="Show Info">Hide Info
+            </button>
+            <button class='col rounded-0 btn btn-success' data-toggle="collapse" data-target='.debugAppLogEntry'
+                    data-text-alt="Show Debug">Hide Debug
+            </button>
+            <button class='col rounded-0 btn btn-warning' data-toggle="collapse" data-target='.warningAppLogEntry'
+                    data-text-alt="Show Warning">Hide Warning
+            </button>
+            <button class='col rounded-0 btn btn-danger' data-toggle="collapse" data-target='.errorAppLogEntry'
+                    data-text-alt="Show Error">Hide Error
+            </button>
         </div>
         <div id='systemLog'>
             <?php

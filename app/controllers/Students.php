@@ -1,61 +1,78 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The MIT License
+ *
+ * Copyright 2020 cjacobsen.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
-namespace app\controllers;
+namespace App\Controllers;
 
 /**
  * Description of Students
  *
  * @author cjacobsen
  */
-use app\models\district\Student;
-use app\api\AD;
-use system\Post;
+use App\Models\District\Student;
+use App\Api\AD;
+use System\Post;
+use System\Get;
 
 class Students extends Controller {
 
 //put your code here
+
+    public function index() {
+        return $this->search();
+    }
+
     public function homeDrivePost() {
-        $post = \system\Post::getAll();
-        if (isset($post)and key_exists("action", $post) and $post["action"] == "query") {
+        if (Post::get("action") == "query") {
             return $this->view('students/show/homeDrive');
         }
     }
 
-    public function accountStatus($username=null) {
-        if ($username==null){
-        return $this->view('students/accountStatus');
-    }
-    else{
-        //var_export($username);
-        
+    public function search($username = null) {
+        if ($username == null) {
+            return $this->view('students/search');
+        } else {
+//var_export($username);
+
             return $this->showAccountStatus($username);
         }
-        
     }
 
-    public function accountStatusPost() {
-        $post = Post::getAll();
-        if (isset($post)and key_exists("username", $post)) {
-            return $this->showAccountStatus($post["username"]);
-            
-        }
+    public function searchGet() {
+        return $this->search(Get::get('username'));
     }
-    public function accountStatusGet() {
-        $get = Get::getAll();
-        if (isset($get)and key_exists("username", $get)) {
-            return $this->showAccountStatus($post["username"]);
-        }
+
+    public function searchPost($username = null) {
+//return $username;
+        return $this->search($username);
     }
-    private function showAccountStatus($username){
-        
-                        $this->student = $this->getStudent($username);
-                        return $this->view('students/show/student');
+
+    private function showAccountStatus($username) {
+
+        $this->student = $this->getStudent($username);
+        return $this->view('students/show/student');
     }
 
     private function getStudent($username) {
@@ -63,47 +80,47 @@ class Students extends Controller {
 
         $student = new Student($username);
 
-        //var_dump($student);
+//var_dump($student);
         return $student;
-
     }
+
     public function accountStatusChange() {
 
         return $this->view('students/accountStatusChange');
     }
 
-    public function accountStatusChangePost() {
-        $post = Post::getAll();
-        if (isset($post)and key_exists("username", $post)) {
-            $username = $post["username"];
-            $student = $this->getStudent($username);
-            if (key_exists("action", $post)) {
-                switch ($post["action"]) {
-                    case "unlock":
-                        $student->unlock();
-                        return $this->showAccountStatus($username);
-                        
-                    
-                    case "enable":
-                        $student->enable();
-                       // var_dump($username);
-                        return $this->showAccountStatus($username);
-                    case "disable";
-                         $student->disable();
-                       // var_dump($username);
-                        return $this->showAccountStatus($username);
-                        break;
+    public function editPost() {
+//if (Post::csrfValid()) {
 
-                    default:
-                        break;
-                }
+        $username = Post::get("username");
+        $student = $this->getStudent($username);
+        $action = Post::get("action");
+        if ($action != false) {
+            switch ($action) {
+                case "unlock":
+                    $student->unlock();
+                    return $this->showAccountStatus($username);
+
+
+                case "enable":
+                    $student->enable();
+                    return $this->showAccountStatus($username);
+                case "disable";
+                    $student->disable();
+                    return $this->showAccountStatus($username);
+                    break;
+
+                default:
+                    break;
             }
-
-            //$this->student = $this->getStudent($post["username"]);
         }
-        //return $this->view('students/show/student');
     }
 
+    /**
+     *
+     * @return type
+     * @deprecated since version number
+     */
     public function resetPassword() {
         return $this->view('students/resetPassword');
     }
@@ -114,6 +131,11 @@ class Students extends Controller {
         return AD::get()->setPassword($username, $password);
     }
 
+    /**
+     *
+     * @return type
+     * @deprecated since version number
+     */
     public function createAccounts() {
         return $this->view('students/createAccounts');
     }

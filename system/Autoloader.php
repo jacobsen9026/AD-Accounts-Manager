@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of Autoloader
@@ -40,9 +40,11 @@ namespace system;
  *
  * @author cjacobsen
  */
-abstract class Autoloader {
+abstract class Autoloader
+{
 
-    public static function run(Core $core) {
+    public static function run()
+    {
         /*
          * Load Composers Autoloader to include Composer packages
          */

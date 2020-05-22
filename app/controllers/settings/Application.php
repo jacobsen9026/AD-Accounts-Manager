@@ -24,56 +24,51 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers\settings;
+namespace App\Controllers\Settings;
 
 /**
  * Description of Home
  *
  * @author cjacobsen
  */
-use system\Post;
-use app\models\district\District;
-use app\database\Schema;
-use app\controllers\Controller;
 
-class Application extends Controller {
+use App\Controllers\Controller;
+use System\App\AppLogger;
+use App\Models\Database\AppDatabase;
+use App\Models\Database\AuthDatabase;
+use App\Models\Database\EmailDatabase;
+
+class Application extends Controller
+{
 
     public $postables;
 
-    function __construct($app) {
+    function __construct($app)
+    {
         parent::__construct($app);
     }
 
     //put your code here
-    public function index() {
+    public function index()
+    {
 
 
         return $this->view('settings/index');
     }
 
-    public function indexGet() {
+    public function indexGet()
+    {
         $this->index();
     }
 
-    public function indexPost() {
-        \system\app\AppLogger::get()->debug('Edit Post');
+    public function indexPost()
+    {
+        AppLogger::get()->info('Editing Settings');
         $post = \system\Post::getAll();
-        var_dump($post);
-        \app\models\DatabasePost::setPost(Schema::APP, \system\app\App::getID(), $post);
-        //var_dump($post);
+        AppDatabase::saveSettings($post);
+
+        EmailDatabase::saveSettings($post);
         $this->redirect('/settings/application');
-    }
-
-    /**
-     * Write the database schema as constants to a file for the IDE
-     */
-    public function updateSchema() {
-
-        $constantsTable = \system\Database::get()->getConstants();
-        //var_dump($constantsTable);
-        if (!empty($constantsTable)) {
-            \system\File::refreshSchemaDefinitions($constantsTable);
-        }
     }
 
 }

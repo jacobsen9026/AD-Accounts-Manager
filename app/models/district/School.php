@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 cjacobsen.
+ * Copyright 2020 cjacobsen.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,68 +24,65 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\district;
+namespace App\Models\District;
 
 /**
  * Description of School
  *
  * @author cjacobsen
  */
-use app\database\Schema;
-use app\models\Query;
+use App\Models\Model;
 
-class School {
+class School extends Model {
 
-    const TABLE_NAME = 'School';
+    private $name;
+    private $abbr;
+    private $ou;
+    private $id;
 
-    //put your code here
-    public $name;
+    public function importFromAD($LDAPResponse) {
+        \System\App\AppLogger::get()->debug($LDAPResponse);
 
-    /** @var Grade The grades contained within this school */
-    public $grades;
+        if (key_exists("displayname", $LDAPResponse))
+            $this->setName($LDAPResponse["displayname"][0]);
+        $this->setAbbr($LDAPResponse["ou"][0]);
+        $this->setOU($LDAPResponse["distinguishedname"][0]);
+    }
 
-    function __construct($name) {
+    public function getId() {
+        return $this->id;
+    }
+
+    public function setId($id) {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function getName() {
+        return $this->name;
+    }
+
+    public function getAbbr() {
+        return $this->abbr;
+    }
+
+    public function getOu() {
+        return $this->ou;
+    }
+
+    public function setName($name) {
         $this->name = $name;
+        return $this;
     }
 
-    public static function createSchool($name, $districtID) {
-        \system\app\AppLogger::get()->debug("Creating new district named: " . $name);
-        return \system\Database::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (' . Schema::SCHOOL_NAME[Schema::COLUMN] . ',' . Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN] . ') VALUES ("' . $name . '", "' . $districtID . '")');
+    public function setAbbr($abbr) {
+        $this->abbr = $abbr;
+        return $this;
     }
 
-    public static function getDistrictID($schoolID) {
-        $query = new Query(self::TABLE_NAME, Query::SELECT, Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN]);
-        $query->where(Schema::SCHOOL_ID, $schoolID);
-        return $query->run();
-    }
-
-    public static function getSchool($schoolID) {
-        $query = new Query(self::TABLE_NAME);
-        $query->where(Schema::SCHOOL_ID, $schoolID);
-
-        return $query->run()[0];
-        \system\app\AppLogger::get()->debug("Get school by id: " . $schoolID);
-        return(\system\Database::get()->query('SELECT * From ' . self::TABLE_NAME . ' Where ' . Schema::SCHOOL_ID[Schema::COLUMN] . '=' . $schoolID)[0]);
-    }
-
-    public static function deleteSchool($schoolID) {
-        \system\app\AppLogger::get()->debug("Delete school id: " . $schoolID);
-        return \system\Database::get()->query('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::SCHOOL_ID[Schema::COLUMN] . '=' . $schoolID);
-    }
-
-    public static function getADSettings($schoolID, $type) {
-        $query = new Query(Schema::ACTIVEDIRECTORY);
-        $query->where(Schema::ACTIVEDIRECTORY_SCHOOL_ID, $schoolID)
-                ->where(Schema::ACTIVEDIRECTORY_TYPE, $type);
-
-        return $query->run()[0];
-    }
-
-    public static function getGASettings($schoolID, $type) {
-        $query = new Query(Schema::GOOGLEAPPS);
-        $query->where(Schema::GOOGLEAPPS_SCHOOL_ID, $schoolID)
-                ->where(Schema::GOOGLEAPPS_TYPE, $type);
-        return $query->run()[0];
+    public function setOu($ou) {
+        $this->ou = $ou;
+        return $this;
     }
 
 }

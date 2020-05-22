@@ -24,25 +24,29 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\auth;
+namespace System\App\Auth;
 
 /**
  * Description of Local
  *
  * @author cjacobsen
  */
-use system\app\auth\AuthException;
-use app\config\MasterConfig;
-use app\models\user\User;
 
-abstract class Local {
+use System\App\Auth\AuthException;
+use app\config\MasterConfig;
+use App\Models\User\User;
+use App\Models\Database\AuthDatabase;
+
+abstract class Local
+{
 //put your code here
 
     /** @var MasterConfig|null The app logger */
-    public static function authenticate($username = null, $password = null) {
+    public static function authenticate($username = null, $password = null)
+    {
         $password = hash('sha256', $password);
         //$config = \app\config\MasterConfig::get();
-        $adminPassword = \app\models\AppConfig::getAdminPassword();
+        $adminPassword = AuthDatabase::getAdminPassword();
 
         if (strtolower($username) == "admin") {
             if (isset($adminPassword) and $adminPassword != '') {

@@ -24,17 +24,19 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\auth;
+namespace System\App\Auth;
 
 /**
  * Description of Oauth2
  *
  * @author cjacobsen
  */
-abstract class Oauth2 {
+abstract class Oauth2
+{
 
     //put your code here
-    public function authenticate($username, $password, $domain, $ouathPrivateKey) {
+    public function authenticate($username, $password, $domain, $ouathPrivateKey)
+    {
 
     }
 

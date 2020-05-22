@@ -7,7 +7,7 @@
 
 <?php
 
-use system\app\forms\Form;
+use System\App\Forms\Form;
 
 $form = new Form();
 $form->buildTextInput('Username', 'username')

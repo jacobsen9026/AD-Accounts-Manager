@@ -14,7 +14,8 @@
                     and any other school specific data will be erased.
                     Please ensure you have a recent backup of the application configuration.
                 </p>
-                <a class="btn btn-danger" aria-label="Delete" href="/settings/schools/delete/<?php echo $this->school[\app\database\Schema::SCHOOL_ID[\app\database\Schema::COLUMN]]; ?>">
+                <a class="btn btn-danger" aria-label="Delete"
+                   href="/settings/schools/delete/<?php echo $this->school[\app\database\Schema::SCHOOL_ID[\app\database\Schema::COLUMN]]; ?>">
                     Delete
                 </a>
             </div>

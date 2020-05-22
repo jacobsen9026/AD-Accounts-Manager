@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 cjacobsen.
+ * Copyright 2020 cjacobsen.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,24 +24,43 @@
  * THE SOFTWARE.
  */
 
-namespace system\common;
+namespace System\Common;
 
 /**
- * Description of App
+ * Description of CommonApp
  *
  * @author cjacobsen
  */
-use system\Parser;
+class CommonApp
+{
 
-class CommonApp extends Parser {
-//put your code here
+    /** @var Request|null The system logger */
+    public $request;
 
+    /** @var Session|null The system logger */
+    public $session;
 
+    /** @var Router|null The system logger */
+    public $router;
 
     /**
      *
-     * @param Core $core
+     * @var App
      */
-}
+    public static $instance;
 
-?>
+    /**
+     * Get the current App instance
+     *
+     * @return App
+     */
+    public static function get()
+    {
+        $class = \System\Core::getAppClass();
+        if ($class::$instance === null) {
+            $class::$instance = new $class();
+        }
+        return $class::$instance;
+    }
+
+}
