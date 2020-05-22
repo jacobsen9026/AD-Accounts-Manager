@@ -31,10 +31,12 @@ namespace System\App\Auth;
  *
  * @author cjacobsen
  */
-abstract class Oauth2 {
+abstract class Oauth2
+{
 
     //put your code here
-    public function authenticate($username, $password, $domain, $ouathPrivateKey) {
+    public function authenticate($username, $password, $domain, $ouathPrivateKey)
+    {
 
     }
 

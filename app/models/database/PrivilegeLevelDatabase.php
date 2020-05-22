@@ -31,18 +31,22 @@ namespace App\Models\Database;
  *
  * @author cjacobsen
  */
+
 use App\Models\User\PrivilegeLevel;
 
-abstract class PrivilegeLevelDatabase extends DatabaseModel {
+abstract class PrivilegeLevelDatabase extends DatabaseModel
+{
 
     const TABLE_NAME = 'PrivilegeLevel';
 
     /**
      *
      * @param string $groupName
+     *
      * @return PrivilegeLevel
      */
-    public static function getPrivilegeLevel(string $groupName) {
+    public static function getPrivilegeLevel(string $groupName)
+    {
         $query = new Query(self::TABLE_NAME, Query::SELECT);
         $query->where('AD_Group_Name', $groupName);
         $result = $query->run()[0];
@@ -55,7 +59,8 @@ abstract class PrivilegeLevelDatabase extends DatabaseModel {
      *
      * @param type $id
      */
-    public static function removePrivilegeLevel($id) {
+    public static function removePrivilegeLevel($id)
+    {
         $query = new Query(self::TABLE_NAME, Query::DELETE);
         $query->where('ID', $id);
         return $query->run();
@@ -65,10 +70,11 @@ abstract class PrivilegeLevelDatabase extends DatabaseModel {
      *
      * @param PrivilegeLevel $level
      */
-    public static function addPrivilegeLevel(string $adGroupName, int $districtID) {
+    public static function addPrivilegeLevel(string $adGroupName, int $districtID)
+    {
         $query = new Query(self::TABLE_NAME, Query::INSERT);
         $query->insert('AD_Group_Name', $adGroupName)
-                ->set('District_ID', $districtID);
+            ->set('District_ID', $districtID);
 
         return $query->run();
     }
@@ -80,11 +86,12 @@ abstract class PrivilegeLevelDatabase extends DatabaseModel {
      * @param string $adGroupName
      * @param bool $superAdmin
      */
-    public static function updatePrivilegeLevel(int $id, string $adGroupName, $superAdmin) {
+    public static function updatePrivilegeLevel(int $id, string $adGroupName, $superAdmin)
+    {
         $query = new Query(self::TABLE_NAME, Query::UPDATE);
         $query->where('ID', $id)
-                ->set('AD_Group_Name', $adGroupName)
-                ->set('Super_Admin', $superAdmin);
+            ->set('AD_Group_Name', $adGroupName)
+            ->set('Super_Admin', $superAdmin);
         return $query->run();
     }
 
@@ -92,15 +99,16 @@ abstract class PrivilegeLevelDatabase extends DatabaseModel {
      *
      * @return array <PrivilegeLevel>
      */
-    public static function get($id = null) {
+    public static function get($id = null)
+    {
         if ($id == null) {
             $dbTable = parent::get();
             if ($dbTable != false) {
                 foreach ($dbTable as $row) {
                     $level = new PrivilegeLevel();
                     $level->setId($row['ID'])
-                            ->setAdGroup($row['AD_Group_Name'])
-                            ->setSuperAdmin($row['Super_Admin']);
+                        ->setAdGroup($row['AD_Group_Name'])
+                        ->setSuperAdmin($row['Super_Admin']);
                     $levels[] = $level;
                 }
                 return $levels;

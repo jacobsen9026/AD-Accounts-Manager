@@ -31,6 +31,7 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
-class FormCheckbox extends FormElement {
+class FormCheckbox extends FormElement
+{
     //put your code here
 }

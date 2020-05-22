@@ -31,11 +31,13 @@ namespace System\App\Interfaces;
  *
  * @author cjacobsen
  */
+
 use System\Request;
 use System\Common\CommonLogger;
 use System\AppOutput;
 
-interface AppInterface {
+interface AppInterface
+{
 
     public function __construct(Request $request, CommonLogger $systemLogger);
 

@@ -30,17 +30,19 @@ namespace System\App;
  *
  * @author cjacobsen
  */
-trait RequestRedirection {
+trait RequestRedirection
+{
 
     //put your code here
 
-    public function redirect($url) {
+    public function redirect($url)
+    {
         $app = \System\Core::getAppClass()::get();
         //$app = App::get();
         if ($app->request->getType() != 'ajax') {
             if ($app->inDebugMode()) {
                 $app->appOutput->appendBody("In Debug Mode<br/>Would have redirected<br/>"
-                        . "<a href='" . $url . "'>here</a>");
+                    . "<a href='" . $url . "'>here</a>");
             } else {
                 header('Location: ' . $url);
             }

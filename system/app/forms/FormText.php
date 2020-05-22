@@ -31,7 +31,8 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
-class FormText extends FormElement implements FormElementInterface {
+class FormText extends FormElement implements FormElementInterface
+{
 
     //put your code here
     private $autocomplete = false;
@@ -44,9 +45,11 @@ class FormText extends FormElement implements FormElementInterface {
     /**
      * Autocomplete for users who fall into either
      * of the defined user groups (Student/Staff) on the district setup
+     *
      * @return $this
      */
-    public function autoCompleteUsername() {
+    public function autoCompleteUsername()
+    {
         $this->autocomplete = true;
         $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteUser/', $this->getName());
         $this->setScript($script);
@@ -56,9 +59,11 @@ class FormText extends FormElement implements FormElementInterface {
     /**
      * Autocomplete for users who fall into either
      * of the defined user groups (Student/Staff) on the district setup
+     *
      * @return $this
      */
-    public function autoCompleteOU() {
+    public function autoCompleteOU()
+    {
         $this->autocomplete = true;
         $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteOU/', $this->getId());
         $this->setScript($script);
@@ -68,9 +73,11 @@ class FormText extends FormElement implements FormElementInterface {
     /**
      * Autocomplete for groups who fall into either
      * of the defined user groups (Student/Staff) on the district setup
+     *
      * @return $this
      */
-    public function autoCompleteGroupName() {
+    public function autoCompleteGroupName()
+    {
         $this->autocomplete = true;
         $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteGroup/', $this->getName());
         $this->setScript($script);
@@ -79,9 +86,11 @@ class FormText extends FormElement implements FormElementInterface {
 
     /**
      * Autocomplete for all users in domain (permissions apply)
+     *
      * @return $this
      */
-    public function autoCompleteDomainUsername() {
+    public function autoCompleteDomainUsername()
+    {
         $this->autocomplete = true;
         $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteDomainUser/', $this->getName());
         $this->setScript($script);
@@ -90,9 +99,11 @@ class FormText extends FormElement implements FormElementInterface {
 
     /**
      * Autocomplete for all groups in domain (permissions apply)
+     *
      * @return $this
      */
-    public function autoCompleteDomainGroupName() {
+    public function autoCompleteDomainGroupName()
+    {
         $this->autocomplete = true;
         $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteDomainGroup/', $this->getName());
         $this->setScript($script);
@@ -102,10 +113,12 @@ class FormText extends FormElement implements FormElementInterface {
     /**
      *
      * @param string $iconHTML
+     *
      * @return $this
      *
      */
-    public function appendIcon($iconHTML) {
+    public function appendIcon($iconHTML)
+    {
         $this->appendIcon = $iconHTML;
         return $this;
     }
@@ -114,7 +127,8 @@ class FormText extends FormElement implements FormElementInterface {
      *
      * @param type $value
      */
-    public function getElementHTML() {
+    public function getElementHTML()
+    {
         $html = '';
         $disable = '';
         if ($this->disabled) {
@@ -122,21 +136,21 @@ class FormText extends FormElement implements FormElementInterface {
         }
 
         $html .= '<div class="col"><div class="row pl-3 ui-widget">'
-                . '<div class="pr-0 w-100 row">';
+            . '<div class="pr-0 w-100 row">';
         if ($this->appendIcon != null) {
             $inputCol = 10;
-            $html .= '<span class="d-inline-block col-2 pr-0 mr-0 input-group-text h-100 text-center d-inline">' . $this->appendIcon . '</span>'
-            ;
+            $html .= '<span class="d-inline-block col-2 pr-0 mr-0 input-group-text h-100 text-center d-inline">' . $this->appendIcon . '</span>';
         }
 
-        $html .= '<div class="d-inline-block col mx-auto pr-0">'
-                . '<input type="' . $this->type . '" class="form-control text-center ui-autocomplete-input" name="' . $this->getName() . '" id="' . $this->getName() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" ' . $disable . '>'
-                . '</div></div>';
+        $html .= '<div class="d-inline-block col mx-auto px-0">'
+            . '<input type="' . $this->type . '" class="form-control text-center ui-autocomplete-input" name="' . $this->getName() . '" id="' . $this->getName() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" ' . $disable . '>'
+            . '</div></div>';
         $html .= '</div></div>';
         return $html;
     }
 
-    public function setValue($value) {
+    public function setValue($value)
+    {
         $this->value = $value;
         return $this;
     }
@@ -144,9 +158,11 @@ class FormText extends FormElement implements FormElementInterface {
     /**
      *
      * @param boolean $disable
+     *
      * @return $this
      */
-    public function disable($disable = true) {
+    public function disable($disable = true)
+    {
         $this->disabled = $disable;
         return $this;
     }
@@ -154,12 +170,14 @@ class FormText extends FormElement implements FormElementInterface {
     /**
      * Sets the input type to "password"
      */
-    public function isPassword() {
+    public function isPassword()
+    {
         $this->type = "password";
         return $this;
     }
 
-    public function setPlaceholder($placeholder) {
+    public function setPlaceholder($placeholder)
+    {
         $this->placeholder = $placeholder;
         return $this;
     }

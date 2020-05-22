@@ -31,18 +31,21 @@ namespace app\lang;
  *
  * @author cjacobsen
  */
-trait Language {
+trait Language
+{
 
     //put your code here
 
-    public static function get($name) {
+    public static function get($name)
+    {
         if (isset(Self::$strings[$name]) and Self::$strings[$name] != null) {
             return Self::$strings[$name];
         }
         return 'No language reference found for ' . $name;
     }
 
-    public static function getHelp($name) {
+    public static function getHelp($name)
+    {
         if (isset(Self::$help[$name]) and Self::$help[$name] != null) {
             return Self::$help[$name];
         }

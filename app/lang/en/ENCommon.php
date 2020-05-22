@@ -31,24 +31,26 @@ namespace app\lang\en;
  *
  * @author cjacobsen
  */
+
 use app\lang\Language;
 
-abstract class ENCommon {
+abstract class ENCommon
+{
 
     use Language;
 
     //put your code here
 
-    public static $strings = array(
+    public static $strings = [
         'Administrator Full Name' => 'Administrator',
         'Login' => 'Login',
         'Remember Username' => 'Remember Username',
         'Remember Me' => 'Remember Me',
         'Username' => 'Username',
         'Password' => 'Password'
-    );
-    public static $help = array(
-        'User Search' => 'Can also enter first or last name to search for username.'
-    );
+    ];
+    public static $help = [
+        'user Search' => 'Can also enter first or last name to search for username.'
+    ];
 
 }

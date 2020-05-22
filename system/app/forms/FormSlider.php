@@ -31,18 +31,30 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
+
 use System\App\Forms\FormRadioOption;
 
-class FormSlider extends FormRadio implements FormElementInterface {
+class FormSlider extends FormRadio implements FormElementInterface
+{
+    public function getValue()
+    {
+        $value = parent::getValue();
+        if ($value === null) {
+            $value = 0;
+        }
+        return $value;
+    }
 
-    public function getElementHTML() {
+
+    public function getElementHTML()
+    {
 
         /* @var $option FormRadioOption */
         $selectedOption = new FormRadioOption('');
         foreach ($this->getOptions() as $option) {
             $cases[] = 'case "' . $option->getValue() . '":' . "\n"
-                    . 'output = "' . $option->getLabel() . '";'
-                    . 'break;';
+                . 'output = "' . $option->getLabel() . '";'
+                . 'break;';
             if ($option->getSelected()) {
                 $selectedOption = $option;
             }
@@ -50,19 +62,20 @@ class FormSlider extends FormRadio implements FormElementInterface {
         // $this->setId($this->getId() . hash("sha256", $this->getId()));
         $outputId = $this->getId() . '_Status_Text';
         $function = 'let value = $(this).val();'
-                . 'console.log(value);'
-                . 'let output = "";'
-                . 'switch (value){';
+            . 'console.log(value);'
+            . 'let output = "";'
+            . 'switch (value){';
         foreach ($cases as $case) {
             $function .= $case;
         }
 
         $function .= '}'
-                . '$("#' . $outputId . '").html(output);';
+            . '$("#' . $outputId . '").html(output);';
         $this->setScript(\App\Models\View\Javascript::onClick($this->getId(), $function));
         $html = '<input  type="range" class="custom-range h-50" name="' . $this->getName() . '" style="max-width:50px;" min="0" max="1" id="' . $this->getId() . '" value="' . $this->getValue() . '">';
         $html .= '<div class="text-muted small" id="' . $this->getId() . '_Status_Text">' . $selectedOption->getLabel() . '</div>';
         return $html;
     }
+
 
 }

@@ -31,11 +31,14 @@ namespace App\Controllers;
  *
  * @author cjacobsen
  */
+
 use App\Api\WindowsRM;
 
-class Tech extends Controller {
+class Tech extends Controller
+{
 
-    public function workstationManage($computer = "localhost") {
+    public function workstationManage($computer = "localhost")
+    {
         //return "hi";
         $win = new WindowsRM();
         $workstationReachable = $win->testConnection($computer);

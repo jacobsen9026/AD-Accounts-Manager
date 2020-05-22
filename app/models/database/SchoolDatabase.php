@@ -31,10 +31,12 @@ namespace App\Models\Database;
  *
  * @author cjacobsen
  */
+
 use app\database\Schema;
 use App\Models\Query;
 
-class SchoolDatabase {
+class SchoolDatabase
+{
 
     const TABLE_NAME = 'School';
 
@@ -44,47 +46,54 @@ class SchoolDatabase {
     /** @var Grade The grades contained within this school */
     public $grades;
 
-    function __construct($name) {
+    function __construct($name)
+    {
         $this->name = $name;
     }
 
-    public static function createSchool($name, $abbr, $ou, $districtID) {
+    public static function createSchool($name, $abbr, $ou, $districtID)
+    {
         \System\App\AppLogger::get()->debug("Creating new district named: " . $name);
         return \system\Database::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (' . Schema::SCHOOL_NAME[Schema::COLUMN] . ',' . Schema::SCHOOL_ABBREVIATION[Schema::COLUMN] . ',' . Schema::SCHOOL_OU[Schema::COLUMN] . ',' . Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN] . ') VALUES ("' . $name . '","' . $abbr . '","' . $ou . '","' . $districtID . '")');
     }
 
-    public static function getDistrictID($schoolID) {
+    public static function getDistrictID($schoolID)
+    {
         $query = new Query(self::TABLE_NAME, Query::SELECT, Schema::SCHOOL_DISTRICT_ID[Schema::COLUMN]);
         $query->where(Schema::SCHOOL_ID, $schoolID);
         return $query->run();
     }
 
-    public static function getSchool($schoolID) {
+    public static function getSchool($schoolID)
+    {
         $query = new Query(self::TABLE_NAME);
         $query->where(Schema::SCHOOL_ID, $schoolID);
 
         return $query->run()[0];
         \System\App\AppLogger::get()->debug("Get school by id: " . $schoolID);
-        return(\system\Database::get()->query('SELECT * From ' . self::TABLE_NAME . ' Where ' . Schema::SCHOOL_ID[Schema::COLUMN] . '=' . $schoolID)[0]);
+        return (\system\Database::get()->query('SELECT * From ' . self::TABLE_NAME . ' Where ' . Schema::SCHOOL_ID[Schema::COLUMN] . '=' . $schoolID)[0]);
     }
 
-    public static function deleteSchool($schoolID) {
+    public static function deleteSchool($schoolID)
+    {
         \System\App\AppLogger::get()->debug("Delete school id: " . $schoolID);
         return \system\Database::get()->query('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . Schema::SCHOOL_ID[Schema::COLUMN] . '=' . $schoolID);
     }
 
-    public static function getADSettings($schoolID, $type) {
+    public static function getADSettings($schoolID, $type)
+    {
         $query = new Query(Schema::ACTIVEDIRECTORY);
         $query->where(Schema::ACTIVEDIRECTORY_SCHOOL_ID, $schoolID)
-                ->where(Schema::ACTIVEDIRECTORY_TYPE, $type);
+            ->where(Schema::ACTIVEDIRECTORY_TYPE, $type);
 
         return $query->run()[0];
     }
 
-    public static function getGASettings($schoolID, $type) {
+    public static function getGASettings($schoolID, $type)
+    {
         $query = new Query(Schema::GOOGLEAPPS);
         $query->where(Schema::GOOGLEAPPS_SCHOOL_ID, $schoolID)
-                ->where(Schema::GOOGLEAPPS_TYPE, $type);
+            ->where(Schema::GOOGLEAPPS_TYPE, $type);
         return $query->run()[0];
     }
 

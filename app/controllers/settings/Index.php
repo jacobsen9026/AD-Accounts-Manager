@@ -31,11 +31,14 @@ namespace App\Controllers\Settings;
  *
  * @author cjacobsen
  */
+
 use App\Controllers\Controller;
 
-class Index extends Controller {
+class Index extends Controller
+{
 
-    public function index() {
+    public function index()
+    {
         return $this->view('settings/index');
     }
 

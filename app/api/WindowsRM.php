@@ -31,10 +31,12 @@ namespace App\Api;
  *
  * @author cjacobsen
  */
+
 use System\App\AppLogger;
 use System\App\AppException;
 
-class WindowsRM {
+class WindowsRM
+{
 
     /**
      *
@@ -48,7 +50,8 @@ class WindowsRM {
      */
     public static $instance;
 
-    function __construct() {
+    function __construct()
+    {
 
         if (isset(self::$instance)) {
             return self::$instance;
@@ -62,14 +65,16 @@ class WindowsRM {
      *
      * @return WindowsRM
      */
-    public static function get() {
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }
         return self::$instance;
     }
 
-    public function testConnection($computer) {
+    public function testConnection($computer)
+    {
         $this->logger->info("Testing connection to $computer");
         try {
             if (!filter_var($computer, FILTER_VALIDATE_IP)) {
@@ -89,14 +94,16 @@ class WindowsRM {
         //return $this->portReachable($computer, 5985);
     }
 
-    public function rebootWorkstation($hostname) {
+    public function rebootWorkstation($hostname)
+    {
 
         $cmd = new WindowsCommand();
         $cmd->setCmd("shutdown /r /t 30")
-                ->setHostname($hostname);
+            ->setHostname($hostname);
     }
 
-    public function DNSLookup($hostname) {
+    public function DNSLookup($hostname)
+    {
         $record = dns_get_record($hostname);
         if (is_array($record) and key_exists(0, $record) and is_array($record[0]) and key_exists('ip', $record[0])) {
             return $record[0]['ip'];
@@ -104,7 +111,8 @@ class WindowsRM {
         throw new AppException("Could not resolve DNS name");
     }
 
-    private function portReachable($host, $port) {
+    private function portReachable($host, $port)
+    {
         $wait = 1;
         $socket = @\fsockopen($host, $port, $errCode, $errStr, $wait);
         //echo "Ping $host:$port ($key) ==> ";

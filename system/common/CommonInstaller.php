@@ -31,6 +31,7 @@ namespace System\Common;
  *
  * @author cjacobsen
  */
-class CommonInstaller {
+class CommonInstaller
+{
     //put your code here
 }

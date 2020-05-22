@@ -33,7 +33,8 @@ namespace App\Controllers\Api;
  * @author cjacobsen
  * @deprecated
  */
-class App extends APIController {
+class App extends APIController
+{
 
     const GET_APP_SETTINGS = "getApplicationSettings";
     const GET_AUTH_SETTINGS = "getAuthenticationSettings";
@@ -41,26 +42,31 @@ class App extends APIController {
     const GET_NOTIF_SETTINGS = "getNotificationSettings";
     const GET_CONFIG = "getConfiguration";
 
-    protected function getApplicationSettings() {
+    protected function getApplicationSettings()
+    {
         return $this->returnHTML($this->view('settings/application'));
     }
 
-    protected function getAuthenticationSettings() {
+    protected function getAuthenticationSettings()
+    {
         return $this->returnHTML($this->view('settings/authentication'));
     }
 
-    protected function getEmailSettings() {
+    protected function getEmailSettings()
+    {
         return $this->returnHTML($this->view('settings/email'));
     }
 
-    protected function getNotificationSettings() {
+    protected function getNotificationSettings()
+    {
         return $this->returnHTML($this->view('settings/notification'));
     }
 
-    private function printConfig() {
-        if ($this->user->privilege >= \App\Models\User\Privilege::ADMIN) {
+    private function printConfig()
+    {
+        if ($this->user->superAdmin) {
             $output = "<h1>Configuration Database</h1>";
-            foreach (\system\Database::get()->getAllTables()as $table) {
+            foreach (\system\Database::get()->getAllTables() as $table) {
                 $output .= "<h3>" . $table . "</h3>";
                 $output .= $this->html_table(\system\Database::get()->query("SELECT * FROM " . $table));
                 //ob_start();
@@ -71,15 +77,17 @@ class App extends APIController {
         return $this->returnHTML($output);
     }
 
-    public function getConfiguration() {
+    public function getConfiguration()
+    {
         return $this->printConfig();
     }
 
-    private function html_table($data = array()) {
-        $rows = array();
+    private function html_table($data = [])
+    {
+        $rows = [];
 
         foreach ($data as $row) {
-            $cells = array();
+            $cells = [];
             foreach ($row as $cell) {
                 $cells[] = "<td>{$cell}</td>";
             }

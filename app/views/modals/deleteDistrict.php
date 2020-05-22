@@ -13,7 +13,8 @@
                     and any other district specific data will be erased.
                     Please ensure you have a recent backup of the application configuration.
                 </p>
-                <a class="btn btn-danger" aria-label="Delete" href="/settings/districts/delete/<?php echo $this->district->getId(); ?>">
+                <a class="btn btn-danger" aria-label="Delete"
+                   href="/settings/districts/delete/<?php echo $this->district->getId(); ?>">
                     Delete
                 </a>
             </div>

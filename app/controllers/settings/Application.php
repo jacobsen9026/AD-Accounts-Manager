@@ -31,32 +31,38 @@ namespace App\Controllers\Settings;
  *
  * @author cjacobsen
  */
+
 use App\Controllers\Controller;
 use System\App\AppLogger;
 use App\Models\Database\AppDatabase;
 use App\Models\Database\AuthDatabase;
 use App\Models\Database\EmailDatabase;
 
-class Application extends Controller {
+class Application extends Controller
+{
 
     public $postables;
 
-    function __construct($app) {
+    function __construct($app)
+    {
         parent::__construct($app);
     }
 
     //put your code here
-    public function index() {
+    public function index()
+    {
 
 
         return $this->view('settings/index');
     }
 
-    public function indexGet() {
+    public function indexGet()
+    {
         $this->index();
     }
 
-    public function indexPost() {
+    public function indexPost()
+    {
         AppLogger::get()->info('Editing Settings');
         $post = \system\Post::getAll();
         AppDatabase::saveSettings($post);

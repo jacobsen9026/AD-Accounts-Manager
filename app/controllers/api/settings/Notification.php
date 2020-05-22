@@ -31,13 +31,16 @@ namespace App\Controllers\Api\settings;
  *
  * @author cjacobsen
  */
+
 use App\Controllers\Api\APIController;
 
-class Notification extends APIController {
+class Notification extends APIController
+{
 
     //put your code here
 
-    public function indexPost() {
+    public function indexPost()
+    {
         //$notification = new \App\Controllers\Settings\Notification($this->app);
         //$notification->indexPost();
 

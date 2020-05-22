@@ -31,40 +31,48 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
-class FormTextArea extends FormElement implements FormElementInterface {
+class FormTextArea extends FormElement implements FormElementInterface
+{
 
     private $resizable = true;
     private $placeholder;
     private $value;
 
-    public function getPlaceholder() {
+    public function getPlaceholder()
+    {
         return $this->placeholder;
     }
 
-    public function setPlaceholder($placeholder) {
+    public function setPlaceholder($placeholder)
+    {
         $this->placeholder = $placeholder;
         return $this;
     }
 
-    public function getResizable() {
+    public function getResizable()
+    {
         return $this->resizable;
     }
 
-    public function getValue() {
+    public function getValue()
+    {
         return $this->value;
     }
 
-    public function resizable($resizable = true) {
+    public function resizable($resizable = true)
+    {
         $this->resizable = $resizable;
         return $this;
     }
 
-    public function setValue($value) {
+    public function setValue($value)
+    {
         $this->value = $value;
         return $this;
     }
 
-    public function getElementHTML() {
+    public function getElementHTML()
+    {
         $output = '<div class="row">
         <div class = "col-md-4">
         <label class = "' . $this->getLabelClasses() . '" for = "' . $this->getName() . '">

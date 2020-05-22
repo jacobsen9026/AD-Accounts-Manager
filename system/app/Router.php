@@ -31,6 +31,7 @@ namespace System\App;
  *
  * @author cjacobsen
  */
+
 use System\App\App;
 use System\Post;
 use System\Get;
@@ -40,7 +41,8 @@ use System\App\Route;
  * @name CoreRouter
  *
  */
-class Router {
+class Router
+{
 
     private $logger;
 
@@ -54,7 +56,8 @@ class Router {
      */
     private $route;
 
-    public function __construct(App $app) {
+    public function __construct(App $app)
+    {
         /**
          * We want to pull in the application
          * logger so we can write to it's logs
@@ -78,7 +81,8 @@ class Router {
      *
      * @return string
      */
-    public static function getDefaultController() {
+    public static function getDefaultController()
+    {
         return "Home";
     }
 
@@ -86,7 +90,8 @@ class Router {
      *
      * @return string
      */
-    public static function getDefaultMethod() {
+    public static function getDefaultMethod()
+    {
         return "index";
     }
 
@@ -94,7 +99,8 @@ class Router {
      *
      * @return array
      */
-    public function route() {
+    public function route()
+    {
         /**
          * Route the request
          */
@@ -113,7 +119,8 @@ class Router {
     /**
      * Replaces custom routes
      */
-    private function replaceCustomRoutes() {
+    private function replaceCustomRoutes()
+    {
 //Inset custom routes over computed route
         $controller = $this->route->getControler();
         $method = $this->route->getMethod();
@@ -124,7 +131,8 @@ class Router {
         }
     }
 
-    private function includeCustomRoutes() {
+    private function includeCustomRoutes()
+    {
         require(CONFIGPATH . DIRECTORY_SEPARATOR . "Routes.php");
     }
 
@@ -132,7 +140,8 @@ class Router {
      *
      * @param Route $route
      */
-    private function setRouteFromRequest(Route $route) {
+    private function setRouteFromRequest(Route $route)
+    {
         /**
          * First we pull the uri from the request supplied when the router
          * was instantiated.
@@ -166,7 +175,8 @@ class Router {
     /**
      * Set the route to take based on the request
      */
-    private function setRoute() {
+    private function setRoute()
+    {
         /**
          *  First we build a route based on the request
          */
@@ -218,9 +228,11 @@ class Router {
     /**
      *
      * @param type $string
+     *
      * @return type
      */
-    private function preProcess($string) {
+    private function preProcess($string)
+    {
         /*
          * Break down a request like /students-cms/account-status
          * and convert it to a call to the method accountStatus
@@ -252,9 +264,11 @@ class Router {
 
     /**
      * Shifts controller, method and data, left one function, removing the controller.
+     *
      * @deprecated since version number
      * */
-    private function shiftLeft($route) {
+    private function shiftLeft($route)
+    {
         if (!is_null($this->method)) {
             $this->controller = $this->method;
             $this->method = $this->data;
@@ -267,16 +281,19 @@ class Router {
     /**
      *
      * @param type $string
+     *
      * @return type
      */
-    private function preProcessController($string) {
+    private function preProcessController($string)
+    {
 
         $this->controller = $string;
 
         return $this->controller;
     }
 
-    private function handleAPIRequests() {
+    private function handleAPIRequests()
+    {
         /**
          * We need to handle api calls going to the /api/... uri
          * All those controllers are under the same directory so

@@ -36,12 +36,12 @@ use App\Controllers\Menu\TopMenuItem;
 use App\Controllers\Menu\SubMenuItem;
 use System\App\AppLogger;
 use System\Parser;
-use App\Models\User\Privilege;
 use App\Models\User\User;
 use System\App\App;
 use App\Models\User\PermissionHandler;
 
-class Menu extends Parser {
+class Menu extends Parser
+{
 
     /**
      *
@@ -57,7 +57,8 @@ class Menu extends Parser {
     /** @var AppLogger|null The app logger */
     public $logger;
 
-    function __construct($user, $layout = 'default') {
+    function __construct($user, $layout = 'default')
+    {
 
         $this->user = $user;
         //$this->config = MasterConfig::get();
@@ -89,7 +90,8 @@ class Menu extends Parser {
         }
     }
 
-    private function buildUserMenu() {
+    private function buildUserMenu()
+    {
         /*
          * Build Student Menu
          */
@@ -99,7 +101,8 @@ class Menu extends Parser {
         return $students;
     }
 
-    private function buildGroupsMenu() {
+    private function buildGroupsMenu()
+    {
         /*
          * Build Student Menu
          */
@@ -110,7 +113,8 @@ class Menu extends Parser {
         return $groups;
     }
 
-    private function buildParentMenu() {
+    private function buildParentMenu()
+    {
         /*
          * Build Parent Menu
          */
@@ -122,7 +126,8 @@ class Menu extends Parser {
         return $parents;
     }
 
-    private function buildTechMenu() {
+    private function buildTechMenu()
+    {
         /*
          * Build Tech Menu
          */
@@ -137,10 +142,13 @@ class Menu extends Parser {
 
     /**
      * The layout name referring to the prefix of the layout file
+     *
      * @param string $layoutName
+     *
      * @return type
      */
-    public function getMenu(string $layoutName) {
+    public function getMenu(string $layoutName)
+    {
         $this->app = App::get();
 
 

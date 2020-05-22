@@ -31,19 +31,23 @@ namespace System\Models\View;
  *
  * @author cjacobsen
  */
+
 use System\Core;
 use System\File;
 use System\Common\CommonLogger;
 use System\Common\CommonLogEntry;
 
-class DebugViewer {
+class DebugViewer
+{
 
     /**
      *
      * @param array $loggers
+     *
      * @return string
      */
-    public static function printDebugTools(array $loggers) {
+    public static function printDebugTools(array $loggers)
+    {
 
 
         // return;
@@ -58,18 +62,18 @@ class DebugViewer {
 
         $logToolsOutput .= '<div class="debugToolboxContainer resizable-y bg-dark" style="display: none;">';
         $logToolsOutput .= '<div class="container-fluid mb-0 bg-secondary text-light text-center pb-2 h2 debugToolboxContainerHandle">'
-                . 'Debug Tools'
-                . '<button type = "button" class = "close" data-dismiss = "modal" onclick="' . $toogleDebugToolsOutputFunction . '">&times;
+            . 'Debug Tools'
+            . '<button type = "button" class = "close" data-dismiss = "modal" onclick="' . $toogleDebugToolsOutputFunction . '">&times;
                             </button>';
         $logToolsOutput .= '</div>'
-                . '<script>'
-                . '$(function () {$(".resizable-y").resizable({
+            . '<script>'
+            . '$(function () {$(".resizable-y").resizable({
                     maxHeight: "100vh",
                     handles:"n, s"
                 }
                 );
                 });'
-                . '</script>';
+            . '</script>';
 
         // $logToolsOutput .= '<div class="debugOutputContainer text-left  bg-dark debug-toolbar-tab">';
 
@@ -77,12 +81,8 @@ class DebugViewer {
         $logToolsOutput .= self::printLogTools($loggers);
 
 
-
-
-
-
         $resizeBoundaryFunction = '<script>'
-                . '$( window ).resize(function() {
+            . '$( window ).resize(function() {
                     position=$( ".debugToolboxContainer" ).css("top");
 
                     //console.log($( ".debugToolboxContainer" ).css("top"));
@@ -95,13 +95,14 @@ class DebugViewer {
                      $(".debugToolboxContainer").css("top",bottomBuffer);
                     }
                     });'
-                . '</script>';
+            . '</script>';
         $logToolsOutput .= $resizeBoundaryFunction;
 
         return $logToolsOutput;
     }
 
-    public static function errors_exist(array $loggers) {
+    public static function errors_exist(array $loggers)
+    {
         /* @var $logger CommonLogger */
         foreach ($loggers as $logger) {
             /*  @var $entry CommonLogEntry */
@@ -125,14 +126,15 @@ class DebugViewer {
         return false;
     }
 
-    private static function printRuntimeLogs($runtimeLoggers) {
+    private static function printRuntimeLogs($runtimeLoggers)
+    {
 
         $runtimeLogs = '<div id="loggerRuntimeLogs" class = "tab-pane container-fluid  p-0 active">
 
                          <ul id="SystemLoggingMenuList" class = "tab-list nav nav-pills bg-secondary row mx-0" role="tablist">
                          <div class="container-fluid row">';
         $first = true;
-        $loggerOutputs = array();
+        $loggerOutputs = [];
         /* @var $logger CommonLogger */
         foreach ($runtimeLoggers as $logger) {
             if ($logger == null) {
@@ -156,18 +158,17 @@ class DebugViewer {
         //. '</div>';
 
 
-
-
         return $runtimeLogs;
     }
 
-    public static function printAJAXLogs($runtimeLoggers) {
+    public static function printAJAXLogs($runtimeLoggers)
+    {
         $ajaxLog = '<div id="loggerAJAXLogs" class = "tab-pane container-fluid  p-0">
 
                          <ul id="AJAXSystemLoggingMenuList" class = "tab-list nav nav-pills bg-dark row mx-0" role="tablist">
                          <div class="container-fluid row">';
         $first = true;
-        $loggerOutputs = array();
+        $loggerOutputs = [];
         /* @var $logger CommonLogger */
         foreach ($runtimeLoggers as $logger) {
             if ($logger == null) {
@@ -188,10 +189,8 @@ class DebugViewer {
         $ajaxLog .= '</div>';
 
         $ajaxLog .= '</div>'
-                . '</div>'
-                . '</div>';
-
-
+            . '</div>'
+            . '</div>';
 
 
         return $ajaxLog;
@@ -202,15 +201,17 @@ class DebugViewer {
      * @param CommonLogger $logger
      * @param string $loggerPanelID
      * @param string $loggerTabButtonID
+     *
      * @return type
      */
-    public static function printLogButton(CommonLogger $logger, string $loggerPanelID, string $loggerTabButtonID) {
+    public static function printLogButton(CommonLogger $logger, string $loggerPanelID, string $loggerTabButtonID)
+    {
         $tabButton = new \System\App\Forms\FormButton(ucfirst($logger->getName()));
         $tabButton->setId($loggerTabButtonID)
-                ->setTheme('light')
-                ->setType("button");
+            ->setTheme('light')
+            ->setType("button");
         $function = '$(".log-tab-content .active").removeClass("active");'
-                . '$("#' . $loggerPanelID . '").addClass("active");';
+            . '$("#' . $loggerPanelID . '").addClass("active");';
         $script = \App\Models\View\Javascript::onClick($loggerTabButtonID, $function);
         $tabButton->setScript($script);
         $tabButton->setBreakPoint('');
@@ -221,36 +222,41 @@ class DebugViewer {
      *
      * @param string $targetShowID
      * @param string $listenerButtonID
+     *
      * @return type
      */
-    public static function printLogGroupButton(string $label, string $targetShowID, string $listenerButtonID) {
+    public static function printLogGroupButton(string $label, string $targetShowID, string $listenerButtonID)
+    {
         $tabButton = new \System\App\Forms\FormButton(ucfirst($label));
         $tabButton->setId($listenerButtonID)
-                ->setTheme('dark')
-                ->setType($listenerButtonID);
+            ->setTheme('dark')
+            ->setType($listenerButtonID);
         $function = '$(".log-groups-content .active").removeClass("active");'
-                . '$("#' . $targetShowID . '").addClass("active");';
+            . '$("#' . $targetShowID . '").addClass("active");';
         $script = \App\Models\View\Javascript::onClick($listenerButtonID, $function);
         $tabButton->setScript($script);
         $tabButton->setBreakPoint('');
         return $tabButton->print();
     }
 
-    public static function prepareRuntimeLoggerOutput($logger, $loggerPaneID) {
+    public static function prepareRuntimeLoggerOutput($logger, $loggerPaneID)
+    {
         $loggerOutput = '<div class = "tab-pane container-fluid  p-0" id = "' . $loggerPaneID . '" role="tabpanel">';
         $loggerOutput .= LogPrinter::printLog($logger);
         $loggerOutput .= '</div>';
         return $loggerOutput;
     }
 
-    public static function prepareAJAXLoggerOutput($logger, $loggerPaneID) {
+    public static function prepareAJAXLoggerOutput($logger, $loggerPaneID)
+    {
         $loggerOutput = '<div class = "tab-pane container-fluid  p-0" id = "' . $loggerPaneID . '" role="tabpanel">';
         // $loggerOutput .= LogPrinter::printLog($logger);
         $loggerOutput .= '</div>';
         return $loggerOutput;
     }
 
-    public static function printLogTools($loggers) {
+    public static function printLogTools($loggers)
+    {
         $logToolsOutput = '<div class = "border-0 text-light">
 <ul id="loggerToolboxMenusList" class = "tab-list nav nav-pills bg-secondary row mx-0" role="tablist">';
         $logToolsOutput .= self::printLogGroupButton('Runtime Logs', 'loggerRuntimeLogs', 'showRuntimeLogButtton');

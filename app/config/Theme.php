@@ -31,7 +31,8 @@ namespace app\config;
  *
  * @author cjacobsen
  */
-class Theme {
+class Theme
+{
 
     //put your code here
     const DEFAULT_THEME = "default_theme";
@@ -47,7 +48,8 @@ class Theme {
      *
      * @return type An array of all theme constants
      */
-    public static function getThemes() {
+    public static function getThemes()
+    {
         $rc = new \ReflectionClass(new Theme);
         return $rc->getConstants();
     }

@@ -31,15 +31,18 @@ namespace System\App;
  *
  * @author cjacobsen
  */
+
 use App\Models\Database\EmailDatabase as EmailConfig;
 
-class Email extends \system\Parser {
+class Email extends \system\Parser
+{
 
     /**
      *
      * @return \PHPMailer\PHPMailer\PHPMailer
      */
-    private static function createMailer() {
+    private static function createMailer()
+    {
         $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
 //var_dump(EmailConfig::getSMTPServer());
 //Server settings
@@ -63,7 +66,8 @@ class Email extends \system\Parser {
         return $mail;
     }
 
-    public static function sendTest($to = null) {
+    public static function sendTest($to = null)
+    {
         if ($to == null) {
             $to = 'cjacobsen@branchburg.k12.nj.us';
         }
@@ -88,11 +92,13 @@ class Email extends \system\Parser {
         }
     }
 
-    public function send($to, $cc, $bcc, $subject, $body, $replyTo) {
+    public function send($to, $cc, $bcc, $subject, $body, $replyTo)
+    {
 
     }
 
-    public function testConnection() {
+    public function testConnection()
+    {
         return false;
     }
 

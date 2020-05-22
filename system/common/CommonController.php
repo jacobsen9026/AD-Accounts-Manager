@@ -31,11 +31,13 @@ namespace System\Common;
  *
  * @author cjacobsen
  */
+
 use System\Parser;
 use System\App\App;
 use app\config\MasterConfig;
 
-class CommonController extends Parser {
+class CommonController extends Parser
+{
 
     /** @var App|null The view parser */
     public $app;
@@ -47,7 +49,8 @@ class CommonController extends Parser {
     public $layout;
 
     //put your code here
-    function __construct($app) {
+    function __construct($app)
+    {
         $this->app = $app;
     }
 

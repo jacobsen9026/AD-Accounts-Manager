@@ -30,7 +30,8 @@ namespace App\Models\Database;
  *
  * @author cjacobsen
  */
-interface DatabaseModelInterface {
+interface DatabaseModelInterface
+{
 
     public static function saveSettings(array $postData);
 }

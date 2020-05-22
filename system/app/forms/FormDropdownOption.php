@@ -31,38 +31,46 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
-class FormDropdownOption extends FormElement {
+class FormDropdownOption extends FormElement
+{
 
     //put your code here
     private $value;
     private $selected = '';
 
-    function __construct($label = null, $value = null) {
+    function __construct($label = null, $value = null)
+    {
         $this->setLabel($label);
         $this->value = $value;
     }
 
-    function getName() {
+    function getName()
+    {
         return $this->name;
     }
 
-    function getValue() {
+    function getValue()
+    {
         return $this->value;
     }
 
-    function setName($name): void {
+    function setName($name): void
+    {
         $this->name = $name;
     }
 
-    function setValue($value): void {
+    function setValue($value): void
+    {
         $this->value = $value;
     }
 
-    public function selected() {
+    public function selected()
+    {
         $this->selected = 'selected';
     }
 
-    public function getSelected() {
+    public function getSelected()
+    {
         return $this->selected;
     }
 

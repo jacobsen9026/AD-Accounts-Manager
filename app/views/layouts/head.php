@@ -30,7 +30,8 @@
         echo $this->title;
         ?>
     </title>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+          integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 
     <link rel="stylesheet" href="/css/style2.css">
 
@@ -55,32 +56,50 @@
         echo ' <link rel="stylesheet" href="/css/' . $theme . '.css">';
     }
     /**
-      if ($this->app->user->theme == \app\config\Theme::RED_THEME) {
-      System\App\AppLogger::get()->debug("theme is red");
-      echo ' <link rel="stylesheet" href="/css/redTheme.css">';
-      }
-      if ($this->app->user->theme == \app\config\Theme::GREEN_THEME) {
-      System\App\AppLogger::get()->debug("theme is green");
-      echo ' <link rel="stylesheet" href="/css/greenTheme.css">';
-      }
+     * if ($this->app->user->theme == \app\config\Theme::RED_THEME) {
+     * System\App\AppLogger::get()->debug("theme is red");
+     * echo ' <link rel="stylesheet" href="/css/redTheme.css">';
+     * }
+     * if ($this->app->user->theme == \app\config\Theme::GREEN_THEME) {
+     * System\App\AppLogger::get()->debug("theme is green");
+     * echo ' <link rel="stylesheet" href="/css/greenTheme.css">';
+     * }
      *
      */
     ?>
 
+
     <script>
-        //Highlight changed items on all forms
-        $(document).ready(function () {
+        /**
+         * Highlight changed items on all forms
+         * and show save button if available.
+         */
 
-            $('input').keyup(function () {
+
+
+        function preparePageHooks() {
+            console.log('Preparing page hooks');
+
+            let handler = function () {
+                console.log('key pressed in text box 2'
+                    + this
+                )
                 $(this).addClass('text-danger border-danger');
+                /**
+                 * Show the save form button
+                 */
+                $(".floating-form-button").removeClass("show");
+                $(".floating-form-button").addClass("show");
+            };
+            $(document).find('input').change(handler);
+            $(document).find('input').keyup(handler);
 
-            });
 
-            $('select').change(function () {
-                console.log("wpsdafdsa");
-                $(this).addClass('border-danger text-danger');
+        }
 
-            });
+        $(document).ready(function () {
+            preparePageHooks($(document));
+
 
         });
     </script>

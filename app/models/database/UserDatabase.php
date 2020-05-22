@@ -31,9 +31,10 @@ namespace App\Models\Database;
  *
  * @author cjacobsen
  */
-abstract class UserDatabase extends DatabaseModel {
+abstract class UserDatabase extends DatabaseModel
+{
 
-    const TABLE_NAME = "User";
+    const TABLE_NAME = "user";
     const TOKEN = "Token";
     const USERNAME = "Username";
     const THEME = "Theme";
@@ -42,7 +43,8 @@ abstract class UserDatabase extends DatabaseModel {
 
     //put your code here
 
-    public static function setUserToken(String $username, String $token) {
+    public static function setUserToken(String $username, String $token)
+    {
 
         if (self::getID($username) == false) {
             $query = new Query(self::TABLE_NAME, Query::INSERT);
@@ -57,7 +59,8 @@ abstract class UserDatabase extends DatabaseModel {
         return $query->run();
     }
 
-    public static function setUserTheme(String $username, String $theme) {
+    public static function setUserTheme(String $username, String $theme)
+    {
 
         if (self::getID($username) == false) {
             $query = new Query(self::TABLE_NAME, Query::INSERT);
@@ -72,7 +75,8 @@ abstract class UserDatabase extends DatabaseModel {
         return $query->run();
     }
 
-    public static function setUserPrivilege(String $username, int $privilege) {
+    public static function setUserPrivilege(String $username, int $privilege)
+    {
 
         if (self::getID($username) == false) {
             $query = new Query(self::TABLE_NAME, Query::INSERT);
@@ -87,13 +91,15 @@ abstract class UserDatabase extends DatabaseModel {
         return $query->run();
     }
 
-    public static function getToken(String $username) {
+    public static function getToken(String $username)
+    {
         $query = new Query(self::TABLE_NAME, Query::SELECT, self::TOKEN);
         $query->where(self::USERNAME, $username);
         return $query->run();
     }
 
-    public static function getTheme(String $username) {
+    public static function getTheme(String $username)
+    {
         $query = new Query(self::TABLE_NAME, Query::SELECT, self::THEME);
         $query->where(self::USERNAME, $username);
         $theme = $query->run();
@@ -103,7 +109,8 @@ abstract class UserDatabase extends DatabaseModel {
         return $theme;
     }
 
-    public static function getID(String $username) {
+    public static function getID(String $username)
+    {
         $query = new Query(self::TABLE_NAME, Query::SELECT, self::ID);
         $query->where(self::USERNAME, $username);
         return $query->run();

@@ -1,11 +1,11 @@
-
 <?php
 if (isset($this->appLogger)) {
     $log = $this->appLogger->getLog('query');
 }
 if (!function_exists('printQueryLog')) {
 
-    function printQueryLog($array) {
+    function printQueryLog($array)
+    {
         $logIndex = 0;
         foreach ($array as $entry) {
 
@@ -37,7 +37,8 @@ if (!function_exists('printQueryLog')) {
                 </div>
                 <div class='col-11 text-break'>
                     <?php //htmlspecialchars($message);     ?>
-                    <p data-toggle="collapse" data-target="#appLogBacktrace<?= $logIndex ?>" aria-expanded="false" aria-controls="appLogBacktrace<?= $logIndex ?>">
+                    <p data-toggle="collapse" data-target="#appLogBacktrace<?= $logIndex ?>" aria-expanded="false"
+                       aria-controls="appLogBacktrace<?= $logIndex ?>">
                         <?= $message; ?>
                     </p>
                     <div class="collapse" id="appLogBacktrace<?= $logIndex ?>">
@@ -55,11 +56,6 @@ if (!function_exists('printQueryLog')) {
 
 }
 ?>
-
-
-
-
-
 
 
 <div class="scroll">

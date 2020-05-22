@@ -31,22 +31,26 @@ namespace App\Controllers\Settings;
  *
  * @author cjacobsen
  */
+
 use System\Post;
 use App\Models\User\PrivilegeLevel;
 use App\Models\Database\PrivilegeLevelDatabase;
 use App\Controllers\Controller;
 use App\Models\Database\AuthDatabase;
 
-class Authentication extends Controller {
+class Authentication extends Controller
+{
 
     //put your code here
-    public function index() {
+    public function index()
+    {
 
         $this->tab = 'authentication';
         return $this->view('settings/index');
     }
 
-    public function indexPost() {
+    public function indexPost()
+    {
 
         $post = \system\Post::getAll();
         AuthDatabase::saveSettings($post);

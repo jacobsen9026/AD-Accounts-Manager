@@ -31,7 +31,8 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
-interface FormElementInterface {
+interface FormElementInterface
+{
 
     public function getElementHTML();
 }

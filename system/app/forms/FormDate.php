@@ -31,6 +31,7 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
-class FormDate extends FormElement {
+class FormDate extends FormElement
+{
     //put your code here
 }

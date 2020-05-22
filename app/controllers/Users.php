@@ -31,72 +31,117 @@ namespace App\Controllers;
  *
  * @author cjacobsen
  */
+
+
+use App\Api\Ad\ADUsers;
+use App\Models\Audit\Action\User\SearchUserAuditAction;
+use App\Models\Audit\AuditEntry;
+use App\Models\Database\AuditDatabase;
 use App\Models\District\DistrictUser;
+use App\Models\User\PermissionHandler;
+use App\Models\User\PermissionLevel;
 use System\Post;
 use System\App\Picture;
 use System\Models\Post\UploadedFile;
-use System\File;
 
-class Users extends Controller {
+class Users extends Controller
+{
 
-    public function index() {
+    public function index()
+    {
         return $this->search();
     }
 
-    public function search($username = null) {
+    public function search($username = null)
+    {
         if ($username == null) {
             return $this->view('users/search');
         } else {
             //var_export($username);
+            $auditEntry = new AuditEntry($this->app->request, $this->user, new SearchUserAuditAction($username));
+            AuditDatabase::addAudit($auditEntry);
 
             return $this->showAccountStatus($username);
         }
     }
 
-    public function searchPost($username = null) {
+    public function searchPost($username = null)
+    {
         //return $username;
         $action = Post::get("action");
         switch ($action) {
             case 'uploadPhoto':
 
                 $uploadedPicture = new UploadedFile(Post::getFile("photo"));
-                $picture = imagecreatefromjpeg($uploadedPicture->getTempFileName());
+                $fileType = $uploadedPicture->getType();
+                switch ($uploadedPicture->getType()) {
+                    case 'image/png':
+                        $picture = imagecreatefrompng($uploadedPicture->getTempFileName());
+                        break;
+                    case 'image/jpeg':
+                        $picture = imagecreatefromjpeg($uploadedPicture->getTempFileName());
+                        break;
+                    case 'image/gif':
+                        $picture = imagecreatefromgif($uploadedPicture->getTempFileName());
+                        break;
+                    case 'image/bmp':
+                        $picture = imagecreatefrombmp($uploadedPicture->getTempFileName());
+                        break;
+
+                }
                 $picture = Picture::cropSquare($picture, 225);
                 ob_start();
                 imagejpeg($picture);
                 $rawPicture = ob_get_clean();
-                var_dump(bin2hex($rawPicture));
+
+                //var_dump(bin2hex($rawPicture));
                 $user = new DistrictUser($username);
-                $user->setPhoto($rawPicture);
+                $this->logger->debug($rawPicture);
+                $user->activeDirectory->setThumbnail($rawPicture, false)->save();
                 //imagecreatefromstring($uploadedPicture->getTempFileContents());
                 //$resiezedPhoto = imagescale($picture, '96', '96');
-//imagejpeg($picture);
+                //imagejpeg($picture);
                 break;
-
+            case 'resetPassword':
+                $password = trim(Post::get("password"));
+                $user = new DistrictUser(Post::get("username"));
+                $user->activeDirectory->setPassword($password);
+                break;
             default:
                 break;
         }
         return $this->search($username);
     }
 
-    private function showAccountStatus($username) {
+    private function showAccountStatus($username)
+    {
 
         $this->districtUser = $this->getUser($username);
         return $this->view('users/show');
     }
 
-    public function getUser($username) {
-        return new DistrictUser($username);
+    public function getUser($username)
+    {
+
+        $user = new DistrictUser($username);
+        //$user->activeDirectory;
+        //var_dump($user);
+        //var_dump($user->activeDirectory->getAttributes());
+        return $user;
+
+        //return new DistrictUser($username);
     }
 
-    private function unlockUser($username) {
+    private function unlockUser($username)
+    {
         $adUser = \App\Api\AD::get()->unlockUser($username);
         var_dump($adUser);
         return $adUser;
 //$gaUser = \App\Api\GAM::getUser($username);
     }
 
-    public function accountStatusChangePost() {
+    public function accountStatusChangePost()
+    {
         if ($action = Post::get("action")) {
             $username = Post::get("username");
             switch ($action) {
@@ -114,33 +159,42 @@ class Users extends Controller {
         }
     }
 
-    public function editPost() {
+    public function editPost()
+    {
 //if (Post::csrfValid()) {
         $username = Post::get("username");
         $districtUser = $this->getUser($username);
-        var_dump($districtUser);
+        // var_dump($districtUser);
         $action = Post::get("action");
-        var_dump($action);
+        //var_dump($action);
 
         if ($action != false) {
             switch ($action) {
                 case "unlock":
-                    $districtUser->unlock();
-                    $this->redirect('/users/search/' . $username);
-                    break;
-                //return $this->showAccountStatus($username);
+                    if (PermissionHandler::hasPermission($districtUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_UNLOCK)) {
+
+                        $districtUser->unlock();
+                        $this->redirect('/users/search/' . $username);
+
+                    }
+                    return;
 
 
                 case "enable":
-                    $districtUser->enable();
-                    $this->redirect('/users/search/' . $username);
-                    return;
-                //return $this->showAccountStatus($username);
-                case "disable";
-                    $districtUser->disable();
-                    $this->redirect('/users/search/' . $username);
+                    if (PermissionHandler::hasPermission($districtUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_DISABLE)) {
 
-                    //return $this->showAccountStatus($username);
+                        $districtUser->enable();
+                        $this->redirect('/users/search/' . $username);
+
+                    }
+                    return;
+
+                case "disable";
+                    if (PermissionHandler::hasPermission($districtUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_DISABLE)) {
+
+                        $districtUser->disable();
+                        $this->redirect('/users/search/' . $username);
+                    }
                     return;
 
                 default:

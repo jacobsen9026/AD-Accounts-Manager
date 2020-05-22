@@ -1,18 +1,8 @@
-<?php
+<h2>
 
-namespace App\Views;
-class Homepage
-{
+    <?= $this->applicationName ?>
+</h2>
+
+<?= $this->motd ?>
 
 
-    public function getDabaseConnection()
-    {
-        //echo "<br/><br/><br/><br/><br/><br/><br/>test";
-        //echo $this->view('install/index');
-        echo $this->applicationName;
-        //echo $appConfig["webAppName"];
-
-        echo $this->motd;
-    }
-
-}

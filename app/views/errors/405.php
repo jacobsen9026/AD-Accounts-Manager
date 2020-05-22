@@ -10,7 +10,8 @@
     </div>
     <div>
 
-        The page you requested was unable to fully complete processing due to a lack of implementation for a requested function.<br/>
+        The page you requested was unable to fully complete processing due to a lack of implementation for a requested
+        function.<br/>
         <?= $this->route->getControler() . "->" . $this->route->getMethod(); ?>
     </div>
 </div>

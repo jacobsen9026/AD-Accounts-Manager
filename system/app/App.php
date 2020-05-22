@@ -34,8 +34,10 @@ namespace System\App;
  * This is the main Application class. It manages all steps of app execution. The application flow is as follows.
  * AppLogger->Config->Routing->Controlling->Layout->Output back to core
  *
- * No application specific data/functions should be present in this class. That should be utilized in classes within the App namespace.
+ * No application specific data/functions should be present in this class. That should be utilized in classes within
+ * the App namespace.
  */
+
 use System\App\Route;
 use System\App\AppErrorHandler;
 use System\Common\CommonLogger;
@@ -51,13 +53,15 @@ use System\App\WindowsLogger;
 
 ;
 
-class App extends CommonApp implements AppInterface {
+class App extends CommonApp implements AppInterface
+{
 
     use RequestRedirection;
     use \System\Traits\Parser;
 
     /** @var MasterConfig|null The system logger
-      @deprecated since version number */
+     * @deprecated since version number
+     */
     public $config;
 
     /** @var SystemLogger|null The system logger */
@@ -110,7 +114,8 @@ class App extends CommonApp implements AppInterface {
      * @param Request $req
      * @param SystemLogger $cLogger
      */
-    function __construct(Request $req, CommonLogger $cLogger) {
+    function __construct(Request $req, CommonLogger $cLogger)
+    {
 
         //session_destroy();
         //$this->user = "this";
@@ -131,21 +136,21 @@ class App extends CommonApp implements AppInterface {
         $this->coreLogger->info("The app logger has been created");
 
         /*
-         * Set up the AD API LDAP Logger
+         * Set up the ad API LDAP Logger
          */
         $this->ldapLogger = new LDAPLogger();
         $this->logger->info("LDAP logger started");
         /*
-         * Set up the AD API LDAP Logger
+         * Set up the ad API LDAP Logger
          */
         $this->windowsLogger = new WindowsLogger();
         $this->logger->info("Windows logger started");
 
         /*
-         * Set up the AD API LDAP Logger
+         * Set up the ad API LDAP Logger
          */
         $this->userLogger = new UserLogger();
-        $this->logger->info("User logger started");
+        $this->logger->info("user logger started");
 
         /*
          * Load the request into the app
@@ -156,9 +161,11 @@ class App extends CommonApp implements AppInterface {
 
     /**
      * Get the current App instance
+     *
      * @return App
      */
-    public static function get() {
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -168,7 +175,8 @@ class App extends CommonApp implements AppInterface {
     /**
      * Load the application configuration
      */
-    public function loadConfig() {
+    public function loadConfig()
+    {
         //$this->config = new MasterConfig();
         $this->coreLogger->info("The app config has been loaded");
         define('GAMPATH', CONFIGPATH . DIRECTORY_SEPARATOR . "google");
@@ -182,9 +190,11 @@ class App extends CommonApp implements AppInterface {
 
     /**
      * Run the application
+     *
      * @return AppOutput
      */
-    public function run(): AppOutput {
+    public function run(): AppOutput
+    {
 
         $this->logger->info("Creating Session");
         User::load($this);
@@ -193,10 +203,11 @@ class App extends CommonApp implements AppInterface {
             /**
              * Is the current user allowed to access this uri?
              * If not, this function changes the route to 403 error page
+             *
              * @deprecated
              *
              *
-              $this->checkPermission();
+             * $this->checkPermission();
              */
             /**
              * This is where the magic happens. The control function calls the class and method
@@ -225,9 +236,9 @@ class App extends CommonApp implements AppInterface {
              * We need to inject the logs into the appOutput so the core can handle it.
              */
             $this->appOutput->addLogger($this->logger)
-                    ->addLogger($this->ldapLogger)
-                    ->addLogger($this->windowsLogger)
-                    ->addLogger($this->userLogger);
+                ->addLogger($this->ldapLogger)
+                ->addLogger($this->windowsLogger)
+                ->addLogger($this->userLogger);
         }
 
         return $this->appOutput;
@@ -238,7 +249,8 @@ class App extends CommonApp implements AppInterface {
      * the Router to determine a controller, method,
      * and data to be executed this run.
      */
-    public function route() {
+    public function route()
+    {
         /*
          * HTTPS redirect check
          * If database setting for https redirect is set,
@@ -271,7 +283,8 @@ class App extends CommonApp implements AppInterface {
      *
      * @todo Should use Request Object
      */
-    private function handleHttpsRedirect() {
+    private function handleHttpsRedirect()
+    {
         $this->logger->info("Protocol: " . $this->request->getProtocol());
         $this->logger->info("Hostname: " . ($_SERVER["SERVER_NAME"]));
         if ($this->request->getProtocol() == "http" && AppDatabase::getForceHTTPS()) {
@@ -284,7 +297,8 @@ class App extends CommonApp implements AppInterface {
      *
      * @todo Should use Request Object
      */
-    private function handleHostnameRedirect() {
+    private function handleHostnameRedirect()
+    {
         $this->logger->info("Hostname: " . ($_SERVER["SERVER_NAME"]));
         if (strtolower($_SERVER["SERVER_NAME"]) != strtolower(AppDatabase::getWebsiteFQDN()) and AppDatabase::getWebsiteFQDN() != "") {
             $this->redirect($this->request->getProtocol() . "://" . strtolower(AppDatabase::getWebsiteFQDN()) . $_SERVER["REQUEST_URI"]);
@@ -296,7 +310,8 @@ class App extends CommonApp implements AppInterface {
      *
      * @return null
      */
-    protected function control() {
+    protected function control()
+    {
         /*
          * Check that the user is logged on and if not, set the route to the login screen
          */
@@ -309,7 +324,7 @@ class App extends CommonApp implements AppInterface {
             return;
         } else {
             /*
-             * User is logged in so update the timeout to reflect new activity
+             * user is logged in so update the timeout to reflect new activity
              */
             Session::updateTimeout();
         }
@@ -350,7 +365,8 @@ class App extends CommonApp implements AppInterface {
      * Applies theming, menus, modals, and styling
      *  to the controller output as a final preparation for the core
      */
-    public function layout() {
+    public function layout()
+    {
         $this->layout = new Layout($this);
         //var_dump($this->request);
         if ($this->request->getType() == 'http') {
@@ -363,7 +379,8 @@ class App extends CommonApp implements AppInterface {
      * in the webConfig.
      */
 
-    private function setErrorMode() {
+    private function setErrorMode()
+    {
         if ($this->inDebugMode()) {
             enablePHPErrors();
         } else {
@@ -373,9 +390,11 @@ class App extends CommonApp implements AppInterface {
 
     /**
      * Check if the application is currently in debug mode
+     *
      * @return boolean
      */
-    public function inDebugMode() {
+    public function inDebugMode()
+    {
 
         if (AppDatabase::getDebugMode()) {
             return true;
@@ -386,9 +405,11 @@ class App extends CommonApp implements AppInterface {
 
     /**
      * Get the application database ID
+     *
      * @return int Always returns 1
      */
-    public static function getID() {
+    public static function getID()
+    {
         /**
          * We always return one because there is currently only one application running on this core.
          * It allows flexabillity if that ever changes.

@@ -36,9 +36,11 @@ use System\App\App;
 use System\Common\CommonLogEntry;
 use System\Common\CommonLogger;
 
-abstract class LogPrinter {
+abstract class LogPrinter
+{
 
-    public static function printLog(CommonLogger $logger) {
+    public static function printLog(CommonLogger $logger)
+    {
         $loggerOutput = '';
         // $loggerOutput = '<div id="' . $logger->getName() . 'Log" >';
         if ($logger->hasLogEntries()) {
@@ -52,7 +54,8 @@ abstract class LogPrinter {
      *
      * @param array $logEntries
      */
-    private static function printLogEntries(array $logEntries) {
+    private static function printLogEntries(array $logEntries)
+    {
         /*  @var $logEntry CommonLogEntry */
         $logOutput = '';
         foreach ($logEntries as $logEntry) {
@@ -62,20 +65,21 @@ abstract class LogPrinter {
         //var_export($logOutput);
     }
 
-    private static function printBackTrace(CommonLogEntry $logEntry) {
+    private static function printBackTrace(CommonLogEntry $logEntry)
+    {
         $traceOutput = '<div class="collapse bg-dark text-muted rounded p-3" id="' . $logEntry->getId() . '">'
-                . 'Backtrace';
+            . 'Backtrace';
         $backtrace = $logEntry->getBacktrace();
         $x = count($backtrace);
         foreach ($backtrace as $step) {
             $traceOutput .= '<div class="row">'
-                    . '<div class="pl-2" style="max-width:2em">';
+                . '<div class="pl-2" style="max-width:2em">';
             $traceOutput .= $x;
             $traceOutput .= '</div>'
-                    . '<div class="col">';
+                . '<div class="col">';
             $traceOutput .= $step['file'] . ': ' . $step['line'];
             $traceOutput .= '</div>'
-                    . '</div>';
+                . '</div>';
             $x--;
         }
 
@@ -83,7 +87,8 @@ abstract class LogPrinter {
         return $traceOutput;
     }
 
-    public static function printLogEntry(CommonLogEntry $logEntry) {
+    public static function printLogEntry(CommonLogEntry $logEntry)
+    {
         $logOutput = '';
 
         $et = substr($logEntry->getElapsedTime(), 0, 5) . ' s';
@@ -94,7 +99,7 @@ abstract class LogPrinter {
 
         $entryOutput = ' <div class=" collapse show container-fluid mx-auto my-0 py-1 row rounded-0 alert alert-' . $logEntry->getAlertLevel() . '">
             <div class="col-md-1">' . $et
-                . '</div>
+            . '</div>
             <div class="col-md-11 text-break ">
 
                 <p class="clickable" data-toggle="collapse" data-target="#' . $logEntry->getId() . '" aria-expanded="false" aria-controls="">

@@ -1,4 +1,3 @@
-
 <?php
 
 use System\App\Forms\Form;
@@ -16,14 +15,14 @@ $email = new FormText('Email Address', '', 'email');
 $email->medium();
 $ouInput = new FormText("OU", "Can search by name, email, or description", "ou");
 $ouInput->autoCompleteOU()
-        ->setId("ou")
-        // ->appendIcon('<i class="fas fa-search"></i>')
-        ->large();
+    ->setId("ou")
+    // ->appendIcon('<i class="fas fa-search"></i>')
+    ->large();
 $form->addElementToNewRow($name)
-        ->addElementToCurrentRow($description)
-        ->addElementToNewRow($email)
-        ->addElementToNewRow($ouInput)
-        ->addElementToNewRow($button);
+    ->addElementToCurrentRow($description)
+    ->addElementToNewRow($email)
+    ->addElementToNewRow($ouInput)
+    ->addElementToNewRow($button);
 echo $form->print();
 
 

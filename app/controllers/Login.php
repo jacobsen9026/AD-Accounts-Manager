@@ -31,6 +31,7 @@ namespace App\Controllers;
  *
  * @author cjacobsen
  */
+
 use System\App\Auth\Local;
 use System\App\App;
 use App\Models\User\User;
@@ -41,15 +42,18 @@ use System\Post;
 use App\Auth\ADAuth;
 use App\Models\Database\AuthDatabase;
 
-class Login extends Controller {
+class Login extends Controller
+{
 
-    public function __construct(App $app) {
+    public function __construct(App $app)
+    {
 
         parent::__construct($app);
         $this->layout = 'login';
     }
 
-    public function index() {
+    public function index()
+    {
         $logger = AppLogger::get();
         $logger->debug('logining in');
         if (isset($_POST) and isset($_POST['username']) and isset($_POST['password'])) {

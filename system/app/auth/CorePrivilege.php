@@ -31,7 +31,8 @@ namespace System\App\Auth;
  *
  * @author cjacobsen
  */
-class CorePrivilege {
+class CorePrivilege
+{
 
     //put your code here
     const UNAUTHENTICATED = 0;

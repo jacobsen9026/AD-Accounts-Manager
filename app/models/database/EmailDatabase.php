@@ -31,9 +31,11 @@ namespace App\Models\Database;
  *
  * @author cjacobsen
  */
+
 use app\database\Schema;
 
-class EmailDatabase extends DatabaseModel {
+class EmailDatabase extends DatabaseModel
+{
 
     const TABLE_NAME = 'Email';
 
@@ -41,7 +43,8 @@ class EmailDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getSMTPServer() {
+    public static function getSMTPServer()
+    {
         return self::getDatabaseValue("SMTP_Server");
     }
 
@@ -49,7 +52,8 @@ class EmailDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getSMTPUsername() {
+    public static function getSMTPUsername()
+    {
         return self::getDatabaseValue("SMTP_Username");
     }
 
@@ -57,7 +61,8 @@ class EmailDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getSMTPPassword() {
+    public static function getSMTPPassword()
+    {
         return self::getDatabaseValue("SMTP_Password");
     }
 
@@ -65,7 +70,8 @@ class EmailDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getSMTPPort() {
+    public static function getSMTPPort()
+    {
         $value = self::getDatabaseValue("SMTP_Port");
         if (!$value) {
             $value = 25;
@@ -77,7 +83,8 @@ class EmailDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getFromAddress() {
+    public static function getFromAddress()
+    {
         return self::getDatabaseValue("From_Address");
     }
 
@@ -85,7 +92,8 @@ class EmailDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getFromName() {
+    public static function getFromName()
+    {
         return self::getDatabaseValue("From_Name");
     }
 
@@ -93,7 +101,8 @@ class EmailDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getReplyToAddress() {
+    public static function getReplyToAddress()
+    {
         return self::getDatabaseValue("Reply_To_Address");
     }
 
@@ -101,7 +110,8 @@ class EmailDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getReplyToName() {
+    public static function getReplyToName()
+    {
         return self::getDatabaseValue("Reply_To_Name");
     }
 
@@ -109,7 +119,8 @@ class EmailDatabase extends DatabaseModel {
      *
      * @return bool
      */
-    public static function getUseSMTPSSL() {
+    public static function getUseSMTPSSL()
+    {
 
         return self::getDatabaseValue("Use_SMTP_SSL");
     }
@@ -119,48 +130,59 @@ class EmailDatabase extends DatabaseModel {
      * @return bool
      *
      */
-    public static function getUseSMTPAuth() {
+    public static function getUseSMTPAuth()
+    {
         return self::getDatabaseValue("Use_SMTP_Auth");
     }
 
-    public static function setSMTPServer(string $value) {
+    public static function setSMTPServer(string $value)
+    {
         return self::updateDatabaseValue("SMTP_Server", $value);
     }
 
-    public static function setSMTPUsername(string $value) {
+    public static function setSMTPUsername(string $value)
+    {
         return self::updateDatabaseValue("SMTP_Username", $value);
     }
 
-    public static function setSMTPPassword(string $value) {
+    public static function setSMTPPassword(string $value)
+    {
         return self::updateDatabaseValue("SMTP_Password", $value);
     }
 
-    public static function setSMTPPort(int $value) {
+    public static function setSMTPPort(int $value)
+    {
 
         return self::updateDatabaseValue("SMTP_Port", $value);
     }
 
-    public static function setFromAddress(string $value) {
+    public static function setFromAddress(string $value)
+    {
         return self::updateDatabaseValue("From_Address", $value);
     }
 
-    public static function setFromName(string $value) {
+    public static function setFromName(string $value)
+    {
         return self::updateDatabaseValue("From_Name", $value);
     }
 
-    public static function setReplyToAddress(string $value) {
+    public static function setReplyToAddress(string $value)
+    {
         return self::updateDatabaseValue("Reply_To_Address", $value);
     }
 
-    public static function setReplyToName(string $value) {
+    public static function setReplyToName(string $value)
+    {
         return self::updateDatabaseValue("Reply_To_Name", $value);
     }
 
-    public static function setUseSMTPAuth(bool $value) {
+    public static function setUseSMTPAuth(bool $value)
+    {
         return self::updateDatabaseValue("Use_SMTP_Auth", $value);
     }
 
-    public static function setUseSMTPSSL(bool $value) {
+    public static function setUseSMTPSSL(bool $value)
+    {
 
         return self::updateDatabaseValue("Use_SMTP_SSL", $value);
     }
@@ -172,7 +194,8 @@ class EmailDatabase extends DatabaseModel {
      *
      * @param type $postedData
      */
-    public static function saveSettings(array $postedData) {
+    public static function saveSettings(array $postedData)
+    {
         foreach ($postedData as $key => $data) {
             \System\App\AppLogger::get()->debug($key);
             \System\App\AppLogger::get()->debug($data);
@@ -216,8 +239,6 @@ class EmailDatabase extends DatabaseModel {
                 case "replyName":
                     self::setReplyToName($data);
                     break;
-
-
 
 
                 default:

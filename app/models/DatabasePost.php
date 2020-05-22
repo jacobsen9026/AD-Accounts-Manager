@@ -29,15 +29,17 @@ namespace App\Models;
 /**
  * Description of DatabaseInterface
  *
- * @author cjacobsen
+ * @author     cjacobsen
  * @deprecated since version number
  */
+
 use app\database\Schema;
 use System\Database;
 use System\App\AppLogger;
 use App\Models\Query;
 
-abstract class DatabasePost {
+abstract class DatabasePost
+{
     //put your code here
 
     /**
@@ -45,14 +47,15 @@ abstract class DatabasePost {
      * @param type $tableName
      * @param array $post
      */
-    public static function setPost($primaryTable, $id, $post, $type = null) {
+    public static function setPost($primaryTable, $id, $post, $type = null)
+    {
         $logger = AppLogger::get();
         $logger->debug('Setting database post');
         $logger->debug('Primary Table: ' . $primaryTable);
         $logger->debug('ID: ' . $id);
         $logger->debug($post);
         $logger->debug($_FILES);
-        if (isset($_FILES) and!empty($_FILES)) {
+        if (isset($_FILES) and !empty($_FILES)) {
             self::uploadFiles();
         }
         foreach ($post as $label => $value) {
@@ -83,7 +86,7 @@ abstract class DatabasePost {
 
                     $query = new Query($table, Query::UPDATE, $column);
                     $query->where($schema, $id)
-                            ->set($column, $value);
+                        ->set($column, $value);
                     if ($type != null) {
                         $query->where(Schema::ACTIVEDIRECTORY_TYPE[Schema::COLUMN], $type);
                     }
@@ -99,7 +102,8 @@ abstract class DatabasePost {
         }
     }
 
-    private static function preProcessValue($label, $value) {
+    private static function preProcessValue($label, $value)
+    {
         //var_dump($label);
         switch ($label) {
             case Schema::DISTRICT_AD_NETBIOS[Schema::NAME]:
@@ -126,7 +130,8 @@ abstract class DatabasePost {
         }
     }
 
-    private static function uploadFiles() {
+    private static function uploadFiles()
+    {
         //var_dump($_FILES);
         //exit;
         foreach ($_FILES as $key => $file) {

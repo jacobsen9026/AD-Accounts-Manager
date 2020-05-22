@@ -31,10 +31,13 @@ namespace App\Controllers\Api;
  *
  * @author cjacobsen
  */
-use App\Api\AD;
-use App\Models\User\Privilege;
 
-class District extends APIController {
+use App\Api\AD;
+use App\Api\Ad\ADConnection;
+use App\Api\Ad\ADUsers;
+
+class District extends APIController
+{
 
     /**
      * Uses the settings in the database to test create a random user
@@ -44,8 +47,9 @@ class District extends APIController {
      *
      * @return string
      */
-    public function testPerms() {
-        if ($this->user->privilege >= Privilege::TECH) {
+    public function testPerms()
+    {
+        if ($this->user->superAdmin) {
             $districtID = 1;
             $testResult = $this->getPermissionCheckResult($districtID);
             if ($testResult == 'true') {
@@ -58,12 +62,14 @@ class District extends APIController {
 
     /**
      * District ID's are being dropped use non post version of this method
+     *
      * @return string
      * @deprecated since version number
      */
-    public function testPermsPost() {
+    public function testPermsPost()
+    {
 
-        if ($this->user->privilege >= Privilege::TECH) {
+        if ($this->user->superAdmin) {
             $districtID = \system\Post::get("districtID");
             $testResult = $this->getPermissionCheckResult($districtID);
             if ($testResult == 'true') {
@@ -81,11 +87,13 @@ class District extends APIController {
      *
      *
      * @param int $districtID The database districtID
+     *
      * @return string
      */
-    private function getPermissionCheckResult(int $districtID) {
+    private function getPermissionCheckResult(int $districtID)
+    {
 
-        if ($this->user->privilege >= Privilege::TECH) {
+        if ($this->user->superAdmin) {
             $ad = new AD($districtID);
             $testResult = $ad->createTestUser();
             // var_dump($testResult);
@@ -93,31 +101,26 @@ class District extends APIController {
         }
     }
 
-    /**
-     * Used for form input auto-completion
-     *
-     * @param string $searchTerm
-     */
-    public function autocompleteStudent(string $searchTerm) {
-        $searchTerm = $this->parseInput($searchTerm);
-        $users = AD::get()->listStudentUsers($searchTerm);
-        return (["autocomplete" => $users]);
-    }
 
     /**
      * Converts encoded spaces back to literal spaces
+     *
      * @param string $input
+     *
      * @return type
      */
-    private function parseInput(string $input) {
+    private function parseInput(string $input)
+    {
         return str_replace("%20", " ", $input);
     }
 
     /**
      * Prints an array of matching staff users
+     *
      * @param string $searchTerm
      */
-    public function autocompleteOU(string $searchTerm) {
+    public function autocompleteOU(string $searchTerm)
+    {
         $appBaseDN = \App\Models\Database\DistrictDatabase::getAD_BaseDN(1);
         $searchTerm = $this->parseInput($searchTerm);
         $ous = AD::get()->listOUs($searchTerm);
@@ -126,7 +129,7 @@ class District extends APIController {
             $display = str_replace($remove, '', $ou);
             $parts = explode("OU=", $display);
             $parts = array_reverse($parts);
-            $display = array_reduce($parts, function($a, $b) {
+            $display = array_reduce($parts, function ($a, $b) {
                 if ($a != null) {
                     return $a . "/" . $b;
                 }
@@ -141,65 +144,51 @@ class District extends APIController {
         return (["autocomplete" => $ous]);
     }
 
-    /**
-     * Prints an array of matching staff users
-     * @param string $username
-     */
-    public function autocompleteStaff(string $username) {
-
-        $username = $this->parseInput($username);
-        $users = AD::get()->listStaffUsers($username);
-        return (["autocomplete" => $users]);
-    }
 
     /**
      * Prints an array of matching groups for both student and staff groups
      * respecting permissions
+     *
      * @param type $searchTerm
      */
-    public function autocompleteGroup(string $searchTerm) {
+    public function autocompleteGroup(string $searchTerm)
+    {
         $groups = $this->searchGroups($searchTerm);
         //   $groups = array_merge($groups, $this->searchStaffGroups($searchTerm));
         //wvar_dump($groups);
-        //$groups = AD::get()->listGroups($searchTerm);
+        //$groups = ad::get()->listGroups($searchTerm);
         return (["autocomplete" => $groups]);
     }
 
     /**
      * Prints an array of matching users for both student and staff groups
      * respecting permissions
+     *
      * @param type $searchTerm
      */
-    public function autocompleteUser(string $searchTerm) {
+    public function autocompleteUser(string $searchTerm)
+    {
 
-        $users = AD::get()->listStaffUsers($searchTerm);
-        $users = array_merge($users, AD::get()->listStudentUsers($searchTerm));
+        //$users = AD::get()->listStaffUsers($searchTerm);
+        //$users = array_merge($users, AD::get()->listStudentUsers($searchTerm));
+        $users2 = ADUsers::listUsers($searchTerm);
 
-        return (["autocomplete" => $users]);
+        return (["autocomplete" => $users2]);
     }
 
-    /**
-     * Returns and array of matching staff groups
-     * @param type $searchTerm
-     * @return array
-     */
-    private function searchStaffGroups(string $searchTerm) {
-        $groups = AD::get()->listStaffGroups($searchTerm);
-        if ($groups == false) {
-            $groups = array();
-        }
-        return ($groups);
-    }
 
     /**
      * Returns an array of matching staff groups
+     *
      * @param string $searchTerm
+     *
      * @return array
      */
-    private function searchGroups(string $searchTerm) {
+    private function searchGroups(string $searchTerm)
+    {
         $groups = AD::get()->listStudentGroups($searchTerm);
         if ($groups == false) {
-            $groups = array();
+            $groups = [];
         }
         return ($groups);
     }
@@ -209,11 +198,12 @@ class District extends APIController {
      *
      * @param string $searchTerm
      */
-    public function autocompleteDomainGroup(string $searchTerm) {
+    public function autocompleteDomainGroup(string $searchTerm)
+    {
         $searchTerm = $this->parseInput($searchTerm);
         $groups = AD::get()->listDomainGroups($searchTerm);
         if ($groups == false) {
-            $groups = array();
+            $groups = [];
         }
         //return $groups;
         return (["autocomplete" => $groups]);
@@ -224,11 +214,12 @@ class District extends APIController {
      *
      * @param string $searchTerm
      */
-    public function autocompleteDomainUser(string $searchTerm) {
+    public function autocompleteDomainUser(string $searchTerm)
+    {
         $searchTerm = $this->parseInput($searchTerm);
         $users = AD::get()->listDomainUsers($searchTerm);
         if ($users == false) {
-            $users = array();
+            $users = [];
         }
         //return $groups;
         return (["autocomplete" => $users]);

@@ -31,11 +31,13 @@ namespace App\Models\User;
  *
  * @author cjacobsen
  */
+
 use App\Models\Model;
 use App\Models\Database\PermissionMapDatabase;
 use System\Encryption;
 
-class Permission extends Model {
+class Permission extends Model
+{
 
     private $id;
     private $refID;
@@ -46,112 +48,134 @@ class Permission extends Model {
     private $userPermissionLevel;
     private $groupPermissionLevel;
 
-    public function getRefID() {
+    public function getRefID()
+    {
         return $this->privilegeID . hash("sha256", $this->getOu());
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getGroupName() {
+    public function getGroupName()
+    {
         $privilege = new PrivilegeLevel();
         $privilege->importFromDatabase(\App\Models\Database\PrivilegeLevelDatabase::get($this->getPrivilegeID()));
         return $privilege->getAdGroup();
     }
 
-    public function getOu() {
+    public function getOu()
+    {
         return $this->ou;
     }
 
-    public function setOu($ou) {
+    public function setOu($ou)
+    {
         $this->ou = $ou;
         $this->ouDepth = count(explode('OU=', $ou));
         return $this;
     }
 
-    public function getPrivilegeID() {
+    public function getPrivilegeID()
+    {
         return $this->privilegeID;
     }
 
-    public function getScopeColumn() {
+    public function getScopeColumn()
+    {
         return $this->scopeColumn;
     }
 
-    public function getScopeID() {
+    public function getScopeID()
+    {
         return $this->scopeID;
     }
 
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
-    public function getUserPermissionLevel() {
+    public function getUserPermissionLevel()
+    {
         return $this->userPermissionLevel;
     }
 
-    public function getGroupPermissionLevel() {
+    public function getGroupPermissionLevel()
+    {
         return $this->groupPermissionLevel;
     }
 
-    public function setUserPermissionLevel($userPermissionLevel) {
+    public function setUserPermissionLevel($userPermissionLevel)
+    {
         $this->logger->info("Setting user permission level to " . $userPermissionLevel);
         $this->userPermissionLevel = $userPermissionLevel;
         return $this;
     }
 
-    public function setGroupPermissionLevel($groupPermissionLevel) {
+    public function setGroupPermissionLevel($groupPermissionLevel)
+    {
         $this->groupPermissionLevel = $groupPermissionLevel;
         return $this;
     }
 
-    public function setId($id) {
+    public function setId($id)
+    {
         $this->id = $id;
         return $this;
     }
 
-    public function setPrivilegeID($privilegeID) {
+    public function setPrivilegeID($privilegeID)
+    {
         $this->privilegeID = $privilegeID;
         return $this;
     }
 
-    public function setScopeColumn($scopeColumn) {
+    public function setScopeColumn($scopeColumn)
+    {
         $this->scopeColumn = $scopeColumn;
         return $this;
     }
 
-    public function setScopeID($scopeID) {
+    public function setScopeID($scopeID)
+    {
         $this->scopeID = $scopeID;
         return $this;
     }
 
-    public function setType($type) {
+    public function setType($type)
+    {
         $this->type = $type;
         return $this;
     }
 
-    public function getOuDepth() {
+    public function getOuDepth()
+    {
         return $this->ouDepth;
     }
 
-    public function setOuDepth($ouDepth) {
+    public function setOuDepth($ouDepth)
+    {
         $this->ouDepth = $ouDepth;
         return $this;
     }
 
-    public function importFromDatabase($rawDBResponse) {
+    public function importFromDatabase($rawDBResponse)
+    {
         //var_dump($rawDBResponse);
 
         $this->setId($rawDBResponse['ID'])
-                ->setOu($rawDBResponse['OU'])
-                ->setUserPermissionLevel($rawDBResponse['User_Perm'])
-                ->setGroupPermissionLevel($rawDBResponse["Group_Perm"])
-                ->setPrivilegeID($rawDBResponse['Privilege_ID']);
+            ->setOu($rawDBResponse['OU'])
+            ->setUserPermissionLevel($rawDBResponse['User_Perm'])
+            ->setGroupPermissionLevel($rawDBResponse["Group_Perm"])
+            ->setPrivilegeID($rawDBResponse['Privilege_ID']);
 
         return $this;
     }
 
-    public function updateInDatabase() {
+    public function updateInDatabase()
+    {
         PermissionMapDatabase::modifyPermission($this);
     }
 

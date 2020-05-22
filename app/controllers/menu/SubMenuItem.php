@@ -31,14 +31,16 @@ namespace App\Controllers\Menu;
  *
  * @author cjacobsen
  */
-class SubMenuItem extends MenuItem {
+class SubMenuItem extends MenuItem
+{
 
     //put your code here
 
 
     public $data;
 
-    function __construct($displayText, $targetURL = "/", $data = null) {
+    function __construct($displayText, $targetURL = "/", $data = null)
+    {
         $this->setDisplayText($displayText);
         $this->setTargetURL($targetURL);
         $this->data = $data;

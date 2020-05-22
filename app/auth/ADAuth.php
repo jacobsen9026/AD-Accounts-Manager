@@ -31,26 +31,29 @@ namespace App\Auth;
  *
  * @author cjacobsen
  */
+
 use App\Models\Database\AuthDatabase;
 use App\Models\User\User;
 use System\App\Auth\AuthException;
-use App\Models\User\Privilege;
 use App\Api\AD;
 use App\Models\Database\PrivilegeLevelDatabase;
 use System\App\AppLogger;
+use System\Traits\DomainTools;
 
-class ADAuth {
+class ADAuth
+{
 
     /**
      * Load Domain Tools Trait
      *
      */
-    use \System\Traits\DomainTools;
+    use DomainTools;
 
     private $connection;
 
 //put your code here
-    public function authenticate($username, $password) {
+    public function authenticate($username, $password)
+    {
 
         $passed = false;
         $username = strtolower($username);
@@ -58,7 +61,7 @@ class ADAuth {
         $server = AuthDatabase::getLDAPServer();
         $domain = AuthDatabase::getLDAP_FQDN();
 // Prepare connection username by appending domain name if not already provided
-        if (!is_null($domain) and!strpos($username, $domain)) {
+        if (!is_null($domain) and !strpos($username, $domain)) {
             $ldapUser = $username . "@" . $domain;
         }
 // Connect to LDAP server
@@ -67,7 +70,7 @@ class ADAuth {
 
         if (is_resource($this->connection)) {
             $superAdmin = false;
-            $userLevels = array();
+            $userLevels = [];
             $adAPI = AD::get();
             //echo "<br/><br/><br/><br/><br/><br/><br/><br/>";
             $allPrivilegeLevels = PrivilegeLevelDatabase::get();
@@ -86,7 +89,6 @@ class ADAuth {
 //return false;
 
 
-
             $connected = true;
 
 // If bind was successful, user was found in LDAP continue processing
@@ -97,15 +99,15 @@ class ADAuth {
 
             $adGroupName = '';
             /**
-              if ($adAPI->isUserInGroup($username, AuthDatabase::getSuperUserADGroup())) {
-              $passed = true;
-
-              //$fullName = $superUserInfo[$i]["name"][0];
-              // $fullName = "Finish me line 114 ADAuth";
-              $privilege = Privilege::TECH;
-              $superAdmin = true;
-              $adGroupName = AuthDatabase::getSuperUserADGroup();
-              }
+             * if ($adAPI->isUserInGroup($username, AuthDatabase::getSuperUserADGroup())) {
+             * $passed = true;
+             *
+             * //$fullName = $superUserInfo[$i]["name"][0];
+             * // $fullName = "Finish me line 114 ADAuth";
+             * $privilege = Privilege::TECH;
+             * $superAdmin = true;
+             * $adGroupName = AuthDatabase::getSuperUserADGroup();
+             * }
              *
              *
              */
@@ -121,10 +123,10 @@ class ADAuth {
                 }
                 $user = new User();
                 $user->authenticated()
-                        ->setFullName($fullName)
-                        ->setUsername($username)
-                        ->setPrivilegeLevels($userLevels)
-                        ->setSuperUser($superAdmin);
+                    ->setFullName($fullName)
+                    ->setUsername($username)
+                    ->setPrivilegeLevels($userLevels)
+                    ->setSuperUser($superAdmin);
                 AppLogger::get()->info($user);
                 return $user;
 
@@ -142,9 +144,11 @@ class ADAuth {
      * @param type $connection
      * @param type $baseDN
      * @param type $groupName
+     *
      * @return string
      */
-    public static function getGroupDN($connection, $baseDN, $groupName) {
+    public static function getGroupDN($connection, $baseDN, $groupName)
+    {
         $filter = "(&(objectClass=group)(cn=" . $groupName . "))";
         $result = ldap_search($connection, $baseDN, $filter);
         $info = ldap_get_entries($connection, $result);
@@ -160,11 +164,12 @@ class ADAuth {
         }
     }
 
-    public static function testConnection($server, $username, $password) {
+    public static function testConnection($server, $username, $password)
+    {
         $logger = \System\App\AppLogger::get();
         $ldapconn = ldap_connect("ldap://" . $server)
 
-                or die("Could not connect to LDAP server.");
+        or die("Could not connect to LDAP server.");
 
         if ($ldapconn) {
 

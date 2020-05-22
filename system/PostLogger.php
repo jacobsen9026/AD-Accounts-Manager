@@ -31,14 +31,17 @@ namespace System;
  *
  * @author cjacobsen
  */
+
 use System\Common\CommonLogger;
 
-class PostLogger extends CommonLogger {
+class PostLogger extends CommonLogger
+{
 
     /** @var DatabaseLogger|null */
     public static $instance;
 
-    function __construct() {
+    function __construct()
+    {
 
         parent::__construct();
         self::$instance = $this;
@@ -54,7 +57,8 @@ class PostLogger extends CommonLogger {
      *
      * @return CommonLogger
      */
-    public static function get() {
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }

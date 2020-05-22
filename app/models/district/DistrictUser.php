@@ -27,516 +27,168 @@
 namespace App\Models\District;
 
 /**
- * Description of User
+ * Description of user
  *
  * @author cjacobsen
  */
-use App\Api\AD;
 
-class DistrictUser {
+use Adldap\Models\User;
+use App\Api\Ad\ADUsers;
+use System\App\LDAPLogger;
+use System\Traits\DomainTools;
 
-//put your code here
-    public $firstName;
-    public $middleName;
-    public $employeeID;
-    public $lastName;
-    public $distinguishedName;
-    public $username;
-    public $enabled;
-    public $street;
-    public $lockedOut;
-    public $description;
-    public $groups;
-    public $script;
-    public $homeDir;
-    public $homeDrv;
-    public $email;
-    public $adDepartment;
-    public $city;
-    public $state;
-    public $zip;
-    public $homePhone;
-    public $office;
-    public $adCompany;
-    public $adContainerName;
-    public $photo;
+class DistrictUser extends ADModel
+{
+    /**
+     * Include the DomainTools trait
+     */
+    use DomainTools;
 
-    public function __construct($username = null) {
-        if ($username !== null) {
-            $this->importFromAD(AD::get()->searchUser($username));
+
+    /**
+     * @var User
+     */
+    public $activeDirectory;
+
+
+    /**
+     * DistrictUser constructor.
+     *
+     * @param User|string $user Provide either the users samaccountname or the already retrieved ADLDAP2 user object
+     *
+     * @throws \System\App\AppException
+     */
+    public function __construct($user)
+    {
+        parent::__construct();
+        if (is_string($user)) {
+            $this->activeDirectory = ADUsers::getUser($user);
+        } elseif ($user instanceof User) {
+            $this->activeDirectory = $user;
         }
     }
 
     /**
-     *  Imports raw AD response
-     * @param type $adUserRaw
+     * Get the OU that the user is in
+     *
+     * @return string
      */
-    public function importFromAD($adUserRaw) {
-        \System\App\AppLogger::get()->debug($adUserRaw);
-        if (key_exists("givenname", $adUserRaw)) {
-            $this->firstName = $adUserRaw["givenname"][0];
-        }
+    public function getOU()
+    {
+        return self::getOUFromDN($this->activeDirectory->getDistinguishedName());
+    }
 
-        if (key_exists("thumbnailphoto", $adUserRaw)) {
-            $this->photo = $adUserRaw["thumbnailphoto"][0];
-        }
-        if (key_exists("sn", $adUserRaw)) {
-            $this->lastName = $adUserRaw["sn"][0];
-        }
-        if (key_exists("middlename", $adUserRaw)) {
-            $this->middleName = $adUserRaw["middlename"][0];
-        }
-        if (key_exists("employeeid", $adUserRaw)) {
-            $this->employeeID = $adUserRaw["employeeid"][0];
-        }
-        if (key_exists("homedirectory", $adUserRaw)) {
-            $this->homeDir = $adUserRaw["homedirectory"][0];
-        }
-        if (key_exists("homedrive", $adUserRaw)) {
-            $this->homeDrv = $adUserRaw["homedrive"][0];
-        }
-        if (key_exists("scriptpath", $adUserRaw)) {
-            $this->script = $adUserRaw["scriptpath"][0];
-        }
-        if (key_exists("pager", $adUserRaw)) {
-            $this->adPager = $adUserRaw["pager"][0];
-        }
+    /**
+     * Get the city in the Address tab of AD
+     *
+     * @return string
+     */
+    public function getCity()
+    {
+        return $this->getAttribute('l');
+    }
 
-        if (key_exists("company", $adUserRaw)) {
-            $this->adCompany = $adUserRaw["company"][0];
-        }
-        if (key_exists("streetaddress", $adUserRaw)) {
-            $this->street = $adUserRaw["streetaddress"][0];
-        }
-        if (key_exists("mail", $adUserRaw)) {
-            $this->email = $adUserRaw["mail"][0];
-        }
-        if (key_exists("description", $adUserRaw)) {
-            $this->description = $adUserRaw["description"][0];
-        }
-        if (key_exists("samaccountname", $adUserRaw)) {
-            $this->username = $adUserRaw["samaccountname"][0];
-        }
-        if (key_exists("displayName", $adUserRaw))
-            $this->adDisplayName = $adUserRaw["displayName"][0];
+    /**
+     * Get the user's middle name
+     *
+     * @return string
+     */
+    public function getMiddleName()
+    {
+        return $this->getAttribute('middlename');
+    }
 
-        if (key_exists("department", $adUserRaw))
-            $this->adDepartment = $adUserRaw["department"][0];
+    /**
+     * Get State from Address tab in AD ("st")
+     *
+     * @return string
+     */
+    public function getState()
+    {
+        return $this->getAttribute('st');
+    }
 
-        if (key_exists("l", $adUserRaw))
-            $this->city = $adUserRaw["l"][0];
+    /**
+     * Unlock the user
+     *
+     * @return bool
+     */
+    public function unlock()
+    {
+        $modifiedUser = $this->activeDirectory->setClearLockoutTime();
+        $this->logger->debug($modifiedUser);
+        return $modifiedUser->save();
 
-        if (key_exists("st", $adUserRaw))
-            $this->state = $adUserRaw["st"][0];
+    }
 
-        if (key_exists("postalcode", $adUserRaw))
-            $this->zip = $adUserRaw["postalcode"][0];
+    /**
+     * Disable the user
+     */
+    public function disable()
+    {
+        $this->setEnabledStatus(0);
+    }
 
-        if (key_exists("distinguishedname", $adUserRaw))
-            $this->distinguishedName = $adUserRaw["distinguishedname"][0];
+    public function enable()
+    {
+        $this->setEnabledStatus(1);
+    }
 
-        if (key_exists("homephone", $adUserRaw))
-            $this->homePhone = $adUserRaw["homephone"][0];
+    /**
+     * Sets a user to enabled or disabled in Active Directory
+     *
+     * @param bool $enable If ommitted, will be true;
+     *
+     * @return bool
+     */
+    private function setEnabledStatus($enable = true): bool
+    {
+        /**
+         * Get the existing user account control
+         */
+        $useraccountcontrol = $this->activeDirectory->getUserAccountControl();
+        /**
+         * Prepare enabled and disabled forms, one
+         * of these will be invalid depending on
+         * current user enabled state
+         */
+        $disabled = ($useraccountcontrol | 2); // set all bits plus bit 1 (=dec2)
+        $enabled = ($useraccountcontrol & ~2); // set all bits minus bit 1 (=dec2)
 
-        if (key_exists("physicaldeliveryofficename", $adUserRaw))
-            $this->office = $adUserRaw["physicaldeliveryofficename"][0];
-
-        if (key_exists("cn", $adUserRaw))
-            $this->adContainerName = $adUserRaw["cn"][0];
-
-        if (key_exists("memberof", $adUserRaw)) {
-            foreach ($adUserRaw["memberof"] as $key => $memberGroup) {
-                if (strval($key) != "count") {
-                    $groups[] = $memberGroup;
-                }
-            }
-
-            $this->groups = $groups;
-        }
-
-        if (key_exists("lockouttime", $adUserRaw)) {
-            if (intval($adUserRaw["lockouttime"][0]) > 0) {
-                $this->lockedOut = true;
-            } else {
-                $this->lockedOut = false;
-            }
+        /**
+         * Choose which new account control value to use
+         */
+        if ($enable) {
+            if (1 !== $enabled)
+                $new = $enabled;
+            else
+                $new = $disabled; //enable or disable?
         } else {
-            $this->lockedOut = false;
+            if (1 == $enabled)
+                $new = $enabled;
+            else
+                $new = $disabled; //enable or disable?
         }
-        if (key_exists("enabled", $adUserRaw)) {
-            $this->enabled = $adUserRaw['enabled'];
+        //var_dump($this);
+        $modifiedUser = $this->activeDirectory->setUserAccountControl($new);
+        $this->logger->debug($modifiedUser);
+        return $modifiedUser->save();
+    }
+
+    /**
+     * Gets the full name in (First [Middle] Last) format
+     *
+     * @return string
+     */
+    public function getFullName()
+    {
+        $middle = " ";
+        if ($this->getMiddleName() != null) {
+            $middle .= $this->getMiddleName() . " ";
         }
+        $fullname = $this->activeDirectory->getFirstName() . $middle . $this->activeDirectory->getLastName();
+        return $fullname;
     }
 
-    /**
-     * @deprecated since version number
-     * @param \Google_Service_Directory_User $gaUserRaw
-     */
-    private function processGA($gaUserRaw) {
-        /* @var $gaUserRaw \Google_Service_Directory_User */
-        $this->gaFirstName = $gaUserRaw->getName()->getGivenName();
-
-        $this->gaLastName = $gaUserRaw->getName()->getFamilyName();
-
-        $this->gaEnabled = !$gaUserRaw->getSuspended();
-
-        $this->gaUsername = $gaUserRaw->getEmails()[0]['address'];
-        $googleGroups = \App\Api\GAM::get()->getUserGroups($this->gaUsername);
-        foreach ($googleGroups as $group) {
-            $this->gaGroups[$group["name"]] = $group["email"];
-        }
-    }
-
-    /**
-     * Returns the users full name [first](middle)[last]
-     * If not middle name is set it is ommitted
-     * @return type
-     */
-    public function getFullName() {
-        $middle = ' ';
-        if ($this->getMiddleName() != '') {
-            $middle .= $this->getMiddleName() . ' ';
-        }
-
-        return $this->getFirstName() . $middle . $this->getLastName();
-    }
-
-    public function getDistinguishedName() {
-        return $this->distinguishedName;
-    }
-
-    public function getHomeDrv() {
-        return $this->homeDrv;
-    }
-
-    public function setDistinguishedName($distinguishedName) {
-        $this->distinguishedName = $distinguishedName;
-        return $this;
-    }
-
-    public function setHomeDrv($homeDrv) {
-        $this->homeDrv = $homeDrv;
-        return $this;
-    }
-
-    public function getFirstName() {
-        return $this->firstName;
-    }
-
-    public function getMiddleName() {
-        return $this->middleName;
-    }
-
-    public function getLastName() {
-        return $this->lastName;
-    }
-
-    public function getUsername() {
-        return $this->username;
-    }
-
-    public function getEnabled() {
-        return $this->enabled;
-    }
-
-    function getAdDepartment() {
-        return $this->adDepartment;
-    }
-
-    function setAdDepartment($adDepartment): void {
-        $this->adDepartment = $adDepartment;
-    }
-
-    function getDescription() {
-        return $this->description;
-    }
-
-    function getPhoto() {
-        return $this->photo;
-    }
-
-    function setPhoto($photo) {
-        $this->photo = $photo;
-        $ad = AD::get();
-        $ad->setUserThumbnailPhoto($this->distinguishedName, $photo);
-        return $this;
-    }
-
-    function setDescription($description) {
-        $this->description = $description;
-        return $this;
-    }
-
-    public function getGaEnabled() {
-        return $this->gaEnabled;
-    }
-
-    public function getGroups() {
-        return $this->groups;
-    }
-
-    public function getScript() {
-        return $this->script;
-    }
-
-    public function getHomeDir() {
-        return $this->homeDir;
-    }
-
-    public function getEmail() {
-        return $this->email;
-    }
-
-    public function getGaUsername() {
-        return $this->gaUsername;
-    }
-
-    public function getGaGroups() {
-        return $this->gaGroups;
-    }
-
-    /**
-     *
-     * @param type $firstName
-     * @return self
-     */
-    public function setFirstName($firstName) {
-        $this->firstName = $firstName;
-        return $this;
-    }
-
-    /**
-     *
-     * @param type $middleName
-     * @return self
-     */
-    public function setMiddleName($middleName) {
-        $this->middleName = $middleName;
-        return $this;
-    }
-
-    function getAdContainerName() {
-        return $this->adContainerName;
-    }
-
-    function setAdContainerName($adContainerName) {
-        $this->adContainerName = $adContainerName;
-        return $this;
-    }
-
-    function getAdCompany() {
-        return $this->adCompany;
-    }
-
-    function setAdCompany($adCompany) {
-        $this->adCompany = $adCompany;
-        return $this;
-    }
-
-    /**
-     *
-     * @param type $lastName
-     * @return self
-     */
-    public function setLastName($lastName) {
-        $this->lastName = $lastName;
-        return $this;
-    }
-
-    /**
-     *
-     * @param type $username
-     * @return self
-     */
-    public function setUsername($username) {
-        $this->username = $username;
-        return $this;
-    }
-
-    function getOffice() {
-        return $this->office;
-    }
-
-    function setOffice($office) {
-        $this->office = $office;
-        return $this;
-    }
-
-    function getCity() {
-        return $this->city;
-    }
-
-    function getState() {
-        return $this->state;
-    }
-
-    function getZip() {
-        return $this->zip;
-    }
-
-    function setCity($city) {
-        $this->city = $city;
-        return $this;
-    }
-
-    function setState($state) {
-        $this->state = $state;
-        return $this;
-    }
-
-    function setZip($zip) {
-        $this->zip = $zip;
-        return $this;
-    }
-
-    function getStreet() {
-        return $this->street;
-    }
-
-    function setStreet($street) {
-        $this->street = $street;
-        return $this;
-    }
-
-    function getHomePhone() {
-        return $this->homePhone;
-    }
-
-    function setHomePhone($homePhone) {
-        $this->homePhone = $homePhone;
-        return $this;
-    }
-
-    function getEmployeeID() {
-        return $this->employeeID;
-    }
-
-    function setEmployeeID($employeeID) {
-        $this->employeeID = $employeeID;
-        return $this;
-    }
-
-    function getLockedOut() {
-        return $this->lockedOut;
-    }
-
-    function setEnabled($enabled) {
-        $this->enabled = $enabled;
-        return $this;
-    }
-
-    function setLockedOut($lockedOut) {
-        $this->lockedOut = $lockedOut;
-        return $this;
-    }
-
-    /**
-     *
-     * @param type $adEnabled
-     * @return self
-     */
-    public function setAdEnabled($adEnabled) {
-        $this->enabled = $adEnabled;
-        return $this;
-    }
-
-    /**
-     *
-     * @param type $gaEnabled
-     * @return self
-     */
-    public function setGaEnabled($gaEnabled) {
-        $this->gaEnabled = $gaEnabled;
-        return $this;
-    }
-
-    /**
-     *
-     * @param type $groups
-     * @return self
-     */
-    public function setGroups($groups) {
-        $this->groups = $groups;
-        return $this;
-    }
-
-    /**
-     *
-     * @param type $script
-     * @return self
-     */
-    public function setScript($script) {
-        $this->script = $script;
-        return $this;
-    }
-
-    /**
-     *
-     * @param type $homeDir
-     * @return self
-     */
-    public function setHomeDir($homeDir) {
-        $this->homeDir = $homeDir;
-        return $this;
-    }
-
-    /**
-     *
-     * @param type $email
-     * @return self
-     */
-    public function setEmail($email) {
-        $this->email = $email;
-        return $this;
-    }
-
-    /**
-     *
-     * @param type $gaUsername
-     * @return self
-     */
-    public function setGaUsername($gaUsername) {
-        $this->gaUsername = $gaUsername;
-        return $this;
-    }
-
-    /**
-     *
-     * @param type $gaGroups
-     * @return self
-     */
-    public function setGaGroups($gaGroups) {
-        $this->gaGroups = $gaGroups;
-        return $this;
-    }
-
-    /**
-     * Unlocks this user in AD
-     */
-    public function unlock() {
-        $result = AD::get()->unlockUser($this->username);
-    }
-
-    /**
-     * Disables this user in AD
-     */
-    public function disable() {
-        $result = AD::get()->disableUser($this->username);
-    }
-
-    /**
-     * Enables this user in AD
-     */
-    public function enable() {
-        $result = AD::get()->enableUser($this->username);
-    }
-
-    /**
-     * Returns the users OU location based on Distinguished Name
-     * @return type
-     */
-    public function getOu() {
-        return substr($this->distinguishedName, strpos($this->distinguishedName, ',') + 1);
-    }
 
 }

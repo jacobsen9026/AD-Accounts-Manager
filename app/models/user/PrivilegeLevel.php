@@ -31,49 +31,59 @@ namespace App\Models\User;
  *
  * @author cjacobsen
  */
+
 use App\Models\Database\PrivilegeLevelDatabase;
 
-class PrivilegeLevel {
+class PrivilegeLevel
+{
 
     private $id;
     private $adGroup;
     private $superAdmin;
 
-    public function setId(int $id) {
+    public function setId(int $id)
+    {
         $this->id = $id;
         return $this;
     }
 
-    public function setAdGroup($adGroup) {
+    public function setAdGroup($adGroup)
+    {
         $this->adGroup = $adGroup;
         return $this;
     }
 
-    public function setSuperAdmin($superAdmin) {
+    public function setSuperAdmin($superAdmin)
+    {
         $this->superAdmin = $superAdmin;
         return $this;
     }
 
-    public function getId(): int {
+    public function getId(): int
+    {
         return $this->id;
     }
 
-    public function getAdGroup() {
+    public function getAdGroup()
+    {
         return $this->adGroup;
     }
 
-    public function getSuperAdmin() {
+    public function getSuperAdmin()
+    {
         return $this->superAdmin;
     }
 
-    public function importFromDatabase($data) {
+    public function importFromDatabase($data)
+    {
         $this->setId($data['ID'])
-                ->setAdGroup($data['AD_Group_Name'])
-                ->setSuperAdmin($data['Super_Admin']);
+            ->setAdGroup($data['AD_Group_Name'])
+            ->setSuperAdmin($data['Super_Admin']);
         return $this;
     }
 
-    public function saveToDatabase() {
+    public function saveToDatabase()
+    {
         PrivilegeLevelDatabase::updatePrivilegeLevel($this->getId(), $this->getAdGroup(), $this->getSuperAdmin());
     }
 

@@ -31,6 +31,7 @@ namespace App\Models\User;
  *
  * @author cjacobsen
  */
+
 use App\Models\User\User;
 use App\Models\User\PrivilegeLevel;
 use App\Models\User\Permission;
@@ -38,7 +39,8 @@ use System\App\AppLogger;
 use App\Models\Database\PermissionMapDatabase;
 use System\App\UserLogger;
 
-abstract class PermissionHandler {
+abstract class PermissionHandler
+{
 
     /**
      *
@@ -58,26 +60,29 @@ abstract class PermissionHandler {
      */
     private static $logger;
 
-    private static function loadUser() {
+    private static function loadUser()
+    {
 
         if (self::$user == null) {
             UserLogger::get()->info('Trying to load user for permission handling');
             $appClass = APPCLASS;
             self::$logger = $appClass::get()->logger;
             self::$user = $appClass::get()->user;
-            UserLogger::get()->info('Loaded User:');
+            UserLogger::get()->info('Loaded user:');
             UserLogger::get()->info(self::$user);
         }
     }
 
     /**
      * Determines if a user has the necessary permission to match the request
+     *
      * @param string $requestedType Options are "user" or "group"
-     * @param int $requestedLevel Options are int(0-4) Meaning differs based on permission type, but generally (Read,Change,Write,Delete)
+     * @param int $requestedLevel   Options are int(0-4) Meaning differs based on permission type, but generally
+     *                              (Read,Change,Write,Delete)
      */
-    public static function hasPermission(string $ou, string $requestedType, int $requestedLevel) {
-        $testResults = array();
-
+    public static function hasPermission(string $ou, string $requestedType, int $requestedLevel)
+    {
+        $testResults = [];
 
 
         self::loadUser();
@@ -87,8 +92,6 @@ abstract class PermissionHandler {
         self::$logger->info("Loading user permissions");
 
         $userPermissions = self::$user->getPermissions($ou);
-
-
 
 
         /* @var $permission Permission */
@@ -108,9 +111,11 @@ abstract class PermissionHandler {
     /**
      * Checks if the user has any group permissions
      * defined anywhere within the permission mappings
+     *
      * @return boolean
      */
-    public static function hasGroupPermissions() {
+    public static function hasGroupPermissions()
+    {
         self::loadUser();
         if (self::$user->superAdmin) {
             return true;
@@ -125,9 +130,11 @@ abstract class PermissionHandler {
     /**
      * Checks if the user has any group permissions
      * defined anywhere within the permission mappings
+     *
      * @return boolean
      */
-    public static function hasUserPermissions() {
+    public static function hasUserPermissions()
+    {
         self::loadUser();
         if (self::$user !== null) {
             if (self::$user->superAdmin) {
@@ -143,12 +150,13 @@ abstract class PermissionHandler {
     /**
      *
      * @param array $userPermissions An array of all the users relevant permissions for the requested OU
-     * @param string $ou The OU to find permission for
-     * @param string $requestedType Can be PermissionLevel::GROUPS or PermissionLevel::USERS
+     * @param string $ou             The OU to find permission for
+     * @param string $requestedType  Can be PermissionLevel::GROUPS or PermissionLevel::USERS
      * @param int $requestedLevel
      */
-    private static function testPermissions(array $userPermissions, string $ou, string $requestedType, int $requestedLevel) {
-        $testResults = array();
+    private static function testPermissions(array $userPermissions, string $ou, string $requestedType, int $requestedLevel)
+    {
+        $testResults = [];
         foreach ($userPermissions as $permission) {
             $distanceFromOU = strpos($ou, $permission->getOu());
             self::$logger->info($permission->getId() . " Distance: " . $permission->getOu() . ' -> ' . $ou . ' = ' . $distanceFromOU);

@@ -33,13 +33,16 @@ namespace System;
  *
  * @author cjacobsen
  */
-abstract class Get {
+abstract class Get
+{
 
     /**
      * Check if the GET was used in the request
+     *
      * @return boolean
      */
-    public static function isSet() {
+    public static function isSet()
+    {
         if (isset($_GET) and $_GET != null) {
             return true;
         } else {
@@ -49,9 +52,11 @@ abstract class Get {
 
     /**
      * Returns the contents of the GET array, or false if GET was not used.
+     *
      * @return null|array
      */
-    public static function getAll() {
+    public static function getAll()
+    {
         if (Get::isSet()) {
             return $_GET;
         } else {
@@ -59,7 +64,8 @@ abstract class Get {
         }
     }
 
-    public static function get($key) {
+    public static function get($key)
+    {
         if (self::isSet($_GET[$key])) {
             app\AppLogger::get()->info("Getting Get variable " . $key . ' ' . $_GET[$key]);
             return $_GET[$key];

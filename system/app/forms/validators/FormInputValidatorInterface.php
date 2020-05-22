@@ -30,7 +30,8 @@ namespace System\App\Forms\Validators;
  *
  * @author cjacobsen
  */
-interface FormInputValidatorInterface {
+interface FormInputValidatorInterface
+{
 
     public function validateInput();
 }

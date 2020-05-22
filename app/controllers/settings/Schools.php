@@ -31,23 +31,26 @@ namespace App\Controllers\Settings;
  *
  * @author cjacobsen
  */
+
 use App\Controllers\Controller;
 use App\Models\Database\DistrictDatabase;
 use App\Models\Database\SchoolDatabase;
 use App\Api\AD;
 
-class Schools extends Controller {
+class Schools extends Controller
+{
 
     /**
-      public function index() {
-      return $this->show(1);
-      if (DistrictDatabase::getSchools(1)) {
-
-      }
-      }
+     * public function index() {
+     * return $this->show(1);
+     * if (DistrictDatabase::getSchools(1)) {
+     *
+     * }
+     * }
      *
      */
-    public function show($districtID = null) {
+    public function show($districtID = null)
+    {
 
         //$this->getDistrictDirectory();
 
@@ -63,7 +66,8 @@ class Schools extends Controller {
         }
     }
 
-    public function edit($schoolID) {
+    public function edit($schoolID)
+    {
         $this->preProcessSchoolID($schoolID);
 
         $this->staffADSettings = SchoolDatabase::getADSettings($schoolID, 'Staff');
@@ -74,7 +78,8 @@ class Schools extends Controller {
         }
     }
 
-    public function editPost($schoolID) {
+    public function editPost($schoolID)
+    {
         \System\App\AppLogger::get()->debug('Edit Post');
         $post = \system\Post::getAll();
         //var_dump($post);
@@ -83,14 +88,16 @@ class Schools extends Controller {
         $this->redirect('/schools/edit/' . $schoolID);
     }
 
-    public function createPost($districtID = null) {
+    public function createPost($districtID = null)
+    {
         $post = \system\Post::getAll();
         //SchoolDatabase::createSchool($post['name'], $post['abbr'], $post['ou'], $districtID);
         $this->redirect('/schools/show/' . $districtID);
         //return $this->index();
     }
 
-    public function delete($schoolID) {
+    public function delete($schoolID)
+    {
         $this->districtID = SchoolDatabase::getDistrictID($schoolID);
         SchoolDatabase::deleteSchool($schoolID);
         $this->redirect('/schools/show/' . $this->districtID);

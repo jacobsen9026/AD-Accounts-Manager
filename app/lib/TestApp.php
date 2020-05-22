@@ -31,20 +31,24 @@ namespace App\Lib;
  *
  * @author cjacobsen
  */
+
 use System\App\Interfaces\AppInterface;
 use System\AppOutput;
 use System\Common\CommonApp;
 
-class TestApp extends CommonApp implements AppInterface {
+class TestApp extends CommonApp implements AppInterface
+{
 
     //put your code here
-    public function __construct(\System\Request $request, \System\Common\CommonLogger $systemLogger) {
+    public function __construct(\System\Request $request, \System\Common\CommonLogger $systemLogger)
+    {
         //Did something here
         $this->request = $request;
         self::$instance = $this;
     }
 
-    public function run(): \System\AppOutput {
+    public function run(): \System\AppOutput
+    {
         $out = new AppOutput($this);
         $out->appendBody("Hello World");
         return $out;

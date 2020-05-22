@@ -31,13 +31,15 @@ namespace App\Controllers\Settings;
  *
  * @author cjacobsen
  */
+
 use App\Controllers\Controller;
 use App\Models\Database\DistrictDatabase;
 use App\Models\Database\SchoolDatabase;
 use App\Models\District\Department;
 use app\database\Schema;
 
-class Departments extends Controller {
+class Departments extends Controller
+{
 
     //put your code here
     /*
@@ -46,12 +48,14 @@ class Departments extends Controller {
       }
      *
      */
-    function __construct(\System\App\App $app) {
+    function __construct(\System\App\App $app)
+    {
         parent::__construct($app);
         $this->layout = 'setup';
     }
 
-    public function show($schoolID = null) {
+    public function show($schoolID = null)
+    {
         $this->preProcessSchoolID($schoolID);
         $this->departments = Department::getDepartments($schoolID);
         //var_dump($this->schools);
@@ -62,7 +66,8 @@ class Departments extends Controller {
         }
     }
 
-    public function edit($departmentID) {
+    public function edit($departmentID)
+    {
         $this->preProcessDepartmentID($departmentID);
 
         $this->staffADSettings = Department::getADSettings($departmentID, 'Staff');
@@ -73,7 +78,8 @@ class Departments extends Controller {
         }
     }
 
-    public function editPost($departmentID) {
+    public function editPost($departmentID)
+    {
         \System\App\AppLogger::get()->debug('Edit Post');
         $post = \system\Post::getAll();
         //var_dump($post);
@@ -82,14 +88,16 @@ class Departments extends Controller {
         $this->redirect('/departments/edit/' . $departmentID);
     }
 
-    public function createPost($schoolID = null) {
+    public function createPost($schoolID = null)
+    {
         $post = \system\Post::getAll();
         Department::createDepartment($post[Schema::DEPARTMENT_NAME[Schema::COLUMN]], $schoolID);
         $this->redirect('/departments/show/' . $schoolID);
         //return $this->index();
     }
 
-    public function delete($departmentID) {
+    public function delete($departmentID)
+    {
         $this->schoolID = Department::getSchoolID($departmentID);
         Department::deleteDepartment($departmentID);
         $this->redirect('/departments/show/' . $this->schoolID);

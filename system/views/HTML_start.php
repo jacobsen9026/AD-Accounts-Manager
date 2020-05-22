@@ -5,7 +5,15 @@ use System\App\Forms\Form;
 ?>
 <html lang="en">
 <head>
-    <!-- Latest compiled and minified CSS -->
+
+    <!-- Compiled and minified CSS
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    -->
+    <!-- Compiled and minified JavaScript
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    -->
+
+    <!-- Latest compiled and minified CSS    -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
 
     <!-- jQuery library -->
@@ -44,7 +52,7 @@ use System\App\Forms\Form;
                 $(this).html($(this).data('text-alt'));
                 $(this).data('text-alt', $(this).data('text-original'));
             });
-           
+
         });
         //Custom JQuery for district settings navigation
         jQuery(function ($) {

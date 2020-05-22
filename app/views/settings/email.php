@@ -26,6 +26,7 @@
 
 use App\Models\Database\EmailDatabase;
 use System\App\Forms\Form;
+use System\App\Forms\FormFloatingButton;
 use System\App\Forms\FormText;
 use System\App\Forms\FormRadio;
 use System\App\Forms\FormButton;
@@ -35,7 +36,7 @@ $email = new EmailDatabase();
 $form = new Form('/settings/email');
 
 $smtpServer = new FormText("SMTP Server", 'Enter the SMTP server address',
-        'smtpServer', $email->getSMTPServer());
+    'smtpServer', $email->getSMTPServer());
 
 $smtpPort = new FormText('SMTP Port', 'Enter the SMTP server port', 'smtpPort', $email->getSMTPPort());
 
@@ -44,50 +45,43 @@ $useSMTPAuth->addOption('False', 0, !$email->getUseSMTPAuth());
 $useSMTPAuth->addOption('True', 1, $email->getUseSMTPAuth());
 
 $smtpUsername = new FormText("SMTP Username", 'SMTP Auth username',
-        'smtpUsername', $email->getSMTPUsername());
+    'smtpUsername', $email->getSMTPUsername());
 
 $smtpPassword = new FormText("SMTP Password", 'SMTP Auth password',
-        'smtpPassword', $email->getSMTPPassword());
+    'smtpPassword', $email->getSMTPPassword());
 
 $useSMTPSSL = new FormRadio('Use SMTP over SSL', 'Sends emails securly', 'useSMTPSSL');
 $useSMTPSSL->addOption('False', 0, !$email->getUseSMTPSSL());
 $useSMTPSSL->addOption('True', 1, $email->getUseSMTPSSL());
 
 $replyAddress = new FormText("Reply-To Address", 'The reply-to address for emails sent from this app',
-        'replyAddress', $email->getReplyToAddress());
+    'replyAddress', $email->getReplyToAddress());
 
 $replyName = new FormText("Reply-To Name", 'The reply-to display name for emails sent from this app',
-        'replyName', $email->getReplyToName());
+    'replyName', $email->getReplyToName());
 
 $fromAddress = new FormText("From Address", 'The from address for emails sent from this app',
-        'fromAddress', $email->getFromAddress());
+    'fromAddress', $email->getFromAddress());
 
 $fromName = new FormText("From Name", 'The from display name for emails sent from this app',
-        'fromName', $email->getFromName());
+    'fromName', $email->getFromName());
 
 
-
-
-
-
-
-
-
-$saveButton = new FormButton('Save');
-$saveButton->small()
-        ->addAJAXRequest('/api/settings/email', 'settingsOutput', $form);
+$saveButton = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
+$saveButton->setId('floatingSaveButton')
+    ->addAJAXRequest('/api/settings/email', 'settingsOutput', $form);
 
 $form->addElementToNewRow($smtpServer)
-        ->addElementToCurrentRow($smtpPort)
-        ->addElementToNewRow($smtpUsername)
-        ->addElementToCurrentRow($smtpPassword)
-        ->addElementToNewRow($useSMTPAuth)
-        ->addElementToCurrentRow($useSMTPSSL)
-        ->addElementToNewRow($fromAddress)
-        ->addElementToCurrentRow($fromName)
-        ->addElementToNewRow($replyAddress)
-        ->addElementToCurrentRow($replyName)
-        ->addElementToNewRow($saveButton);
+    ->addElementToCurrentRow($smtpPort)
+    ->addElementToNewRow($smtpUsername)
+    ->addElementToCurrentRow($smtpPassword)
+    ->addElementToNewRow($useSMTPAuth)
+    ->addElementToCurrentRow($useSMTPSSL)
+    ->addElementToNewRow($fromAddress)
+    ->addElementToCurrentRow($fromName)
+    ->addElementToNewRow($replyAddress)
+    ->addElementToCurrentRow($replyName)
+    ->addElementToNewRow($saveButton);
 echo $form->print();
 
 $form = new Form('', 'testEmail');
@@ -98,12 +92,12 @@ $testResult = new FormHTML('', '', 'result');
 $testResult->setId('emailTestOutput');
 $testEmail = new FormButton("Test Email");
 $testEmail->setType("button")
-        ->small()
-        ->addAJAXRequest('/api/email', $testResult, $form, true);
+    ->small()
+    ->addAJAXRequest('/api/email', $testResult, $form, true);
 $form->addElementToNewRow($testResult)
-        ->addElementToNewRow($action)
-        ->addElementToNewRow($testRecipient)
-        ->addElementToNewRow($testEmail);
+    ->addElementToNewRow($action)
+    ->addElementToNewRow($testRecipient)
+    ->addElementToNewRow($testEmail);
 echo $form->print();
 ?>
 

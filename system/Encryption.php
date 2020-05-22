@@ -31,13 +31,15 @@ namespace System;
  *
  * @author nbranco
  */
-abstract class Encryption {
+abstract class Encryption
+{
 
     //Varible for the cipher for changing as PHP updates openssl cipher lists
     const CIPHER = "aes-256-cbc";
     const KEY_PATH = CONFIGPATH . DIRECTORY_SEPARATOR . "private.key";
 
-    public static function encrypt($plaintext) {
+    public static function encrypt($plaintext)
+    {
         if ($plaintext == '') {
             return $plaintext;
         }
@@ -53,7 +55,8 @@ abstract class Encryption {
         }
     }
 
-    public static function decrypt($ciphertext) {
+    public static function decrypt($ciphertext)
+    {
         if ($ciphertext == '') {
             return $ciphertext;
         }
@@ -67,14 +70,16 @@ abstract class Encryption {
      *
      * @return byte The generated key
      */
-    public static function genereatePrivateKeyFile() {
+    public static function genereatePrivateKeyFile()
+    {
         $rand = openssl_random_pseudo_bytes(256);
         $key = $rand;
         File::overwriteFile(self::KEY_PATH, $rand);
         return $key;
     }
 
-    private static function getKey() {
+    private static function getKey()
+    {
         $key = File::getContents(self::KEY_PATH);
         if ($key == "") {
             $key = self::genereatePrivateKeyFile();

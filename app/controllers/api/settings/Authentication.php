@@ -31,13 +31,16 @@ namespace App\Controllers\Api\settings;
  *
  * @author cjacobsen
  */
+
 use App\Controllers\Api\APIController;
 
-class Authentication extends APIController {
+class Authentication extends APIController
+{
 
     //put your code here
 
-    public function indexPost() {
+    public function indexPost()
+    {
         $authentication = new \App\Controllers\Settings\Authentication($this->app);
         $authentication->indexPost();
         return $this->returnHTML($this->view('settings/authentication'));

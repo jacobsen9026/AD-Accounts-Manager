@@ -31,9 +31,11 @@ namespace App\Api;
  *
  * @author cjacobsen
  */
+
 use \Google_Client;
 
-class GAM {
+class GAM
+{
 
 //put your code here
     private $clientSecretFile;
@@ -51,7 +53,8 @@ class GAM {
     /** @var GAM|null */
     public static $instance;
 
-    function __construct() {
+    function __construct()
+    {
 
         if (isset(self::$instance)) {
             return self::$instance;
@@ -78,18 +81,19 @@ class GAM {
      *
      * @return GAM
      */
-    public static function get() {
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }
         return self::$instance;
     }
 
-    private function prepareGoogleClient() {
+    private function prepareGoogleClient()
+    {
 
 
         $oauth_credentials = GAMPATH . DIRECTORY_SEPARATOR . "client_secret.json";
-
 
 
         $this->googleClient = new \Google_Client();
@@ -121,7 +125,8 @@ class GAM {
 //var_dump($this->googleClient->getRefreshToken());
     }
 
-    private function getAccessToken() {
+    private function getAccessToken()
+    {
 // Refresh the token if possible, else fetch a new one.
         if ($this->googleClient->getRefreshToken()) {
             $this->googleClient->fetchAccessTokenWithRefreshToken($this->googleClient->getRefreshToken());
@@ -132,7 +137,8 @@ class GAM {
         }
     }
 
-    private function generateToken() {
+    private function generateToken()
+    {
 //var_dump($_GET["code"]);
         $token = $this->googleClient->fetchAccessTokenWithAuthCode($_GET['code']);
         $this->googleClient->setAccessToken($token);
@@ -153,7 +159,8 @@ class GAM {
 //exit;
     }
 
-    public function isAuthorized() {
+    public function isAuthorized()
+    {
         if (!isset($this->googleClient)) {
             return false;
         }
@@ -165,7 +172,8 @@ class GAM {
         return true;
     }
 
-    public function getAuthUrl() {
+    public function getAuthUrl()
+    {
         if (isset($this->authUrl)) {
             return $this->authUrl;
         } else {
@@ -174,7 +182,8 @@ class GAM {
         return "";
     }
 
-    public function clientSecretExists() {
+    public function clientSecretExists()
+    {
         if (file_exists($this->clientSecretFile)) {
             return true;
         } else {
@@ -182,12 +191,13 @@ class GAM {
         }
     }
 
-    public function getDomainNames() {
+    public function getDomainNames()
+    {
         $service = new \Google_Service_Directory($this->googleClient);
         $domains = $service->domains;
         $customer = $service->customers->get($this->customerID);
         $domainList = $domains->listDomains($customer->id);
-        $domainNames = array();
+        $domainNames = [];
         $domainNames[] = $domainList->current()->domainName;
         while ($domainList->next()) {
             $domainNames[] = ($domainList->current()->domainName);
@@ -195,21 +205,23 @@ class GAM {
         return $domainNames;
     }
 
-    public function getScopes() {
+    public function getScopes()
+    {
         return $this->scopes;
     }
 
-    public function getUser($username) {
+    public function getUser($username)
+    {
         $username = $username . "@branchburg.k12.nj.us";
         echo "<br><br><br>";
         //echo $username;
 // Print the first 10 users in the domain.
-        $optParams = array(
+        $optParams = [
             'customer' => 'my_customer',
             'maxResults' => 10,
             'email' => $username,
             'orderBy' => 'email',
-        );
+        ];
         if ($this->googleClient != null) {
             $service = new \Google_Service_Directory($this->googleClient);
             $user = $service->users->get($username);
@@ -221,12 +233,13 @@ class GAM {
         return false;
     }
 
-    public function getUserGroups($username) {
+    public function getUserGroups($username)
+    {
         //var_dump($username);
         $service = new \Google_Service_Directory($this->googleClient);
-        $optParams = array(
+        $optParams = [
             'userKey' => $username,
-        );
+        ];
         $groups = $service->groups->listGroups($optParams);
         return $groups["modelData"]["groups"];
     }

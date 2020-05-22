@@ -31,23 +31,27 @@ namespace App\Controllers\Settings;
  *
  * @author cjacobsen
  */
+
 use System\Post;
 use App\Models\User\PrivilegeLevel;
 use App\Models\Database\PrivilegeLevelDatabase;
 use App\Controllers\Controller;
 use App\Models\Database\EmailDatabase;
 
-class Email extends Controller {
+class Email extends Controller
+{
 
     //put your code here
-    public function index() {
+    public function index()
+    {
 
         $this->tab = 'email';
         var_dump($this->tab);
         return $this->view('settings/index');
     }
 
-    public function indexPost() {
+    public function indexPost()
+    {
 
         $post = \system\Post::getAll();
         EmailDatabase::saveSettings($post);

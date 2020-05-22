@@ -31,9 +31,11 @@ namespace App\Models\Database;
  *
  * @author cjacobsen
  */
+
 use App\Models\Model;
 
-abstract class DatabaseModel extends Model implements DatabaseModelInterface {
+abstract class DatabaseModel extends Model implements DatabaseModelInterface
+{
 
     /**
      * The calling object MUST have a TABLE_NAME constant
@@ -42,12 +44,14 @@ abstract class DatabaseModel extends Model implements DatabaseModelInterface {
      *
      * @param type $column
      * @param type $value
+     *
      * @return type
      */
-    protected static function updateDatabaseValue($column, $value) {
+    protected static function updateDatabaseValue($column, $value)
+    {
         $query = new Query(static::TABLE_NAME, Query::UPDATE, $column);
         $query->where("ID", 1)
-                ->set($column, $value);
+            ->set($column, $value);
         return $query->run();
     }
 
@@ -58,9 +62,11 @@ abstract class DatabaseModel extends Model implements DatabaseModelInterface {
      *
      *
      * @param string $column
+     *
      * @return mixed
      */
-    protected static function getDatabaseValue($column, $id = 1) {
+    protected static function getDatabaseValue($column, $id = 1)
+    {
         $query = new Query(static::TABLE_NAME, Query::SELECT, $column);
         $query->where("ID", $id);
         return $query->run();
@@ -68,9 +74,11 @@ abstract class DatabaseModel extends Model implements DatabaseModelInterface {
 
     /**
      * Returns the entire table
+     *
      * @return type
      */
-    public static function get() {
+    public static function get()
+    {
         $query = new Query(static::TABLE_NAME);
         return $query->run();
     }

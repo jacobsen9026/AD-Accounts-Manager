@@ -31,16 +31,19 @@ namespace System;
  *
  * @author cjacobsen
  */
+
 use System\App\Session;
 use System\App\AppException;
 
-abstract class Post {
+abstract class Post
+{
 
     //put your code here
-    public static function isSet($key = null) {
+    public static function isSet($key = null)
+    {
 
         if ($key == null) {
-            if (isset($_POST) and $_POST != null and!empty($_POST)) {
+            if (isset($_POST) and $_POST != null and !empty($_POST)) {
                 return true;
             } else {
                 return false;
@@ -55,7 +58,8 @@ abstract class Post {
         }
     }
 
-    public static function getAll() {
+    public static function getAll()
+    {
         if (Post::isSet()) {
             return $_POST;
         } else {
@@ -63,7 +67,8 @@ abstract class Post {
         }
     }
 
-    public static function get($key = null) {
+    public static function get($key = null)
+    {
         if ($key == null) {
             if (Post::isSet()) {
                 return $_POST;
@@ -81,7 +86,8 @@ abstract class Post {
         }
     }
 
-    public static function csrfCheck() {
+    public static function csrfCheck()
+    {
         if (Post::isSet()) {
             if (isset($_POST["csrfToken"])) {
                 if (Encryption::decrypt($_POST["csrfToken"]) == Session::getID()) {
@@ -93,7 +99,8 @@ abstract class Post {
         //return false;
     }
 
-    public static function getFile($inputID) {
+    public static function getFile($inputID)
+    {
 
         $files = $_FILES;
         //var_dump($files);

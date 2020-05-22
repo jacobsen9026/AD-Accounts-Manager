@@ -31,10 +31,12 @@ namespace App\Models\District;
  *
  * @author cjacobsen
  */
+
 use App\Models\District\DistrictUser;
 use App\Api\AD;
 
-class Group {
+class Group
+{
 
     private $distinguishedName;
     private $name;
@@ -47,57 +49,70 @@ class Group {
      */
     private $members;
 
-    public function getDistinguishedName() {
+    public function getDistinguishedName()
+    {
         return $this->distinguishedName;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
 
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
-    public function setDescription($description) {
+    public function setDescription($description)
+    {
         $this->description = $description;
         return $this;
     }
 
-    public function getMembers() {
+    public function getMembers()
+    {
         return $this->members;
     }
 
-    public function setDistinguishedName($distinguishedName) {
+    public function setDistinguishedName($distinguishedName)
+    {
         $this->distinguishedName = $distinguishedName;
         return $this;
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
         return $this;
     }
 
-    public function setEmail($email) {
+    public function setEmail($email)
+    {
         $this->email = $email;
         return $this;
     }
 
-    public function setMembers(array $members) {
+    public function setMembers(array $members)
+    {
         $this->members = $members;
         return $this;
     }
 
     /**
      * Checks if this groups has a user by username or DistrictUser object
+     *
      * @param type $member
+     *
      * @return boolean
      */
-    public function hasMember($member) {
+    public function hasMember($member)
+    {
         if (is_string($member) and $this->getMembers() !== null) {
             foreach ($this->getMembers() as $mem) {
                 if ($member == $mem->getUsername()) {
@@ -117,15 +132,17 @@ class Group {
     }
 
     /**
-     * Loads all group members from AD
+     * Loads all group members from ad
+     *
      * @return $this
      */
-    public function fillMembers() {
+    public function fillMembers()
+    {
         $ad = AD::get();
-        $members = array();
+        $members = [];
         $members = $ad->listGroupMembers($this->distinguishedName);
 
-        $users = array();
+        $users = [];
         foreach ($members as $member) {
             $users[] = new DistrictUser($member);
         }
@@ -135,10 +152,12 @@ class Group {
     }
 
     /**
-     * Imports raw AD response
+     * Imports raw ad response
+     *
      * @param type $rawADResponse
      */
-    public function importFromAD($rawADResponse) {
+    public function importFromAD($rawADResponse)
+    {
 //var_dump($rawADResponse);
         if (is_array($rawADResponse)) {
             $this->setDistinguishedName($rawADResponse['distinguishedname'][0]);
@@ -153,9 +172,11 @@ class Group {
     /**
      *
      * @param DistrictUser $user
+     *
      * @return type
      */
-    public function addMember(DistrictUser $user) {
+    public function addMember(DistrictUser $user)
+    {
 
         $ad = AD::get();
         return $ad->addUserToGroup($this->distinguishedName, $user->getDistinguishedName());
@@ -164,16 +185,19 @@ class Group {
     /**
      *
      * @param DistrictUser $user
+     *
      * @return type
      */
-    public function removeMember(DistrictUser $user) {
+    public function removeMember(DistrictUser $user)
+    {
 
 
         $ad = AD::get();
         return $ad->removeUserFromGroup($this->distinguishedName, $user->getDistinguishedName());
     }
 
-    public function createInAD() {
+    public function createInAD()
+    {
         $ad = AD::get();
         return $ad->createGroup($this->getName(), $this->distinguishedName, $this->email);
     }

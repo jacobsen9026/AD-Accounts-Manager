@@ -31,10 +31,12 @@ namespace System\Common;
  *
  * @author cjacobsen
  */
+
 use System\Parser;
 use System\Common\CommonLogEntry;
 
-class CommonLogger extends Parser {
+class CommonLogger extends Parser
+{
 
     private $startTime;
     private $logs;
@@ -43,20 +45,24 @@ class CommonLogger extends Parser {
     private $queries;
     private $hasErrors = false;
 
-    function __construct() {
+    function __construct()
+    {
         $this->startTime = floatval(microtime());
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
         return $this;
     }
 
-    public function getStartTime() {
+    public function getStartTime()
+    {
         return $this->startTime;
     }
 
-    private function getErrorLogs() {
+    private function getErrorLogs()
+    {
         $errors = null;
         foreach ($this->logs as $log) {
             if ($log[1] == CommonLogEntry::ERROR) {
@@ -68,7 +74,8 @@ class CommonLogger extends Parser {
         return $errors;
     }
 
-    private function getQueryLogs() {
+    private function getQueryLogs()
+    {
 
         return $this->queries;
     }
@@ -77,7 +84,8 @@ class CommonLogger extends Parser {
      *
      * @return array|null
      */
-    public function getLog($logType) {
+    public function getLog($logType)
+    {
         //var_dump($this->log);
         switch ($logType) {
             case CommonLogEntry::ERROR:
@@ -93,7 +101,8 @@ class CommonLogger extends Parser {
         return null;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -101,27 +110,32 @@ class CommonLogger extends Parser {
      *
      * @return string
      */
-    public function getLogs() {
+    public function getLogs()
+    {
         //var_dump($this->log);
         return $this->logs;
     }
 
     /**
      * Returns the array of CommonLogEntries for this logger
+     *
      * @return array<CommonLogEntry>
      */
-    public function getLogEntries() {
+    public function getLogEntries()
+    {
         return $this->logEntries;
     }
 
     /**
      *
      * @param mixed $message
+     *
      * @return string
      * @deprecated
      *
      */
-    private function preProcessMessage($message) {
+    private function preProcessMessage($message)
+    {
         if (is_array($message)) {
             $message = var_export($message, true);
         }
@@ -130,7 +144,7 @@ class CommonLogger extends Parser {
         }
         $message = str_replace("\n", "", $message);
         $caller = backTrace();
-        if (isset($caller["file"])and isset($caller["file"])) {
+        if (isset($caller["file"]) and isset($caller["file"])) {
             $caller["file"] = $this->sanitize($caller['file']);
             return $caller["file"] . ":" . $caller["line"] . ' ' . $message;
         }
@@ -140,9 +154,11 @@ class CommonLogger extends Parser {
     /**
      *
      * @param mixed $message
+     *
      * @return string
      */
-    private function preProcessMessage2($message) {
+    private function preProcessMessage2($message)
+    {
         if (is_array($message)) {
             $message = var_export($message, true);
         }
@@ -151,7 +167,7 @@ class CommonLogger extends Parser {
         }
         $message = str_replace("\n", "", $message);
         $caller = backTrace();
-        if (isset($caller["file"])and isset($caller["file"])) {
+        if (isset($caller["file"]) and isset($caller["file"])) {
             $caller["file"] = $this->sanitize($caller['file']);
             return $caller["file"] . ":" . $caller["line"] . ' ' . $message;
         }
@@ -160,14 +176,16 @@ class CommonLogger extends Parser {
 
     /**
      * Stores a log event as a CommonLogEntry in this loggers $logEntries store
+     *
      * @param mixed $message
      * @param string $level
      */
-    protected function storeLogEntry($message, string $level) {
+    protected function storeLogEntry($message, string $level)
+    {
         $logEntry = new CommonLogEntry($this);
 
         $logEntry->setMessage($message)
-                ->setLevel($level);
+            ->setLevel($level);
         $this->logEntries[] = $logEntry;
     }
 
@@ -175,7 +193,8 @@ class CommonLogger extends Parser {
      *
      * @param mixed $message
      */
-    public function debug($message) {
+    public function debug($message)
+    {
         $this->logs[] = $this->packageMessage(CommonLogEntry::DEBUG, $message);
         /**
          * Test new log entry objects
@@ -187,11 +206,13 @@ class CommonLogger extends Parser {
      *
      * @param mixed $message
      */
-    public function warning($message) {
+    public function warning($message)
+    {
         $this->storeLogEntry($message, CommonLogEntry::WARNING);
     }
 
-    public function hasErrors() {
+    public function hasErrors()
+    {
         return $this->hasErrors;
     }
 
@@ -199,7 +220,8 @@ class CommonLogger extends Parser {
      *
      * @param mixed $message
      */
-    public function error($message) {
+    public function error($message)
+    {
         $this->hasErrors = true;
         $this->storeLogEntry($message, CommonLogEntry::ERROR);
     }
@@ -208,7 +230,8 @@ class CommonLogger extends Parser {
      *
      * @param mixed $message
      */
-    public function info($message) {
+    public function info($message)
+    {
         $this->storeLogEntry($message, CommonLogEntry::INFO);
     }
 
@@ -216,16 +239,19 @@ class CommonLogger extends Parser {
      *
      * @param mixed $message
      */
-    public function query($message) {
+    public function query($message)
+    {
         $this->debug($message);
     }
 
     /**
      *
      * @param type $array
+     *
      * @return string
      */
-    public function debugArray($array) {
+    public function debugArray($array)
+    {
         if (isset($array)) {
             $message = "<div>";
             foreach ($array as $name => $option) {
@@ -248,9 +274,11 @@ class CommonLogger extends Parser {
     /**
      *
      * @param type $object
+     *
      * @return type
      */
-    public function debugObject($object) {
+    public function debugObject($object)
+    {
         ob_start();
         if (isset($object->xdebug_message)) {
             ob_clean();
@@ -261,7 +289,8 @@ class CommonLogger extends Parser {
         //return htmlspecialchars(print_r($object, true));
     }
 
-    private function packageMessage($level, $message) {
+    private function packageMessage($level, $message)
+    {
         $et = floatval(microtime()) - $this->startTime;
         $x = 2;
 
@@ -276,10 +305,11 @@ class CommonLogger extends Parser {
         krsort($backTrace);
         //var_dump($backTrace);
 
-        return array($et, $level, $this->preProcessMessage($message), $backTrace);
+        return [$et, $level, $this->preProcessMessage($message), $backTrace];
     }
 
-    private function createEntry($level, $message) {
+    private function createEntry($level, $message)
+    {
         $et = floatval(microtime()) - $this->startTime;
         $x = 2;
 
@@ -298,15 +328,17 @@ class CommonLogger extends Parser {
         $entry->setBacktrace($backTrace);
         $entry->setElapsedTime($et);
         $entry->setMessage($message);
-        return array($et, $level, $this->preProcessMessage($message), $backTrace);
+        return [$et, $level, $this->preProcessMessage($message), $backTrace];
     }
 
     /**
      * Check if this logger had anything logged
+     *
      * @return boolean
      */
-    public function hasLogEntries() {
-        if ($this->logEntries !== null and!empty($this->logEntries)) {
+    public function hasLogEntries()
+    {
+        if ($this->logEntries !== null and !empty($this->logEntries)) {
             return true;
         }
         return false;

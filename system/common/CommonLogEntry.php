@@ -33,9 +33,11 @@ namespace System\Common;
  *
  * @author cjacobsen
  */
+
 use System\Common\CommonLogger;
 
-class CommonLogEntry {
+class CommonLogEntry
+{
 
     const ERROR = "error";
     const INFO = "info";
@@ -54,7 +56,8 @@ class CommonLogEntry {
      */
     private $logger;
 
-    public function __construct(CommonLogger $logger) {
+    public function __construct(CommonLogger $logger)
+    {
         $this->elapsedTime = floatval(microtime()) - $logger->getStartTime();
         $this->backtrace = $this->traceBack();
         $this->logger = $logger;
@@ -63,7 +66,8 @@ class CommonLogEntry {
         //var_dump($this);
     }
 
-    private function traceBack() {
+    private function traceBack()
+    {
         $traceCursor = 4;
         $cursor = 0;
         while (backTrace($traceCursor)) {
@@ -80,37 +84,45 @@ class CommonLogEntry {
         return $backTrace;
     }
 
-    public function getElapsedTime() {
+    public function getElapsedTime()
+    {
         return htmlspecialchars($this->elapsedTime);
     }
 
-    public function getId() {
+    public function getId()
+    {
         return 'LogEntry_' . $this->id;
     }
 
     /**
      * Returns one of the following
+     *
      * @return type
      */
-    public function getLevel() {
+    public function getLevel()
+    {
         return $this->level;
     }
 
-    public function getMessage() {
+    public function getMessage()
+    {
         return $this->message;
         return htmlspecialchars($this->message);
     }
 
-    public function getBacktrace() {
+    public function getBacktrace()
+    {
         return $this->backtrace;
     }
 
     /**
      *
      * @param type $level
+     *
      * @return $this
      */
-    public function setLevel($level) {
+    public function setLevel($level)
+    {
         $this->level = $level;
         return $this;
     }
@@ -118,9 +130,11 @@ class CommonLogEntry {
     /**
      *
      * @param type $message
+     *
      * @return $this
      */
-    public function setMessage($message) {
+    public function setMessage($message)
+    {
         $this->message = $this->preProcessMessage($message);
         return $this;
     }
@@ -128,10 +142,12 @@ class CommonLogEntry {
     /**
      *
      * @param mixed $message
+     *
      * @return string
      *
      */
-    private function preProcessMessage($message) {
+    private function preProcessMessage($message)
+    {
 
         if (is_array($message)) {
             $message = var_export($message, true);
@@ -146,9 +162,11 @@ class CommonLogEntry {
     /**
      *
      * @param type $object
+     *
      * @return type
      */
-    private function debugObject($object) {
+    private function debugObject($object)
+    {
         ob_start();
         if (isset($object->xdebug_message)) {
             ob_clean();
@@ -159,7 +177,8 @@ class CommonLogEntry {
         //return htmlspecialchars(print_r($object, true));
     }
 
-    public function getAlertLevel() {
+    public function getAlertLevel()
+    {
         switch ($this->getLevel()) {
             case self::ERROR:
                 return 'danger';
@@ -171,7 +190,8 @@ class CommonLogEntry {
         }
     }
 
-    public function isError() {
+    public function isError()
+    {
         if ($this->getLevel() == self::ERROR) {
             return true;
         }

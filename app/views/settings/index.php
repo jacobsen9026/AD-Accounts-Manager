@@ -81,10 +81,14 @@ switch ($this->tab) {
 </h4>
 <nav>
     <div class="nav nav-tabs nav-fill nav-justified" id="nav-tab" role="tablist">
-        <a class="nav-item nav-link active" id="nav-app-tab" data-toggle="tab" href="#nav-app" role="tab" aria-controls="nav-app" aria-selected="true" onclick='<?= $showApplicationSettingsCommand ?>'>Application</a>
-        <a class="nav-item nav-link" id="nav-auth-tab" data-toggle="tab" href="#nav-auth" role="tab" aria-controls="nav-auth" aria-selected="false" onclick='<?= $showAuthenticationSettingsCommand ?>'>Authentication</a>
-        <a class="nav-item nav-link" id="nav-email-tab" data-toggle="tab" href="#nav-email" role="tab" aria-controls="nav-email" aria-selected="false" onclick='<?= $showEmailSettingsCommand ?>'>Email</a>
-        <a class="nav-item nav-link" id="nav-notification-tab" data-toggle="tab" href="#nav-notification" role="tab" aria-controls="nav-notification" aria-selected="false" onclick='<?= $showNotificationSettingsCommand ?>'>Notification</a>
+        <a class="nav-item nav-link active" id="nav-app-tab" data-toggle="tab" href="#nav-app" role="tab"
+           aria-controls="nav-app" aria-selected="true" onclick='<?= $showApplicationSettingsCommand ?>'>Application</a>
+        <a class="nav-item nav-link" id="nav-auth-tab" data-toggle="tab" href="#nav-auth" role="tab"
+           aria-controls="nav-auth" aria-selected="false" onclick='<?= $showAuthenticationSettingsCommand ?>'>Authentication</a>
+        <a class="nav-item nav-link" id="nav-email-tab" data-toggle="tab" href="#nav-email" role="tab"
+           aria-controls="nav-email" aria-selected="false" onclick='<?= $showEmailSettingsCommand ?>'>Email</a>
+        <a class="nav-item nav-link" id="nav-notification-tab" data-toggle="tab" href="#nav-notification" role="tab"
+           aria-controls="nav-notification" aria-selected="false" onclick='<?= $showNotificationSettingsCommand ?>'>Notification</a>
     </div>
 </nav>
 <div class="row"></div>

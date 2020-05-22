@@ -31,10 +31,11 @@ namespace System\App;
  *
  * @author cjacobsen
  */
-abstract class Picture {
+abstract class Picture
+{
 
-    public static function cropSquare($imageResource, $targetDimension) {
-
+    public static function cropSquare($imageResource, $targetDimension)
+    {
 
 
         $imageWidth = imagesx($imageResource);
@@ -52,7 +53,6 @@ abstract class Picture {
         $imageResource = imagescale($imageResource, $newWidth);
 
 
-
         $imageWidth = imagesx($imageResource);
         $imageHeight = imagesy($imageResource);
 
@@ -63,7 +63,6 @@ abstract class Picture {
         $rect = ['x' => $xOffset, 'y' => 0, 'width' => $targetDimension, 'height' => $targetDimension];
         // var_dump($rect);
         $imageResource = imagecrop($imageResource, $rect);
-
 
 
         return $imageResource;

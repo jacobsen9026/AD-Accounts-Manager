@@ -31,10 +31,12 @@ namespace App\Models\User;
  *
  * @author cjacobsen
  */
+
 use App\Models\User\User;
 use App\Models\User\PermissionLevel;
 
-class PermissionRequest {
+class PermissionRequest
+{
 
     private $user;
     private $ou;
@@ -43,49 +45,61 @@ class PermissionRequest {
 
     /**
      * Creates a new PermissionRequest for use in the PermissionHandler
+     *
      * @param User $user
-     * @param type $ou The OU we want to validate access to
-     * @param type $permissionType Options are {PermissionType::STUDENT_USER,PermissionType::STUDENT_GROUP,PermissionType::STAFF_USER,PermissionType::STAFF_GROUP}
-     * @param type $permissionLevel Options are int(0-4) Meaning differs based on permission type, but generally (Read,Change,Write,Delete)
+     * @param type $ou              The OU we want to validate access to
+     * @param type $permissionType  Options are
+     *                              {PermissionType::STUDENT_USER,PermissionType::STUDENT_GROUP,PermissionType::STAFF_USER,PermissionType::STAFF_GROUP}
+     * @param type $permissionLevel Options are int(0-4) Meaning differs based on permission type, but generally
+     *                              (Read,Change,Write,Delete)
      */
-    public function __construct(User $user, $ou, PermissionLevel $permissionLevel) {
+    public function __construct(User $user, $ou, PermissionLevel $permissionLevel)
+    {
         $this->user = $user;
         $this->ou = $ou;
         $this->permissionLevel = $permissionLevel;
     }
 
-    public function getPermissionType() {
+    public function getPermissionType()
+    {
         return $this->permissionType;
     }
 
-    public function getPermissionLevel() {
+    public function getPermissionLevel()
+    {
         return $this->permissionLevel;
     }
 
-    public function setPermissionType($permissionType) {
+    public function setPermissionType($permissionType)
+    {
         $this->permissionType = $permissionType;
         return $this;
     }
 
-    public function setPermissionLevel($permissionLevel) {
+    public function setPermissionLevel($permissionLevel)
+    {
         $this->permissionLevel = $permissionLevel;
         return $this;
     }
 
-    public function getUser() {
+    public function getUser()
+    {
         return $this->user;
     }
 
-    public function getOu() {
+    public function getOu()
+    {
         return $this->ou;
     }
 
-    public function setUser($user) {
+    public function setUser($user)
+    {
         $this->user = $user;
         return $this;
     }
 
-    public function setOu($ou) {
+    public function setOu($ou)
+    {
         $this->ou = $ou;
         return $this;
     }

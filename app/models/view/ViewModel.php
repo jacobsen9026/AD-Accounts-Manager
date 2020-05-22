@@ -31,8 +31,10 @@ namespace App\Models\View;
  *
  * @author cjacobsen
  */
+
 use App\Models\Model;
 
-class ViewModel extends Model {
+class ViewModel extends Model
+{
     //put your code here
 }

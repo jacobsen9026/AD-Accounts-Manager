@@ -1,4 +1,3 @@
-
 <div id="debugConfigModal" class="modal fade" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
 
@@ -10,11 +9,12 @@
 
             </div>
             <div class="modal-body">
-                <div id="ajaxOutput"><!--<span class="spinner-border text-primary" role="status"></span><br/>Loading Configuration Data... --></div>
+                <div id="ajaxOutput">
+                    <!--<span class="spinner-border text-primary" role="status"></span><br/>Loading Configuration Data... --></div>
                 <script>
-<?php
-$script
-?>
+                    <?php
+                    $script
+                    ?>
 
 
                 </script>

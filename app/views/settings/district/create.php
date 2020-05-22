@@ -4,11 +4,11 @@
 
     use System\App\Forms\Form;
 
-$form = new Form('/settings/district/create');
+    $form = new Form('/settings/district/create');
     $name = new \System\App\Forms\FormText('District Name', '', 'name');
     $createButton = new \System\App\Forms\FormButton('Create District');
     $form->addElementToCurrentRow($name)
-            ->addElementToNewRow($createButton);
+        ->addElementToNewRow($createButton);
     echo $form->print();
     ?>
 </div>

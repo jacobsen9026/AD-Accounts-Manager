@@ -31,7 +31,8 @@ namespace App\Models\User;
  *
  * @author cjacobsen
  */
-class PermissionLevel {
+class PermissionLevel
+{
 
     const USERS = "User_Perm";
     const USER_READ = 1;
@@ -47,25 +48,30 @@ class PermissionLevel {
     private $name;
     private $id;
 
-    public function __construct($name = null, $id = null) {
+    public function __construct($name = null, $id = null)
+    {
         $this->setDisplayName($name)
-                ->setId($id);
+            ->setId($id);
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function setDisplayName($name) {
+    public function setDisplayName($name)
+    {
         $this->name = $name;
         return $this;
     }
 
-    public function setId($id) {
+    public function setId($id)
+    {
         $this->id = $id;
         return $this;
     }
@@ -74,7 +80,8 @@ class PermissionLevel {
      *
      * @return PermissionLevel[]
      */
-    public static function getGroupTypes() {
+    public static function getGroupTypes()
+    {
         return [
             new PermissionLevel("0-None", 0),
             new PermissionLevel("1-Read", 1),
@@ -88,7 +95,8 @@ class PermissionLevel {
      *
      * @return PermissionLevel[]
      */
-    public static function getUserTypes() {
+    public static function getUserTypes()
+    {
         return [
             new PermissionLevel("0-None", 0),
             new PermissionLevel("1-Read", 1),

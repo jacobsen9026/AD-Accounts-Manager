@@ -27,25 +27,30 @@
 namespace App\Controllers\Settings;
 
 /**
- * Description of User
+ * Description of user
  *
  * @author cjacobsen
  */
+
 use App\Controllers\Controller;
 
-class Profile extends Controller {
+class Profile extends Controller
+{
 
-    public function __construct(\System\App\App $app) {
+    public function __construct(\System\App\App $app)
+    {
         parent::__construct($app);
         $this->layout = "thin";
     }
 
     //put your code here
-    public function index() {
+    public function index()
+    {
         return $this->view('settings/profile');
     }
 
-    public function indexPost() {
+    public function indexPost()
+    {
 
         $this->user->setTheme(\system\Post::get('theme'));
         $this->user->save();

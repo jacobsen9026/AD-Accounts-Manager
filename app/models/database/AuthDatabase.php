@@ -31,7 +31,8 @@ namespace App\Models\Database;
  *
  * @author cjacobsen
  */
-class AuthDatabase extends DatabaseModel {
+class AuthDatabase extends DatabaseModel
+{
 
     const TABLE_NAME = 'Auth';
 
@@ -39,7 +40,8 @@ class AuthDatabase extends DatabaseModel {
      *
      * @return string The hashed local admin password
      */
-    public static function getAdminPassword() {
+    public static function getAdminPassword()
+    {
 
         return self::getDatabaseValue("Admin_Password");
     }
@@ -48,7 +50,8 @@ class AuthDatabase extends DatabaseModel {
      *
      * @return int Time in seconds
      */
-    public static function getSessionTimeout() {
+    public static function getSessionTimeout()
+    {
         return self::getDatabaseValue("Session_Timeout");
     }
 
@@ -57,7 +60,8 @@ class AuthDatabase extends DatabaseModel {
      * @return string
      * @deprecated since version number
      */
-    public static function getTechGAGroup() {
+    public static function getTechGAGroup()
+    {
         return self::getDatabaseValue('Tech_GA_Group');
     }
 
@@ -66,7 +70,8 @@ class AuthDatabase extends DatabaseModel {
      * @return string
      * @deprecated since version number
      */
-    public static function getAdminGAGroup() {
+    public static function getAdminGAGroup()
+    {
         return self::getDatabaseValue('Admin_GA_Group');
     }
 
@@ -75,7 +80,8 @@ class AuthDatabase extends DatabaseModel {
      * @return string
      * @deprecated since version number
      */
-    public static function getPowerGAGroup() {
+    public static function getPowerGAGroup()
+    {
         return self::getDatabaseValue('Power_GA_Group');
     }
 
@@ -84,7 +90,8 @@ class AuthDatabase extends DatabaseModel {
      * @return string
      * @deprecated since version number
      */
-    public static function getBasicGAGroup() {
+    public static function getBasicGAGroup()
+    {
         return self::getDatabaseValue('Basic_GA_Group');
     }
 
@@ -92,7 +99,8 @@ class AuthDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getSuperUserADGroup() {
+    public static function getSuperUserADGroup()
+    {
         return self::getDatabaseValue('Tech_AD_Group');
     }
 
@@ -100,7 +108,8 @@ class AuthDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getAdminADGroup() {
+    public static function getAdminADGroup()
+    {
         return self::getDatabaseValue('Admin_AD_Group');
     }
 
@@ -108,7 +117,8 @@ class AuthDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getPowerADGroup() {
+    public static function getPowerADGroup()
+    {
         return self::getDatabaseValue('Power_AD_Group');
     }
 
@@ -116,7 +126,8 @@ class AuthDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getBasicADGroup() {
+    public static function getBasicADGroup()
+    {
         return self::getDatabaseValue('Basic_AD_Group');
     }
 
@@ -124,7 +135,8 @@ class AuthDatabase extends DatabaseModel {
      *
      * @return bool
      */
-    public static function getLDAPEnabled() {
+    public static function getLDAPEnabled()
+    {
         return self::getDatabaseValue('LDAP_Enabled');
     }
 
@@ -132,7 +144,8 @@ class AuthDatabase extends DatabaseModel {
      *
      * @return bool
      */
-    public static function getLDAPUseSSL() {
+    public static function getLDAPUseSSL()
+    {
         return self::getDatabaseValue('LDAP_Use_SSL');
     }
 
@@ -140,7 +153,8 @@ class AuthDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getLDAPServer() {
+    public static function getLDAPServer()
+    {
 
         return self::getDatabaseValue('LDAP_Server');
     }
@@ -149,7 +163,8 @@ class AuthDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getLDAP_FQDN() {
+    public static function getLDAP_FQDN()
+    {
         return self::getDatabaseValue('LDAP_FQDN');
     }
 
@@ -157,7 +172,8 @@ class AuthDatabase extends DatabaseModel {
      *
      * @return int
      */
-    public static function getLDAP_Port() {
+    public static function getLDAP_Port()
+    {
         return self::getDatabaseValue('LDAP_Port');
     }
 
@@ -165,7 +181,8 @@ class AuthDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getLDAPUsername() {
+    public static function getLDAPUsername()
+    {
         return self::getDatabaseValue('LDAP_Username');
     }
 
@@ -173,17 +190,20 @@ class AuthDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getLDAPPassword() {
+    public static function getLDAPPassword()
+    {
         return self::getDatabaseValue('LDAP_Password');
     }
 
-    public static function setAdminPassword(string $value) {
+    public static function setAdminPassword(string $value)
+    {
         if ($value != self::getAdminPassword()) {
             return self::updateDatabaseValue("Admin_Password", hash("sha256", $value));
         }
     }
 
-    public static function setSessionTimeout(int $value) {
+    public static function setSessionTimeout(int $value)
+    {
 
         return self::updateDatabaseValue("Session_Timeout", $value);
     }
@@ -191,10 +211,12 @@ class AuthDatabase extends DatabaseModel {
     /**
      *
      * @param string $value
+     *
      * @return type
      * @deprecated since version number
      */
-    public static function setTechGAGroup(string $value) {
+    public static function setTechGAGroup(string $value)
+    {
 
         return self::updateDatabaseValue("Tech_GA_Group", $value);
     }
@@ -202,74 +224,91 @@ class AuthDatabase extends DatabaseModel {
     /**
      *
      * @param string $value
+     *
      * @return type
      * @deprecated since version number
      */
-    public static function setAdminGAGroup(string $value) {
+    public static function setAdminGAGroup(string $value)
+    {
         return self::updateDatabaseValue("Admin_GA_Group", $value);
     }
 
     /**
      *
      * @param string $value
+     *
      * @return type
      * @deprecated since version number
      */
-    public static function setPowerGAGroup(string $value) {
+    public static function setPowerGAGroup(string $value)
+    {
         return self::updateDatabaseValue("Power_GA_Group", $value);
     }
 
     /**
      *
      * @param string $value
+     *
      * @return type
      * @deprecated since version number
      */
-    public static function setBasicGAGroup(string $value) {
+    public static function setBasicGAGroup(string $value)
+    {
         return self::updateDatabaseValue("Basic_GA_Group", $value);
     }
 
-    public static function setTechADGroup(string $value) {
+    public static function setTechADGroup(string $value)
+    {
         return self::updateDatabaseValue("Tech_AD_Group", $value);
     }
 
-    public static function setAdminADGroup(string $value) {
+    public static function setAdminADGroup(string $value)
+    {
         return self::updateDatabaseValue("Admin_AD_Group", $value);
     }
 
-    public static function setPowerADGroup(string $value) {
+    public static function setPowerADGroup(string $value)
+    {
         return self::updateDatabaseValue("Power_AD_Group", $value);
     }
 
-    public static function setBasicADGroup(string $value) {
+    public static function setBasicADGroup(string $value)
+    {
         return self::updateDatabaseValue("Basic_AD_Group", $value);
     }
 
-    public static function setLDAPEnabled(bool $value) {
+    public static function setLDAPEnabled(bool $value)
+    {
         return self::updateDatabaseValue("LDAP_Enabled", $value);
     }
 
-    public static function setLDAPUseSSL(bool $value) {
+    public static function setLDAPUseSSL(bool $value)
+    {
         return self::updateDatabaseValue("LDAP_Use_SSL", $value);
     }
 
-    public static function setLDAPServer(string $value) {
+    public static function setLDAPServer(string $value)
+    {
         return self::updateDatabaseValue("LDAP_Server", $value);
     }
 
-    public static function setLDAP_FQDN(string $value) {
+    public static function setLDAP_FQDN(string $value)
+    {
         return self::updateDatabaseValue("LDAP_FQDN", $value);
     }
 
-    public static function setLDAP_Port(int $value) {
+    public static function setLDAP_Port(int $value)
+    {
         return self::updateDatabaseValue("LDAP_Port", $value);
     }
 
-    public static function setLDAPUsername(string $value) {
+    public static function setLDAPUsername(string $value)
+    {
         return self::updateDatabaseValue("LDAP_Username", $value);
     }
 
-    public static function setLDAPPassword(string $value) {
+    public static function setLDAPPassword(string $value)
+    {
         return self::updateDatabaseValue("LDAP_Password", $value);
     }
 
@@ -280,7 +319,8 @@ class AuthDatabase extends DatabaseModel {
      *
      * @param type $postedData
      */
-    public static function saveSettings(array $postedData) {
+    public static function saveSettings(array $postedData)
+    {
         foreach ($postedData as $key => $data) {
             \System\App\AppLogger::get()->debug($key);
             \System\App\AppLogger::get()->debug($data);

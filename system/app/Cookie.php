@@ -31,14 +31,17 @@ namespace System\App;
  *
  * @author nbranco
  */
-abstract class Cookie {
+abstract class Cookie
+{
 
     /**
      *
      * @param type $cookieName The Name of the cookie
+     *
      * @return boolean | mixed Returns false if cookie does not exist
      */
-    public static function get($name) {
+    public static function get($name)
+    {
 
         if (!is_null($_COOKIE)) {
             if (key_exists($name, $_COOKIE)) {
@@ -50,11 +53,13 @@ abstract class Cookie {
 
     /**
      *
-     * @param type $name  The Name of the Cookie
-     * @param type $value  The Value of the Cookie
-     * @param type $expires  The length of time until the expires, measured in seconds.  If not used, the cookie will be set to expire in 100 years
+     * @param type $name    The Name of the Cookie
+     * @param type $value   The Value of the Cookie
+     * @param type $expires The length of time until the expires, measured in seconds.  If not used, the cookie will be
+     *                      set to expire in 100 years
      */
-    public static function set($name, $value = "", $expires = null, $path = "/") {
+    public static function set($name, $value = "", $expires = null, $path = "/")
+    {
 
         if (is_null($expires)) {
             $expires = 100 * 365 * 24 * 60 * 60;
@@ -62,7 +67,8 @@ abstract class Cookie {
         setcookie($name, $value, time() + $expires, $path);
     }
 
-    public static function delete($name) {
+    public static function delete($name)
+    {
         setcookie($name, "", time() - 3600);
     }
 

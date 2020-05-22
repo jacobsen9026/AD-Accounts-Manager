@@ -1,4 +1,3 @@
-
 <?php
 
 use System\App\Forms\Form;
@@ -12,16 +11,17 @@ $action = new FormText('', '', 'action', 'deleteGroup');
 $action->hidden();
 $button = new FormButton("Delete");
 $button->small()
-        ->setTheme('danger');
+    ->setTheme('danger');
 $text = new FormHTML();
-$text->setHtml('<h5>Are you absolutely sure you want to delete this group? There is no undo to this action. Be sure you are deleting the right group.</h5>');
+$text->setHtml('<h5>Are you absolutely sure you want to delete this group? There is no undo to this action.<br><br> Be sure you are deleting the right group.</h5>');
+$text->full();
 $name = new FormText('', '', 'groupDN', $params["distinguishedName"]);
 $name->medium()
-        ->hidden();
+    ->hidden();
 $form->addElementToNewRow($name)
-        ->addElementToNewRow($action)
-        ->addElementToNewRow($text)
-        ->addElementToNewRow($button);
+    ->addElementToNewRow($action)
+    ->addElementToNewRow($text)
+    ->addElementToNewRow($button);
 echo $form->print();
 
 

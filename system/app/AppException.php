@@ -31,12 +31,14 @@ namespace System\App;
  *
  * @author cjacobsen
  */
+
 use System\CoreException;
 
-class AppException extends \Exception {
+class AppException extends \Exception
+{
 
-    const PERMISSION_MISSING_ID = '701';
-    const PERMISSION_MISSING_OU = '702';
+    const PERMISSION_MISSING_ID = '601';
+    const PERMISSION_MISSING_OU = '602';
     const FAIL_USER_READ_PERM = '401';
     const FAIL_USER_CHANGE_PERM = '402';
     const FAIL_USER_UNLOCK_PERM = '403';
@@ -45,6 +47,8 @@ class AppException extends \Exception {
     const FAIL_GROUP_CHANGE_PERM = '412';
     const FAIL_GROUP_ADD_PERM = '413';
     const FAIL_GROUP_DELETE_PERM = '414';
+    const USER_NOT_FOUND = '701';
+    const GROUP_NOT_FOUND = '702';
     const GROUP_ADD_EXISTS = '703';
 
 }

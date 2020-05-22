@@ -37,20 +37,20 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
+
 use app\database\Schema;
 use App\Models\District\ActiveDirectory;
 use App\Models\District\GoogleApps;
 use System\App\AppLogger;
 
-class Form {
+class Form
+{
 
     private $method = "post";
     private $action;
     private $name;
     private $style;
     private $id;
-
-
 
 
     /* A 2D array that represents the layout of the form */
@@ -89,10 +89,11 @@ class Form {
      * This essentially builds the form tag
      *
      * @param string $action The action attribute of the form tag. If left blank will be current page URL
-     * @param string $name The name attribute of the form tag
+     * @param string $name   The name attribute of the form tag
      * @param string $method
      */
-    function __construct($action = null, $name = '', $method = 'post') {
+    function __construct($action = null, $name = '', $method = 'post')
+    {
 
 // Initialize form logger
         $this->logger = AppLogger::get();
@@ -111,7 +112,8 @@ class Form {
         self::$csrfToken = \system\Encryption::encrypt(\System\App\Session::getID());
     }
 
-    public function setStyle($style) {
+    public function setStyle($style)
+    {
         $this->style = $style;
         return $this;
     }
@@ -119,9 +121,11 @@ class Form {
     /**
      *
      * @param \System\App\Forms\FormElement $element
+     *
      * @return $this
      */
-    public function addElementToCurrentRow(FormElement $element) {
+    public function addElementToCurrentRow(FormElement $element)
+    {
 
         $this->rowsOfElements[$this->currentRow][] = $element;
 
@@ -132,9 +136,11 @@ class Form {
     /**
      *
      * @param \System\App\Forms\FormElement $element
+     *
      * @return $this
      */
-    public function addElementToNewRow(FormElement $element) {
+    public function addElementToNewRow(FormElement $element)
+    {
 
         $this->currentRow++;
         $this->addElementToCurrentRow($element);
@@ -142,15 +148,18 @@ class Form {
         return $this;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function setId($id) {
+    public function setId($id)
+    {
         return $this->id = $id;
     }
 
-    public function setActionVariable(FormElement $element) {
+    public function setActionVariable(FormElement $element)
+    {
         //var_dump($element);
         $elementName = $element->getName();
         $attribute = 'name="' . $elementName . '"';
@@ -175,9 +184,11 @@ console.log(inputVal);
      *
      * @param type $arrayOfElements
      * @param type $html
+     *
      * @return type
      */
-    private function printArrayOfElements($arrayOfElements, $html = '') {
+    private function printArrayOfElements($arrayOfElements, $html = '')
+    {
         //var_dump($arrayOfElements);
 
         foreach ($arrayOfElements as $element) {
@@ -195,14 +206,16 @@ console.log(inputVal);
         return $html;
     }
 
-    private function printElement(FormElement $element) {
+    private function printElement(FormElement $element)
+    {
 
         $html = $element->print();
 
         return $html;
     }
 
-    public static function getCsrfToken(): String {
+    public static function getCsrfToken(): String
+    {
         if (self::$csrfToken == null) {
             new self();
         }
@@ -212,9 +225,11 @@ console.log(inputVal);
     /**
      * Generate the HTML output for the form
      * This is the final step
+     *
      * @return string
      */
-    public function print() {
+    public function print()
+    {
 
         $html = "<form action='$this->action' method='$this->method' name='$this->name' id='$this->id' style='$this->style' onclick='$this->onSubmit' enctype='multipart/form-data'>";
         $html .= '<input type="hidden" name="csrfToken" value="' . self::$csrfToken . '"/>';
@@ -235,11 +250,13 @@ console.log(inputVal);
         return $html;
     }
 
-    public function getOnSubmit(): string {
+    public function getOnSubmit(): string
+    {
         return $this->onSubmit;
     }
 
-    public function setOnSubmit(string $onSubmit) {
+    public function setOnSubmit(string $onSubmit)
+    {
         $this->onSubmit = $onSubmit;
         return $this;
     }

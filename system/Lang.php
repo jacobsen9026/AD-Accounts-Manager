@@ -31,11 +31,13 @@ namespace System;
  *
  * @author cjacobsen
  */
-abstract class Lang {
+abstract class Lang
+{
 
     //put your code here
 
-    public static function get($name) {
+    public static function get($name)
+    {
         $requestedLang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
 
         if (self::langExists($requestedLang)) {
@@ -49,7 +51,8 @@ abstract class Lang {
         return $target::get($name);
     }
 
-    public static function getHelp($name) {
+    public static function getHelp($name)
+    {
         $requestedLang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
 
         if (self::langExists($requestedLang)) {
@@ -62,7 +65,8 @@ abstract class Lang {
         return $target::getHelp($name);
     }
 
-    private static function langExists($lang) {
+    private static function langExists($lang)
+    {
         $path = APPPATH . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . strtoupper($lang) . 'Common.php';
         //app\AppLogger::get()->info("Language Path: ".$path);
         if (file_exists($path)) {

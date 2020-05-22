@@ -365,7 +365,7 @@ abstract class PermissionMapPrinter extends ViewModel
     private
     static function buildUserPermissionDropdown($selectedType = 0): FormDropdown
     {
-        return self::generatePermissionTypeDropdown(PermissionLevel::getUserTypes(), '', 'User', "userPermissionType", $selectedType);
+        return self::generatePermissionTypeDropdown(PermissionLevel::getUserTypes(), '', 'user', "userPermissionType", $selectedType);
     }
 
     /**

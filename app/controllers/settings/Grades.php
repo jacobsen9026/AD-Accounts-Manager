@@ -31,6 +31,7 @@ namespace App\Controllers\Settings;
  *
  * @author cjacobsen
  */
+
 use App\Controllers\Controller;
 use App\Models\District\Grade;
 use System\Post;
@@ -38,7 +39,8 @@ use app\database\Schema;
 use System\App\AppLogger;
 use App\Models\DatabasePost;
 
-class Grades extends Controller {
+class Grades extends Controller
+{
 
     //put your code here
     /*
@@ -47,12 +49,14 @@ class Grades extends Controller {
       }
      *
      */
-    function __construct(\System\App\App $app) {
+    function __construct(\System\App\App $app)
+    {
         parent::__construct($app);
         $this->layout = 'setup';
     }
 
-    public function show($schoolID = null) {
+    public function show($schoolID = null)
+    {
         $this->preProcessSchoolID($schoolID);
 
         if (isset($this->grades) and $this->grades != false) {
@@ -62,7 +66,8 @@ class Grades extends Controller {
         }
     }
 
-    public function edit($gradeID) {
+    public function edit($gradeID)
+    {
         $this->preProcessGradeID($gradeID);
         //var_dump($this->school);
         $this->staffADSettings = Grade::getADSettings($gradeID, 'Staff');
@@ -75,7 +80,8 @@ class Grades extends Controller {
         }
     }
 
-    public function editPost($gradeID) {
+    public function editPost($gradeID)
+    {
         AppLogger::get()->debug('Edit Post');
         $post = Post::getAll();
         var_dump($post);
@@ -85,7 +91,8 @@ class Grades extends Controller {
         $this->redirect('/grades/edit/' . $gradeID);
     }
 
-    public function editStaffPost($gradeID) {
+    public function editStaffPost($gradeID)
+    {
         AppLogger::get()->debug('Edit Post');
         $post = Post::getAll();
         var_dump($post);
@@ -95,7 +102,8 @@ class Grades extends Controller {
         $this->redirect('/grades/edit/' . $gradeID);
     }
 
-    public function editStudentsPost($gradeID) {
+    public function editStudentsPost($gradeID)
+    {
         AppLogger::get()->debug('Edit Post');
         $post = Post::getAll();
         var_dump($post);
@@ -105,13 +113,15 @@ class Grades extends Controller {
         $this->redirect('/grades/edit/' . $gradeID);
     }
 
-    public function createPost($schoolID = null) {
+    public function createPost($schoolID = null)
+    {
         $post = \system\Post::getAll();
         Grade::createGrade($schoolID, $post);
         $this->redirect('/grades/show/' . $schoolID);
     }
 
-    public function delete($gradeID) {
+    public function delete($gradeID)
+    {
         $this->schoolID = \App\Models\District\Grade::getSchoolID($gradeID);
 
         \App\Models\District\Grade::deleteGrade($gradeID);

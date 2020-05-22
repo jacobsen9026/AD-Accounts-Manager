@@ -31,9 +31,11 @@ namespace System\Models\Post;
  *
  * @author cjacobsen
  */
+
 use System\File;
 
-class UploadedFile {
+class UploadedFile
+{
 
     private $name;
     private $type;
@@ -41,7 +43,8 @@ class UploadedFile {
     private $error;
     private $fileSize;
 
-    public function __construct(array $rawFileUpload) {
+    public function __construct(array $rawFileUpload)
+    {
         $this->name = $rawFileUpload["name"];
         $this->type = $rawFileUpload["type"];
         $this->tempFileName = $rawFileUpload["tmp_name"];
@@ -49,56 +52,68 @@ class UploadedFile {
         $this->fileSize = $rawFileUpload["size"];
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
-    public function getTempFileName() {
+    public function getTempFileName()
+    {
         return $this->tempFileName;
     }
 
-    public function getError() {
+    public function getError()
+    {
         return $this->error;
     }
 
-    public function getFileSize() {
+    public function getFileSize()
+    {
         return $this->fileSize;
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
         return $this;
     }
 
-    public function setType($type) {
+    public function setType($type)
+    {
         $this->type = $type;
         return $this;
     }
 
-    public function setTempFileName($tempFileName) {
+    public function setTempFileName($tempFileName)
+    {
         $this->tempFileName = $tempFileName;
         return $this;
     }
 
-    public function setError($error) {
+    public function setError($error)
+    {
         $this->error = $error;
         return $this;
     }
 
-    public function setFileSize($fileSize) {
+    public function setFileSize($fileSize)
+    {
         $this->fileSize = $fileSize;
         return $this;
     }
 
-    public function saveTo(string $destinationFilePath) {
+    public function saveTo(string $destinationFilePath)
+    {
         move_uploaded_file($this->tempFileName, $destinationFilePath);
     }
 
-    public function getTempFileContents() {
+    public function getTempFileContents()
+    {
         return File::getContents($this->tempFileName);
     }
 

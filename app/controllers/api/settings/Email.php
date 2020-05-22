@@ -31,13 +31,16 @@ namespace App\Controllers\Api\settings;
  *
  * @author cjacobsen
  */
+
 use App\Controllers\Api\APIController;
 
-class Email extends APIController {
+class Email extends APIController
+{
 
     //put your code here
 
-    public function indexPost() {
+    public function indexPost()
+    {
         $email = new \App\Controllers\Settings\Email($this->app);
         $email->indexPost();
 

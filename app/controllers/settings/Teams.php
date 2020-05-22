@@ -31,10 +31,12 @@ namespace App\Controllers\Settings;
  *
  * @author cjacobsen
  */
+
 use App\Controllers\Controller;
 use App\Models\District\Team;
 
-class Teams extends Controller {
+class Teams extends Controller
+{
 
     //put your code here
     /*
@@ -44,18 +46,21 @@ class Teams extends Controller {
      *
      */
 
-    function __construct(\System\App\App $app) {
+    function __construct(\System\App\App $app)
+    {
         parent::__construct($app);
         $this->layout = 'setup';
     }
 
-    public function show($gradeId = null) {
+    public function show($gradeId = null)
+    {
         $this->preProcessGradeID($gradeId);
         //var_dump($this->schools);
         return $this->view('settings/district/schools/grades/teams/show');
     }
 
-    public function edit($teamID) {
+    public function edit($teamID)
+    {
         $this->preProcessTeamID($teamID);
         $this->staffADSettings = Team::getADSettings($teamID, 'Staff');
         $this->staffGASettings = Team::getGASettings($teamID, 'Staff');
@@ -68,7 +73,8 @@ class Teams extends Controller {
         }
     }
 
-    public function editPost($teamId) {
+    public function editPost($teamId)
+    {
         $post = \system\Post::getAll();
         var_dump($post);
         //\App\Models\DatabasePost::setPost($teamID, $post);
@@ -76,13 +82,15 @@ class Teams extends Controller {
         $this->redirect('/teams/edit/' . $teamID);
     }
 
-    public function createPost($teamID = null) {
+    public function createPost($teamID = null)
+    {
         $post = \system\Post::getAll();
         Team::createTeam($teamID, $post);
         $this->redirect('/teams/show/' . $teamID);
     }
 
-    public function delete($teamId) {
+    public function delete($teamId)
+    {
         $this->gradeID = \App\Models\District\Team::getGradeID($teamId);
 
         \App\Models\District\Team::deleteTeam($teamId);

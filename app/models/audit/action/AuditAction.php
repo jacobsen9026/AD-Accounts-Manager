@@ -4,11 +4,23 @@
 namespace App\Models\Audit\Action;
 
 
-
 class AuditAction
 {
-    private $type;
-    private $description;
+    protected $type;
+    protected $description;
+    protected $user;
+
+    /**
+     * AuditAction constructor.
+     *
+     * @param $type
+     */
+    public function __construct()
+    {
+        /* @var $user \App\Models\User\User */
+        $this->$user = APPCLASS::get()->user;
+    }
+
 
     /**
      * @return mixed

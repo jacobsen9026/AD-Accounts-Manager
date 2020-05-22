@@ -31,13 +31,15 @@ namespace System;
  *
  * @author cjacobsen
  */
+
 use System\Common\CommonLogger;
 
-class AppOutput {
+class AppOutput
+{
 
 //put your code here
     private $body;
-    private $ajax = array();
+    private $ajax = [];
     private $app;
 
     /**
@@ -49,23 +51,28 @@ class AppOutput {
     /**
      *  All loggers used by the application
      *  that should be returned to the core for rendering
+     *
      * @var array <CommonLoggers>
      */
-    private $loggers = array();
+    private $loggers = [];
 
-    public function __construct($app = null) {
+    public function __construct($app = null)
+    {
         $this->app = $app;
     }
 
-    public function getBody() {
+    public function getBody()
+    {
         return $this->body;
     }
 
-    public function getAjax() {
+    public function getAjax()
+    {
         return $this->ajax;
     }
 
-    public function setAjax($ajax) {
+    public function setAjax($ajax)
+    {
         $this->ajax = $ajax;
         return $this;
     }
@@ -75,11 +82,13 @@ class AppOutput {
      * @return type
      * @deprecated since version number
      */
-    public function getLogs() {
+    public function getLogs()
+    {
         return $this->logs;
     }
 
-    public function setBody($body) {
+    public function setBody($body)
+    {
         // var_dump($this->app->request->getType());
         if ($this->app->request->getType() == 'ajax') {
             $this->addAjax($body);
@@ -92,13 +101,16 @@ class AppOutput {
     /**
      *
      * @param type $logs
+     *
      * @deprecated since version
      */
-    public function setLogs($logs) {
+    public function setLogs($logs)
+    {
         $this->logs = $logs;
     }
 
-    public function appendBody($body) {
+    public function appendBody($body)
+    {
         if ($this->app->request->getType() == 'ajax') {
             $this->addAjax($body);
         } elseif ($this->app->request->getType() == 'http') {
@@ -107,7 +119,8 @@ class AppOutput {
         }
     }
 
-    public function prependBody($body) {
+    public function prependBody($body)
+    {
         var_dump($body);
         if ($this->app->request->getType() == 'ajax') {
             $this->addAjax($body);
@@ -121,21 +134,25 @@ class AppOutput {
      *
      * @return array
      */
-    public function getLoggers(): array {
+    public function getLoggers(): array
+    {
         return $this->loggers;
     }
 
     /**
      *
      * @param CommonLogger $logger
+     *
      * @return $this
      */
-    public function addLogger(CommonLogger $logger) {
+    public function addLogger(CommonLogger $logger)
+    {
         $this->loggers[] = $logger;
         return $this;
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize()
+    {
         $vars = get_object_vars($this);
         foreach ($vars as $var) {
             if (is_object($var)) {
@@ -146,7 +163,8 @@ class AppOutput {
         return $vars;
     }
 
-    public function addAjax($array) {
+    public function addAjax($array)
+    {
         //var_dump($array);
         //var_dump(backTrace());
         if (!empty($this->ajax)) {

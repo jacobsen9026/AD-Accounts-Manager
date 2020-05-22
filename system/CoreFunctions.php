@@ -26,30 +26,33 @@
 
 if (!function_exists('enablePHPErrors')) {
 
-    function enablePHPErrors() {
+    function enablePHPErrors()
+    {
         /*
           $bt = debug_backtrace(1);
           $caller = array_shift($bt);
           echo $caller['file'] . ":" . $caller["line"]; */
         error_reporting(E_ALL);
-        ini_set('display_errors', TRUE);
-        ini_set('display_startup_errors', TRUE);
+        ini_set('display_errors', true);
+        ini_set('display_startup_errors', true);
     }
 
 }
 if (!function_exists('disablePHPErrors')) {
 
-    function disablePHPErrors() {
+    function disablePHPErrors()
+    {
 
         error_reporting(0);
-        ini_set('display_errors', FALSE);
-        ini_set('display_startup_errors', FALSE);
+        ini_set('display_errors', false);
+        ini_set('display_startup_errors', false);
     }
 
 }
 if (!function_exists('backTrace')) {
 
-    function backTrace($startOffset = null) {
+    function backTrace($startOffset = null)
+    {
         $bt = debug_backtrace(1);
         //var_dump($bt);
         $caller = null;
@@ -69,7 +72,8 @@ if (!function_exists('backTrace')) {
 }
 if (!function_exists("array_flatten")) {
 
-    function array_flatten($array) {
+    function array_flatten($array)
+    {
         if (is_array($array)) {
             $it = new RecursiveIteratorIterator(new RecursiveArrayIterator($array));
             foreach ($it as $v) {

@@ -53,13 +53,16 @@ namespace App\Controllers\Api\settings;
  *
  * @author cjacobsen
  */
+
 use App\Controllers\Api\APIController;
 
-class Application extends APIController {
+class Application extends APIController
+{
 
     //put your code here
 
-    public function indexPost() {
+    public function indexPost()
+    {
         $application = new \App\Controllers\Settings\Application($this->app);
         $application->indexPost();
         return $this->returnHTML($this->view('settings/application'));

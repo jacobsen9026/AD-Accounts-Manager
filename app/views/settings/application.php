@@ -27,6 +27,7 @@
 use App\Models\Database\AppDatabase;
 use System\App\Forms\Form;
 use System\App\Forms\FormButton;
+use System\App\Forms\FormFloatingButton;
 use System\App\Forms\FormText;
 use System\App\Forms\FormRadio;
 
@@ -36,10 +37,10 @@ $webAppName = new FormText("Web App Name", null, "webAppName", AppDatabase::getA
 $webAppName->large();
 $webFQDN = new FormText("Website FQDN", "If this is set all requests are redirected to this address. Be sure it is correct and stays available.", "webAppFQDN", AppDatabase::getWebsiteFQDN());
 $webFQDN->large()
-        ->setPlaceholder("Enter the public FQDN that users use to access this applicaiton.");
-$webHelpDesk = new FormText("User Helpdesk URL", "The url that users should use to access your help portal.", "webHelpdeskURL", AppDatabase::getUserHelpdeskURL());
+    ->setPlaceholder("Enter the public FQDN that users use to access this applicaiton.");
+$webHelpDesk = new FormText("user Helpdesk URL", "The url that users should use to access your help portal.", "webHelpdeskURL", AppDatabase::getUserHelpdeskURL());
 $webHelpDesk->large()
-        ->setPlaceholder("https://helpdesk.company.com");
+    ->setPlaceholder("https://helpdesk.company.com");
 
 
 $forceHTTPS = new FormRadio("Force HTTPS", "Redirect all HTTP requests to HTTPS", "forceHTTPS");
@@ -50,23 +51,25 @@ $debugMode->addOption("False", '0', !AppDatabase::getDebugMode());
 $debugMode->addOption("True", '1', AppDatabase::getDebugMode());
 $homepageMessage = new System\App\Forms\FormTextArea();
 $homepageMessage->setLabel("Homepage Message")
-        ->setSubLabel("Accepts HTML and inline style")
-        ->setName("webMOTD")
-        ->setValue(AppDatabase::getMOTD());
+    ->setSubLabel("Accepts HTML and inline style")
+    ->setName("webMOTD")
+    ->setValue(AppDatabase::getMOTD());
 
-$submitButton = new FormButton("Save");
-$submitButton->small()
-        ->addAJAXRequest('/api/settings/application', 'settingsOutput', $form);
+$submitButton = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
+$submitButton->setId('floatingSaveButton')
+    ->addAJAXRequest('/api/settings/application', 'settingsOutput', $form);
+
 
 $form->addElementToNewRow($webAppName)
-        ->addElementToNewRow($homepageMessage)
-        ->addElementToNewRow($webFQDN)
-        ->addElementToNewRow($forceHTTPS)
-        ->addElementToCurrentRow($debugMode)
-        ->addElementToNewRow($webHelpDesk)
-        ->addElementToNewRow($submitButton);
+    ->addElementToNewRow($homepageMessage)
+    ->addElementToNewRow($webFQDN)
+    ->addElementToNewRow($forceHTTPS)
+    ->addElementToCurrentRow($debugMode)
+    ->addElementToNewRow($webHelpDesk)
+    ->addElementToNewRow($submitButton);
 echo $form->print();
 ?>
+
 
 
 

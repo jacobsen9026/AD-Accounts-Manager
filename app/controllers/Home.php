@@ -31,14 +31,17 @@ namespace App\Controllers;
  *
  * @author cjacobsen
  */
+
 use App\Models\Database\AppDatabase;
 use App\Models\Database\DistrictDatabase;
 use App\Models\User\PermissionLevel;
 use App\Models\User\PermissionHandler;
 
-class Home extends Controller {
+class Home extends Controller
+{
 
-    public function index() {
+    public function index()
+    {
         $this->motd = AppDatabase::getMOTD();
         $this->applicationName = AppDatabase::getAppName();
 //echo "<br/><br/><br/><br/><br/><br/>";
@@ -63,11 +66,13 @@ class Home extends Controller {
         return $this->view('homepage');
     }
 
-    public function indexPost() {
+    public function indexPost()
+    {
         $this->index();
     }
 
-    public function show403() {
+    public function show403()
+    {
 
 
         $this->motd = AppDatabase::getMOTD();
@@ -76,5 +81,6 @@ class Home extends Controller {
     }
 
 }
+
 ?>
 

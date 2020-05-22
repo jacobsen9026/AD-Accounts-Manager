@@ -31,9 +31,11 @@ namespace System\App\Forms\Validators;
  *
  * @author cjacobsen
  */
+
 use App\Models\District\Group;
 
-class GroupValidator extends FormInputValidator {
+class GroupValidator extends FormInputValidator
+{
 
     const ADD_GROUP = "addGroup";
 
@@ -43,11 +45,13 @@ class GroupValidator extends FormInputValidator {
      */
     private $group;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->group = new Group();
     }
 
-    public function addGroup() {
+    public function addGroup()
+    {
         var_dump($this->group);
         return
         foreach ($input as $field => $value) {
@@ -56,22 +60,26 @@ class GroupValidator extends FormInputValidator {
         }
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->group->setName($name);
         return $this;
     }
 
-    public function setDescription($description) {
+    public function setDescription($description)
+    {
         $this->group->setDescription($description);
         return $this;
     }
 
-    public function setEmail($email) {
+    public function setEmail($email)
+    {
         $this->group->setEmail($email);
         return $this;
     }
 
-    public function setOu($ou) {
+    public function setOu($ou)
+    {
         $this->ou = $ou;
         return $this;
     }

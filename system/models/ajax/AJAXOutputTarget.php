@@ -31,24 +31,29 @@ namespace System\Models\Ajax;
  *
  * @author cjacobsen
  */
-class AJAXOutputTarget {
+class AJAXOutputTarget
+{
 
     private $outputIdentifier;
     private $outputElement;
 
-    public function setOutputID($id) {
+    public function setOutputID($id)
+    {
         $this->outputIdentifier = '#' . $id;
     }
 
-    public function setOutputInputName($name) {
+    public function setOutputInputName($name)
+    {
         //$this->outputIdentifier=
     }
 
-    public function outputHTML() {
+    public function outputHTML()
+    {
         $this->outputElement = 'html';
     }
 
-    public function outputValue() {
+    public function outputValue()
+    {
         $this->outputElement = 'val';
     }
 

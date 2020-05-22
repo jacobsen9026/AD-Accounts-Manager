@@ -27,15 +27,18 @@
 namespace App\Controllers\Api;
 
 /**
- * Description of User
+ * Description of user
  *
  * @author cjacobsen
  */
+
 use System\Post;
 
-class User extends APIController {
+class User extends APIController
+{
 
-    public function newAPIKeyPost() {
+    public function newAPIKeyPost()
+    {
         Post::csrfCheck();
         //return hash("sha256", random_bytes(256));
         $this->user->generateAPIToken();

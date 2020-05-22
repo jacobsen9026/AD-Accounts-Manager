@@ -31,9 +31,11 @@ namespace System\App;
  *
  * @author cjacobsen
  */
+
 use System\App\Router;
 
-class Route {
+class Route
+{
 
     /**
      *
@@ -57,7 +59,8 @@ class Route {
      *
      * @return type
      */
-    public function getControler() {
+    public function getControler()
+    {
         return $this->controler;
     }
 
@@ -65,7 +68,8 @@ class Route {
      *
      * @return type
      */
-    public function getMethod() {
+    public function getMethod()
+    {
         return $this->method;
     }
 
@@ -73,16 +77,19 @@ class Route {
      *
      * @return type
      */
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
     /**
      *
      * @param type $controler
+     *
      * @return $this
      */
-    public function setControler($controler) {
+    public function setControler($controler)
+    {
         $this->controler = $controler;
         return $this;
     }
@@ -90,9 +97,11 @@ class Route {
     /**
      *
      * @param type $method
+     *
      * @return $this
      */
-    public function setMethod($method) {
+    public function setMethod($method)
+    {
         $this->method = $method;
         return $this;
     }
@@ -100,9 +109,11 @@ class Route {
     /**
      *
      * @param type $data
+     *
      * @return $this
      */
-    public function setData($data) {
+    public function setData($data)
+    {
 
         $this->data = $this->preProcessData($data);
         return $this;
@@ -112,9 +123,11 @@ class Route {
      * Converts HTML encoded characters to string
      *
      * @param string $data
+     *
      * @return string
      */
-    private function preProcessData($data) {
+    private function preProcessData($data)
+    {
         return str_replace("%20", " ", $data);
     }
 
@@ -124,9 +137,11 @@ class Route {
      * as method. Finally break trim the first segment from the data.
      *
      * @param Route $this
+     *
      * @return Route Description
      */
-    public function unfoldLeft() {
+    public function unfoldLeft()
+    {
         $this->setControler($this->getMethod());
         $this->setMethod(explode("/", $this->getData())[0]);
 

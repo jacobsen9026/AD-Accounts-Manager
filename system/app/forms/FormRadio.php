@@ -31,7 +31,8 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
-class FormRadio extends FormElement implements FormElementInterface {
+class FormRadio extends FormElement implements FormElementInterface
+{
 
     /**
      *
@@ -43,27 +44,38 @@ class FormRadio extends FormElement implements FormElementInterface {
      *
      * @param type $displayName
      * @param type $value
-     * @param type $selected
+     * @param bool $selected
+     * @param bool $enabled
+     *
+     * @return FormRadio
      */
-    public function addOption($displayName, $value, $selected = false) {
+    public function addOption($displayName, $value, $selected = false, $enabled = true)
+    {
         $id = $this->getId();
         if ($id == null or $id = '') {
             $id = str_replace(" ", '_', $this->getLabel());
         }
-        $this->options[] = new FormRadioOption($this->getName(), $displayName, $value, boolval($selected), $id);
+        $newOption = new FormRadioOption($this->getName(), $displayName, $value, boolval($selected), $id);
+        if (!$enabled) {
+            $newOption->disable();
+        }
+        $this->options[] = $newOption;
         return $this;
     }
 
-    public function getOptions() {
+    public function getOptions()
+    {
         return $this->options;
     }
 
-    public function setOptions($options) {
+    public function setOptions($options)
+    {
         $this->options = $options;
         return $this;
     }
 
-    public function getElementHTML() {
+    public function getElementHTML()
+    {
 
         $output = '<div class="row">';
         foreach ($this->options as $option) {

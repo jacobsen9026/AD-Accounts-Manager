@@ -31,7 +31,8 @@ namespace System;
  *
  * @author cjacobsen
  */
-class Request {
+class Request
+{
 
     /**
      *
@@ -44,12 +45,14 @@ class Request {
     public $protocol = "http";
     private $logger;
     private $id;
+    private $ip;
 
     /**
      *
      * @param \SAM\App $core
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->logger = SystemLogger::get();
         $this->id = substr(hash("sha256", rand()), 0, 5);
         /*
@@ -91,55 +94,91 @@ class Request {
         if (isset($_SERVER["HTTPS"])) {
             $this->setProtocol("https");
         }
+        if (isset($_SERVER["REMOTE_ADDR"])) {
+            $this->ip = $_SERVER["REMOTE_ADDR"];
+        }
+
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getUri(): string {
+    public function getUri(): string
+    {
         return $this->uri;
     }
 
-    public function getReferer() {
+    public function getReferer()
+    {
         return $this->referer;
     }
 
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
-    public function getServerName() {
+    public function getServerName()
+    {
         return $this->serverName;
     }
 
-    public function getProtocol() {
+    public function getProtocol()
+    {
         return $this->protocol;
     }
 
-    public function setUri(string $uri) {
+    public function setUri(string $uri)
+    {
         $this->uri = $uri;
         return $this;
     }
 
-    public function setReferer($referer) {
+    public function setReferer($referer)
+    {
         $this->referer = $referer;
         return $this;
     }
 
-    public function setType($type) {
+    public function setType($type)
+    {
         $this->type = $type;
         return $this;
     }
 
-    public function setServerName($serverName) {
+
+    public function setServerName($serverName)
+    {
         $this->serverName = $serverName;
         return $this;
     }
 
-    public function setProtocol($protocol) {
+    public function setProtocol($protocol)
+    {
         $this->protocol = $protocol;
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getIp()
+    {
+        return $this->ip;
+    }
+
+    /**
+     * @param mixed $ip
+     *
+     * @return Request
+     */
+    public function setIp($ip)
+    {
+        $this->ip = $ip;
+        return $this;
+    }
+    
 
 }

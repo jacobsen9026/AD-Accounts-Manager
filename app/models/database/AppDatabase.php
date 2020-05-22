@@ -31,7 +31,8 @@ namespace App\Models\Database;
  *
  * @author cjacobsen
  */
-abstract class AppDatabase extends DatabaseModel {
+abstract class AppDatabase extends DatabaseModel
+{
 
     const TABLE_NAME = 'App';
 
@@ -39,7 +40,8 @@ abstract class AppDatabase extends DatabaseModel {
      *
      * @return bool
      */
-    public static function getDebugMode() {
+    public static function getDebugMode()
+    {
         return self::getDatabaseValue("Debug_Mode");
     }
 
@@ -47,7 +49,8 @@ abstract class AppDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getAppName() {
+    public static function getAppName()
+    {
         return self::getDatabaseValue("Name");
     }
 
@@ -55,7 +58,8 @@ abstract class AppDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getAppAbbreviation() {
+    public static function getAppAbbreviation()
+    {
         $fullName = self::getAppName();
         $abbreviation = '';
         foreach (explode(" ", $fullName) as $word) {
@@ -69,7 +73,8 @@ abstract class AppDatabase extends DatabaseModel {
      *
      * @return string
      */
-    public static function getMOTD() {
+    public static function getMOTD()
+    {
         return self::getDatabaseValue("MOTD");
     }
 
@@ -77,7 +82,8 @@ abstract class AppDatabase extends DatabaseModel {
      *
      * @return bool
      */
-    public static function getForceHTTPS() {
+    public static function getForceHTTPS()
+    {
 
         return self::getDatabaseValue("Force_HTTPS");
     }
@@ -87,7 +93,8 @@ abstract class AppDatabase extends DatabaseModel {
      * @return type
      * @deprecated since version number
      */
-    public static function getAdminUsernames() {
+    public static function getAdminUsernames()
+    {
         return self::getDatabaseValue("Admin_Usernames");
     }
 
@@ -95,7 +102,8 @@ abstract class AppDatabase extends DatabaseModel {
      *
      * @return type
      */
-    public static function getWebsiteFQDN() {
+    public static function getWebsiteFQDN()
+    {
         return self::getDatabaseValue("Websitie_FQDN");
     }
 
@@ -103,34 +111,41 @@ abstract class AppDatabase extends DatabaseModel {
      *
      * @return type
      */
-    public static function getUserHelpdeskURL() {
+    public static function getUserHelpdeskURL()
+    {
         return self::getDatabaseValue("User_Helpdesk_URL");
     }
 
     /**
      *
      * @param bool $value
+     *
      * @return bool
      */
-    public static function setDebugMode($value) {
+    public static function setDebugMode($value)
+    {
         return self::updateDatabaseValue('Debug_Mode', $value);
     }
 
     /**
      *
      * @param string $value
+     *
      * @return bool
      */
-    public static function setAppName($value) {
+    public static function setAppName($value)
+    {
         return self::updateDatabaseValue('Name', $value);
     }
 
-    public static function setMOTD($value) {
+    public static function setMOTD($value)
+    {
         $value = str_replace("'", "''", $value);
         return self::updateDatabaseValue('MOTD', $value);
     }
 
-    public static function setForceHTTPS($value) {
+    public static function setForceHTTPS($value)
+    {
         return self::updateDatabaseValue('Force_HTTPS', $value);
     }
 
@@ -139,7 +154,8 @@ abstract class AppDatabase extends DatabaseModel {
      * @return type
      * @deprecated since version number
      */
-    public static function setAdminUsernames($value) {
+    public static function setAdminUsernames($value)
+    {
         return self::updateDatabaseValue('Admin_Usernames', $value);
     }
 
@@ -147,17 +163,21 @@ abstract class AppDatabase extends DatabaseModel {
      * Update database column so it doesn't say websitie lol
      *
      * @param type $value
+     *
      * @return type
      */
-    public static function setWebsiteFQDN($value) {
+    public static function setWebsiteFQDN($value)
+    {
         return self::updateDatabaseValue('Websitie_FQDN', $value);
     }
 
-    public static function setUserHelpdeskURL($value) {
+    public static function setUserHelpdeskURL($value)
+    {
         return self::updateDatabaseValue('User_Helpdesk_URL', $value);
     }
 
-    public static function saveSettings($postedData) {
+    public static function saveSettings($postedData)
+    {
         foreach ($postedData as $key => $data) {
             $data = trim($data);
             \System\App\AppLogger::get()->debug($key);

@@ -35,14 +35,17 @@ namespace System\App;
  *
  * @author cjacobsen
  */
-abstract class ControllerFactory {
+abstract class ControllerFactory
+{
 
     /**
      *
      * @param App $app
+     *
      * @return Controller The appropriate Controller object based on the given route, already instantiated.
      */
-    public static function buildController($app) {
+    public static function buildController($app)
+    {
         /**
          * Set Controller Path
          * This should be converted to a core configuration constant

@@ -32,16 +32,20 @@ namespace System;
  *
  * @author cjacobsen
  */
+
 use System\App\AppLogger;
 
-class Parser {
+class Parser
+{
 
     /**
      *
      * @param string $view
+     *
      * @return boolean
      */
-    public function view(string $view, array $params = null) {
+    public function view(string $view, array $params = null)
+    {
 
         //var_dump($view);
         $view = $this->sanitize($view);
@@ -75,9 +79,11 @@ class Parser {
     /**
      *
      * @param stirng $modal
+     *
      * @return boolean
      */
-    public function modal(string $modal) {
+    public function modal(string $modal)
+    {
 
         //var_dump($modal);
         $modal = $this->sanitize($modal);
@@ -106,9 +112,11 @@ class Parser {
     /**
      *
      * @param string $file
+     *
      * @return boolean
      */
-    public function include($file) {
+    public function include($file)
+    {
 
         $file = $this->sanitize($file);
 
@@ -129,25 +137,34 @@ class Parser {
     /**
      *
      * @param string $path
+     *
      * @return string
      */
-    public function sanitize($path) {
+    public function sanitize($path)
+    {
         if ($path[0] == "/" or $path[0] == "\\") {
             $path = substr($path, 1);
         }
-        $path = str_replace(array('/', '\\'), strval(DIRECTORY_SEPARATOR), $path);
+        $path = str_replace(['/', '\\'], strval(DIRECTORY_SEPARATOR), $path);
         return $path;
     }
 
     /**
      *
      * @param array $object
+     *
      * @return string
      */
-    public function varDump($object) {
+    public function varDump($object)
+    {
         ob_start();
         var_dump($object);
         return ob_get_clean();
+    }
+
+    public static function get()
+    {
+        return new self();
     }
 
 }

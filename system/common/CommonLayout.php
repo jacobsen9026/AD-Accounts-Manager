@@ -31,13 +31,15 @@ namespace System\Common;
  *
  * @author cjacobsen
  */
+
 use System\App\App;
 use System\Parser;
 use App\Models\User\User;
 use App\Controllers\Menu;
 use System\App\AppLogger;
 
-class CommonLayout extends Parser {
+class CommonLayout extends Parser
+{
 
     const DEFAULT_LAYOUT_NAME = 'default';
 
@@ -63,7 +65,8 @@ class CommonLayout extends Parser {
      *
      * @param App $app
      */
-    function __construct($app) {
+    function __construct($app)
+    {
         $this->app = $app;
         $this->logger = $app->logger;
         $this->user = $app->user;
@@ -78,7 +81,8 @@ class CommonLayout extends Parser {
         }
     }
 
-    public function apply() {
+    public function apply()
+    {
 
         $this->logger->info($this->app->request->type);
 
@@ -96,16 +100,19 @@ class CommonLayout extends Parser {
         return $this->layoutOutput;
     }
 
-    public function getHeader() {
+    public function getHeader()
+    {
         $this->app->logger->debug('getting header');
         return $this->view('layouts/' . $this->layoutName . '_header');
     }
 
-    public function getFooter() {
+    public function getFooter()
+    {
         return $this->view('layouts/' . $this->layoutName . '_footer');
     }
 
-    public function getNavigation() {
+    public function getNavigation()
+    {
         // var_dump($this->user);
         $menu = new Menu($this->user);
         if ($this->user->authenticated) {

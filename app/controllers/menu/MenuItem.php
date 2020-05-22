@@ -31,25 +31,30 @@ namespace App\Controllers\Menu;
  *
  * @author cjacobsen
  */
-class MenuItem extends \App\Models\Model {
+class MenuItem extends \App\Models\Model
+{
 
     public $displayText;
     public $targetURL;
 
-    public function getDisplayText() {
+    public function getDisplayText()
+    {
         return $this->displayText;
     }
 
-    public function getTargetURL() {
+    public function getTargetURL()
+    {
         return $this->targetURL;
     }
 
-    public function setDisplayText($displayText) {
+    public function setDisplayText($displayText)
+    {
         $this->displayText = $displayText;
         return $this;
     }
 
-    public function setTargetURL($targetURL) {
+    public function setTargetURL($targetURL)
+    {
         $this->targetURL = $targetURL;
         return $this;
     }

@@ -40,9 +40,11 @@ namespace System;
  *
  * @author cjacobsen
  */
-abstract class Autoloader {
+abstract class Autoloader
+{
 
-    public static function run() {
+    public static function run()
+    {
         /*
          * Load Composers Autoloader to include Composer packages
          */

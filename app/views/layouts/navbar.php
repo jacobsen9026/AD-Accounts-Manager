@@ -4,6 +4,7 @@ use System\App\App;
 use App\Models\User\Privilege;
 use App\Models\Database\AppDatabase;
 use App\Models\User\User;
+
 ?>
 
 <nav class="shadow navbar fixed-top navbar-expand-md bg-primary navbar-dark">
@@ -18,10 +19,10 @@ use App\Models\User\User;
             </a>
         </div>
 
-        <div  data-toggle="collapse" data-target="#collapseAbbreviation">
+        <div data-toggle="collapse" data-target="#collapseAbbreviation">
 
         </div>
-        <div class="" >
+        <div class="">
 
             <!-- Brand -->
             <a class="navbar-brand d-md-none" href="/">
@@ -41,21 +42,18 @@ use App\Models\User\User;
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
 
 
-
-
-
-
         <ul class="navbar-nav">
 
             <?php
-//var_dump($this);
+            //var_dump($this);
             if (isset($this->items) and $this->items != null) {
                 foreach ($this->items as $topItem) {
                     if ($topItem->targetURL == null) {
                         ?>
 
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="<?php echo $topItem->targetURL; ?>" id="navbardrop" data-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle" href="<?php echo $topItem->targetURL; ?>"
+                               id="navbardrop" data-toggle="dropdown">
                                 <?php echo $topItem->displayText; ?>
                             </a>
                             <div class="shadow dropdown-menu">
@@ -64,7 +62,8 @@ use App\Models\User\User;
                                 <?php
                                 foreach ($topItem->subItems as $subItem) {
                                     ?>
-                                    <a class="dropdown-item" href="<?php echo $subItem->targetURL; ?>"><?php echo $subItem->displayText; ?></a>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $subItem->targetURL; ?>"><?php echo $subItem->displayText; ?></a>
 
                                     <?php
                                 }
@@ -72,7 +71,6 @@ use App\Models\User\User;
 
                             </div>
                         </li>
-
 
 
                         <?php
@@ -85,7 +83,6 @@ use App\Models\User\User;
                             </a>
 
                         </li>
-
 
 
                         <?php
@@ -111,10 +108,8 @@ use App\Models\User\User;
                             <div class="shadow dropdown-menu dropdown-menu-right">
 
 
-
-
-                                <a class="dropdown-item" href="/settings/application">Application</a>
-                                <a class="dropdown-item" href="/settings/district/edit">District Setup</a>
+                                <a class="dropdown-item" href="/settings/application">Settings</a>
+                                <a class="dropdown-item" href="/settings/district/edit">Setup</a>
 
 
                             </div>

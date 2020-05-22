@@ -31,14 +31,17 @@ namespace System\App;
  *
  * @author cjacobsen
  */
+
 use System\Common\CommonLogger;
 
-class WindowsLogger extends CommonLogger {
+class WindowsLogger extends CommonLogger
+{
 
     /** @var LDAPLogger|null */
     public static $instance;
 
-    function __construct() {
+    function __construct()
+    {
         parent::__construct();
         self::$instance = $this;
         $this->setName('win');
@@ -48,7 +51,8 @@ class WindowsLogger extends CommonLogger {
      *
      * @return LDAPLogger
      */
-    public static function get() {
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }

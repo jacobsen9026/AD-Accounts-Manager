@@ -69,7 +69,7 @@ define('APPCLASS', "System\App\App");
 /*
  * Toggle for core debug mode. Has no effect on app debug, but does allow App output directly.
  */
-define('DEBUG_MODE', false);
+define('DEBUG_MODE', true);
 
 $this->include('system/schema.php');
 

@@ -31,9 +31,11 @@ namespace App\Controllers;
  *
  * @author cjacobsen
  */
-class Logout extends Controller {
+class Logout extends Controller
+{
 
-    public function index() {
+    public function index()
+    {
         \System\App\Session::end();
         //session_destroy();
         header("Location: /");

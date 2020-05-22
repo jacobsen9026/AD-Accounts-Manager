@@ -32,13 +32,16 @@ namespace App\Models\District;
  * @author cjacobsen
  * @deprecated
  */
+
 use app\database\Schema;
 
-class GoogleApps {
+class GoogleApps
+{
 
     //put your code here
 
-    public static function getField($table, $id, $schema, $type) {
+    public static function getField($table, $id, $schema, $type)
+    {
         $column = strtoupper($schema[Schema::COLUMN]);
 
         //\System\App\AppLogger::get()->debug($table . ' ' . $id . ' ' . $column . ' ' . $type);
@@ -69,7 +72,8 @@ class GoogleApps {
         }
     }
 
-    private static function getDistrictField($id, $column, $type) {
+    private static function getDistrictField($id, $column, $type)
+    {
         $district = DistrictDatabase::getGASettings($id, $type);
         //\System\App\AppLogger::get()->debug($district);
         $schema = 'GOOGLEAPPS_' . $column;
@@ -79,7 +83,8 @@ class GoogleApps {
         return $return;
     }
 
-    private static function getSchoolField($id, $column, $type) {
+    private static function getSchoolField($id, $column, $type)
+    {
 
         \System\App\AppLogger::get()->info('Getting School ' . $id . ' Field ' . $column);
         $school = SchoolDatabase::getGASettings($id, $type);
@@ -96,7 +101,8 @@ class GoogleApps {
         return $return;
     }
 
-    private static function getDepartmentField($id, $column, $type) {
+    private static function getDepartmentField($id, $column, $type)
+    {
 
         \System\App\AppLogger::get()->info('Getting Department ' . $id . ' Field ' . $column);
         $department = Department::getGASettings($id, $type);
@@ -113,7 +119,8 @@ class GoogleApps {
         return $return;
     }
 
-    private static function getGradeField($id, $column, $type) {
+    private static function getGradeField($id, $column, $type)
+    {
         $grade = Grade::getGASettings($id, $type);
 
         $schoolID = Grade::getSchoolID($id);
@@ -126,7 +133,8 @@ class GoogleApps {
             if ($type == "Staff") {
                 \System\App\AppLogger::get()->warning('Couldn\'t find grade ' . $type . ' ' . $constant . ' will check school.');
                 $return = self::getSchoolField($schoolID, $column, $type);
-            }if ($type == "Student") {
+            }
+            if ($type == "Student") {
                 \System\App\AppLogger::get()->warning('Couldn\'t find grade ' . $type . ' ' . $constant . ' will check staff grade settings.');
                 $return = self::getSchoolField($id, $column, "Staff");
             }
@@ -134,7 +142,8 @@ class GoogleApps {
         return $return;
     }
 
-    private static function getTeamField($id, $column, $type) {
+    private static function getTeamField($id, $column, $type)
+    {
         $team = Grade::getGASettings($id, $type);
 
         $gradeID = Team::getGradeID($id);
@@ -150,7 +159,8 @@ class GoogleApps {
         return $return;
     }
 
-    private static function getSchemaColumn($schema) {
+    private static function getSchemaColumn($schema)
+    {
         $schemaClass = new \ReflectionClass('app\database\Schema');
         //\System\App\AppLogger::get()->debug($schema);
 

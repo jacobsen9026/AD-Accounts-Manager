@@ -31,38 +31,24 @@ namespace App\Models;
  *
  * @author cjacobsen
  */
-use System\App\AppLogger;
 
-class Model {
+use System\App\AppLogger;
+use System\Common\CommonLogger;
+use System\Parser;
+
+class Model extends Parser
+{
 
     /**
      *
-     * @var AppLogger
+     * @var CommonLogger
      */
     protected $logger;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->logger = AppLogger::get();
     }
 
-    /**
-     *
-     * @param type $schema
-     * @return string
-     * @deprecated since version number
-     */
-    public static function getTableFromSchema($schema) {
-        return $schema['table'];
-    }
-
-    /**
-     *
-     * @param type $schema
-     * @return string
-     * @deprecated
-     */
-    public static function getColumnFromSchema($schema) {
-        return $schema['column'];
-    }
 
 }

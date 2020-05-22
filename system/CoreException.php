@@ -31,7 +31,8 @@ namespace System;
  *
  * @author cjacobsen
  */
-class CoreException extends \Exception {
+class CoreException extends \Exception
+{
 
     const APP_MISSING = 1;
     const APP_MISSING_RUN = 2;
@@ -46,12 +47,13 @@ class CoreException extends \Exception {
 
     //
     // Redefine the exception so message isn't optional
-    public function __construct($message, $code = 0, $previous = null) {
+    public function __construct($message, $code = 0, $previous = null)
+    {
         // some code
         // make sure everything is assigned properly
         parent::__construct($message, $code, $previous);
         $that = $this;
-        set_error_handler(function() use ($that) {
+        set_error_handler(function () use ($that) {
             $that->handleError($that->code, $that->message, $that->file, $that->line);
         });
     }
@@ -62,9 +64,11 @@ class CoreException extends \Exception {
      * @param type $errstr
      * @param type $errfile
      * @param type $errline
+     *
      * @return boolean
      */
-    public function handleError($errno, $errstr, $errfile, $errline) {
+    public function handleError($errno, $errstr, $errfile, $errline)
+    {
         if (!(error_reporting() & $errno)) {
             // This error code is not included in error_reporting, so let it fall
             // through to the standard PHP error handler
@@ -97,11 +101,13 @@ class CoreException extends \Exception {
     }
 
     // custom string representation of object
-    public function __toString() {
+    public function __toString()
+    {
         return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
     }
 
-    public function customFunction() {
+    public function customFunction()
+    {
         echo "A custom function for this type of exception\n";
     }
 

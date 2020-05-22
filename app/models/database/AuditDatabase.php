@@ -24,27 +24,28 @@
  */
 
 namespace App\Models\Database;
+
 use App\Models\Audit\AuditEntry;
 use App\Models\Database\Query;
 
 abstract class AuditDatabase extends DatabaseModel
 {
-    const TABLE_NAME="Audit";
+    const TABLE_NAME = "Audit";
 
 
     /**
      * @param AuditEntry $newAudit
      */
-    public static function addAudit(AuditEntry $newAudit){
-        $query = new Query(self::TABLE_NAME,Query::INSERT);
-        $query->insert('Timestamp',$newAudit->getTimestamp())
-            ->insert('Username',$newAudit->getUsername())
-            ->insert('IP',$newAudit->getIp())
-            ->insert('Action',$newAudit->getAction()->getType())
-            ->insert('Description',$newAudit->getAction()->getDescription());
+    public static function addAudit(AuditEntry $newAudit)
+    {
+        $query = new Query(self::TABLE_NAME, Query::INSERT);
+        $query->insert('Timestamp', $newAudit->getTimestamp())
+            ->insert('Username', $newAudit->getUsername())
+            ->insert('IP', $newAudit->getIp())
+            ->insert('Action', $newAudit->getAction()->getType())
+            ->insert('Description', $newAudit->getAction()->getDescription());
         $query->run();
     }
-
 
 
 }

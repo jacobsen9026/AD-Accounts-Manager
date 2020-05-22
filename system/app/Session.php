@@ -31,17 +31,20 @@ namespace System\App;
  *
  * @author cjacobsen
  */
+
 use App\Models\User\User;
 use App\Models\Database\AuthDatabase;
 
-abstract class Session {
+abstract class Session
+{
     //put your code here
 
     /** @var User|null */
     const TIMEOUT = 'timeout';
     const USER = 'user';
 
-    public static function getUser() {
+    public static function getUser()
+    {
         if (isset($_SESSION[self::USER]) and $_SESSION[self::USER] != '') {
             if (Session::getTimeoutStatus()) {
                 return new User();
@@ -52,11 +55,13 @@ abstract class Session {
         return new User();
     }
 
-    public static function getID() {
+    public static function getID()
+    {
         return session_id();
     }
 
-    public static function setUser($user) {
+    public static function setUser($user)
+    {
         if ($_SESSION[self::USER] = serialize($user)) {
             return true;
         }
@@ -66,20 +71,23 @@ abstract class Session {
     /**
      * Update the user timeout with the value set in the application settings
      */
-    public static function updateTimeout() {
+    public static function updateTimeout()
+    {
 
         $nextTimeout = AuthDatabase::getSessionTimeout() + time();
         $_SESSION[self::TIMEOUT] = $nextTimeout;
     }
 
-    public static function getTimeoutStatus() {
+    public static function getTimeoutStatus()
+    {
         if (time() > $_SESSION[self::TIMEOUT]) {
             return true;
         }
         return false;
     }
 
-    public static function end() {
+    public static function end()
+    {
         session_unset();
         Cookie::delete("PHPSESSID");
     }

@@ -33,17 +33,20 @@ namespace App\Models\District;
  * @deprecated
  * @
  */
-abstract class UsernameFormat {
+abstract class UsernameFormat
+{
 
     //put your code here
-    const FILN = array('{First Initial}{Last Name}', 'uf_filn');
-    const YOGFILN = array('{Year of Grad}{First Initial}{Last Name}', 'uf_yogfiln');
+    const FILN = ['{First Initial}{Last Name}', 'uf_filn'];
+    const YOGFILN = ['{Year of Grad}{First Initial}{Last Name}', 'uf_yogfiln'];
 
-    public static function getUsernameFormats() {
-        return array(self::FILN, self::YOGFILN);
+    public static function getUsernameFormats()
+    {
+        return [self::FILN, self::YOGFILN];
     }
 
-    public static function formatUsername($firstName, $lastName, $format, $yog = null, $middleName = null) {
+    public static function formatUsername($firstName, $lastName, $format, $yog = null, $middleName = null)
+    {
         switch ($format) {
             case self::FILN:
 

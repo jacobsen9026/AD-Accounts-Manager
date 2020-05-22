@@ -31,16 +31,19 @@ namespace System\App\Auth;
  *
  * @author cjacobsen
  */
+
 use System\App\Auth\AuthException;
 use app\config\MasterConfig;
 use App\Models\User\User;
 use App\Models\Database\AuthDatabase;
 
-abstract class Local {
+abstract class Local
+{
 //put your code here
 
     /** @var MasterConfig|null The app logger */
-    public static function authenticate($username = null, $password = null) {
+    public static function authenticate($username = null, $password = null)
+    {
         $password = hash('sha256', $password);
         //$config = \app\config\MasterConfig::get();
         $adminPassword = AuthDatabase::getAdminPassword();

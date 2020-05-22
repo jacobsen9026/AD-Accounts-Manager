@@ -31,17 +31,20 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
-class FormHTML extends FormElement implements FormElementInterface {
+class FormHTML extends FormElement implements FormElementInterface
+{
 
     //put your code here
     private $html;
 
-    public function setHtml($html) {
+    public function setHtml($html)
+    {
         $this->html = $html;
         return $this;
     }
 
-    public function getElementHTML() {
+    public function getElementHTML()
+    {
         $output = '<div id="' . $this->getId() . '" data-toggle="tooltip" data-placement="top" title="' . $this->getTooltip() . '">';
         $output .= $this->html;
         $output .= '</div>';

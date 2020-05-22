@@ -31,7 +31,8 @@ namespace System\App\Auth;
  *
  * @author cjacobsen
  */
-class AuthException extends \Exception {
+class AuthException extends \Exception
+{
 
     const BAD_PASSWORD = "BAD_PASSWORD";
     const BAD_USER = "BAD_USER";

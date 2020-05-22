@@ -31,24 +31,28 @@ namespace System\App;
  *
  * @author cjacobsen
  */
+
 use System\Common\CommonLogger;
 
-class UserLogger extends CommonLogger {
+class UserLogger extends CommonLogger
+{
 
     /** @var LDAPLogger|null */
     public static $instance;
 
-    function __construct() {
+    function __construct()
+    {
         parent::__construct();
         self::$instance = $this;
-        $this->setName('User');
+        $this->setName('user');
     }
 
     /**
      *
      * @return LDAPLogger
      */
-    public static function get() {
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }

@@ -28,6 +28,7 @@ use app\database\Schema;
 use App\Models\Database\AppDatabase;
 use App\Models\Database\EmailDatabase;
 use System\App\Forms\Form;
+use System\App\Forms\FormFloatingButton;
 use System\App\Forms\FormTextArea;
 
 $this->email = EmailDatabase::get();
@@ -36,11 +37,11 @@ $this->email = EmailDatabase::get();
 $form = new Form('', 'notification');
 $adminEmails = new FormTextArea('Admin Email Addresses', 'Recieves important system notifications', 'adminEmails');
 //$staffBlind = new FormTextArea('', $subLabel, $name)
-$save = new \System\App\Forms\FormButton("Save");
-$save->small()
-        ->addAJAXRequest('/api/settings/notification', 'settingsOutput', $form);
+$save = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
+$save->setId('floatingSaveButton')
+    ->addAJAXRequest('/api/settings/notification', 'settingsOutput', $form);
 $form->addElementToCurrentRow($adminEmails)
-        ->addElementToNewRow($save);
+    ->addElementToNewRow($save);
 echo $form->print();
 ?>
 

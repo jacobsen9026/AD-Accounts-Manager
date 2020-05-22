@@ -1,6 +1,7 @@
 <?php
 
 use app\database\Schema;
+
 ?>
 
 <div id="deleteTeam<?php echo $this->team[Schema::TEAM_ID[Schema::COLUMN]]; ?>Modal" class="modal fade" role="dialog">
@@ -14,12 +15,14 @@ use app\database\Schema;
 
             </div>
             <div class="modal-body text-center">
-                <p class="px-5 pb-2">Are you sure you want to delete Team <?php echo $this->team[Schema::TEAM_NAME[Schema::COLUMN]]; ?>?<br/>
+                <p class="px-5 pb-2">Are you sure you want to delete
+                    Team <?php echo $this->team[Schema::TEAM_NAME[Schema::COLUMN]]; ?>?<br/>
                     All team configuration including OU mappings,
                     and any other team specific data will be erased.
                     Please ensure you have a recent backup of the application configuration.
                 </p>
-                <a class="btn btn-danger" aria-label="Delete" href="/settings/teams/delete/<?php echo $this->team[Schema::TEAM_ID[Schema::COLUMN]]; ?>">
+                <a class="btn btn-danger" aria-label="Delete"
+                   href="/settings/teams/delete/<?php echo $this->team[Schema::TEAM_ID[Schema::COLUMN]]; ?>">
                     Delete
                 </a>
             </div>

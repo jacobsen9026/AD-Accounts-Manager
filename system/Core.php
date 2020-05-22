@@ -43,7 +43,8 @@ use System\CoreException;
 use System\SystemLogger;
 use System\Common\CommonLogger;
 
-class Core {
+class Core
+{
 
     /** @var Parser|null The view parser that enables printing of views */
     private $parser;
@@ -80,9 +81,10 @@ class Core {
 
     /** @var Core|null This core instance */
     public static
-            $instance;
+        $instance;
 
-    function __construct() {
+    function __construct()
+    {
         /*
          * Create Core
          * Start Session
@@ -96,8 +98,8 @@ class Core {
          * Enable Error Reporting for core until the system config is loaded
          */
         error_reporting(E_ALL);
-        ini_set('display_errors', TRUE);
-        ini_set('display_startup_errors', TRUE);
+        ini_set('display_errors', true);
+        ini_set('display_startup_errors', true);
         ini_set('file_uploads', true);
         /*
          * Store new instance for abstract reference
@@ -110,7 +112,8 @@ class Core {
      *
      * @return Core
      */
-    public static function get() {
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -120,7 +123,8 @@ class Core {
     /**
      * Start the system core running. This should be called from the public php index file
      */
-    public function run() {
+    public function run()
+    {
         /**
          * BEGIN
          *
@@ -161,9 +165,11 @@ class Core {
     /**
      * In the event of a CoreException, immediately stops app execution and pulls the current AppLogger state.
      * Should not be used by other classes.
+     *
      * @param type $message
      */
-    public function abort($message = null) {
+    public function abort($message = null)
+    {
         self::$systemLogger->error("Aborting App Execution!");
         self::$systemLogger->error($message);
         $this->appLogger = ($this->app->logger);
@@ -179,7 +185,8 @@ class Core {
     /**
      * Initialize all core systems for application running
      */
-    private function initialize() {
+    private function initialize()
+    {
         /**
          * Run autoloader
          */
@@ -235,7 +242,8 @@ class Core {
     /**
      * Executes the application class by calling the runApp() method
      */
-    private function execute() {
+    private function execute()
+    {
         self::$systemLogger->info("App starting");
         /**
          * We prep the output in case something goes wrong with the app
@@ -260,7 +268,8 @@ class Core {
         self::$systemLogger->info("App execution completed");
     }
 
-    private function runApp() {
+    private function runApp()
+    {
 
         /*
          * Check that the defined primary app class in the
@@ -299,7 +308,8 @@ class Core {
      * Draw the request and deliver back to user
      *
      */
-    private function render() {
+    private function render()
+    {
         /*
          * Create instance of renderer
          * Render the body into the full response
@@ -317,7 +327,8 @@ class Core {
      * Debug On: Print all errors
      * Debug Off: Suppress Errors
      */
-    private function setErrorMode() {
+    private function setErrorMode()
+    {
         if ($this->inDebugMode()) {
             self::$systemLogger->info("Enabling PHP Errors");
             enablePHPErrors();
@@ -334,7 +345,8 @@ class Core {
      *
      * @return boolean
      */
-    public static function inDebugMode() {
+    public static function inDebugMode()
+    {
         if (defined('DEBUG_MODE') and DEBUG_MODE) {
             return true;
         } else {
@@ -342,7 +354,8 @@ class Core {
         }
     }
 
-    public static function getAppClass() {
+    public static function getAppClass()
+    {
         return APPCLASS;
     }
 

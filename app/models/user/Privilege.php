@@ -31,9 +31,11 @@ namespace App\Models\User;
  *
  * @author cjacobsen
  */
+
 use System\App\Auth\CorePrivilege;
 
-abstract class Privilege extends CorePrivilege {
+abstract class Privilege extends CorePrivilege
+{
 
     const BASIC = 1000;
     const POWER = 2000;

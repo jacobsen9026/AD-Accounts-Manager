@@ -31,28 +31,33 @@ namespace App\Controllers\Api;
  *
  * @author cjacobsen
  */
+
 use App\Controllers\Controller;
 
-class APIController extends Controller {
+class APIController extends Controller
+{
 
     //put your code here
-    public function __construct(\System\App\App $app) {
+    public function __construct(\System\App\App $app)
+    {
         parent::__construct($app);
         $this->app->request->setType('ajax');
     }
 
-    public function indexPost() {
+    public function indexPost()
+    {
         $action = \system\Post::get("action");
         if (method_exists($this, $action)) {
             return $this->$action();
         }
     }
 
-    public function indexGet() {
+    public function indexGet()
+    {
 
         $action = \system\Get::get("action");
         /**
-         * Placeholder for User Token verification
+         * Placeholder for user Token verification
          */
         if (method_exists($this, $action)) {
             //var_dump("Method Exists");
@@ -60,15 +65,19 @@ class APIController extends Controller {
         }
     }
 
-    public function returnHTML($html) {
-        return ["html" => $html];
+    public function returnHTML($html)
+    {
+        $pageHookScript = '<script>preparePageHooks();</script>';
+        return ["html" => $html . $pageHookScript];
     }
 
-    public function returnValue($html) {
+    public function returnValue($html)
+    {
         return ["val" => $html];
     }
 
-    public function returnAutoComplete($autoCompletionArray) {
+    public function returnAutoComplete($autoCompletionArray)
+    {
         return ["autocomplete" => $autoCompletionArray];
     }
 

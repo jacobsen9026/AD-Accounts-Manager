@@ -1,7 +1,7 @@
-
 <?php
 
-function printSessionArray($array) {
+function printSessionArray($array)
+{
     foreach ($array as $entry) {
         $entry = var_export($entry);
         ?>
@@ -11,10 +11,8 @@ function printSessionArray($array) {
         <?php
     }
 }
+
 ?>
-
-
-
 
 
 <div class="scroll">

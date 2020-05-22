@@ -31,11 +31,13 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
+
 use App\Models\View\Javascript;
 use System\Models\Ajax\AJAXRequest;
 use App\Models\View\Modal;
 
-class FormButton extends FormElement implements FormElementInterface {
+class FormButton extends FormElement implements FormElementInterface
+{
 
     private $theme = "primary";
     private $type = 'submit';
@@ -48,7 +50,8 @@ class FormButton extends FormElement implements FormElementInterface {
      * @param type $subLabel
      * @param type $size Must be one of: small,medium,large
      */
-    function __construct(string $name, $size = "medium") {
+    function __construct(string $name, $size = "medium")
+    {
         parent::__construct(null, null, $name);
 
         $this->setName($name);
@@ -56,25 +59,30 @@ class FormButton extends FormElement implements FormElementInterface {
         $this->setInputClasses("w-100 btn");
     }
 
-    function getTheme() {
+    function getTheme()
+    {
         return $this->theme;
     }
 
-    function getType() {
+    function getType()
+    {
         return $this->type;
     }
 
-    function setType($type) {
+    function setType($type)
+    {
         $this->type = $type;
         return $this;
     }
 
-    public function setTheme($theme) {
+    public function setTheme($theme)
+    {
         $this->theme = $theme;
         return $this;
     }
 
-    public function getId() {
+    public function getId()
+    {
         $id = parent::getId();
         if ($id == null) {
             return str_replace(" ", "", $this->getName()) . "Button";
@@ -87,7 +95,8 @@ class FormButton extends FormElement implements FormElementInterface {
      *
      * @return string
      */
-    public function getElementHTML() {
+    public function getElementHTML()
+    {
 
         $textClass = '';
         if ($this->getTheme() == 'warning') {
@@ -102,18 +111,19 @@ class FormButton extends FormElement implements FormElementInterface {
             //$html .= ' data-toggle="modal" data-target="#exampleModal" ';
         }
         $html .= '>'
-                . $this->getName() .
-                '</button></div>';
+            . $this->getName() .
+            '</button></div>';
         //var_dump($html);
         return $html;
     }
 
-    public function addModal($modalTitle, $modalBody, $modalTheme) {
+    public function addModal($modalTitle, $modalBody, $modalTheme)
+    {
         $modal = new Modal();
         $modal->setTitle($modalTitle)
-                ->setBody($modalBody)
-                ->setID($this->getId() . '_Modal')
-                ->setTheme($modalTheme);
+            ->setBody($modalBody)
+            ->setID($this->getId() . '_Modal')
+            ->setTheme($modalTheme);
         $this->setModal($modal);
         $this->setType("button");
         \System\App\AppLogger::get()->info("Added modal to " . $this->getName());
@@ -122,11 +132,13 @@ class FormButton extends FormElement implements FormElementInterface {
 
     /**
      *  Converts the button to a background AJAX call
-     * @param string $url The target URL of the AJAX request
+     *
+     * @param string $url      The target URL of the AJAX request
      * @param string $outputID The ID of the HTML element to place the response
-     * @param mixed $data Can be a prepared array, a Form object, or a JQuery string
+     * @param mixed $data      Can be a prepared array, a Form object, or a JQuery string
      */
-    public function addAJAXRequest($url, $outputID = null, $data = null, $showLoading = false, $outputElement = 'html') {
+    public function addAJAXRequest($url, $outputID = null, $data = null, $showLoading = false, $outputElement = 'html')
+    {
 
         $this->ajaxRequest = new AJAXRequest($url, $data);
         if ($outputID != null)
@@ -138,16 +150,17 @@ class FormButton extends FormElement implements FormElementInterface {
         $this->setType('button');
 
 
-
         return $this;
     }
 
     /**
      * Turns the button into a link that can post data if provided
+     *
      * @param type $url
      * @param type $data
      */
-    public function addClientRequest($url, $data = null) {
+    public function addClientRequest($url, $data = null)
+    {
         $this->setType('button');
         $function = Javascript::buildClientRequest($url, $data);
         $script = Javascript::onClick($this->getId(), $function);

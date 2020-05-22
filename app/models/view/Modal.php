@@ -31,64 +31,74 @@ namespace App\Models\View;
  *
  * @author cjacobsen
  */
-class Modal extends ViewModel {
+class Modal extends ViewModel
+{
 
     private $id;
     private $title;
     private $body;
     private $theme;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->theme = 'primary';
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->title;
     }
 
-    public function getBody() {
+    public function getBody()
+    {
         return $this->body;
     }
 
-    public function getTheme() {
+    public function getTheme()
+    {
         return $this->theme;
     }
 
-    public function setTheme($theme) {
+    public function setTheme($theme)
+    {
         $this->theme = $theme;
         return $this;
     }
 
-    public function setId($id) {
+    public function setId($id)
+    {
         //$strip = ['_'];
         //$this->id = str_replace($strip, '', $id);
         $this->id = $id;
         return $this;
     }
 
-    public function setTitle($title) {
+    public function setTitle($title)
+    {
         $this->title = $title;
         return $this;
     }
 
-    public function setBody($body) {
+    public function setBody($body)
+    {
         $this->body = $body;
         return $this;
     }
 
-    public function print() {
+    public function print()
+    {
         \System\App\AppLogger::get()->debug($this);
 
 
-
         $modal = '<div id="'
-                . $this->getId()
-                . '" class="modal fade" role="dialog">'
-                . '<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            . $this->getId()
+            . '" class="modal fade" role="dialog">'
+            . '<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
 
         <!-- Modal content-->
         <div class="modal-content">

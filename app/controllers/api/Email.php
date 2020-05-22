@@ -31,20 +31,23 @@ namespace App\Controllers\Api;
  *
  * @author cjacobsen
  */
+
 use System\Post;
 
-class Email extends APIController {
+class Email extends APIController
+{
 
     /**
      *
      * @param type $to The email address to send a test to.
      */
-    public function test($to = null) {
+    public function test($to = null)
+    {
         //var_dump($to);
         if ($to == null) {
             $to = Post::get('to');
         }
-        if ($this->user->privilege >= \App\Models\User\Privilege::ADMIN) {
+        if ($this->user->superAdmin) {
             return \System\App\Email::sendTest($to);
         }
     }

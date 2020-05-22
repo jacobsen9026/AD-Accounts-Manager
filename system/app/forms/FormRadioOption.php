@@ -31,7 +31,8 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
-class FormRadioOption extends FormElement implements FormElementInterface {
+class FormRadioOption extends FormElement implements FormElementInterface
+{
 
     /**
      *
@@ -45,40 +46,50 @@ class FormRadioOption extends FormElement implements FormElementInterface {
      */
     private $selected = false;
 
-    public function __construct($name, $label = '', $value = '', $selected = false, $id = null) {
+    public function __construct($name, $label = '', $value = '', $selected = false, $id = '')
+    {
         parent::__construct($label, null, $name);
         $this->setValue($value);
         $this->setSelected($selected);
         $this->setId($id);
     }
 
-    public function getValue(): string {
+    public function getValue(): ?string
+    {
         return $this->value;
     }
 
-    public function getSelected(): bool {
+    public function getSelected(): bool
+    {
         return $this->selected;
     }
 
-    public function setValue($value) {
+    public function setValue($value)
+    {
         $this->value = $value;
         return $this;
     }
 
-    public function setSelected(bool $selected) {
+    public function setSelected(bool $selected)
+    {
         $this->selected = $selected;
         return $this;
     }
 
-    public function getElementHTML() {
+    public function getElementHTML()
+    {
+        $disabled = '';
+        if ($this->isDisabled()) {
+            $disabled = ' disabled';
+        }
         $checked = '';
         if ($this->getSelected()) {
             $checked = ' checked ';
         }
         $output = '<div class="col-md custom-radio custom-control">'
-                . '<input class="custom-control-input" type="radio" name="' . $this->getName() . '" id="' . $this->getId() . '_' . $this->getLabel() . '" value="' . $this->getValue() . '" ' . $checked . '>'
-                . '<label class="custom-control-label" for="' . $this->getId() . '_' . $this->getLabel() . '">' . $this->getLabel() . '</label>'
-                . '</div>';
+            . '<input class="custom-control-input" type="radio" name="' . $this->getName() . '" id="' . $this->getId() . '_' . $this->getLabel() . '" value="' . $this->getValue() . '" ' . $checked . ' ' . $disabled . '>'
+            . '<label class="custom-control-label" for="' . $this->getId() . '_' . $this->getLabel() . '">' . $this->getLabel() . '</label>'
+            . '</div>';
         return $output;
         //$output .=
     }

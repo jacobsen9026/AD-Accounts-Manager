@@ -33,11 +33,13 @@ namespace System;
  *
  * @author cjacobsen
  */
+
 use System\Core;
 use System\SystemLogger;
 use Error;
 
-class CoreErrorHandler {
+class CoreErrorHandler
+{
 
     public static $instance;
 
@@ -48,9 +50,10 @@ class CoreErrorHandler {
      *
      * @return self
      */
-    function __construct() {
-        set_error_handler(array($this, 'handleError'));
-        set_exception_handler(array($this, 'handleException'));
+    function __construct()
+    {
+        set_error_handler([$this, 'handleError']);
+        set_exception_handler([$this, 'handleException']);
 
         if (isset(self::$instance)) {
             return self::$instance;
@@ -63,7 +66,8 @@ class CoreErrorHandler {
      *
      * @return type
      */
-    public static function get() {
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -79,7 +83,8 @@ class CoreErrorHandler {
      * @param type $line
      * @param type $context
      */
-    public function handleError($code, $description = null, $file = null, $line = null, $context = null) {
+    public function handleError($code, $description = null, $file = null, $line = null, $context = null)
+    {
         $output = "Error: [$code] $description";
         if ($file != null and $line != null) {
             $output = "Error: $file:$line [$code] $description";
@@ -92,7 +97,8 @@ class CoreErrorHandler {
      *
      * @param Error $exception
      */
-    function handleException($exception) {
+    function handleException($exception)
+    {
         /* @var $file string */
         ob_flush();
         $file = $exception->getFile();
@@ -109,6 +115,14 @@ class CoreErrorHandler {
 
         /* @var $trace array */
         $trace = $exception->getTrace();
+        //var_dump($trace);
+        $traceOutput = '';
+        $count = count($trace);
+        for ($x = 1; $x < $count; $x++) {
+            $traceOutput .= "<div>" . $trace[$x]["file"] . ":" . $trace[$x]["line"] . "</div>";
+
+        }
+
         $surroundingCode = $lineNumber - 3 . file($file)[$lineNumber - 4];
         $surroundingCode .= $lineNumber - 2 . file($file)[$lineNumber - 3];
         $surroundingCode .= $lineNumber - 1 . file($file)[$lineNumber - 2];
@@ -119,14 +133,15 @@ class CoreErrorHandler {
         $surroundingCode = str_replace("'", '"', $surroundingCode);
 
 
-
         if (Core::get()->inDebugMode()) {
             //Send a 500 internal server error to the browser.
             header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
             $logMessage = $file . ':' . $lineNumber . ' ' . $message;
-            $errorMessage = '<div class="alert alert-danger">Fatal Errror <br/><br/>' . $message . '<br/><br/>' . $file
-                    . ':' . $lineNumber . '<br/><pre>'
-                    . $surroundingCode . '</pre></div>';
+            $errorMessage = '<div class="m-5 p-5 alert alert-danger"><h4>Fatal Error</h4>' . $message . '<br/><br/>' . $file
+                . ':' . $lineNumber . '<br/><pre>'
+                . $surroundingCode . '</pre>'
+                . $traceOutput
+                . '</div>';
             echo $errorMessage;
         }
         /*

@@ -31,7 +31,8 @@ namespace System\App\Forms\Validators;
  *
  * @author cjacobsen
  */
-class FormInputValidator implements FormInputValidatorInterface {
+class FormInputValidator implements FormInputValidatorInterface
+{
 
     /**
      *
@@ -41,15 +42,19 @@ class FormInputValidator implements FormInputValidatorInterface {
 
     /**
      * Sets the validator method to use upon validation
+     *
      * @param string $method
+     *
      * @return $this
      */
-    public function setMethod(string $method) {
+    public function setMethod(string $method)
+    {
         $this->method = $method;
         return $this;
     }
 
-    public function validateInput() {
+    public function validateInput()
+    {
         $method = $this->method;
         $this->$method();
     }

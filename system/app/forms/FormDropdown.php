@@ -31,7 +31,8 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
-class FormDropdown extends FormElement {
+class FormDropdown extends FormElement
+{
     //put your code here
 
     /**
@@ -41,21 +42,25 @@ class FormDropdown extends FormElement {
     private $options;
     private $name;
 
-    public function createOption($label, $value) {
+    public function createOption($label, $value)
+    {
         $this->options[] = new FormDropdownOption($label, $value);
         return $this;
     }
 
-    public function addOption($option) {
+    public function addOption($option)
+    {
         $this->options[] = $option;
         return $this;
     }
 
-    public function getOptions() {
+    public function getOptions()
+    {
         return $this->options;
     }
 
-    function getElementHTML() {
+    function getElementHTML()
+    {
         $disable = '';
         if ($this->isDisabled())
             $disable = ' disabled ';

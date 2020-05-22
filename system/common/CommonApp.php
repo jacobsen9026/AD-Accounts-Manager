@@ -31,7 +31,8 @@ namespace System\Common;
  *
  * @author cjacobsen
  */
-class CommonApp {
+class CommonApp
+{
 
     /** @var Request|null The system logger */
     public $request;
@@ -50,9 +51,11 @@ class CommonApp {
 
     /**
      * Get the current App instance
+     *
      * @return App
      */
-    public static function get() {
+    public static function get()
+    {
         $class = \System\Core::getAppClass();
         if ($class::$instance === null) {
             $class::$instance = new $class();

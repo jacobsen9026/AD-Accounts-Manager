@@ -15,21 +15,16 @@
                 <input name="delay" value="0"/><br/>
 
                 <br/><br/>
-                <button type="submit" onclick="showMessege('Sending reboot command to workstation please wait...')">Submit</button><br/>
+                <button type="submit" onclick="showMessege('Sending reboot command to workstation please wait...')">
+                    Submit
+                </button>
+                <br/>
                 <br/>
                 <br/><br/>
             </td>
         </tr>
     </table>
 </form>
-
-
-
-
-
-
-
-
 
 
 <form action="/?goto=/tech/computers/renamePC.php" method="post">
@@ -49,7 +44,8 @@
                 <input name="newPCName"/><br/>
 
                 <br/><br/>
-                <button type="submit" onclick="showMessege('Renaming workstation please wait...')">Submit</button><br/>
+                <button type="submit" onclick="showMessege('Renaming workstation please wait...')">Submit</button>
+                <br/>
                 <br/>
                 <!--
 <a href="/?goto=/tech/computers/fixPowershell.php">
@@ -61,11 +57,6 @@
         </tr>
     </table>
 </form>
-
-
-
-
-
 
 
 <form action="/?goto=/tech/computers/termsrvHack.php" method="post">
@@ -97,18 +88,21 @@
                 </select>
             </td>
         </tr>
-        <tr><td>
-            <br/><br/>
-            <button type="submit" onclick="showMessege('Applying RDP Multi-User hack please wait...')">Submit</button><br/>
-            <br/>
+        <tr>
+            <td>
+                <br/><br/>
+                <button type="submit" onclick="showMessege('Applying RDP Multi-User hack please wait...')">Submit
+                </button>
+                <br/>
+                <br/>
 
 
-            <!--
-<a href="/?goto=/tech/computers/fixPowershell.php">
-<button type="button">Fix Powershell Execution Policy</button>
-</a>
--->
-            <br/><br/>
+                <!--
+    <a href="/?goto=/tech/computers/fixPowershell.php">
+    <button type="button">Fix Powershell Execution Policy</button>
+    </a>
+    -->
+                <br/><br/>
             </td>
         </tr>
     </table>
@@ -126,7 +120,9 @@
         <tr>
             <td>
                 <input name="flushdns" value="true" hidden/>
-                <button type="submit" onclick="showMessege('Flushing the DNS cache on the server please wait...')">Flush It!</button>
+                <button type="submit" onclick="showMessege('Flushing the DNS cache on the server please wait...')">Flush
+                    It!
+                </button>
             </td>
         </tr>
     </table>

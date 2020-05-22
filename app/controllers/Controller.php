@@ -31,6 +31,7 @@ namespace App\Controllers;
  *
  * @author cjacobsen
  */
+
 use System\Common\CommonController;
 use App\Models\User\User;
 use app\config\MasterConfig;
@@ -45,7 +46,8 @@ use System\App\App;
 use App\Models\Query;
 use App\Models\District\District;
 
-class Controller extends CommonController {
+class Controller extends CommonController
+{
 
     use \System\App\RequestRedirection;
 
@@ -68,7 +70,8 @@ class Controller extends CommonController {
 
     /* @var $app App */
 
-    function __construct(App $app) {
+    function __construct(App $app)
+    {
 
         parent::__construct($app);
         //$this->config = MasterConfig::get();
@@ -78,7 +81,8 @@ class Controller extends CommonController {
         $this->layout = "default";
     }
 
-    public function preProcessSchoolID($schoolID) {
+    public function preProcessSchoolID($schoolID)
+    {
         $query = new Query(Schema::GRADEDEFINITION);
 
         $this->gradeDefinitions = $query->run();
@@ -100,14 +104,16 @@ class Controller extends CommonController {
         $this->preProcessDistrictID($this->districtID);
     }
 
-    public function preProcessTeamID($teamID) {
+    public function preProcessTeamID($teamID)
+    {
         $this->teamID = $teamID;
         $this->team = Team::getTeam($this->teamID);
         $this->teamName = $this->team[Schema::TEAM_NAME[Schema::COLUMN]];
         $this->preProcessGradeID($this->team[Schema::TEAM_GRADE_ID[Schema::COLUMN]]);
     }
 
-    public function preProcessGradeID($gradeID) {
+    public function preProcessGradeID($gradeID)
+    {
 
         $this->gradeID = $gradeID;
         $this->grade = Grade::getGrade($this->gradeID);
@@ -117,7 +123,8 @@ class Controller extends CommonController {
         $this->preProcessSchoolID($schoolID);
     }
 
-    public function preProcessDepartmentID($departmentID) {
+    public function preProcessDepartmentID($departmentID)
+    {
 
         $this->departmentID = $departmentID;
         $this->department = Department::getDepartment($this->departmentID);
@@ -127,7 +134,8 @@ class Controller extends CommonController {
         $this->preProcessSchoolID($schoolID);
     }
 
-    public function preProcessDistrictID($districtID) {
+    public function preProcessDistrictID($districtID)
+    {
         $this->districtID = $districtID;
         $this->district = DistrictDatabase::getDistrict($this->districtID);
     }
@@ -136,7 +144,8 @@ class Controller extends CommonController {
      *
      * @return string
      */
-    public function unauthorized() {
+    public function unauthorized()
+    {
         return $this->view('errors/403');
     }
 

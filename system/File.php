@@ -31,18 +31,21 @@ namespace System;
  *
  * @author cjacobsen
  */
-abstract class File {
+abstract class File
+{
     //put your code here
 
     /**
      * getAllFilesInDirectory
      *
      * @param Core $app
+     *
      * @return File $files
      */
     const SCHEMA_FILE_PATH = \APPPATH . \DIRECTORY_SEPARATOR . "database" . \DIRECTORY_SEPARATOR . "Schema.php";
 
-    public static function getFiles($dir) {
+    public static function getFiles($dir)
+    {
         $files = null;
         //echo 'Dir';
         //var_dump($dir);
@@ -59,10 +62,11 @@ abstract class File {
         return $files;
     }
 
-    public static function getFolders($dir) {
+    public static function getFolders($dir)
+    {
         $folders = null;
         $folderPath = scandir($dir . DIRECTORY_SEPARATOR);
-        $folders = Array();
+        $folders = [];
         foreach ($folderPath as $folder) {
             if ($folder != "." and $folder != ".." and is_dir($folder) and $folder[0] != ".") {
                 $folders[] = realpath($dir . DIRECTORY_SEPARATOR . $folder);
@@ -76,9 +80,11 @@ abstract class File {
      * Returns a list of filenames in a given directory
      *
      * @param string $dir
+     *
      * @return array A list of file names
      */
-    public static function getAllFiles($dir) {
+    public static function getAllFiles($dir)
+    {
         $rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir));
         $files[] = null;
         //echo 'Dir';
@@ -98,24 +104,26 @@ abstract class File {
     /**
      * Writes to app/database/schema to update the column constants
      * Only used during development
+     *
      * @param type $constantsTable
      */
-    public static function refreshSchemaDefinitions($constantsTable) {
+    public static function refreshSchemaDefinitions($constantsTable)
+    {
         $writeFooter = false;
         if (!file_exists(self::SCHEMA_FILE_PATH)) {
             touch(self::SCHEMA_FILE_PATH);
             $output = "<?php \n"
-                    . " namespace app\database; \n"
-                    . " class Schema { \n"
-                    . "\n"
-                    . "    const NAME = 'name';\n"
-                    . "    const TABLE = 'table';\n"
-                    . "    const COLUMN = 'column';\n";
+                . " namespace app\database; \n"
+                . " class Schema { \n"
+                . "\n"
+                . "    const NAME = 'name';\n"
+                . "    const TABLE = 'table';\n"
+                . "    const COLUMN = 'column';\n";
             foreach (Database::get()->getAllTables() as $table) {
                 $output .= "    const " . strtoupper($table) . " = '$table';\n";
             }
             $output .= "Pop This"
-                    . "\n Pop This";
+                . "\n Pop This";
             file_put_contents(self::SCHEMA_FILE_PATH, $output, FILE_APPEND);
             $writeFooter = true;
         }
@@ -138,19 +146,23 @@ abstract class File {
         //$this->redirect('/settings');
     }
 
-    public static function overwriteFile($filepath, $contents) {
+    public static function overwriteFile($filepath, $contents)
+    {
         file_put_contents($filepath, $contents);
     }
 
-    public static function appendToFile($filepath, $contents) {
+    public static function appendToFile($filepath, $contents)
+    {
         file_put_contents($filepath, $contents, FILE_APPEND);
     }
 
-    public static function deleteFile($filepath) {
+    public static function deleteFile($filepath)
+    {
         unlink($filepath);
     }
 
-    public static function getContents($filepath) {
+    public static function getContents($filepath)
+    {
         return file_get_contents($filepath);
     }
 

@@ -31,11 +31,13 @@ namespace System\Models\Ajax;
  *
  * @author cjacobsen
  */
+
 use System\App\Forms\FormElement;
 use System\App\Forms\Form;
 use App\Models\View\Javascript;
 
-class AJAXRequest {
+class AJAXRequest
+{
 
     private $targetURL;
     private $outputID;
@@ -59,59 +61,71 @@ class AJAXRequest {
      */
     private $loadingHTML;
 
-    public function __construct($targetURL, $data) {
+    public function __construct($targetURL, $data)
+    {
         $data = $this->preprocessData($data);
         $this->setTargetURL($targetURL)
-                ->setData($data);
+            ->setData($data);
     }
 
-    public function getTargetURL() {
+    public function getTargetURL()
+    {
         return $this->targetURL;
     }
 
-    public function getOutputID() {
+    public function getOutputID()
+    {
         return $this->outputID;
     }
 
-    public function getOutputField() {
+    public function getOutputField()
+    {
         return $this->outputElement;
     }
 
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
-    public function getLoadingHTML() {
+    public function getLoadingHTML()
+    {
         return $this->loadingHTML;
     }
 
-    public function setTargetURL($targetURL) {
+    public function setTargetURL($targetURL)
+    {
         $this->targetURL = $targetURL;
         return $this;
     }
 
-    public function setOutputID($outputID) {
+    public function setOutputID($outputID)
+    {
         $this->outputID = $this->preprocessOutputID($outputID);
         return $this;
     }
 
-    public function setOutputElement($outputElement) {
+    public function setOutputElement($outputElement)
+    {
         $this->outputElement = $outputElement;
         return $this;
     }
 
-    public function setData($data) {
+    public function setData($data)
+    {
         //var_dump($data);
         $this->data = $this->preprocessData($data);
         return $this;
     }
 
-    public function setLoadingHTML(string $loadingHTML) {
+    public function setLoadingHTML(string $loadingHTML)
+    {
         $this->loadingHTML = $loadingHTML;
         return $this;
     }
 
-    private function preprocessData($data) {
+    private function preprocessData($data)
+    {
         if (!is_string($data)) {
 
             if ($data instanceof Form) {
@@ -126,7 +140,8 @@ class AJAXRequest {
         return $data;
     }
 
-    private function preprocessOutputID($outputID) {
+    private function preprocessOutputID($outputID)
+    {
         if ($outputID instanceof FormElement) {
             $outputID = $outputID->getId();
         }
@@ -136,9 +151,11 @@ class AJAXRequest {
 
     /**
      * Returns a core AJAX call function to be placed into a listener
+     *
      * @return type
      */
-    public function print() {
+    public function print()
+    {
         $ajax = Javascript::buildAJAXRequest($this->targetURL, $this->outputID, $this->data, $this->getLoadingHTML(), $this->outputElement);
         return $ajax;
     }
