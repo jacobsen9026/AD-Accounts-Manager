@@ -3,7 +3,7 @@
 namespace System;
 
 chdir("../");
-require('./system/Core.php');
+require_once('./system/Core.php');
 $core = new Core();
 
 $core->run();
