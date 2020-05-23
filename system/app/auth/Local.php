@@ -45,7 +45,7 @@ abstract class Local
     public static function authenticate($username = null, $password = null)
     {
         $password = hash('sha256', $password);
-        //$config = \app\config\MasterConfig::get();
+
         $adminPassword = AuthDatabase::getAdminPassword();
 
         if (strtolower($username) == "admin") {

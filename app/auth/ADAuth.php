@@ -57,9 +57,10 @@ class ADAuth
 
         $passed = false;
         $username = strtolower($username);
-        $logger = \System\App\AppLogger::get();
+        $logger = AppLogger::get();
         $server = AuthDatabase::getLDAPServer();
         $domain = AuthDatabase::getLDAP_FQDN();
+
 // Prepare connection username by appending domain name if not already provided
         if (!is_null($domain) and !strpos($username, $domain)) {
             $ldapUser = $username . "@" . $domain;
@@ -72,10 +73,9 @@ class ADAuth
             $superAdmin = false;
             $userLevels = [];
             $adAPI = AD::get();
-            //echo "<br/><br/><br/><br/><br/><br/><br/><br/>";
             $allPrivilegeLevels = PrivilegeLevelDatabase::get();
             foreach ($allPrivilegeLevels as $privilegeLevel) {
-                AppLogger::get()->info($privilegeLevel->getAdGroup());
+                $logger->info($privilegeLevel->getAdGroup());
                 if ($adAPI->isUserInGroup($username, $privilegeLevel->getAdGroup())) {
                     if ($privilegeLevel->getSuperAdmin()) {
                         $superAdmin = true;
@@ -84,39 +84,23 @@ class ADAuth
                     $passed = true;
                 }
             }
-            AppLogger::get()->info($userLevels);
-            AppLogger::get()->info($adAPI->isUserInGroup($username, 'SAM Tech'));
+            $logger->info($userLevels);
+            $logger->info($adAPI->isUserInGroup($username, 'SAM Tech'));
 //return false;
 
 
-            $connected = true;
 
 // If bind was successful, user was found in LDAP continue processing
 
             $logger->info("LDAP bind successful to " . $server . " using credentials: " . $ldapUser);
-// Explode ldap FQDN into a base DN
-            $baseDN = self::FQDNtoDN($domain);
 
-            $adGroupName = '';
-            /**
-             * if ($adAPI->isUserInGroup($username, AuthDatabase::getSuperUserADGroup())) {
-             * $passed = true;
-             *
-             * //$fullName = $superUserInfo[$i]["name"][0];
-             * // $fullName = "Finish me line 114 ADAuth";
-             * $privilege = Privilege::TECH;
-             * $superAdmin = true;
-             * $adGroupName = AuthDatabase::getSuperUserADGroup();
-             * }
-             *
-             *
-             */
+
             if ($passed) {
 
                 //var_dump("here");
                 $adUser = $adAPI->getDomainUser($username);
                 // var_dump($adUser);
-                AppLogger::get()->info($username . " successfully logged in");
+                $logger->info($username . " successfully logged in");
 
                 if (!$fullName = $adUser['displayname'][0]) {
                     $fullName = $username;
@@ -127,15 +111,15 @@ class ADAuth
                     ->setUsername($username)
                     ->setPrivilegeLevels($userLevels)
                     ->setSuperUser($superAdmin);
-                AppLogger::get()->info($user);
+                $logger->info($user);
                 return $user;
 
-
-                exit;
-                return true;
             } else {
                 throw new AuthException(AuthException::NOT_AUTHORIZED);
             }
+
+        } else {
+            throw new AuthException(AuthException::NOT_AUTHORIZED);
         }
     }
 
@@ -166,7 +150,7 @@ class ADAuth
 
     public static function testConnection($server, $username, $password)
     {
-        $logger = \System\App\AppLogger::get();
+        $logger = AppLogger::get();
         $ldapconn = ldap_connect("ldap://" . $server)
 
         or die("Could not connect to LDAP server.");

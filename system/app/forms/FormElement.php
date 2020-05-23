@@ -295,6 +295,16 @@ class FormElement
     /**
      * @return $this
      */
+    public function auto(): self
+    {
+
+        $this->size = "auto";
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
     public function full(): self
     {
         $this->size = "full";
@@ -389,7 +399,7 @@ class FormElement
     /**
      * @param string $id
      *
-     * @return $this
+     * @return self
      */
     public function setId(string $id): self
     {
@@ -493,11 +503,11 @@ class FormElement
     }
 
     /**
+     *  Should be one of ["tiny","small","medium","large","full"]
+     *
      * @param $size
      *
      * @return $this
-     * @todo document/rework
-     *
      */
     public function setSize($size): self
     {
@@ -612,7 +622,7 @@ class FormElement
                 $this->colSize = "-2";
                 break;
             case 'auto':
-                $this->colSize = "-auto";
+                $this->colSize = "";
                 break;
             case null:
                 $this->colSize = "-6";

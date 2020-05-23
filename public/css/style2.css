@@ -29,6 +29,12 @@ and open the template in the editor.
     }
 }
 
+@media (min-width: 576px) {
+    .h-sm-auto {
+        height: auto ! important;
+    }
+}
+
 .district-nav {
 
     top: 3.5rem !important;

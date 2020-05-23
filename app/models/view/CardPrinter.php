@@ -46,6 +46,7 @@ use System\App\Forms\FormButton;
 use App\Models\User\PermissionLevel;
 use App\Models\User\PermissionHandler;
 use System\App\Forms\FormUpload;
+use System\File;
 use System\Parser;
 use System\Traits\DomainTools;
 
@@ -460,7 +461,7 @@ abstract class CardPrinter extends ViewModel
         $action = new FormText('', '', 'action', 'uploadPhoto');
         $action->small();
         $action->hidden();
-        $uploadPhoto = new FormUpload('', '', 'photo');
+        $uploadPhoto = new FormUpload('', 'Maximum File Size: ' . File::getMaximumUploadSize(), 'photo');
         $uploadPhoto->setBrowseButtonText("Change Photo");
         $uploadPhoto->large();
         $uploadButton = new FormButton('Upload');
@@ -469,7 +470,6 @@ abstract class CardPrinter extends ViewModel
             ->addElementToCurrentRow($action);
         //->addElementToCurrentRow($uploadButton);
         $output .= $form->print();
-
 
         /**
          *

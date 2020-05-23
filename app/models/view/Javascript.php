@@ -59,8 +59,8 @@ abstract class Javascript extends ViewModel
     public static function buildAJAXRequest($url, $outputID = '', $data = null, $showLoading = false, $outputElement = 'html')
     {
         $ajaxCommand = '';
+        $spinner = '\' <div class="mr-5 d-inline-flex straight-loader text-secondary"></div><div class="ml-4 pl-3 d-inline-flex straight-loader delayed text-secondary"></div>\'';
         //$spinner = '\'<div class="round-loader text-secondary"></div>\'';
-        $spinner = '\'<div class="round-loader text-secondary"></div>\'';
 
 
         $jsonObject = 'data.output.ajax.' . $outputElement;

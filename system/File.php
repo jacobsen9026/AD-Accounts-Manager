@@ -166,6 +166,11 @@ abstract class File
         return file_get_contents($filepath);
     }
 
+    public static function getMaximumUploadSize()
+    {
+        return ini_get('upload_max_filesize');
+    }
+
 }
 
 ?>

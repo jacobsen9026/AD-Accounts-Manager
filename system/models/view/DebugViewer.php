@@ -32,6 +32,7 @@ namespace System\Models\View;
  * @author cjacobsen
  */
 
+use System\App\Forms\FormButton;
 use System\Core;
 use System\File;
 use System\Common\CommonLogger;
@@ -206,9 +207,10 @@ class DebugViewer
      */
     public static function printLogButton(CommonLogger $logger, string $loggerPanelID, string $loggerTabButtonID)
     {
-        $tabButton = new \System\App\Forms\FormButton(ucfirst($logger->getName()));
+        $tabButton = new FormButton(ucfirst($logger->getName()));
         $tabButton->setId($loggerTabButtonID)
             ->setTheme('light')
+            ->auto()
             ->setType("button");
         $function = '$(".log-tab-content .active").removeClass("active");'
             . '$("#' . $loggerPanelID . '").addClass("active");';
@@ -227,7 +229,7 @@ class DebugViewer
      */
     public static function printLogGroupButton(string $label, string $targetShowID, string $listenerButtonID)
     {
-        $tabButton = new \System\App\Forms\FormButton(ucfirst($label));
+        $tabButton = new FormButton(ucfirst($label));
         $tabButton->setId($listenerButtonID)
             ->setTheme('dark')
             ->setType($listenerButtonID);

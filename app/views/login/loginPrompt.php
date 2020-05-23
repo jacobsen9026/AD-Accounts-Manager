@@ -1,19 +1,21 @@
 <?php
 
 use System\App\Forms\Form;
+use System\App\Forms\FormText;
+use System\App\Forms\FormButton;
+
 use System\Lang;
 
-$form = new Form();
-if (isset($this->lastErrorMessage)) {
-    $form->buildErrorOutput($this->lastErrorMessage)
-        ->addToNewRow();
+if (isset($params['toast'])) {
+    echo $params['toast'];
+
 }
 
 $form = new Form();
-$username = new \System\App\Forms\FormText(Lang::get("Username"), '', 'username');
-$password = new \System\App\Forms\FormText(Lang::get("Password"), '', 'password');
+$username = new FormText(Lang::get("Username"), '', 'username');
+$password = new FormText(Lang::get("Password"), '', 'password');
 $password->isPassword();
-$loginButton = new \System\App\Forms\FormButton(Lang::get("Login"));
+$loginButton = new FormButton(Lang::get("Login"));
 $loginButton->setTheme('secondary');
 $form->addElementToNewRow($username)
     ->addElementToNewRow($password)

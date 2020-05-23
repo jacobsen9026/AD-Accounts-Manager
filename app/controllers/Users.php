@@ -71,36 +71,42 @@ class Users extends Controller
         $action = Post::get("action");
         switch ($action) {
             case 'uploadPhoto':
-
+                ini_set('upload_max_filesize', "15M");
                 $uploadedPicture = new UploadedFile(Post::getFile("photo"));
-                $fileType = $uploadedPicture->getType();
-                switch ($uploadedPicture->getType()) {
-                    case 'image/png':
-                        $picture = imagecreatefrompng($uploadedPicture->getTempFileName());
-                        break;
-                    case 'image/jpeg':
-                        $picture = imagecreatefromjpeg($uploadedPicture->getTempFileName());
-                        break;
-                    case 'image/gif':
-                        $picture = imagecreatefromgif($uploadedPicture->getTempFileName());
-                        break;
-                    case 'image/bmp':
-                        $picture = imagecreatefrombmp($uploadedPicture->getTempFileName());
-                        break;
+                if ($uploadedPicture->exists()) {
+                    $fileType = $uploadedPicture->getType();
+                    $this->logger->debug('File type: ' . $fileType);
+                    switch ($uploadedPicture->getType()) {
+                        case 'image/png':
+                            $picture = imagecreatefrompng($uploadedPicture->getTempFileName());
+                            break;
+                        case 'image/jpeg':
+                            $picture = imagecreatefromjpeg($uploadedPicture->getTempFileName());
+                            break;
+                        case 'image/jpg':
+                            $picture = imagecreatefromjpeg($uploadedPicture->getTempFileName());
+                            break;
+                        case 'image/gif':
+                            $picture = imagecreatefromgif($uploadedPicture->getTempFileName());
+                            break;
+                        case 'image/bmp':
+                            $picture = imagecreatefrombmp($uploadedPicture->getTempFileName());
+                            break;
 
+                    }
+                    $picture = Picture::cropSquare($picture, 225);
+                    ob_start();
+                    imagejpeg($picture);
+                    $rawPicture = ob_get_clean();
+
+                    //var_dump(bin2hex($rawPicture));
+                    $user = new DistrictUser($username);
+                    $this->logger->debug($rawPicture);
+                    $user->activeDirectory->setThumbnail($rawPicture, false)->save();
+                    //imagecreatefromstring($uploadedPicture->getTempFileContents());
+                    //$resiezedPhoto = imagescale($picture, '96', '96');
+                    //imagejpeg($picture);
                 }
-                $picture = Picture::cropSquare($picture, 225);
-                ob_start();
-                imagejpeg($picture);
-                $rawPicture = ob_get_clean();
-
-                //var_dump(bin2hex($rawPicture));
-                $user = new DistrictUser($username);
-                $this->logger->debug($rawPicture);
-                $user->activeDirectory->setThumbnail($rawPicture, false)->save();
-                //imagecreatefromstring($uploadedPicture->getTempFileContents());
-                //$resiezedPhoto = imagescale($picture, '96', '96');
-                //imagejpeg($picture);
                 break;
             case 'resetPassword':
                 $password = trim(Post::get("password"));
