@@ -65,7 +65,7 @@ class Parser
                     AppLogger::get()->warning("Could not include view file: " . $path);
                 }
             } catch (Exception $ex) {
-                var_dump($ex);
+                SystemLogger::get()->error($ex);
             }
 
             ob_get_clean();
@@ -158,7 +158,7 @@ class Parser
     public function varDump($object)
     {
         ob_start();
-        var_dump($object);
+        SystemLogger::get()->debug($object);
         return ob_get_clean();
     }
 

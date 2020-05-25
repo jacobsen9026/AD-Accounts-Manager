@@ -62,7 +62,7 @@ class Email extends \system\Parser
         }
         $mail->Port = EmailConfig::getSMTPPort();                                  // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
         $mail->setFrom(EmailConfig::getFromAddress());
-        var_dump($mail);
+
         return $mail;
     }
 

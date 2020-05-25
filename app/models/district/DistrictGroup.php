@@ -50,7 +50,8 @@ class DistrictGroup extends ADModel
      */
     public function __construct($group)
     {
-        var_dump($group);
+        parent::__construct();
+        $this->logger->debug($group);
         if (is_string($group)) {
             $this->activeDirectory = ADGroups::getGroup($group);
 

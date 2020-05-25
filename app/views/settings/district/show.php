@@ -70,7 +70,6 @@ $adTestResult = $ad->getConnectionResult();
 
     $adConnectionCheck = new FormHTML();
     $useTLS = DistrictDatabase::getAD_UseTLS();
-    var_dump($useTLS);
     $adUseTLS = new \System\App\Forms\FormSlider('Use TLS', 'Requires web server configuration', 'useTLS', $useTLS);
 
     $adUseTLS->addOption('No', 0, !$useTLS)
