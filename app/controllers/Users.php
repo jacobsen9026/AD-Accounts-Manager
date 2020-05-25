@@ -33,13 +33,13 @@ namespace App\Controllers;
  */
 
 
-use App\Api\Ad\ADUsers;
+use App\Models\Audit\Action\User\ResetUserPasswordAuditAction;
 use App\Models\Audit\Action\User\SearchUserAuditAction;
-use App\Models\Audit\AuditEntry;
-use App\Models\Database\AuditDatabase;
 use App\Models\District\DistrictUser;
 use App\Models\User\PermissionHandler;
 use App\Models\User\PermissionLevel;
+use App\Models\View\Modal;
+use App\Models\View\Toast;
 use System\Post;
 use System\App\Picture;
 use System\Models\Post\UploadedFile;
@@ -58,15 +58,14 @@ class Users extends Controller
             return $this->view('users/search');
         } else {
             //var_export($username);
-            $auditEntry = new AuditEntry($this->app->request, $this->user, new SearchUserAuditAction($username));
-            AuditDatabase::addAudit($auditEntry);
-
+            $this->audit(new SearchUserAuditAction($username));
             return $this->showAccountStatus($username);
         }
     }
 
     public function searchPost($username = null)
     {
+        $output = '';
         //return $username;
         $action = Post::get("action");
         switch ($action) {
@@ -81,11 +80,11 @@ class Users extends Controller
                             $picture = imagecreatefrompng($uploadedPicture->getTempFileName());
                             break;
                         case 'image/jpeg':
-                            $picture = imagecreatefromjpeg($uploadedPicture->getTempFileName());
-                            break;
+                        case 'image/jpgx':
                         case 'image/jpg':
                             $picture = imagecreatefromjpeg($uploadedPicture->getTempFileName());
                             break;
+
                         case 'image/gif':
                             $picture = imagecreatefromgif($uploadedPicture->getTempFileName());
                             break;
@@ -111,12 +110,19 @@ class Users extends Controller
             case 'resetPassword':
                 $password = trim(Post::get("password"));
                 $user = new DistrictUser(Post::get("username"));
-                $user->activeDirectory->setPassword($password);
+                if ($user->activeDirectory->setPassword($password)->save()) {
+                    $this->logger->debug("password reset");
+                    $this->audit(new ResetUserPasswordAuditAction($username));
+                    $toast = new Toast('Password Reset Successfully', 'The password for ' . $username . ' has been changed', 3500);
+                    $toast->setImage('<i class="fas fa-redo"></i>');
+                    $output .= $toast->printToast();
+                }
                 break;
             default:
                 break;
         }
-        return $this->search($username);
+        $output .= $this->search($username);
+        return $output;
     }
 
     private function showAccountStatus($username)
@@ -141,7 +147,7 @@ class Users extends Controller
     private function unlockUser($username)
     {
         $adUser = \App\Api\AD::get()->unlockUser($username);
-        var_dump($adUser);
+        $this->logger->debug($adUser);
         return $adUser;
 //$gaUser = \App\Api\GAM::getUser($username);
     }
