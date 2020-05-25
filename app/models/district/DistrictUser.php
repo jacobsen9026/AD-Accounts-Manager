@@ -190,5 +190,14 @@ class DistrictUser extends ADModel
         return $fullname;
     }
 
+    public function isLockedOut()
+    {
+        $this->logger->debug($this->activeDirectory->getLockoutTime());
+        if ($this->activeDirectory->getLockoutTime() === '0') {
+            return false;
+        }
+        return true;
+    }
+
 
 }
