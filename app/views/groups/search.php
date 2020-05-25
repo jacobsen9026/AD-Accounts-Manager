@@ -7,14 +7,14 @@ use System\App\Forms\FormText;
 $createButton = new FormButton("+");
 $createButton->tiny()
     ->setTheme("success")
-    ->removeInputClasses("w-100")
-    ->addInputClasses("position-absolute right-10")
-    ->addElementClass("top right pr-5");
+    ->removeInputClasses(["w-100"])
+    ->addInputClasses("")
+    ->addElementClass("float-right");
 $createModal = new \App\Models\View\Modal();
 $createModal->setBody($this->view('/groups/create'))
     ->setId('createGroup')
     ->setTitle("Create New Group");
-$createButton->setModal($createModal);
+$createButton->addModal($createModal);
 echo $createButton->print();
 ?>
 
