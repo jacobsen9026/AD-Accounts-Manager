@@ -32,6 +32,10 @@ namespace App\Controllers;
  * @author cjacobsen
  */
 
+use App\Models\Audit\Action\AuditAction;
+use App\Models\Audit\Action\User\SearchUserAuditAction;
+use App\Models\Audit\AuditEntry;
+use App\Models\Database\AuditDatabase;
 use System\Common\CommonController;
 use App\Models\User\User;
 use app\config\MasterConfig;
@@ -148,6 +152,13 @@ class Controller extends CommonController
     {
         return $this->view('errors/403');
     }
+
+    protected function audit(AuditAction $action)
+    {
+        $auditEntry = new AuditEntry($this->app->request, $this->user, $action);
+        AuditDatabase::addAudit($auditEntry);
+    }
+
 
 }
 
