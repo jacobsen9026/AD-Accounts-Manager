@@ -32,6 +32,7 @@ namespace System\App\Forms;
  * @author cjacobsen
  */
 
+use App\Models\View\Javascript;
 use System\App\Forms\FormRadioOption;
 
 class FormSlider extends FormRadio implements FormElementInterface
@@ -71,7 +72,7 @@ class FormSlider extends FormRadio implements FormElementInterface
 
         $function .= '}'
             . '$("#' . $outputId . '").html(output);';
-        $this->setScript(\App\Models\View\Javascript::onClick($this->getId(), $function));
+        $this->setScript(Javascript::on($this->getId(), $function, 'click touch'));
         $html = '<input  type="range" class="custom-range h-50" name="' . $this->getName() . '" style="max-width:50px;" min="0" max="1" id="' . $this->getId() . '" value="' . $this->getValue() . '">';
         $html .= '<div class="text-muted small" id="' . $this->getId() . '_Status_Text">' . $selectedOption->getLabel() . '</div>';
         return $html;
