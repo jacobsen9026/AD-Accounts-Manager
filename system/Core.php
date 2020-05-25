@@ -41,7 +41,7 @@ require './system/Autoloader.php';
 use System\AppOutput;
 use System\CoreException;
 use System\SystemLogger;
-use System\Common\CommonLogger;
+use System\Log\CommonLogger;
 
 class Core
 {
@@ -57,7 +57,6 @@ class Core
      * @var DatabaseLogger
      */
     public static $databaseLogger;
-
     /**
      *
      * @var DatabaseLogger
@@ -133,7 +132,7 @@ class Core
         try {
             $this->initialize();
         } catch (CoreException $ex) {
-            $this->error($ex);
+            self::$systemLogger->error($ex);
         }
         /**
          * Run the App
@@ -151,7 +150,7 @@ class Core
         try {
             $this->render();
         } catch (CoreException $ex) {
-            var_dump($ex);
+            self::$systemLogger->error($ex);
         }
 
         /*
@@ -178,7 +177,7 @@ class Core
         try {
             $this->render();
         } catch (CoreException $ex) {
-            var_dump($ex);
+            self::$systemLogger->error($ex);
         }
     }
 
