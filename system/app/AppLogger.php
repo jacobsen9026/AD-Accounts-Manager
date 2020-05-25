@@ -32,7 +32,7 @@ namespace System\App;
  * @author cjacobsen
  */
 
-use System\Common\CommonLogger;
+use System\Log\CommonLogger;
 
 class AppLogger extends CommonLogger
 {

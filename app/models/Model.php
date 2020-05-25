@@ -33,7 +33,7 @@ namespace App\Models;
  */
 
 use System\App\AppLogger;
-use System\Common\CommonLogger;
+use System\Log\CommonLogger;
 use System\Parser;
 
 class Model extends Parser

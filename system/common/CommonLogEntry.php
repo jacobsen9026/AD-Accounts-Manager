@@ -34,7 +34,7 @@ namespace System\Common;
  * @author cjacobsen
  */
 
-use System\Common\CommonLogger;
+use System\Log\CommonLogger;
 
 class CommonLogEntry
 {

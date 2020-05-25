@@ -32,7 +32,7 @@ namespace System;
  * @author cjacobsen
  */
 
-use System\Common\CommonLogger;
+use System\Log\CommonLogger;
 
 class AppOutput
 {
@@ -121,7 +121,7 @@ class AppOutput
 
     public function prependBody($body)
     {
-        var_dump($body);
+        $this->logger->debug($body);
         if ($this->app->request->getType() == 'ajax') {
             $this->addAjax($body);
         } elseif ($this->app->request->getType() == 'http') {

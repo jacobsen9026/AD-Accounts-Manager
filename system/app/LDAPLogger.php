@@ -32,13 +32,13 @@ namespace System\App;
  * @author cjacobsen
  */
 
-use System\Common\CommonLogger;
+use System\Log\CommonLogger;
 
 class LDAPLogger extends CommonLogger
 {
 
     /** @var LDAPLogger|null */
-    public static $instance;
+    private static $instance;
 
     function __construct()
     {

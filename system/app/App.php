@@ -40,7 +40,7 @@ namespace System\App;
 
 use System\App\Route;
 use System\App\AppErrorHandler;
-use System\Common\CommonLogger;
+use System\Log\CommonLogger;
 use System\App\ControllerFactory;
 use System\Request;
 use System\App\Router;
@@ -51,7 +51,6 @@ use System\App\Interfaces\AppInterface;
 use System\Common\CommonApp;
 use System\App\WindowsLogger;
 
-;
 
 class App extends CommonApp implements AppInterface
 {
