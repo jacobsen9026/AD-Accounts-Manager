@@ -140,7 +140,7 @@ class Database extends Parser
         //var_dump($query);
         /* @var $db PDO */
 
-        self::$logger->query("Query: " . $query);
+        self::$logger->debug("Query: " . $query);
         //var_dump($query);
         try {
             $result = $this->db->query($query);
@@ -174,7 +174,7 @@ class Database extends Parser
             }
 
             //Return Array
-            self::$logger->query("Response: " . var_export($return, true));
+            self::$logger->debug("Response: " . var_export($return, true));
 
             //var_dump($return);
             return $return;
