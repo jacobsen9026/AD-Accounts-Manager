@@ -35,34 +35,22 @@ class FormDropdownOption extends FormElement
 {
 
     //put your code here
-    private $value;
     private $selected = '';
 
-    function __construct($label = null, $value = null)
+    /**
+     * FormDropdownOption constructor.
+     *
+     * @param null $label
+     * @param null $value
+     *
+     */
+    public function __construct($label = null, $value = null)
     {
+
         $this->setLabel($label);
-        $this->value = $value;
+        $this->setValue($value);
     }
 
-    function getName()
-    {
-        return $this->name;
-    }
-
-    function getValue()
-    {
-        return $this->value;
-    }
-
-    function setName($name): void
-    {
-        $this->name = $name;
-    }
-
-    function setValue($value): void
-    {
-        $this->value = $value;
-    }
 
     public function selected()
     {
