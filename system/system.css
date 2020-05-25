@@ -59,8 +59,8 @@ top {
 }
 
 .right {
-    display: block !important;
-    float: right !important;
+    position: absolute !important;
+    right: 0 !important;
 
 }
 
