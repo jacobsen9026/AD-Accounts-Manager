@@ -70,7 +70,7 @@ $(".system-custom-file-input").on("change", function() {
         $browseButton = new FormButton($this->browseButtonText, 'full');
         $browseButton->setType("button");
         $triggerBrowseFunction = '$("#' . $this->getId() . '").click();';
-        $onClick = Javascript::onClick($browseButton->getId(), $triggerBrowseFunction);
+        $onClick = Javascript::on($browseButton->getId(), $triggerBrowseFunction);
 
         $browseButton->setScript($onClick);
 //test
