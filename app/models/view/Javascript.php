@@ -134,9 +134,9 @@ abstract class Javascript extends ViewModel
      *
      * @return string
      */
-    public static function onClick(string $inputID, string $function)
+    public static function on(string $inputID, string $function, string $triggers = "click")
     {
-        $script = '     $("#' . $inputID . '").on("click", function () {
+        $script = '     $("#' . $inputID . '").on("' . $triggers . '", function () {
                         '
             . $function .
             '});';
