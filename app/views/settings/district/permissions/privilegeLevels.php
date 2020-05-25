@@ -46,6 +46,12 @@ use App\Models\View\PermissionMapPrinter;
         A group with Change permission can also Read, but can not Add or Delete (for groups).
     </div>
 </div>
+<div class="row p-2 m-3">
+    <div class="col">
+        Privilege Levels with Super Admin enabled have permission to the whole directory as well as settings and setup
+        pages.
+    </div>
+</div>
 <div class="row">
     <div class="col">
         <?php echo PermissionMapPrinter::printPrivilegeLevels($district->getId()); ?>
