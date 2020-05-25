@@ -155,39 +155,6 @@ class AD
         return true;
     }
 
-    private function hashPassword($newPassword)
-    {
-        $newPassword = "\"" . $newPassword . "\"";
-        $len = strlen($newPassword);
-        $newPassw = "";
-        for ($i = 0; $i < $len; $i++) {
-            $newPassw .= "{$newPassword {$i}}\000";
-        }
-        return $newPassw;
-    }
-
-    public function setPassword($username, $password)
-    {
-        $userDN = $this->getUserDN($username);
-        $newpw = $this->hashPassword($password);
-
-//$encoded_newPassword = "{SHA}" . base64_encode(pack("H*", sha1($password)));
-        $entry = [];
-        $entry["unicodePwd"] = $newpw;
-        $this->logger->debug($userDN);
-        $this->logger->debug($entry);
-
-        if (ldap_mod_replace($this->connection, $userDN, $entry) === false) {
-            $error = ldap_error($this->connection);
-            $errno = ldap_errno($this->connection);
-            $message[] = "E201 - Your password cannot be change, please contact the administrator.";
-            $message[] = "$errno - $error";
-            var_dump($message);
-            return false;
-        } else {
-            return true;
-        }
-    }
 
     /**
      *
