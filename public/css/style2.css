@@ -53,6 +53,16 @@ and open the template in the editor.
     width: 80%;
 }
 
+.rounded-r-0 {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.rounded-l-0 {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
 .log-nav {
     top: 2.5rem !important;
 }
