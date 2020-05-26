@@ -688,8 +688,9 @@ class FormElement
         if ($this->isHidden()) {
             $style = ' style="display:none" ';
         }
-        $html = '<div class="form-element ' . $size . ' mx-auto ' . $this->elementClasses . '"' . $style . '>';
-        return $html . "";
+
+        $html = '<div class="form-element ' . $size . ' mx-auto ' . $this->elementClasses . '"' . $style . ' data-toggle="tooltip" data-placement="bottom" title="' . $this->getTooltip() . '">';
+        return $html . '';
     }
 
     /**
@@ -764,7 +765,7 @@ class FormElement
      *
      * @return string
      */
-    public function print(): string
+    public function print(bool $fromForm = false): string
     {
         $this->preProcess();
         $html = $this->printHeader() . "\n";
@@ -777,7 +778,9 @@ class FormElement
         $html .= $this->printScript() . "\n";
         $html .= $this->printAJAX() . "\n";
         $html .= $this->printFooter() . "\n";
-        $html .= $this->printModals() . "\n";
+        if (!$fromForm) {
+            $html .= $this->printModals() . "\n";
+        }
         return $html . "\n";
     }
 
