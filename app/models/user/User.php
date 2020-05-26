@@ -32,11 +32,11 @@ namespace App\Models\User;
  * @author cjacobsen
  */
 
+use App\App\App;
 use app\config\Theme;
 use System\App\AppLogger;
 use System\App\Auth\CoreUser;
-use System\App\Session;
-use System\App\App;
+use App\App\Session;
 use App\Models\Database\UserDatabase;
 use System\App\UserLogger;
 use App\Models\Database\PermissionMapDatabase;

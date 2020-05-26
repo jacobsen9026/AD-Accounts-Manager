@@ -68,12 +68,14 @@ class Renderer extends Parser
 
     public function draw()
     {
+
         switch ($this->core->request->type) {
             case 'http':
                 //var_dump($this->appOutput);
                 $this->include('system/views/HTML_start');
                 $this->logger->info("Drawing of app started");
-                if ($this->appOutput->getBody() !== null and $this->appOutput->getBody() != '') {
+
+                if ($this->appOutput->getBody() !== null && $this->appOutput->getBody() != '') {
                     echo $this->appOutput->getBody();
                 } else {
                     $this->showNoAppOutputWarning();
@@ -88,8 +90,11 @@ class Renderer extends Parser
 
                 break;
             case 'ajax':
+
                 $ajaxResponse = new AJAXResponse();
-                $ajaxResponse->importAppOutput($this->appOutput);
+                if ($this->appOutput !== null) {
+                    $ajaxResponse->importAppOutput($this->appOutput);
+                }
                 $ajaxResponse->addLogger($this->logger)
                     ->addLogger(DatabaseLogger::get())
                     ->addLogger(PostLogger::get())

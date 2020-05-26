@@ -1,6 +1,6 @@
 <?php
 
-use System\App\App;
+use App\App\App;
 use App\Models\User\Privilege;
 use App\Models\Database\AppDatabase;
 use App\Models\User\User;

@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace System\App;
+namespace App\App;
 
 /**
  * Description of App
@@ -38,8 +38,14 @@ namespace System\App;
  * the App namespace.
  */
 
+use App\Controllers\Controller;
+use System\App\AppLogger;
+use System\App\Layout;
+use System\App\LDAPLogger;
+use System\App\RequestRedirection;
 use System\App\Route;
 use System\App\AppErrorHandler;
+use System\App\UserLogger;
 use System\Log\CommonLogger;
 use System\App\ControllerFactory;
 use System\Request;
@@ -50,18 +56,15 @@ use System\AppOutput;
 use System\App\Interfaces\AppInterface;
 use System\Common\CommonApp;
 use System\App\WindowsLogger;
+use System\SystemLogger;
+use System\Traits\Parser;
 
 
 class App extends CommonApp implements AppInterface
 {
 
     use RequestRedirection;
-    use \System\Traits\Parser;
-
-    /** @var MasterConfig|null The system logger
-     * @deprecated since version number
-     */
-    public $config;
+    use Parser;
 
     /** @var SystemLogger|null The system logger */
     private $coreLogger;
@@ -74,9 +77,6 @@ class App extends CommonApp implements AppInterface
 
     /** @var Route|null The system logger */
     public $route;
-
-    /** @var string|null The system logger */
-    public $outputBody;
 
     /** @var Layout|null The system logger */
     public $layout;
@@ -116,8 +116,7 @@ class App extends CommonApp implements AppInterface
     function __construct(Request $req, CommonLogger $cLogger)
     {
 
-        //session_destroy();
-        //$this->user = "this";
+
         self::$instance = $this;
         /**
          * Trigger the appErrorHandler to begin until we load the config
@@ -155,7 +154,6 @@ class App extends CommonApp implements AppInterface
          * Load the request into the app
          */
         $this->loadConfig();
-        $this->appOutput = new AppOutput($this);
     }
 
     /**
@@ -176,7 +174,6 @@ class App extends CommonApp implements AppInterface
      */
     public function loadConfig()
     {
-        //$this->config = new MasterConfig();
         $this->coreLogger->info("The app config has been loaded");
         define('GAMPATH', CONFIGPATH . DIRECTORY_SEPARATOR . "google");
 
@@ -195,6 +192,7 @@ class App extends CommonApp implements AppInterface
     public function run(): AppOutput
     {
 
+        $this->appOutput = new AppOutput($this->request);
         $this->logger->info("Creating Session");
         User::load($this);
         try {
@@ -313,6 +311,7 @@ class App extends CommonApp implements AppInterface
      */
     protected function control()
     {
+        $this->appOutput = new AppOutput($this->request);
         /*
          * Check that the user is logged on and if not, set the route to the login screen
          */
@@ -324,12 +323,12 @@ class App extends CommonApp implements AppInterface
             $this->appOutput->appendBody($this->controller->index());
             return;
         } else {
-            /*
+            /**
              * user is logged in so update the timeout to reflect new activity
              */
             Session::updateTimeout();
         }
-        /*
+        /**
          * Build the controller based on the previously computed settings
          */
         if ($this->controller = ControllerFactory::buildController($this)) {
@@ -352,7 +351,7 @@ class App extends CommonApp implements AppInterface
 
                 $this->appOutput->appendBody($this->view('errors/405'));
             }
-            /*
+            /**
              * If no controller could be created, it's because the class doesnt exists or is setup wrong
              * Show 404
              */
@@ -375,7 +374,7 @@ class App extends CommonApp implements AppInterface
         }
     }
 
-    /*
+    /**
      * Set the php errror mode repective of the setting
      * in the webConfig.
      */

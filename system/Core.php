@@ -39,8 +39,7 @@ namespace System;
 require './system/Autoloader.php';
 
 use System\AppOutput;
-use System\CoreException;
-use System\SystemLogger;
+use System\Common\CommonApp;
 use System\Log\CommonLogger;
 
 class Core
@@ -75,7 +74,7 @@ class Core
     /** @var CommonLogger|null The application logger */
     public $appLogger;
 
-    /** @var App|null The App Instance */
+    /** @var CommonApp|null The App Instance */
     public $app;
 
     /** @var Core|null This core instance */
@@ -230,6 +229,13 @@ class Core
          */
         $this->request = new Request();
         self::$systemLogger->info("Request created");
+
+
+        /**
+         * We prep the output in case something goes wrong with the app
+         */
+        $this->appOutput = new AppOutput($this->request);
+
         /*
          * Initialization complete return to run()
          */
@@ -242,13 +248,9 @@ class Core
     {
         self::$systemLogger->info("App starting");
         /**
-         * We prep the output in case something goes wrong with the app
-         */
-        $this->appOutput = new AppOutput();
-        /**
          * Run app
          */
-        $this->appOutput = $this->runApp();
+        $this->runApp();
         /**
          * We need to retake control of the run-time errors from the app
          * if it was set to do so.
@@ -264,6 +266,11 @@ class Core
         self::$systemLogger->info("App execution completed");
     }
 
+    /**
+     * Sets the appOutput if App retuned any
+     *
+     * @throws CoreException
+     */
     private function runApp()
     {
 
@@ -281,7 +288,9 @@ class Core
                 /**
                  * Let's run the app and return what it gives back to the core execution
                  */
-                return $this->app->run();
+                $appOutput = $this->app->run();
+                $this->appOutput = $appOutput;
+
             } else {
                 throw new CoreException("The " . APPCLASS . " does not have a run() method", CoreException::APP_MISSING_RUN);
                 echo("The " . APPCLASS . " does not have a run() method");
@@ -314,7 +323,7 @@ class Core
         $this->renderer = new Renderer($this);
         self::$systemLogger->info("Renderer created");
         self::$systemLogger->info("Call renderer to draw");
-        $this->renderer->draw($this);
+        $this->renderer->draw();
     }
 
     /**

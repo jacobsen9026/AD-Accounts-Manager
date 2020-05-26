@@ -40,7 +40,10 @@ class AppOutput
 //put your code here
     private $body;
     private $ajax = [];
-    private $app;
+    /**
+     * @var Request
+     */
+    private $request;
 
     /**
      *
@@ -56,9 +59,9 @@ class AppOutput
      */
     private $loggers = [];
 
-    public function __construct($app = null)
+    public function __construct()
     {
-        $this->app = $app;
+        $this->request = Request::get();
     }
 
     public function getBody()
@@ -90,9 +93,9 @@ class AppOutput
     public function setBody($body)
     {
         // var_dump($this->app->request->getType());
-        if ($this->app->request->getType() == 'ajax') {
+        if ($this->request->getType() == 'ajax') {
             $this->addAjax($body);
-        } elseif ($this->app->request->getType() == 'http') {
+        } elseif ($this->request->getType() == 'http') {
             //var_dump($body);
             $this->body = $body;
         }
@@ -111,9 +114,9 @@ class AppOutput
 
     public function appendBody($body)
     {
-        if ($this->app->request->getType() == 'ajax') {
+        if ($this->request->getType() == 'ajax') {
             $this->addAjax($body);
-        } elseif ($this->app->request->getType() == 'http') {
+        } elseif ($this->request->getType() == 'http') {
             //var_dump($body);
             $this->body .= $body;
         }
@@ -122,9 +125,9 @@ class AppOutput
     public function prependBody($body)
     {
         $this->logger->debug($body);
-        if ($this->app->request->getType() == 'ajax') {
+        if ($this->request->getType() == 'ajax') {
             $this->addAjax($body);
-        } elseif ($this->app->request->getType() == 'http') {
+        } elseif ($this->request->getType() == 'http') {
             //var_dump($body);
             $this->body = $body . $this->body;
         }

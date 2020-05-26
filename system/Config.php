@@ -64,8 +64,9 @@ define('APPAUDITDBPATH', APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_
 /*
  * The Class name with namespace to launch
  */
-define('APPCLASS', "System\App\App");
+//define('APPCLASS', "System\App\App");
 //define('APPCLASS', "App\Lib\TestApp");
+define('APPCLASS', "App\App\App");
 /*
  * Toggle for core debug mode. Has no effect on app debug, but does allow App output directly.
  */

@@ -39,7 +39,7 @@ use App\Models\District\Group;
 use App\Models\District\Student;
 use App\Models\District\Staff;
 use App\Models\User\User;
-use System\App\App;
+use App\App\App;
 use System\App\AppException;
 use System\App\AppLogger;
 use System\App\Forms\Form;
@@ -199,7 +199,7 @@ abstract class CardPrinter extends ViewModel
     private static function buildGroupCard(DistrictGroup $group, User $webUser)
     {
 
-        $app = \System\App\App::get();
+        $app = \App\App\App::get();
         $script = '<script>
     $(function () {
         $(\'[data-toggle="tooltip"]\').tooltip()})

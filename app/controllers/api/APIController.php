@@ -39,7 +39,7 @@ class APIController extends Controller
 {
 
     //put your code here
-    public function __construct(\System\App\App $app)
+    public function __construct(\App\App\App $app)
     {
         parent::__construct($app);
         $this->app->request->setType('ajax');

@@ -38,38 +38,18 @@ use System\Common\CommonLogEntry;
 
 class CommonLogger extends Parser implements LoggerInterface
 {
-    /**
-     * @var float Logger starting time in microseconds
-     */
-    private $startTime;
-    /**
-     * @var string Name of the logger
-     */
-    private $name;
-    /**
-     * @var array <CommonLogEntry> All the log entries
-     */
-    protected static $logEntries = [];
-    /**
-     * @var bool Error flag
-     */
-    protected $hasErrors = false;
 
-    /**
-     * CommonLogger constructor.
-     */
+    private $startTime;
+    private $name;
+    private $logEntries;
+    private $hasErrors = false;
+
     function __construct()
     {
-        $this->startTime = microtime(true);
+        $this->startTime = (float)microtime();
     }
 
-
-    /**
-     * @param string $name
-     *
-     * @return $this
-     */
-    public function setName(string $name)
+    public function setName($name)
     {
         $this->name = $name;
         return $this;
@@ -94,16 +74,7 @@ class CommonLogger extends Parser implements LoggerInterface
      */
     public function getLogEntries()
     {
-        $returnArray = self::$logEntries;
-
-//        usort($returnArray,
-//            function ($a, $b) {
-//                /* @var $a CommonLogEntry */
-//                /* @var $b CommonLogEntry */
-//                return $a->getTimestamp() < $b->getTimestamp();
-//            });
-
-        return $returnArray;
+        return $this->logEntries;
     }
 
 
@@ -115,12 +86,11 @@ class CommonLogger extends Parser implements LoggerInterface
      */
     protected function storeLogEntry($message, string $level)
     {
-        $logEntry = new CommonLogEntry($this->getName());
+        $logEntry = new CommonLogEntry($this);
 
         $logEntry->setMessage($message)
             ->setLevel($level);
-        self::$logEntries[] = $logEntry;
-        //var_dump(self::$logEntries);
+        $this->logEntries[] = $logEntry;
     }
 
 
@@ -196,7 +166,7 @@ class CommonLogger extends Parser implements LoggerInterface
      */
     public function hasLogEntries()
     {
-        if (self::$logEntries !== null and !empty(self::$logEntries)) {
+        if ($this->logEntries !== null and !empty($this->logEntries)) {
             return true;
         }
         return false;
