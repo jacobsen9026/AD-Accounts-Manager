@@ -45,15 +45,17 @@ $form = new Form('/settings/authentication', "authentication");
 $sessionTimeout = new FormText("Session Timeout", "The length of time a session can remain idle in seconds", "sessionTimeout", $auth->getSessionTimeout());
 $adminPassword = new FormText("Admin Password", "Set a new admin password", "adminPassword", $auth->getAdminPassword());
 $adminPassword->isPassword();
-$ldapEnabled = new System\App\Forms\FormRadio("AD Logon Enabled", "Allow logon with Active Directory accounts", "ldapEnabled");
 
 
 $ldapConnected = false;
 if (ADConnection::isConnected()) {
     $ldapConnected = true;
 }
-$ldapEnabled->addOption("False", 0, !$auth->getLDAPEnabled(), $ldapConnected)
-    ->addOption("True", 1, $auth->getLDAPEnabled(), $ldapConnected);
+$ldapEnabled = new System\App\Forms\FormSlider("AD Logon Enabled", "Allow logon with Active Directory accounts", "ldapEnabled", $ldapConnected);
+
+
+$ldapEnabled->addOption("False", 0, !$auth->getLDAPEnabled())
+    ->addOption("True", 1, $auth->getLDAPEnabled());
 
 $button = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
 $button->setId('floatingSaveButton')
