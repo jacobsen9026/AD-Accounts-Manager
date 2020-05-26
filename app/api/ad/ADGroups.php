@@ -17,7 +17,7 @@ class ADGroups extends ADApi
      */
     public static function getGroup($groupName)
     {
-        LDAPLogger::get()->info("Getting " . $groupName . " from Active Directory");
+        SystemLogger::get()->info("Getting " . $groupName . " from Active Directory");
         if ($groupName instanceof Group) {
             return $groupName;
         }
@@ -29,7 +29,9 @@ class ADGroups extends ADApi
 
         SystemLogger::get()->debug($group);
         if ($group == null || !$group->exists) {
-            $group = $conn->search()->groups()->where('distinguishedname', '=', $groupName)->get();
+            //$group = $conn->search()->groups()->where('distinguishedname', '=', $groupName)->get();
+            $group = $conn->search()->findByDn($groupName);
+            LDAPLogger::get()->debug($group);
         }
 
         return $group;

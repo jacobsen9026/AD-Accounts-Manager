@@ -303,7 +303,7 @@ abstract class CardPrinter extends ViewModel
         $action->hidden();
 
         if ($group === null) {
-            $groupName = new FormText('Add to group', '', 'groupName', );
+            $groupName = new FormText('Add to group', '', 'group', );
             $groupName->autoCompleteGroupName();
 
             $userToAdd = new FormText('Add user', 'Can also serarch by first or last name.', 'usernameToAdd', $user->activeDirectory->getAccountName());
@@ -312,7 +312,7 @@ abstract class CardPrinter extends ViewModel
 
             $modal->setTitle("Find Group");
         } elseif ($user === null) {
-            $groupName = new FormText('', '', 'groupName', $group->activeDirectory->getDistinguishedName());
+            $groupName = new FormText('', '', 'group', $group->activeDirectory->getDistinguishedName());
             $groupName->hidden();
 
             $userToAdd = new FormText('Add user', 'Can also serarch by first or last name.', 'usernameToAdd');
