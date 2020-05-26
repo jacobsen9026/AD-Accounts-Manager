@@ -37,7 +37,7 @@ use App\Controllers\Controller;
 class Profile extends Controller
 {
 
-    public function __construct(\System\App\App $app)
+    public function __construct(App $app)
     {
         parent::__construct($app);
         $this->layout = "thin";

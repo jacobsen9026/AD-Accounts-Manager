@@ -73,12 +73,8 @@ abstract class CardPrinter extends ViewModel
     private static function buildUserCard(DistrictUser $user, User $webUser)
     {
 
-        $script = '<script>
-            $(function () {$(\'[data-toggle="tooltip"]\').tooltip()})
-  </script>';
 
-
-        $output = $script . '<div class="col px-0">'
+        $output = '<div class="col px-0">'
             . '<div class="card-body p-0 p-sm-3">'
             . '<div class="position-absolute right text-secondary">'
             . self::printOptionsButton($user, $webUser)
@@ -91,11 +87,11 @@ abstract class CardPrinter extends ViewModel
 
         if ($user->activeDirectory->isActive()) {
             $output .= '<div class="col text-success h3" > '
-                . '<i data - toggle = "tooltip" data - placement = "top" title = "Account is enabled." class="fas fa-check-circle" ></i > '
+                . '<i data-toggle = "tooltip" data-placement = "top" title = "Account is enabled." class="fas fa-check-circle" ></i > '
                 . '</div > ';
         } else {
             $output .= '<div class="col text-danger h3" > '
-                . '<i data - toggle = "tooltip" data - placement = "top" title = "Account is not enabled." class="fas fa-times-circle" ></i > '
+                . '<i data-toggle = "tooltip" data-placement = "top" title = "Account is not enabled." class="fas fa-times-circle" ></i > '
                 . '</div > ';
         }
         $output .= self::printUserHeader($user);
@@ -105,11 +101,11 @@ abstract class CardPrinter extends ViewModel
          */
         if (!$user->isLockedOut()) {
             $output .= '<div class="col text-success h3" > '
-                . '<i data - toggle = "tooltip" data - placement = "top" title = "Account is not locked out." class="fas fa-lock-open" ></i > '
+                . '<i data-toggle = "tooltip" data-placement = "top" title = "Account is not locked out." class="fas fa-lock-open" ></i > '
                 . '</div > ';
         } else {
             $output .= '<div class="col text-danger h3" > '
-                . '<i data - toggle = "tooltip" data - placement = "top" title = "Account is locked out." class="fas fa-lock" ></i > '
+                . '<i data-toggle = "tooltip" data-placement = "top" title = "Account is locked out." class="fas fa-lock" ></i > '
                 . '</div > ';
         }
         $output .= '</div > ';
@@ -341,7 +337,8 @@ abstract class CardPrinter extends ViewModel
 
         $modalButton = new FormButton('<i class="fas fa-plus"></i>', 'tiny');
         $modalButton->addModal($modal)
-            ->setTheme('success');
+            ->setTheme('success')
+            ->setTooltip("Add to new group");
         return $modalButton->print();
         return $modalForm->print();
     }
