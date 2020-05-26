@@ -24,51 +24,48 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of Request
  *
  * @author cjacobsen
  */
-class Request {
+class Request
+{
 
     /**
      *
      * @var string
      */
-    public $post = null;
-    public $get = null;
-    public $uri = null;
-    public $module = null;
-    public $page = null;
-    public $referer = null;
-    public $action = null;
+    public $uri;
+    public $referer;
+    public $type;
+    public $serverName;
+    public $protocol = "http";
     private $logger;
+    private $id;
+    private $ip;
 
     /**
      *
      * @param \SAM\App $core
      */
-    function __construct() {
+    public function __construct()
+    {
         $this->logger = SystemLogger::get();
-        /*
-         * Store GET
-         */
-        if (isset($_GET)) {
-            $this->get = $_GET;
-        }
-        /*
-         * Store POST
-         */
-        if (isset($_POST)) {
-            $this->post = $_POST;
-        }
+        $this->id = substr(hash("sha256", rand()), 0, 5);
         /*
          * Store the referer
          */
         if (isset($_SERVER['HTTP_REFERER'])) {
-            $this->referer = $_SERVER['HTTP_REFERER'];
+            $this->setReferer($_SERVER['HTTP_REFERER']);
+        }
+        /*
+         * Store the webserver name used
+         */
+        if (isset($_SERVER['SERVER_NAME'])) {
+            $this->setServerName($_SERVER['SERVER_NAME']);
         }
         /*
          * Check that URI is set
@@ -77,41 +74,111 @@ class Request {
             /*
              * Set Request URI
              */
-            $this->uri = $_SERVER["REQUEST_URI"];
-            /*
-             * Break up the request by slashes into /module/page/action
-             */
-            $exploded = explode("/", $this->uri);
-            //var_export($exploded);
-            if (sizeof($exploded) > 0) {
-                if (isset($exploded[1]) and $exploded[1] != '') {
-                    $this->module = ucfirst(strtolower($exploded[1]));
-                    //echo "module";
-                }
-                //echo $this->module;
-                if (isset($exploded[2]) and $exploded[2] != '') {
-                    $this->page = $exploded[2];
-                }
-                if (isset($exploded[3]) and $exploded[3] != '') {
-                    $this->action = $exploded[3];
+            $this->setUri($_SERVER["REQUEST_URI"]);
+            if (Get::isSet()) {
+                //Remove Get portion from URI
+                $this->logger->info("URI: " . $this->getUri());
+                $this->logger->info("Position of ? " . strpos($this->getUri(), "?"));
+                if (strpos($this->getUri(), "?")) {
+                    $this->setUri(explode("?", $this->getUri())[0]);
+                } elseif ($this->getUri()[0] == "?") {
+                    $this->setUri("");
                 }
             }
-            $this->logger->debug("Request made: " . $this->module . "->" . $this->page . "->" . $this->action);
         }
-        //var_export($this);
-        //return $this;
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            $this->setType('ajax');
+        } else {
+            $this->setType('http');
+        }
+        if (isset($_SERVER["HTTPS"])) {
+            $this->setProtocol("https");
+        }
+        if (isset($_SERVER["REMOTE_ADDR"])) {
+            $this->ip = $_SERVER["REMOTE_ADDR"];
+        }
+
     }
 
-    public function post(): string {
-        return $this->post;
+    public function getId()
+    {
+        return $this->id;
     }
 
-    public function get() {
-        return $this->get;
-    }
-
-    public function uri() {
+    public function getUri(): string
+    {
         return $this->uri;
     }
+
+    public function getReferer()
+    {
+        return $this->referer;
+    }
+
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    public function getServerName()
+    {
+        return $this->serverName;
+    }
+
+    public function getProtocol()
+    {
+        return $this->protocol;
+    }
+
+    public function setUri(string $uri)
+    {
+        $this->uri = $uri;
+        return $this;
+    }
+
+    public function setReferer($referer)
+    {
+        $this->referer = $referer;
+        return $this;
+    }
+
+    public function setType($type)
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+
+    public function setServerName($serverName)
+    {
+        $this->serverName = $serverName;
+        return $this;
+    }
+
+    public function setProtocol($protocol)
+    {
+        $this->protocol = $protocol;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIp()
+    {
+        return $this->ip;
+    }
+
+    /**
+     * @param mixed $ip
+     *
+     * @return Request
+     */
+    public function setIp($ip)
+    {
+        $this->ip = $ip;
+        return $this;
+    }
+    
 
 }

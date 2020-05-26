@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\controllers;
+namespace App\Controllers;
 
 /**
  * Description of Admin

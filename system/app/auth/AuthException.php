@@ -24,17 +24,19 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\auth;
+namespace System\App\Auth;
 
 /**
  * Description of AuthException
  *
  * @author cjacobsen
  */
-class AuthException extends \Exception {
+class AuthException extends \Exception
+{
 
     const BAD_PASSWORD = "BAD_PASSWORD";
     const BAD_USER = "BAD_USER";
+    const NOT_AUTHORIZED = "NOT_AUTHORIZED";
 
     //put your code here
 }

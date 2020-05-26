@@ -1,0 +1,119 @@
+BEGIN TRANSACTION;
+CREATE TABLE IF NOT EXISTS "PermissionMap" (
+	"ID"	INTEGER PRIMARY KEY AUTOINCREMENT,
+	"Ref_ID"	STRING NOT NULL UNIQUE,
+	"Privilege_ID"	INTEGER NOT NULL,
+	"Student_User"	BOOLEAN DEFAULT (FALSE),
+	"Student_Group"	BOOLEAN DEFAULT (FALSE),
+	"Staff_User"	BOOLEAN DEFAULT (FALSE),
+	"Staff_Group"	BOOLEAN DEFAULT (FALSE),
+	"OU"	STRING,
+	"User_Perm"	INTEGER DEFAULT (0),
+	"Group_Perm"	INTEGER DEFAULT (0),
+	FOREIGN KEY("Privilege_ID") REFERENCES "PrivilegeLevel"("ID") ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE IF NOT EXISTS "PrivilegeLevel" (
+	"ID"	INTEGER PRIMARY KEY AUTOINCREMENT,
+	"District_ID"	INTEGER,
+	"AD_Group_Name"	STRING NOT NULL UNIQUE,
+	"Super_Admin"	BOOLEAN DEFAULT (FALSE),
+	FOREIGN KEY("District_ID") REFERENCES "District"("ID") ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE IF NOT EXISTS "Auth" (
+	"ID"	INTEGER,
+	"Admin_Password"	STRING NOT NULL DEFAULT ('5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8'),
+	"Tech_AD_Group"	STRING,
+	"Admin_AD_Group"	STRING,
+	"Power_AD_Group"	STRING,
+	"Basic_AD_Group"	STRING,
+	"Tech_GA_Group"	STRING,
+	"Admin_GA_Group"	STRING,
+	"Power_GA_Group"	STRING,
+	"Basic_GA_Group"	STRING,
+	"LDAP_Enabled"	BOOLEAN DEFAULT (FALSE),
+	"LDAP_Server"	STRING,
+	"LDAP_FQDN"	STRING,
+	"LDAP_Port"	INTEGER,
+	"LDAP_Username"	STRING,
+	"LDAP_Password"	STRING,
+	"LDAP_Use_SSL"	BOOLEAN DEFAULT (FALSE),
+	"OAuth_Enabled"	BOOLEAN DEFAULT (FALSE),
+	"Session_Timeout"	INTEGER NOT NULL DEFAULT (1200),
+	PRIMARY KEY("ID")
+);
+CREATE TABLE IF NOT EXISTS "App" (
+	"ID"	TEXT DEFAULT (1) CHECK(ID=1),
+	"Name"	STRING NOT NULL DEFAULT "School Accounts Manager",
+	"Force_HTTPS"	BOOLEAN NOT NULL DEFAULT (FALSE),
+	"MOTD"	TEXT,
+	"Debug_Mode"	BOOLEAN NOT NULL DEFAULT (FALSE),
+	"Protected_Admin_Usernames"	STRING,
+	"Websitie_FQDN"	STRING,
+	"App_Version"	STRING DEFAULT ('0.1.0'),
+	"Database_Version"	STRING DEFAULT ('0.1.0'),
+	"User_Helpdesk_URL"	STRING,
+	"Update_Check_URL"	STRING DEFAULT ('https://raw.githubusercontent.com/jacobsen9026/School-Accounts-Manager/master/version.txt'),
+	"Setup_Completed"	BOOLEAN DEFAULT (FALSE),
+	PRIMARY KEY("ID")
+);
+CREATE TABLE IF NOT EXISTS "District" (
+	"ID"	INTEGER DEFAULT (1) CHECK(ID=1) PRIMARY KEY AUTOINCREMENT,
+	"Name"	TEXT NOT NULL UNIQUE,
+	"Grade_Span_From"	STRING,
+	"Grade_Span_To"	STRING,
+	"Abbreviation"	STRING,
+	"AD_FQDN"	STRING,
+	"AD_Server"	STRING,
+	"AD_BaseDN"	STRING,
+	"AD_NetBIOS"	STRING,
+	"AD_Username"	STRING,
+	"AD_Password"	STRING,
+	"AD_Student_Group"	STRING,
+	"GA_FQDN"	STRING,
+	"Parent_Email_Group"	STRING,
+	"Staff_Username_Format"	STRING,
+	"Student_Username_Format"	STRING,
+	"Using_GADS"	BOOLEAN NOT NULL DEFAULT (FALSE),
+	"Using_GAPS"	BOOLEAN NOT NULL DEFAULT (FALSE),
+	"AD_Staff_Group"	STRING
+);
+CREATE TABLE IF NOT EXISTS "User" (
+	"ID"	INTEGER PRIMARY KEY AUTOINCREMENT,
+	"Username"	STRING UNIQUE,
+	"Token"	STRING UNIQUE,
+	"Theme"	STRING,
+	"Privilege"	INTEGER DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS "Logon" (
+	"ID"	INTEGER PRIMARY KEY AUTOINCREMENT,
+	"Timestamp"	DATETIME DEFAULT (SYSDATETIME()),
+	"Username"	STRING
+);
+CREATE TABLE IF NOT EXISTS "Email" (
+	"ID"	INTEGER PRIMARY KEY AUTOINCREMENT,
+	"From_Address"	STRING,
+	"From_Name"	STRING,
+	"Admin_Email_Addresses"	STRING,
+	"Welcome_Email_BCC"	STRING,
+	"Welcome_Email"	STRING,
+	"Reply_To_Address"	STRING,
+	"Reply_To_Name"	STRING,
+	"Use_SMTP_SSL"	BOOLEAN,
+	"SMTP_Server"	STRING,
+	"SMTP_Port"	INTEGER,
+	"Use_SMTP_Auth"	BOOLEAN,
+	"SMTP_Username"	STRING,
+	"SMTP_Password"	STRING
+);
+CREATE TABLE IF NOT EXISTS "Audit" (
+	"ID"	INTEGER,
+	"Timestamp"	DATETIME DEFAULT (SYSDATETIME()),
+	"Username"	TEXT,
+	"IP"	TEXT,
+	"Action"	TEXT,
+	"URI"	TEXT,
+	"Description"	TEXT,
+	PRIMARY KEY("ID")
+);
+CREATE TRIGGER "Setup App" AFTER INSERT ON App BEGIN INSERT INTO Auth (ID) VALUES (New.ID); INSERT INTO Email (ID) VALUES (New.ID); END;
+COMMIT;

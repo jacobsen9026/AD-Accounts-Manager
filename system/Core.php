@@ -24,134 +24,204 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
- * Description of App
+ * Description of Core
  *
- * @author cjacobsen
+ * This is the main system core class. It is the first thing
+ * called upon receiving an http request. It handles bootstrapping
+ * the system classes and loading core configuration. From there it
+ * triggers the application to run and receives it's output and log.
+ * Finally the renderer compiles the app and core data together into
+ * a final HTTP response for the user.
  */
 require './system/Autoloader.php';
 
-use app\App;
-use system\app\CoreApp;
-use system\CoreException;
-use system\SystemLogger;
+use System\AppOutput;
+use System\CoreException;
+use System\SystemLogger;
+use System\Log\CommonLogger;
 
-class Core {
+class Core
+{
 
-    /** @var Parser|null The view parser */
+    /** @var Parser|null The view parser that enables printing of views */
     private $parser;
 
     /** @var SystemLogger|null The system logger */
-    public $logger;
+    public static $systemLogger;
 
-    /** @var Request|null The Request */
-    private $request;
+    /**
+     *
+     * @var DatabaseLogger
+     */
+    public static $databaseLogger;
+    /**
+     *
+     * @var DatabaseLogger
+     */
+    public static $postLogger;
 
-    /** @var Renderer|null The output renderer */
+    /** @var Request|null The Request object */
+    public $request;
+
+    /** @var Renderer|null The application output renderer */
     public $renderer;
 
-    /** @var string|null The application output */
+    /** @var AppOutput The application output */
     public $appOutput;
 
-    /** @var AppLogger|null The application logger */
+    /** @var CommonLogger|null The application logger */
     public $appLogger;
 
-    /** @var App|null The App */
-    private $app;
+    /** @var App|null The App Instance */
+    public $app;
 
-    /** @var Core|null */
-    public static $instance;
+    /** @var Core|null This core instance */
+    public static
+        $instance;
 
-    function __construct() {
+    function __construct()
+    {
         /*
-         * Create
+         * Create Core
          * Start Session
          * Declare ROOTPATH constant which is used for all file interactions
          */
         if (!isset($_SESSION)) {
             session_start();
         }
-
         define('ROOTPATH', getcwd());
-        //Enable Error Reporting for core until the system config is loaded
+        /*
+         * Enable Error Reporting for core until the system config is loaded
+         */
         error_reporting(E_ALL);
-        ini_set('display_errors', TRUE);
-        ini_set('display_startup_errors', TRUE);
+        ini_set('display_errors', true);
+        ini_set('display_startup_errors', true);
+        ini_set('file_uploads', true);
+        /*
+         * Store new instance for abstract reference
+         */
         self::$instance = $this;
     }
 
-    public static function get() {
+    /**
+     * Gets the current core instance
+     *
+     * @return Core
+     */
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }
         return self::$instance;
     }
 
-    public function run() {
+    /**
+     * Start the system core running. This should be called from the public php index file
+     */
+    public function run()
+    {
         /**
          * BEGIN
          *
-         */
-        /**
-         * Auto-load all classes in directories specified within class
+         * Initialize the application
          */
         try {
-            $this->initializeApp();
+            $this->initialize();
         } catch (CoreException $ex) {
-            $this->error($ex);
+            self::$systemLogger->error($ex);
         }
         /**
-         * Run Web App
+         * Run the App
          */
         try {
             $this->execute();
         } catch (CoreException $ex) {
-            $this->error($ex);
+            // $this->abort($ex
+            $this->appOutput->setBody($ex->getMessage());
+            self::$systemLogger->error($ex);
         }
-
+        /**
+         * Return the response to the user
+         */
         try {
             $this->render();
         } catch (CoreException $ex) {
-            var_dump($ex);
+            self::$systemLogger->error($ex);
         }
+
         /*
          * The request has been completed and the response is being delivered.
-         * The app and core, along with all children, are kill.
+         * The app and core have completed execution and PHP is handed off
+         * back to the public index.php file immediately following the run().
          * EXIT
          */
     }
 
     /**
-     * Initialize all core systems
+     * In the event of a CoreException, immediately stops app execution and pulls the current AppLogger state.
+     * Should not be used by other classes.
+     *
+     * @param type $message
      */
-    private function initializeApp() {
+    public function abort($message = null)
+    {
+        self::$systemLogger->error("Aborting App Execution!");
+        self::$systemLogger->error($message);
+        $this->appLogger = ($this->app->logger);
+//$this->appOutput = null;
+//$this->app = null;
+        try {
+            $this->render();
+        } catch (CoreException $ex) {
+            self::$systemLogger->error($ex);
+        }
+    }
 
-        Autoloader::run($this);
+    /**
+     * Initialize all core systems for application running
+     */
+    private function initialize()
+    {
+        /**
+         * Run autoloader
+         */
+        Autoloader::run();
+        /**
+         * By instantiating the CoreErrorHandler we trigger errors and exceptions
+         * to be caught with our custom handlers.
+         *
+         */
+        new CoreErrorHandler();
+
         /*
          * Load the parser in the core since it cannot
          * extend the parser.
          */
-        new CoreErrorHandler();
-
-        trigger_error("Value must be 1 or below");
         $this->parser = new Parser();
         /*
          * Load the system logger
          */
 
-        $this->logger = new SystemLogger();
-        $this->logger->info("Logger started");
-        $this->logger->info("Session Export Below:");
-        $this->logger->info($_SESSION);
+        self::$databaseLogger = new DatabaseLogger();
+        self::$postLogger = new PostLogger();
+        self::$systemLogger = new SystemLogger();
+        self::$systemLogger->info("Logger started");
+        /**
+         * Log the session to the core logger
+         */
+        self::$systemLogger->debug("Session Export Below:");
+        self::$systemLogger->debug($_SESSION);
         /*
          * The following statement must not ever be removed.
          * Everything depends on the system config being
          * loaded.
          */
         $this->parser->include("system/Config");
-        $this->logger->info("Core config loaded");
+        self::$systemLogger->info("Core config loaded");
         /*
          * Set PHP error mode to reflect setting in system config
          * for DEBUG_MODE
@@ -162,50 +232,69 @@ class Core {
          * routing to come.
          */
         $this->request = new Request();
-        $this->logger->info("Request created");
+        self::$systemLogger->info("Request created");
         /*
          * Initialization complete return to run()
          */
     }
 
-    private function execute() {
-        $this->logger->info("App starting");
-        /*
-         * If system debug is enabled, do not buffer
-         * the output of the app to prevent it from echoing
+    /**
+     * Executes the application class by calling the runApp() method
+     */
+    private function execute()
+    {
+        self::$systemLogger->info("App starting");
+        /**
+         * We prep the output in case something goes wrong with the app
          */
-
-
-
+        $this->appOutput = new AppOutput();
+        /**
+         * Run app
+         */
         $this->appOutput = $this->runApp();
-        $this->appLogger = $this->appOutput[1];
-        $this->appOutput = $this->appOutput[0];
-
+        /**
+         * We need to retake control of the run-time errors from the app
+         * if it was set to do so.
+         *
+         * So we re-instantiate the CoreErrorHandler
+         */
         new CoreErrorHandler();
         /*
          * Check if the system is in debug and if so set
          * php error settings appropriatly
          */
-        //$this->setErrorMode();
-        $this->logger->info("App execution completed");
+//$this->setErrorMode();
+        self::$systemLogger->info("App execution completed");
     }
 
-    private function runApp() {
+    private function runApp()
+    {
 
         /*
          * Check that the defined primary app class in the
-         * config actual loaded and then launch it if it is.
+         * config actually exists and then launch it if it is.
          */
         if (class_exists(APPCLASS)) {
             $class = APPCLASS;
-            $this->app = new $class($this->request, $this->logger);
+            $this->app = new $class($this->request, self::$systemLogger);
+            /**
+             * Make sure that this APPCLASS has the run method otherwise what's the point
+             */
             if (method_exists($this->app, 'run')) {
+                /**
+                 * Let's run the app and return what it gives back to the core execution
+                 */
                 return $this->app->run();
             } else {
-                $this->logger->error("The " . APPCLASS . " does not have a run() method");
+                throw new CoreException("The " . APPCLASS . " does not have a run() method", CoreException::APP_MISSING_RUN);
+                echo("The " . APPCLASS . " does not have a run() method");
+
+                exit;
             }
         } else {
-            $this->logger->error("The " . APPCLASS . " class was not found");
+            throw new CoreException("The " . APPCLASS . " class was not found", CoreException::APP_MISSING);
+            echo("The " . APPCLASS . " class was not found");
+            exit;
         }
 
         /*
@@ -218,37 +307,55 @@ class Core {
      * Draw the request and deliver back to user
      *
      */
-    private function render() {
+    private function render()
+    {
         /*
          * Create instance of renderer
          * Render the body into the full response
          */
-        $this->logger->info("Creating renderer");
+        self::$systemLogger->info("Creating renderer");
         $this->renderer = new Renderer($this);
-        $this->logger->info("Renderer created");
-        $this->logger->info("Call renderer to draw");
+        self::$systemLogger->info("Renderer created");
+        self::$systemLogger->info("Call renderer to draw");
         $this->renderer->draw($this);
     }
 
-    private function setErrorMode() {
+    /**
+     * Sets the error mode according to the core debug setting
+     *
+     * Debug On: Print all errors
+     * Debug Off: Suppress Errors
+     */
+    private function setErrorMode()
+    {
         if ($this->inDebugMode()) {
+            self::$systemLogger->info("Enabling PHP Errors");
             enablePHPErrors();
         } else {
 
+            self::$systemLogger->info("Disabling PHP Errors");
             disablePHPErrors();
         }
     }
 
     /**
+     * Returns true if the core is in debug mode,
+     * false if it is not.
      *
      * @return boolean
      */
-    public function inDebugMode() {
-        if (defined('DEBUG_MODE')and DEBUG_MODE) {
+    public static function inDebugMode()
+    {
+        if (defined('DEBUG_MODE') and DEBUG_MODE) {
             return true;
         } else {
             return false;
         }
+    }
+
+    public static function getAppClass()
+    {
+        return APPCLASS;
     }
 
 }

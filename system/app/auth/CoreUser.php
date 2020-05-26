@@ -24,19 +24,86 @@
  * THE SOFTWARE.
  */
 
-namespace system\app\auth;
+namespace System\App\Auth;
 
 /**
  * Description of CoreUser
  *
  * @author cjacobsen
  */
-class CoreUser {
 
-    const ADMINISTRATOR = "ADMIN";
+use System\App\UserLogger;
+
+class CoreUser
+{
+
+    const ADMINISTRATOR = "admin";
 
     //put your code here
     public $username;
     public $privilege;
+
+    /**
+     *
+     * @var bool
+     */
+    public $authenticated = false;
+    public $apiToken;
+
+    public function __construct()
+    {
+
+    }
+
+    /**
+     *
+     * @return type
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param bool $status
+     *
+     * @return $this
+     */
+    public function authenticated($status = true)
+    {
+        UserLogger::get()->info('Setting Authenticated to: ' . $status);
+        $this->authenticated = $status;
+        return $this;
+    }
+
+
+    /**
+     *
+     * @param type $username
+     *
+     * @return $this
+     */
+    public function setUsername(string $username)
+    {
+
+        UserLogger::get()->info('Setting Username to: ' . $username);
+        $this->username = $username;
+        return $this;
+    }
+
+
+    /**
+     *
+     */
+    public function generateAPIToken()
+    {
+        $user = gzcompress($this);
+        $this->apiToken = \system\Encryption::encrypt(serialize($user));
+    }
+
+    public function getApiToken()
+    {
+        return $this->apiToken;
+    }
 
 }

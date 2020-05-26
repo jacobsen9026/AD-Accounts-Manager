@@ -1,77 +1,25 @@
+<?php
 
-<form method="post" action ="/" class="container-sm">
-    <?php
-//echo $appConfig["webAppName"];
-    ?>
+use System\App\Forms\Form;
+use System\App\Forms\FormText;
+use System\App\Forms\FormButton;
 
-    <div style="width:100%;text-align:center;">
-        <?php
-        /*
-          if (isset($_POST['badpass'])) {
-          ?>
-          <script>var toast = new iqwerty.toast.Toast('Bad Username/Password');</script>
-          <span style="color:red;font-size:0.6em;">Bad Username/Password</span><br/>
+use System\Lang;
 
-          <?php
-          }
-          if (isset($_POST['notauthorized'])) {
-          ?>
-          <script>var toast = new iqwerty.toast.Toast('Not Authorized');</script>
-          <span style="color:red;font-size:0.6em;">Not Authorized</span><br/>
+if (isset($params['toast'])) {
+    echo $params['toast'];
 
-          <?php
-          }
-          if (isset($_SESSION)) {
-          if (isset($timedOut)) {
-          if ($timedOut == "true") {
-          $timedOut = "";
-          session_unset();
-          ?>
+}
 
-          <span style="color:black;font-size:0.6em;">Your session has timed out. Please log in again.</span><br/>
+$form = new Form();
+$username = new FormText(Lang::get("Username"), '', 'username');
+$password = new FormText(Lang::get("Password"), '', 'password');
+$password->isPassword();
+$loginButton = new FormButton(Lang::get("Login"));
+$loginButton->setTheme('secondary');
+$form->addElementToNewRow($username)
+    ->addElementToNewRow($password)
+    ->addElementToNewRow($loginButton);
+echo $form->print();
+?>
 
-          <?php
-          }
-          }
-          }
-         *
-         */
-        echo system\Lang::get('Username');
-        ?>
-
-
-    </div>
-    <input <?php if (!isset($_COOKIE["username"])) { ?>autofocus<?php } ?> type="text" name="username" value="<?php
-    if (isset($_COOKIE["username"])) {
-        echo $_COOKIE["username"];
-    }
-    ?>" autocomplet /><br/>
-                                                       <?php echo system\Lang::get('Password'); ?>
-    <input <?php if (isset($_COOKIE["username"])) { ?>autofocus<?php } ?> type="password" name="password" value="<?php
-    if (isset($_COOKIE["token"])) {
-        echo json_decode($_COOKIE["token"], true)[0];
-    }
-    ?>" autocomplet/><br/>
-
-    <br />
-    <br /><div style="cursor:hand;" style="width:50%;height:3em;vertical-align:middle;display:inline">
-        <text onclick="checkOnPage('rememberUsernameCheckbox')">Remember Username</text>
-        <input id="rememberUsernameCheckbox" style="cursor:hand;width:2em;vertical-align:middle;" type="checkbox" name="rememberUsername" <?php
-        if (isset($_COOKIE["username"])) {
-            echo 'checked=true';
-        }
-        ?>/>
-               <?php //print_r($_COOKIE); ?>
-    </div>
-    <br/>
-    <div style="cursor:hand;" style="width:50%;height:3em;vertical-align:middle;display:inline">
-        <text onclick="checkOnPage('rememberMeCheckbox')">Remember Me</text>
-        <input id="rememberMeCheckbox" style="cursor:hand;width:2em;vertical-align:middle;" type="checkbox" name="rememberMe" <?php
-               if (isset($_COOKIE["token"])) {
-                   echo 'checked=true';
-               }
-               ?>/>
-               <?php //print_r($_COOKIE);  ?>
-    </div><br/>
-    <button type="submit"><?php echo system\Lang::get('Login'); ?></button>
-</form>

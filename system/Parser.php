@@ -24,37 +24,99 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
- * Description of CoreParser
+ * Description of Parser
+ * A collection of functions to control app output buffering
  *
  * @author cjacobsen
  */
-use system\SystemLogger;
 
-class Parser {
+use System\App\AppLogger;
 
-    public function view($view) {
+class Parser
+{
+
+    /**
+     *
+     * @param string $view
+     *
+     * @return boolean
+     */
+    public function view(string $view, array $params = null)
+    {
 
         //var_dump($view);
         $view = $this->sanitize($view);
 
         $path = VIEWPATH . DIRECTORY_SEPARATOR . $view . ".php";
-        //echo $path;
+        //var_dump($path);
         if (file_exists($path)) {
 
-
             ob_start();
-            if (include $path) {
-                return ob_get_clean();
+            try {
+                AppLogger::get()->info("Rendering view file: " . $path);
+                if (include $path) {
+
+                    return ob_get_clean();
+                } else {
+
+                    AppLogger::get()->warning("Could not include view file: " . $path);
+                }
+            } catch (Exception $ex) {
+                SystemLogger::get()->error($ex);
             }
+
             ob_get_clean();
+        } else {
+
+            AppLogger::get()->warning("Could not find view file: " . $path);
         }
         return false;
     }
 
-    public function include($file) {
+    /**
+     *
+     * @param stirng $modal
+     *
+     * @return boolean
+     */
+    public function modal(string $modal)
+    {
+
+        //var_dump($modal);
+        $modal = $this->sanitize($modal);
+
+        $path = VIEWPATH . DIRECTORY_SEPARATOR . "modals" . DIRECTORY_SEPARATOR . $modal . ".php";
+
+        //var_dump($path);
+        if (file_exists($path)) {
+            // echo "test";
+            //var_dump($path);
+            ob_start();
+            if (include $path) {
+                return ob_get_clean();
+            } else {
+                AppLogger::get()->info("Rendering include file: " . $path);
+                AppLogger::get()->warning("Could not include file: " . $path);
+            }
+            ob_get_clean();
+        } else {
+
+            AppLogger::get()->warning("Could not find include file: " . $path);
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param string $file
+     *
+     * @return boolean
+     */
+    public function include($file)
+    {
 
         $file = $this->sanitize($file);
 
@@ -72,18 +134,37 @@ class Parser {
         }
     }
 
-    public function sanitize($path) {
+    /**
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    public function sanitize($path)
+    {
         if ($path[0] == "/" or $path[0] == "\\") {
             $path = substr($path, 1);
         }
-        $path = str_replace(array('/', '\\'), strval(DIRECTORY_SEPARATOR), $path);
+        $path = str_replace(['/', '\\'], strval(DIRECTORY_SEPARATOR), $path);
         return $path;
     }
 
-    public function varDump($object) {
+    /**
+     *
+     * @param array $object
+     *
+     * @return string
+     */
+    public function varDump($object)
+    {
         ob_start();
-        var_dump($object);
+        SystemLogger::get()->debug($object);
         return ob_get_clean();
+    }
+
+    public static function get()
+    {
+        return new self();
     }
 
 }

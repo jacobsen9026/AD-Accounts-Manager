@@ -24,14 +24,23 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of Renderer
  *
  * @author cjacobsen
  */
-class Renderer extends Parser {
+
+use System\AppOutput;
+use System\Models\View\DebugViewer;
+use System\Models\Ajax\AJAXResponse;
+use System\DatabaseLogger;
+use System\App\UserLogger;
+use System\PostLogger;
+
+class Renderer extends Parser
+{
 
 //put your code here
     public $output;
@@ -42,42 +51,78 @@ class Renderer extends Parser {
     /** @var SystemLogger|null */
     public $logger;
 
-    /** @var AppLogger|null */
+    /** @var AppLogger|null
+     * @deprecated since version number
+     *  */
     public $appLogger = null;
 
-    function __construct(Core $core) {
+    /** @var AppOutput */
+    private $appOutput;
+
+    function __construct(Core $core)
+    {
         $this->core = $core;
-        $this->logger = $core->logger;
-        $this->appLogger = $core->appLogger;
+        $this->logger = $core::$systemLogger;
+        $this->appOutput = $core->appOutput;
     }
 
-    public function draw() {
-//var_dump($this->core->appOutput);
-        $this->include('system/views/HTML_start');
-        $this->logger->info("Drawing of app started");
-        if (isset($this->core->appOutput) and $this->core->appOutput != '') {
-            echo $this->core->appOutput;
-        } else {
-            $this->showNoAppOutputWarning();
+    public function draw()
+    {
+        switch ($this->core->request->type) {
+            case 'http':
+                //var_dump($this->appOutput);
+                $this->include('system/views/HTML_start');
+                $this->logger->info("Drawing of app started");
+                if ($this->appOutput->getBody() !== null and $this->appOutput->getBody() != '') {
+                    echo $this->appOutput->getBody();
+                } else {
+                    $this->showNoAppOutputWarning();
+                }
+                $this->logger->info("Drawing of app finished");
+                $loggers = $this->getLoggers();
+                if (!empty($loggers)) {
+                    echo DebugViewer::printDebugTools($loggers);
+                }
+                $this->include('system/views/HTML_end');
+
+
+                break;
+            case 'ajax':
+                $ajaxResponse = new AJAXResponse();
+                $ajaxResponse->importAppOutput($this->appOutput);
+                $ajaxResponse->addLogger($this->logger)
+                    ->addLogger(DatabaseLogger::get())
+                    ->addLogger(PostLogger::get())
+                    ->addLogger(UserLogger::get());
+
+                //var_dump($this->appOutput);
+                $json = $ajaxResponse->jsonSerialize();
+                //var_export($json);
+                echo $json;
+
+                break;
+
+            default:
+                break;
         }
-        $this->logger->info("Drawing of app finished");
-        $this->include('system/views/debugToolbar');
-        $this->include('system/views/HTML_end');
     }
 
-    private function showNoAppOutputWarning() {
+    private function showNoAppOutputWarning()
+    {
         $this->include('system/views/noAppOutput');
     }
 
-    public function errors_exists() {
 
-        if ($this->appLogger->getLogs()['error'] !== null and sizeof($this->appLogger->getLogs()['error']) > 0) {
-            return true;
+    private function getLoggers()
+    {
+
+        $appLoggers = $this->appOutput->getLoggers();
+        $loggers = [];
+        if ($this->core->inDebugMode()) {
+            $loggers = [SystemLogger::get(), PostLogger::get(), DatabaseLogger::get()];
         }
-        if ($this->logger->getLogs()['error'] !== null and sizeof($this->logger->getLogs()['error']) > 0) {
-            return true;
-        }
-        return false;
+        $loggers = array_merge($loggers, $appLoggers);
+        return $loggers;
     }
 
 }

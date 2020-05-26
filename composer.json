@@ -1,0 +1,7 @@
+{
+    "require": {
+        "guzzlehttp/guzzle": "~5.3.1",
+        "phpmailer/phpmailer": "^6.1",
+        "adldap2/adldap2": "^10.2"
+    }
+}

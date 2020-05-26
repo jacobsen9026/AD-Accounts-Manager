@@ -24,31 +24,37 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of Debugger
  *
  * @author cjacobsen
  */
-use system\app\CoreLogger;
 
-class SystemLogger extends CoreLogger {
+use System\Log\CommonLogger;
 
-    /** @var SystemLogger|null */
+class SystemLogger extends CommonLogger
+{
+
+    /** @var DatabaseLogger|null */
     public static $instance;
 
-    function __construct() {
+    function __construct()
+    {
 
+        parent::__construct();
         self::$instance = $this;
-        ;
+        $this->info('Rootpath: ' . ROOTPATH);
+        $this->setName("system");
     }
 
     /**
      *
-     * @return type
+     * @return SystemLogger
      */
-    public static function get() {
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }

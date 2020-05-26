@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -22,121 +23,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+use App\Models\Database\AppDatabase;
+use System\App\Forms\Form;
+use System\App\Forms\FormButton;
+use System\App\Forms\FormFloatingButton;
+use System\App\Forms\FormText;
+use System\App\Forms\FormRadio;
+
+$form = new Form('/settings/application', 'application');
+
+$webAppName = new FormText("Web App Name", null, "webAppName", AppDatabase::getAppName());
+$webAppName->large();
+$webFQDN = new FormText("Website FQDN", "If this is set all requests are redirected to this address. Be sure it is correct and stays available.", "webAppFQDN", AppDatabase::getWebsiteFQDN());
+$webFQDN->large()
+    ->setPlaceholder("Enter the public FQDN that users use to access this applicaiton.");
+$webHelpDesk = new FormText("user Helpdesk URL", "The url that users should use to access your help portal.", "webHelpdeskURL", AppDatabase::getUserHelpdeskURL());
+$webHelpDesk->large()
+    ->setPlaceholder("https://helpdesk.company.com");
+
+
+$forceHTTPS = new FormRadio("Force HTTPS", "Redirect all HTTP requests to HTTPS", "forceHTTPS");
+$forceHTTPS->addOption("False", '0', !AppDatabase::getForceHTTPS());
+$forceHTTPS->addOption("True", '1', AppDatabase::getForceHTTPS());
+$debugMode = new FormRadio("Debug Mode", "Caution: Enabling debug mode is a security risk and should only be used on development systems.", "debugMode");
+$debugMode->addOption("False", '0', !AppDatabase::getDebugMode());
+$debugMode->addOption("True", '1', AppDatabase::getDebugMode());
+$homepageMessage = new System\App\Forms\FormTextArea();
+$homepageMessage->setLabel("Homepage Message")
+    ->setSubLabel("Accepts HTML and inline style")
+    ->setName("webMOTD")
+    ->setValue(AppDatabase::getMOTD());
+
+$submitButton = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
+$submitButton->setId('floatingSaveButton')
+    ->addAJAXRequest('/api/settings/application', 'settingsOutput', $form);
+
+
+$form->addElementToNewRow($webAppName)
+    ->addElementToNewRow($homepageMessage)
+    ->addElementToNewRow($webFQDN)
+    ->addElementToNewRow($forceHTTPS)
+    ->addElementToCurrentRow($debugMode)
+    ->addElementToNewRow($webHelpDesk)
+    ->addElementToNewRow($submitButton);
+echo $form->print();
 ?>
 
 
-<form method="post" class ="table-hover">
-    <div  class="row">
-        <div class="col-5">
-            <h3>
-                Admin Usernames</h3>
-            <small>Users in this list will not be able to<br/>be modified via the tools on this site.<br/></small>
-
-        </div>
-        <div class="col-7">
-            <textarea placeholder="Enter list of usernames, one per line." class="container container-lg" name="adminUsernames" rows="5" spellcheck="false"><?php
-                foreach ($appConfig["adminUsernames"] as $admin) {
-
-                    echo $admin . "\n";
-                }
-                ?></textarea>
-        </div>
-    </div>
-
-
-    <div  class="row">
-        <div class="col-5">
-            <h3>
-                Homepage Message</h3>
-            <small>Accepts HTML and inline style</small>
-
-        </div>
-        <div class="col-7">
-
-
-            <textarea placeholder="Enter list of emails, one per line." class="container container-lg" name="homepageMessage" rows="5" spellcheck="false"><?php
-                foreach ($appConfig["homepageMessage"] as $admin) {
-
-                    echo $admin . "\n";
-                }
-                ?></textarea>
-        </div>
-    </div>
-
-
-
-    <div  class="row">
-        <div class="col-5">
-            <h3>
-                Redirect to HTTPS
-            </h3>
-            <small>
-                <?php
-                //echo  $appConfig["redirectHTTP"];
-                //echo $_POST["redirectHTTPCheck"];
-
-                if (isset($appConfig["redirectHTTP"])) {
-                    if ($appConfig["redirectHTTP"]) {
-                        if (strtolower(explode("=", $_SERVER['HTTPS_SERVER_ISSUER'])[1]) == strtolower($_SERVER['SERVER_NAME'])) {
-                            echo "You are using a self-signed certificate.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
-                        }
-                    } else {
-                        echo "You are not using HTTPS.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
-                    }
-                } else {
-                    echo "You are not using HTTPS.<br/>Understand the risks of allowing this<br/>to be published on the internet.";
-                }
-                ?>
-            </small>
-        </div>
-        <div class="col-7">
-            <input type="text" name="redirectHTTP" hidden/>
-            <input type="checkbox" class="form-check-input" name="redirectHTTPCheck" value="true" <?php
-            //echo  $appConfig["redirectHTTP"];
-            if (isset($appConfig["redirectHTTP"])) {
-                if ($appConfig["redirectHTTP"]) {
-                    echo "checked";
-                }
-            }
-            ?>>
-        </div>
-
-
-
-    </div>
-
-
-
-
-    <div  class="row">
-        <div class="col-5">
-            <h3>
-                Session Timeout
-            </h3>
-        </div>
-        <div class="col-7">
-            <input  placeholder="Time in seconds (eg:1200)" type="text" style="width:25%" name="sessionTimeout" value="<?php echo $appConfig["sessionTimeout"]; ?>"> Seconds
-        </div>
-
-
-    </div>
 
 
 
 
 
-    <div  class="row">
-        <div class="col-5">
-            <h3>
-                Web App Name
-            </h3>
-        </div>
-        <div class="col-7">
-            <input placeholder="Enter Name" type="text" name="webAppName" value="<?php echo $appConfig["webAppName"]; ?>">
-        </div>
 
-
-    </div>
-
-    <div  class="container pt-5"><button type="submit" class="mx-auth btn btn-primary mb-2">Save Settings</button></div>
-</form>

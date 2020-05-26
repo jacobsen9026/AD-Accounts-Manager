@@ -24,27 +24,77 @@
  * THE SOFTWARE.
  */
 
-namespace system;
+namespace System;
 
 /**
  * Description of Autoloader
+ * This class handles autoloading of all application, system, and vendor classes
+ * There are a number of hardcoded directories that are searched through to find a class by name
+ * app/lib system/lib and the root path
+ *
+ * Any classes inside of these are referenced from the path.
+ * EG: a class Car in system/lib is referenced by \Car
+ * EG: a class Car in system is referenced by \system\Car
+ *
+ * Due to the abstract and postloaded nature of this class, logging is unavailable.
  *
  * @author cjacobsen
  */
-abstract class Autoloader {
+abstract class Autoloader
+{
 
-    public static function run(Core $core) {
-
+    public static function run()
+    {
+        /*
+         * Load Composers Autoloader to include Composer packages
+         */
+        require_once ROOTPATH . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
+        /*
+         * Load global core functions that will be available to the entire Core
+         */
         include(ROOTPATH . DIRECTORY_SEPARATOR . "system" . DIRECTORY_SEPARATOR . "CoreFunctions.php");
+        /*
+         * Register the class autoloader, all future class loads will be performed with the following function
+         */
         spl_autoload_register(function ($class) {
-            //var_dump($class);
+            // Check root namspace PSR path
             $filename = ROOTPATH . DIRECTORY_SEPARATOR . $class . '.php';
             if (!class_exists($class)) {
                 if (file_exists($filename)) {
                     try {
+                        /*
+                         * Classfile was found, attempt to include it
+                         */
                         require $filename;
                     } catch (Exception $ex) {
+                        /*
+                         * Classfile inclusion had an error so print the error
+                         */
                         echo $ex;
+                    }
+                } else {
+                    /*
+                     * File wasn't found in root PSR path so now we check the App Lib directory
+                     */
+                    $filename = ROOTPATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . $class . '.php';
+                    if (file_exists($filename)) {
+                        try {
+                            require $filename;
+                        } catch (Exception $ex) {
+                            echo $ex;
+                        }
+                    } else {
+                        /*
+                         * File was also not found in App Lib so one final check for the class in the System Lib folder
+                         */
+                        $filename = ROOTPATH . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . $class . '.php';
+                        if (file_exists($filename)) {
+                            try {
+                                require $filename;
+                            } catch (Exception $ex) {
+                                echo $ex;
+                            }
+                        }
                     }
                 }
             }

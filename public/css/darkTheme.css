@@ -1,79 +1,94 @@
 body {
-	background-color:#000;
+    background-color: #000;
 }
+
 .currentPageButtonHighlight, .navigation_selected {
-	background-color:#190401 !important;
-    border-color:#190401 !important;
+    background-color: #190401 !important;
+    border-color: #190401 !important;
 }
 
-.responseContainer{
-	background-color:#414244;
-}
-button, #sessionTimeoutMessageContainer, #debugConsoleMessageContainer, #container,.container, #disclaimer, .subnavigation button, .subnavigation button:hover, .responseContainer table, .responseContainer, .floatingPanel, .homepage_footer {
-	color:#DDDDDD;
+.responseContainer {
+    background-color: #414244;
 }
 
-#container,.container, #sessionTimeoutMessageContainer, #debugConsoleMessageContainer{
-	background-color:#1c1c1c;
-	/*box-shadow:0px 0px 25px #DDDDDD;*/
+button, #sessionTimeoutMessageContainer, #debugConsoleMessageContainer, #container, .container, #disclaimer, .subnavigation button, .subnavigation button:hover, .responseContainer table, .responseContainer, .floatingPanel, .homepage_footer {
+    color: #DDDDDD;
 }
-.floatingPanel{
-		background-color:#5e6166;
+
+#container, .container, #sessionTimeoutMessageContainer, #debugConsoleMessageContainer {
+    background-color: #1c1c1c;
+    /*box-shadow:0px 0px 25px #DDDDDD;*/
 }
+
+.floatingPanel {
+    background-color: #5e6166;
+}
+
 .navigation button {
-background-color:#3e0b04;
-border-color:#61150a;
-	
-}
-.subnavigation div{
-	border-color:black;
-	
-}
-
-.emailGroupList{
-	color:white;
-}
-.clickable:hover{
-	background-color:#353638;
-	
-}
-.editableEmailEntry{
-		background-color:#6f7175;
+    background-color: #3e0b04;
+    border-color: #61150a;
 
 }
-button{
-	min-width:90px;
-	padding:5px 10px;
-	border-radius:0.2em;
-	background-color:#3e0b04;
-	border-color:#61150a;
+
+.subnavigation div {
+    border-color: black;
+
 }
-button:hover{
-    border-color:#190401;
-	background-color:#190401;
+
+.emailGroupList {
+    color: white;
 }
+
+.clickable:hover {
+    background-color: #353638;
+
+}
+
+.editableEmailEntry {
+    background-color: #6f7175;
+
+}
+
+button {
+    min-width: 90px;
+    padding: 5px 10px;
+    border-radius: 0.2em;
+    background-color: #3e0b04;
+    border-color: #61150a;
+}
+
+button:hover {
+    border-color: #190401;
+    background-color: #190401;
+}
+
 .subnavigation button {
-	border-color:#61150a;
-	background-color:#3e0b04;
+    border-color: #61150a;
+    background-color: #3e0b04;
 }
+
 .subnavigation button:hover {
-	background-color:#190401;
-    border-color:#190401;
-	
-}
-.floatingEditButton,.floatingDebugButton, .floatingConsoleButton{
-background-color:#333333;
-}
-.floatingHelpButton{
-background-color:#333333;
-}
-.highlightEditButton,.highlightedDebugButton{
-		box-shadow: 0px 0px 50px #333333;
+    background-color: #190401;
+    border-color: #190401;
 
 }
+
+.floatingEditButton, .floatingDebugButton, .floatingConsoleButton {
+    background-color: #333333;
+}
+
+.floatingHelpButton {
+    background-color: #333333;
+}
+
+.highlightEditButton, .highlightedDebugButton {
+    box-shadow: 0px 0px 50px #333333;
+
+}
+
 .settingsList {
-	
-	background-color:#ebebec;
+
+    background-color: #ebebec;
 }
 
 }

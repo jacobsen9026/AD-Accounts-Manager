@@ -24,16 +24,18 @@
  * THE SOFTWARE.
  */
 
-namespace app\models\user;
+namespace App\Models\User;
 
 /**
  * Description of Privilege
  *
  * @author cjacobsen
  */
-use system\app\auth\CorePrivilege;
 
-abstract class Privilege extends CorePrivilege {
+use System\App\Auth\CorePrivilege;
+
+abstract class Privilege extends CorePrivilege
+{
 
     const BASIC = 1000;
     const POWER = 2000;

@@ -24,24 +24,27 @@
  * THE SOFTWARE.
  */
 
-namespace system\app;
+namespace System\App;
 
 /**
  * Description of ErrorHandler
  *
  * @author cjacobsen
  */
-use app\App;
-use system\SystemLogger;
-use app\AppLogger;
 
-class AppErrorHandler {
+use app\App;
+use System\SystemLogger;
+use System\AppException;
+
+class AppErrorHandler
+{
 
     public static $instance;
 
-    function __construct() {
+    function __construct()
+    {
 
-        set_error_handler(array($this, 'handleError'));
+        set_error_handler([$this, 'handleError']);
         if (isset(self::$instance)) {
             return self::$instance;
         } else {
@@ -51,9 +54,10 @@ class AppErrorHandler {
 
     /**
      *
-     * @return type
+     * @return AppErrorHandler
      */
-    public static function get() {
+    public static function get()
+    {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -62,12 +66,14 @@ class AppErrorHandler {
 
     //put your code here
 
-    public function handleError($code, $description, $file = null, $line = null, $context = null) {
-        $output = "Error: [$code] $description";
+    public function handleError($code, $description, $file = null, $line = null, $context = null)
+    {
+        $label = $output = "Error: [$code] $description";
         if ($file != null and $line != null) {
             $output = "Error: $file:$line [$code] $description";
         }
         AppLogger::get()->error($output);
+        //die();
     }
 
 }

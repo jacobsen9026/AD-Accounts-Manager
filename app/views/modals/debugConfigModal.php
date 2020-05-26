@@ -1,5 +1,5 @@
 <div id="debugConfigModal" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
 
         <!-- Modal content-->
         <div class="modal-content">
@@ -9,8 +9,31 @@
 
             </div>
             <div class="modal-body">
-                <p><?php echo $this->varDump($this->app->config); ?>
-                </p>
+                <div id="ajaxOutput">
+                    <!--<span class="spinner-border text-primary" role="status"></span><br/>Loading Configuration Data... --></div>
+                <script>
+                    <?php
+
+                    use App\Models\View\Javascript;
+
+                    $ajax = Javascript::buildAJAXRequest('/api/app', 'ajaxOutput', ["action" => \App\Controllers\Api\App::GET_CONFIG], true);
+                    $onClick = Javascript::on("debugConfigButton", $ajax);
+                    echo $onClick;
+                    ?>
+
+
+                </script>
+
+                <?php
+                /**
+                 * foreach (\system\Database::get()->getAllTables()as $table) {
+                 * echo $table;
+                 * var_dump(\system\Database::get()->query('SELECT * FROM ' . $table)[0]);
+                 * }
+                 *
+                 */
+                ?>
+
             </div>
 
         </div>
