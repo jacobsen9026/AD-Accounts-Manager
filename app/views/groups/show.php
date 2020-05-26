@@ -1,4 +1,3 @@
-<a class="text-primary text-decoration-none fas fa-arrow-circle-left mb-3" href="/groups"></a>
 <?php
 
 use App\Models\View\CardPrinter;
