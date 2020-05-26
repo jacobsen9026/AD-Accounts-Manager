@@ -65,7 +65,7 @@ class Application extends APIController
     {
         $application = new \App\Controllers\Settings\Application($this->app);
         $application->indexPost();
-        return $this->returnHTML($this->view('settings/application'));
+        return $this->returnHTML($this->view('settings/application') . $this->settingsSavedToast());
     }
 
 }
