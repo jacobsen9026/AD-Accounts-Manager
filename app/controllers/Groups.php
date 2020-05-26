@@ -38,6 +38,8 @@ use App\Models\Audit\Action\Group\SearchGroupAuditAction;
 use App\Models\Audit\AuditEntry;
 use App\Models\Database\AuditDatabase;
 use App\Models\District\DistrictGroup;
+use App\Models\District\DistrictUser;
+use System\App\AppException;
 use System\Post;
 use App\Models\District\Group;
 use App\Api\AD;
@@ -121,6 +123,7 @@ class Groups extends Controller
      * Handles all group changes by Post
      *
      * @return type
+     * @throws AppException
      */
     public function editPost()
     {
@@ -133,6 +136,8 @@ class Groups extends Controller
 
                 $group = new DistrictGroup($groupName);
                 $user = $group->hasMember($username);
+
+                $this->logger->debug($user);
                 if ($user != false) {
                     if ($group->activeDirectory->removeMember($user->activeDirectory)) {
 
@@ -140,6 +145,8 @@ class Groups extends Controller
 
                         $this->logger->debug("user was successfully removed");
                         return $this->search($group->activeDirectory->getName());
+                    } else {
+                        throw new AppException('Could not remove member from group');
                     }
                 }
                 $this->logger->debug($group);
@@ -150,7 +157,7 @@ class Groups extends Controller
                 $group = new DistrictGroup($groupName);
                 $this->logger->info("adding member " . $username);
 
-                $user = new DistrictUser2($username);
+                $user = new DistrictUser($username);
                 if ($group->activeDirectory->addMember($user)) {
                     AuditDatabase::addAudit(new AuditEntry($this->app->request, $this->user, new AddMemberAuditAction($groupName, $username)));
 
