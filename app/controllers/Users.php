@@ -146,10 +146,10 @@ class Users extends Controller
 
     private function unlockUser($username)
     {
-        $adUser = \App\Api\AD::get()->unlockUser($username);
+        $user = new DistrictUser($username);
+        $user->activeDirectory->setClearLockoutTime()->save();
         $this->logger->debug($adUser);
         return $adUser;
-//$gaUser = \App\Api\GAM::getUser($username);
     }
 
     public function accountStatusChangePost()

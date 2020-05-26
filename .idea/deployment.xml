@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="Samdev-XAMPP">
+  <component name="PublishConfigData" autoUpload="Always" serverName="Samdev-XAMPP" compareModeInSync="TIMESTAMP">
     <serverData>
       <paths name="SamDev-WAMP">
         <serverdata>
@@ -13,6 +13,7 @@
         <serverdata>
           <mappings>
             <mapping deploy="\" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="public" local="$PROJECT_DIR$/public" web="/" />
           </mappings>
         </serverdata>
       </paths>

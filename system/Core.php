@@ -140,7 +140,6 @@ class Core
         try {
             $this->execute();
         } catch (CoreException $ex) {
-            // $this->abort($ex
             $this->appOutput->setBody($ex->getMessage());
             self::$systemLogger->error($ex);
         }
@@ -172,8 +171,6 @@ class Core
         self::$systemLogger->error("Aborting App Execution!");
         self::$systemLogger->error($message);
         $this->appLogger = ($this->app->logger);
-//$this->appOutput = null;
-//$this->app = null;
         try {
             $this->render();
         } catch (CoreException $ex) {
