@@ -44,6 +44,7 @@
     <link rel="mask-icon" href="/img/favicon/safari-pinned-tab.svg" color="#5bbad5">
 
 
+
     <?php
     /**
      * Handle Themes
@@ -102,6 +103,52 @@
 
 
         });
+
+
+        //Custom JQuery to enable data-text-alt tag on btn class objects
+        jQuery(function ($) {
+            $('.btn[data-toggle="collapse"]').on('click', function () {
+                console.log($(this).data('text-alt'));
+                $(this).data('text-original', $(this).text());
+                $(this).text($(this).data('text-alt'));
+                $(this).data('text-alt', $(this).data('text-original'));
+            });
+            $(document).on('click', '.clickable[data-text-alt]', function () {
+                console.log($(this).data('text-alt'));
+                $(this).data('text-original', $(this).html());
+                $(this).html($(this).data('text-alt'));
+                $(this).data('text-alt', $(this).data('text-original'));
+            });
+
+        });
+        //Custom JQuery for district settings navigation
+        jQuery(function ($) {
+
+
+            // remove active class from all
+            var location = window.location.pathname.split('/')[1];
+// remove active class from all
+            $(".nav .nav-item").removeClass('active');
+            console.log('.nav-item a[href=' + location + '*]');
+// add active class to div that matches active url
+            $(".nav-item a[href='/" + location + "']").addClass('active');
+        });
+
+        $(document).ready(function () {
+            $(".resizable-y").resizable({
+                    handles:
+                        "n, s"
+                }
+            );
+        });
+        $(document).ready(function () {
+            $(".resizable-x").resizable({
+                    handles:
+                        "e, w"
+                }
+            );
+        });
+
     </script>
 
 

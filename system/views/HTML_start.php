@@ -3,84 +3,46 @@
 use System\App\Forms\Form;
 
 ?>
-<html lang="en">
+<html class="no-js" lang="en">
 <head>
 
-    <!-- Compiled and minified CSS
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    -->
-    <!-- Compiled and minified JavaScript
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Latest compiled and minified CSS    -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-
+    <!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <!-- jQuery library -->
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <!--    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
+    <script src="https://code.jquery.com/jquery-3.5.1.js" crossorigin="anonymous"></script>
 
     <!-- Popper JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-
+    <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
     <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-
+    <!--    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>-->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+            crossorigin="anonymous"></script>
 
     <!-- Additional JQuery Dependencies -->
     <!--<link href="https://code.jquery.com/ui/1.11.4/themes/flick/jquery-ui.css" rel="stylesheet">-->
     <!--<link href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">-->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
-    <script><?php use App\Models\View\Javascript;
-
-        echo system\File::getContents(ROOTPATH . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'jquery.redirect.js'); ?></script>
+    <script><?= system\File::getContents(ROOTPATH . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'jquery.redirect.js') ?></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.30.7/js/jquery.tablesorter.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+    <script src="js/vendor/modernizr-3.11.2.min.js"></script>
+
     <script>
-        //Custom JQuery to enable data-text-alt tag on btn class objects
-        jQuery(function ($) {
-            $('.btn[data-toggle="collapse"]').on('click', function () {
-                console.log($(this).data('text-alt'));
-                $(this).data('text-original', $(this).text());
-                $(this).text($(this).data('text-alt'));
-                $(this).data('text-alt', $(this).data('text-original'));
-            });
-            $(document).on('click', '.clickable[data-text-alt]', function () {
-                console.log($(this).data('text-alt'));
-                $(this).data('text-original', $(this).html());
-                $(this).html($(this).data('text-alt'));
-                $(this).data('text-alt', $(this).data('text-original'));
-            });
 
-        });
-        //Custom JQuery for district settings navigation
-        jQuery(function ($) {
-
-
-            // remove active class from all
-            var location = window.location.pathname.split('/')[1];
-// remove active class from all
-            $(".nav .nav-item").removeClass('active');
-            console.log('.nav-item a[href=' + location + '*]');
-// add active class to div that matches active url
-            $(".nav-item a[href='/" + location + "']").addClass('active');
-        });
-
-        $(document).ready(function () {
-            $(".resizable-y").resizable({
-                    handles:
-                        "n, s"
-                }
-            );
-        });
-        $(document).ready(function () {
-            $(".resizable-x").resizable({
-                    handles:
-                        "e, w"
-                }
-            );
-        });
         //TouchPunch
         !function (a) {
             function f(a, b) {
@@ -122,6 +84,6 @@ use System\App\Forms\Form;
     </script>
 
     <meta name="theme-color" content="#ffffff">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 </head>
