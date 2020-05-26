@@ -40,6 +40,7 @@ use App\Models\District\Student;
 use App\Models\District\Staff;
 use App\Models\User\User;
 use System\App\App;
+use System\App\AppException;
 use System\App\AppLogger;
 use System\App\Forms\Form;
 use System\App\Forms\FormDropdownOption;
@@ -154,18 +155,36 @@ abstract class CardPrinter extends ViewModel
 
         $output .= self::printRow("Username", $user->activeDirectory->getAccountName());
         $output .= self::printRow("Email Address", $user->activeDirectory->getEmail());
+
+
+        /**
+         * Print Groups the user is a member of
+         */
+
+
         $groups = '';
+
+
         /* @var $group \Adldap\Models\Group */
         foreach ($user->activeDirectory->getGroups() as $group) {
             $groupName = $group->getName();
-            $groups .= ' <a href = "/groups/search/' . $groupName . '" > ' . $groupName . '</a ><br > ';
+            $groups .= '<div class="row">
+ <a href = "/groups/search/' . $groupName . '" class="col"> ' . $groupName . '</a ><br >
+  <div class="col">'
+                . self::buildRemoveFromGroupButton($user, new DistrictGroup($group))
+                . '</div> '
+                . '</div> ';
             //var_dump($group);
         }
+        $groups .= self::printAddGroupMemberModalButton(null, $user);
+
+
         $output .= self::printRow("Groups", $groups);
 
-//$output .= '<div class="row" ><div class="col h6" > Username</div ><div class="col" > '.$user->activeDirectory->getAdUsername().'</div ></div > ';
-//$output .= '<div class="row" ><div class="col h6" > Email Address </div ><div class="col" > '.$user->activeDirectory->getAdEmail().'</div ></div > ';
-//$output .= '<div class="row" ><div class="col h6" > Groups</div ><div class="col" > '.var_export($user->activeDirectory->getAdGroups(),true).'</div ></div ></div > ';
+
+        /**
+         * Groups completed
+         */
 
         return $output;
     }
@@ -204,7 +223,7 @@ abstract class CardPrinter extends ViewModel
 
         $output .= self::printRow("Email", $group->getEmail());
         $output .= self::printGroupMembers("Members", $group);
-        $output .= self::printAddGroupMemberForm($group);
+        $output .= self::printAddGroupMemberModalButton($group);
         $output .= '</div>';
 
         $output .= '</div>';
@@ -278,30 +297,53 @@ abstract class CardPrinter extends ViewModel
      *
      * @return type
      */
-    private static function printAddGroupMemberForm(DistrictGroup $group)
+    private static function printAddGroupMemberModalButton(DistrictGroup $group = null, DistrictUser $user = null)
     {
-        $form = new Form('/groups/edit', 'addMemberToGroup');
+        $modalForm = new Form('/groups/edit', 'addMemberToGroup');
+
+        $modal = new Modal();
+
         $action = new FormText('', '', 'action', 'addMember');
         $action->hidden();
-        $groupName = new FormText('', '', 'groupName', $group->activeDirectory->getName());
-        $groupName->hidden();
 
-        $userToAdd = new FormText('Add user', 'Can also serarch by first or last name.', 'usernameToAdd');
-        $userToAdd->autoCompleteDomainUsername();
+        if ($group === null) {
+            $groupName = new FormText('Add to group', '', 'groupName', );
+            $groupName->autoCompleteGroupName();
 
-        $submitButton = new FormButton("Add Member");
+            $userToAdd = new FormText('Add user', 'Can also serarch by first or last name.', 'usernameToAdd', $user->activeDirectory->getAccountName());
+            $userToAdd->autoCompleteDomainUsername()
+                ->hidden();
 
-        $form->addElementToCurrentRow($groupName)
+            $modal->setTitle("Find Group");
+        } elseif ($user === null) {
+            $groupName = new FormText('', '', 'groupName', $group->activeDirectory->getDistinguishedName());
+            $groupName->hidden();
+
+            $userToAdd = new FormText('Add user', 'Can also serarch by first or last name.', 'usernameToAdd');
+            $userToAdd->autoCompleteDomainUsername();
+
+            $modal->setTitle("Find User");
+        } else {
+            throw new AppException("No user or group was supplied to the add group members modal");
+        }
+
+        $submitButton = new FormButton("Add");
+
+        $modalForm->addElementToCurrentRow($groupName)
             ->addElementToCurrentRow($action)
             ->addElementToCurrentRow($userToAdd)
-            ->addElementToCurrentRow($submitButton);
-        $modal = new Modal();
-        $modal->setTitle("Add User")
-            ->setId('add_user_to_group')
-            ->setBody($form->print());
-        $addNewUserButton = new FormButton('<i class="fas fa-user-plus"></i>');
-        $addNewUserButton->addClientRequest()
-        return $form->print();
+            ->addElementToNewRow($submitButton);
+
+
+        $modal->setId('add_user_to_group')
+            ->setBody($modalForm->print());
+
+
+        $modalButton = new FormButton('<i class="fas fa-plus"></i>', 'tiny');
+        $modalButton->addModal($modal)
+            ->setTheme('success');
+        return $modalButton->print();
+        return $modalForm->print();
     }
 
     /**
@@ -341,6 +383,7 @@ abstract class CardPrinter extends ViewModel
         $form = new Form("/groups/edit", "remove_member", "post");
         $userInput = new FormText("username");
 //var_dump($username);
+//var_dump($username);
 
         $userInput->hidden()
             ->setName("username")
@@ -361,7 +404,8 @@ abstract class CardPrinter extends ViewModel
         $button = new FormButton('<i class="fas fa-trash-alt"></i>');
         $button->tiny()
             ->setTheme("danger")
-            ->hideLabels();
+            ->hideLabels()
+            ->setTooltip("Remove from group");
 
         $form->addElementToNewRow($userInput)
             ->addElementToNewRow($groupInput)
@@ -596,7 +640,8 @@ abstract class CardPrinter extends ViewModel
             ->setTheme("white")
             ->removeInputClasses("w-100")
             ->addInputClasses("position-absolute right-10 text-danger")
-            ->addElementClass("top right pr-5 d-inline");
+            ->addElementClass("top right pr-5 d-inline")
+            ->setTooltip("Delete " . $groupName);
         $deleteModal = new \App\Models\View\Modal();
         $deleteModal->setBody(Parser::get()->view('/groups/delete', ['name' => $groupName, 'distinguishedName' => $group->activeDirectory->getDistinguishedName()]))
             ->setId('deleteGroup')
