@@ -81,7 +81,7 @@ class Menu extends Parser
         }
         if ($this->user->superAdmin) {
             $this->logger->debug("Building Parent and Staff Menus");
-            $this->items[] = $this->buildParentMenu();
+            //$this->items[] = $this->buildParentMenu();
         }
 
 

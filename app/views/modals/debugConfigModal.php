@@ -17,7 +17,7 @@
                     use App\Models\View\Javascript;
 
                     $ajax = Javascript::buildAJAXRequest('/api/app', 'ajaxOutput', ["action" => \App\Controllers\Api\App::GET_CONFIG], true);
-                    $onClick = Javascript::onClick("debugConfigButton", $ajax);
+                    $onClick = Javascript::on("debugConfigButton", $ajax);
                     echo $onClick;
                     ?>
 

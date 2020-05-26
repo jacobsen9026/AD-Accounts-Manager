@@ -38,7 +38,7 @@ use App\Models\User\User;
 use System\App\Session;
 use System\App\Auth\AuthException;
 use System\App\AppLogger;
-use System\Post;
+use App\Models\View\Toast;
 use App\Auth\ADAuth;
 use App\Models\Database\AuthDatabase;
 
@@ -52,6 +52,11 @@ class Login extends Controller
         $this->layout = 'login';
     }
 
+    /**
+     * Handle both display and processing of login page
+     *
+     * @return bool
+     */
     public function index()
     {
         $logger = AppLogger::get();
@@ -66,8 +71,7 @@ class Login extends Controller
                 $user = Local::authenticate($username, $password);
             } catch (AuthException $ex) {
                 if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
-                    $this->lastErrorMessage = $ex->getMessage();
-                    return $this->view('login/loginPrompt');
+                    return $this->badCredentials();
                 }
                 if (AuthDatabase::getLDAPEnabled()) {
                     try {
@@ -77,17 +81,16 @@ class Login extends Controller
                         $user = $adAuth->authenticate($username, $password);
                     } catch (AuthException $ex) {
                         if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
-
-                            $this->lastErrorMessage = $ex->getMessage();
-                            return $this->view('login/loginPrompt');
+                            return $this->badCredentials();
                         }
-                        $this->lastErrorMessage = $ex->getMessage();
-                        return $this->view('login/loginPrompt');
+                        return $this->badCredentials();
                     }
-                } else {
-                    $this->lastErrorMessage = $ex->getMessage();
-                    return $this->view('login/loginPrompt');
                 }
+
+            }
+            if ($user === null) {
+
+                return $this->badCredentials();
             }
 
             $logger->debug('Completed login');
@@ -106,6 +109,15 @@ class Login extends Controller
         } else {
             return $this->view('login/loginPrompt');
         }
+    }
+
+    private function badCredentials()
+    {
+        $toast = new Toast('Bad Credentials', 'The username or password that you entered did not match', 3500);
+        $toast->setImage('<i class="text-danger fas fa-exclamation-circle"></i>');
+        $data = ['toast' => $toast->printToast()];
+
+        return $this->view('login/loginPrompt', $data);
     }
 
 }

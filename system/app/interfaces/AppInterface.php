@@ -33,7 +33,7 @@ namespace System\App\Interfaces;
  */
 
 use System\Request;
-use System\Common\CommonLogger;
+use System\Log\CommonLogger;
 use System\AppOutput;
 
 interface AppInterface

@@ -46,7 +46,6 @@ class Email extends Controller
     {
 
         $this->tab = 'email';
-        var_dump($this->tab);
         return $this->view('settings/index');
     }
 

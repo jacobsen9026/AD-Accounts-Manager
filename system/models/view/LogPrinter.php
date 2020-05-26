@@ -32,21 +32,23 @@
 
 namespace System\Models\View;
 
-use System\App\App;
 use System\Common\CommonLogEntry;
-use System\Common\CommonLogger;
+use System\Log\CommonLogger;
 
 abstract class LogPrinter
 {
 
-    public static function printLog(CommonLogger $logger)
+    /**
+     * @param CommonLogger $logger
+     *
+     * @return string
+     */
+    public static function printLog(CommonLogger $logger): string
     {
         $loggerOutput = '';
-        // $loggerOutput = '<div id="' . $logger->getName() . 'Log" >';
         if ($logger->hasLogEntries()) {
             $loggerOutput .= self::printLogEntries($logger->getLogEntries());
         }
-        //$loggerOutput .= '</div>';
         return $loggerOutput;
     }
 
@@ -54,7 +56,7 @@ abstract class LogPrinter
      *
      * @param array $logEntries
      */
-    private static function printLogEntries(array $logEntries)
+    private static function printLogEntries(array $logEntries): string
     {
         /*  @var $logEntry CommonLogEntry */
         $logOutput = '';
@@ -65,7 +67,12 @@ abstract class LogPrinter
         //var_export($logOutput);
     }
 
-    private static function printBackTrace(CommonLogEntry $logEntry)
+    /**
+     * @param CommonLogEntry $logEntry
+     *
+     * @return string
+     */
+    private static function printBackTrace(CommonLogEntry $logEntry): string
     {
         $traceOutput = '<div class="collapse bg-dark text-muted rounded p-3" id="' . $logEntry->getId() . '">'
             . 'Backtrace';
@@ -87,14 +94,19 @@ abstract class LogPrinter
         return $traceOutput;
     }
 
-    public static function printLogEntry(CommonLogEntry $logEntry)
+    /**
+     * @param CommonLogEntry $logEntry
+     *
+     * @return string
+     */
+    public static function printLogEntry(CommonLogEntry $logEntry): string
     {
         $logOutput = '';
 
         $et = substr($logEntry->getElapsedTime(), 0, 5) . ' s';
         $app = \System\Core::getAppClass()::get();
         if ($app->request->getType() == "ajax") {
-            $et = $et . "<br/>" . $app->request->getId();
+            $et .= "<br/>" . $app->request->getId();
         }
 
         $entryOutput = ' <div class=" collapse show container-fluid mx-auto my-0 py-1 row rounded-0 alert alert-' . $logEntry->getAlertLevel() . '">

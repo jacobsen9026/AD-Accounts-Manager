@@ -102,9 +102,9 @@ class FormElement
 
     /**
      *
-     * @var Modal
+     * @var array
      */
-    private $modal;
+    private $modal = [];
 
     /**
      *
@@ -213,9 +213,26 @@ class FormElement
      *
      * @return Modal
      */
-    public function getModal(): ?Modal
+    public function getModal(int $index = 0): ?Modal
     {
-        return $this->modal;
+        if (!empty($this->modal)) {
+
+            return $this->modal[$index];
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function getModals(): ?array
+    {
+        if (!empty($this->modal)) {
+
+            return $this->modal;
+        }
+        return null;
     }
 
     /**
@@ -223,10 +240,12 @@ class FormElement
      *
      * @return $this
      */
-    public function setModal(Modal $modal): self
+    public function addModal(Modal $modal): self
     {
-        $this->setType("button");
-        $this->modal = $modal;
+        if ($this instanceof FormButton) {
+            $this->setType("button");
+        }
+        $this->modal[] = $modal;
         return $this;
     }
 
@@ -289,6 +308,16 @@ class FormElement
     {
 
         $this->size = "large";
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function auto(): self
+    {
+
+        $this->size = "auto";
         return $this;
     }
 
@@ -373,7 +402,7 @@ class FormElement
     public function getId()
     {
         if (null === $this->id) {
-            return str_replace(" ", "", $this->getName());
+            return htmlspecialchars(str_replace([" ", '"', "'"], "", $this->getName()));
         }
         return $this->id;
     }
@@ -389,7 +418,7 @@ class FormElement
     /**
      * @param string $id
      *
-     * @return $this
+     * @return self
      */
     public function setId(string $id): self
     {
@@ -493,11 +522,11 @@ class FormElement
     }
 
     /**
+     *  Should be one of ["tiny","small","medium","large","full"]
+     *
      * @param $size
      *
      * @return $this
-     * @todo document/rework
-     *
      */
     public function setSize($size): self
     {
@@ -612,7 +641,7 @@ class FormElement
                 $this->colSize = "-2";
                 break;
             case 'auto':
-                $this->colSize = "-auto";
+                $this->colSize = "";
                 break;
             case null:
                 $this->colSize = "-6";
@@ -659,8 +688,9 @@ class FormElement
         if ($this->isHidden()) {
             $style = ' style="display:none" ';
         }
-        $html = '<div class="form-element ' . $size . ' mx-auto ' . $this->elementClasses . '"' . $style . '>';
-        return $html . "";
+
+        $html = '<div class="form-element ' . $size . ' mx-auto ' . $this->elementClasses . '"' . $style . ' data-toggle="tooltip" data-placement="bottom" title="' . $this->getTooltip() . '">';
+        return $html . '';
     }
 
     /**
@@ -690,14 +720,30 @@ class FormElement
     /**
      * @return string
      */
-    public function printModal(): ?string
+    public function printModal($index = 1): ?string
     {
-        if ($this->modal !== null) {
-            $this->logger->info($this->getName() . " has a modal");
-            $modal = $this->modal->print();
+        if (!empty($this->modal)) {
+            //$this->logger->info($this->getName() . " has a modal");
+            $modal = $this->getModal($index)->print();
             return $modal;
         }
         return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function printModals(): ?string
+    {
+        $modalsOutput = '';
+        if (!empty($this->modal)) {
+//            var_dump($this->modal);
+            //$this->logger->info($this->getName() . " has a modal");
+            foreach ($this->getModals() as $modal) {
+                $modalsOutput .= $modal->print();
+            }
+        }
+        return $modalsOutput;
     }
 
     /**
@@ -708,7 +754,7 @@ class FormElement
         if ($this->ajaxRequest !== null) {
             $this->logger->debug("creating ajax for " . $this->getName());
             $ajax = $this->ajaxRequest->print();
-            $onclick = Javascript::onClick($this->getId(), $ajax);
+            $onclick = Javascript::on($this->getId(), $ajax);
             $script = "<script>" . $onclick . "</script>";
             return $script;
         }
@@ -719,7 +765,7 @@ class FormElement
      *
      * @return string
      */
-    public function print(): string
+    public function print(bool $fromForm = false): string
     {
         $this->preProcess();
         $html = $this->printHeader() . "\n";
@@ -732,7 +778,9 @@ class FormElement
         $html .= $this->printScript() . "\n";
         $html .= $this->printAJAX() . "\n";
         $html .= $this->printFooter() . "\n";
-        $html .= $this->printModal();
+        if (!$fromForm) {
+            $html .= $this->printModals() . "\n";
+        }
         return $html . "\n";
     }
 

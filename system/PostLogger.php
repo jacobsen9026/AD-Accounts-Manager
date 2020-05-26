@@ -32,7 +32,7 @@ namespace System;
  * @author cjacobsen
  */
 
-use System\Common\CommonLogger;
+use System\Log\CommonLogger;
 
 class PostLogger extends CommonLogger
 {

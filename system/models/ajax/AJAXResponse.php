@@ -33,8 +33,8 @@
 namespace System\Models\Ajax;
 
 use System\Models\View\LogPrinter;
-use System\Common\CommonLogger;
-use System\Common\CommonLogEntry;
+use System\Log\CommonLogger;
+use System\Log\CommonLogEntry;
 use System\Core;
 
 class AJAXResponse

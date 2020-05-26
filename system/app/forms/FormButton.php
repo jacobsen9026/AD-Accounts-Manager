@@ -57,6 +57,8 @@ class FormButton extends FormElement implements FormElementInterface
         $this->setName($name);
         $this->setSize($size);
         $this->setInputClasses("w-100 btn");
+        $this->setTheme("primary");
+
     }
 
     function getTheme()
@@ -97,16 +99,14 @@ class FormButton extends FormElement implements FormElementInterface
      */
     public function getElementHTML()
     {
-
         $textClass = '';
         if ($this->getTheme() == 'warning') {
             $textClass = 'text-light';
         }
         $this->addInputClasses(['btn-' . $this->getTheme(), $textClass]);
-        $html = '<div id="' . $this->getId() . '_Button_container" class="' . $this->getElementClasses() . '">
+        $html = '<div id="' . $this->getId() . '_Button_container" >
         <button id="' . $this->getId() . '" type="' . $this->getType() . '" class="' . $this->getInputClasses() . '"';
         if ($this->getModal() != null) {
-
             $html .= ' data-toggle="modal" data-target="#' . $this->getModal()->getId() . '" ';
             //$html .= ' data-toggle="modal" data-target="#exampleModal" ';
         }
@@ -117,14 +117,21 @@ class FormButton extends FormElement implements FormElementInterface
         return $html;
     }
 
-    public function addModal($modalTitle, $modalBody, $modalTheme)
+    /**
+     * @param $modalTitle
+     * @param $modalBody
+     * @param $modalTheme
+     *
+     * @return $this
+     */
+    public function buildModal($modalTitle, $modalBody, $modalTheme)
     {
         $modal = new Modal();
         $modal->setTitle($modalTitle)
             ->setBody($modalBody)
             ->setID($this->getId() . '_Modal')
             ->setTheme($modalTheme);
-        $this->setModal($modal);
+        $this->addModal($modal);
         $this->setType("button");
         \System\App\AppLogger::get()->info("Added modal to " . $this->getName());
         return $this;
@@ -163,7 +170,7 @@ class FormButton extends FormElement implements FormElementInterface
     {
         $this->setType('button');
         $function = Javascript::buildClientRequest($url, $data);
-        $script = Javascript::onClick($this->getId(), $function);
+        $script = Javascript::on($this->getId(), $function);
         //var_dump($script);
         $this->setScript($script);
         return $this;

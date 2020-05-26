@@ -40,7 +40,7 @@ namespace System\App;
 
 use System\App\Route;
 use System\App\AppErrorHandler;
-use System\Common\CommonLogger;
+use System\Log\CommonLogger;
 use System\App\ControllerFactory;
 use System\Request;
 use System\App\Router;
@@ -51,7 +51,6 @@ use System\App\Interfaces\AppInterface;
 use System\Common\CommonApp;
 use System\App\WindowsLogger;
 
-;
 
 class App extends CommonApp implements AppInterface
 {
@@ -120,7 +119,7 @@ class App extends CommonApp implements AppInterface
         //session_destroy();
         //$this->user = "this";
         self::$instance = $this;
-        /*
+        /**
          * Trigger the appErrorHandler to begin until we load the config
          * Start up the coreLogger to be used only by the config
          */
@@ -129,30 +128,30 @@ class App extends CommonApp implements AppInterface
 
 
         $this->request = $req;
-        /*
+        /**
          * Set up the appLogger
          */
         $this->logger = new AppLogger;
         $this->coreLogger->info("The app logger has been created");
 
-        /*
+        /**
          * Set up the ad API LDAP Logger
          */
         $this->ldapLogger = new LDAPLogger();
         $this->logger->info("LDAP logger started");
-        /*
+        /**
          * Set up the ad API LDAP Logger
          */
         $this->windowsLogger = new WindowsLogger();
         $this->logger->info("Windows logger started");
 
-        /*
+        /**
          * Set up the ad API LDAP Logger
          */
         $this->userLogger = new UserLogger();
         $this->logger->info("user logger started");
 
-        /*
+        /**
          * Load the request into the app
          */
         $this->loadConfig();
@@ -181,7 +180,7 @@ class App extends CommonApp implements AppInterface
         $this->coreLogger->info("The app config has been loaded");
         define('GAMPATH', CONFIGPATH . DIRECTORY_SEPARATOR . "google");
 
-        /*
+        /**
          * Set the php errror mode repective of the setting
          * in the webConfig.
          */
@@ -251,14 +250,14 @@ class App extends CommonApp implements AppInterface
      */
     public function route()
     {
-        /*
+        /**
          * HTTPS redirect check
          * If database setting for https redirect is set,
          * check that the protocol used is actually https for
          * this request. If it isn't redirect the request to https
          */
         $this->handleHttpsRedirect();
-        /*
+        /**
          * Hostname redirect check
          * If database setting for the website FQDN is set,
          * check that the request used the database value.
@@ -266,11 +265,11 @@ class App extends CommonApp implements AppInterface
          * stored FQDN value
          */
         $this->handleHostnameRedirect();
-        /*
+        /**
          * Build a router based on the current app state
          */
         $this->router = new Router($this);
-        /*
+        /**
          * Route the app state and store the route
          */
         $this->route = $this->router->route();
@@ -300,8 +299,10 @@ class App extends CommonApp implements AppInterface
     private function handleHostnameRedirect()
     {
         $this->logger->info("Hostname: " . ($_SERVER["SERVER_NAME"]));
-        if (strtolower($_SERVER["SERVER_NAME"]) != strtolower(AppDatabase::getWebsiteFQDN()) and AppDatabase::getWebsiteFQDN() != "") {
-            $this->redirect($this->request->getProtocol() . "://" . strtolower(AppDatabase::getWebsiteFQDN()) . $_SERVER["REQUEST_URI"]);
+        if (strtolower($_SERVER["SERVER_NAME"]) != strtolower(AppDatabase::getWebsiteFQDN())) {
+            if (AppDatabase::getWebsiteFQDN() != "") {
+                $this->redirect($this->request->getProtocol() . "://" . strtolower(AppDatabase::getWebsiteFQDN()) . $_SERVER["REQUEST_URI"]);
+            }
         }
     }
 

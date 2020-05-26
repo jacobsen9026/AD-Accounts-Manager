@@ -29,6 +29,12 @@ and open the template in the editor.
     }
 }
 
+@media (min-width: 576px) {
+    .h-sm-auto {
+        height: auto ! important;
+    }
+}
+
 .district-nav {
 
     top: 3.5rem !important;
@@ -45,6 +51,16 @@ and open the template in the editor.
 
 .minw-5 {
     width: 80%;
+}
+
+.rounded-r-0 {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.rounded-l-0 {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
 }
 
 .log-nav {

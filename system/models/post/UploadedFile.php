@@ -117,4 +117,12 @@ class UploadedFile
         return File::getContents($this->tempFileName);
     }
 
+    public function exists()
+    {
+        if ($this->tempFileName == null) {
+            return false;
+        }
+        return true;
+    }
+
 }

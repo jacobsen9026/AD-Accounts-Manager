@@ -147,7 +147,6 @@ class GoogleApps
         $team = Grade::getGASettings($id, $type);
 
         $gradeID = Team::getGradeID($id);
-        var_dump($team);
         $schema = 'GOOGLEAPPS_' . $column;
         $constant = self::getSchemaColumn($schema);
         //\System\App\AppLogger::get()->debug($constant);

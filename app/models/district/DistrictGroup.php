@@ -33,11 +33,16 @@ namespace App\Models\District;
  */
 
 
+use Adldap\Models\Group;
+use Adldap\Models\User;
 use App\Api\Ad\ADGroups;
+use System\Traits\DomainTools;
 
 
 class DistrictGroup extends ADModel
 {
+    use DomainTools;
+
     /**
      * @var \Adldap\Models\Group;
      */
@@ -50,13 +55,11 @@ class DistrictGroup extends ADModel
      */
     public function __construct($group)
     {
-        var_dump($group);
-        if (is_string($group)) {
-            $this->activeDirectory = ADGroups::getGroup($group);
+        parent::__construct();
 
-        } elseif ($group instanceof User) {
-            $this->activeDirectory = $group;
-        }
+        $this->logger->debug($group);
+        $this->activeDirectory = ADGroups::getGroup($group);
+        //}
     }
 
     public function getEmail()
@@ -75,10 +78,12 @@ class DistrictGroup extends ADModel
 
     public function hasMember($username)
     {
-        /* @var $member \Adldap\Models\User */
-
-        foreach ($this->activeDirectory->getMemberNames() as $member) {
-            if ($member == $username) {
+        /* @var $member User */
+        $this->logger->debug($this->activeDirectory->getMembers());
+        foreach ($this->activeDirectory->getMembers() as $member) {
+            $this->logger->debug("Group Member: " . $username . ' -> ' . $member->getAccountName());
+            if ($member->getAccountName() == $username) {
+                $this->logger->debug($member);
                 return new DistrictUser($member);
             }
         }

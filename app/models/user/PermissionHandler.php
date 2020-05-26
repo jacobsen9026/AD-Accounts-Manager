@@ -116,7 +116,11 @@ abstract class PermissionHandler
      */
     public static function hasGroupPermissions()
     {
+
         self::loadUser();
+        if (self::$user == null) {
+            return false;
+        }
         if (self::$user->superAdmin) {
             return true;
         }

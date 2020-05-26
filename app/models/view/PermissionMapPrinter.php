@@ -110,7 +110,7 @@ abstract class PermissionMapPrinter extends ViewModel
                 $reallyDeleteButton->setId('Delete_Privilege_Level_' . $level->getId())
                     ->setTheme('danger');
                 $function = ' $("#' . $modalID . '").modal("hide");';
-                $onClick = Javascript::onClick($reallyDeleteButton->getId(), $function);
+                $onClick = Javascript::on($reallyDeleteButton->getId(), $function);
                 $reallyDeleteButton->setScript($onClick)
                     // ->setType('button');
                     ->addAjaxRequest('/api/settings/district/permissions/' . $districtID, 'permissionSettingsContainer', $modalForm);
@@ -123,7 +123,7 @@ abstract class PermissionMapPrinter extends ViewModel
                 $deleteButton = new FormButton('Delete');
                 $deleteButton->setTheme('danger')
                     ->setId($deleteButtonID)
-                    ->addModal("Delete " . $level->getAdGroup(), "Are you sure you really want to delete this privilege level?<br/><br/>This will remove all mapped permissions. There is no undo.<br/>" . $modalForm->print(), 'danger');
+                    ->buildModal("Delete " . $level->getAdGroup(), "Are you sure you really want to delete this privilege level?<br/><br/>This will remove all mapped permissions. There is no undo.<br/>" . $modalForm->print(), 'danger');
                 //var_dump($deleteButton);
                 $form->addElementToNewRow($groupName)
                     ->addElementToCurrentRow($superUserSlider)
@@ -295,13 +295,13 @@ abstract class PermissionMapPrinter extends ViewModel
         $reallyDeleteButton->setTheme('warning')
             ->setId("Really_Delete_Permission_" . $permission->getId() . "_" . $ou)
             ->addAJAXRequest('/api/settings/district/permissions', 'ouPermissionsContainer', $modalForm, true);
-        $reallyDeleteButton->setScript(Javascript::onClick($reallyDeleteButton->getId(), 'console.log("hide modal"); $("#' . $removeButton->getId() . 'Modal").modal("toggle")'));
+        $reallyDeleteButton->setScript(Javascript::on($reallyDeleteButton->getId(), 'console.log("hide modal"); $("#' . $removeButton->getId() . 'Modal").modal("toggle")'));
 
 
         $modalForm->addElementToNewRow($removeAction)->addElementToNewRow($reallyDeleteButton)->addElementToNewRow($id);
 
 
-        $removeButton->addModal("Remove " . $permission->getGroupName() . " From " . $ouPath, "Are you sure you really want to remove this permission mapping?<br/>This will remove the permissions this group has at " . $permission->getOu() . " and lower OU's unless there is a defintion lower.<br/>There is no undo.<br/>" . $modalForm->print(), 'warning');
+        $removeButton->builcModal("Remove " . $permission->getGroupName() . " From " . $ouPath, "Are you sure you really want to remove this permission mapping?<br/>This will remove the permissions this group has at " . $permission->getOu() . " and lower OU's unless there is a defintion lower.<br/>There is no undo.<br/>" . $modalForm->print(), 'warning');
 
 
         //var_dump($permission);

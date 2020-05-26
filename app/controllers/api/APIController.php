@@ -33,6 +33,7 @@ namespace App\Controllers\Api;
  */
 
 use App\Controllers\Controller;
+use App\Models\View\Toast;
 
 class APIController extends Controller
 {
@@ -80,5 +81,12 @@ class APIController extends Controller
     {
         return ["autocomplete" => $autoCompletionArray];
     }
+
+    public function settingsSavedToast()
+    {
+        $toast = new Toast('Settings Saved', 'Yipee!', 3000);
+        return $toast->printToast();
+    }
+
 
 }

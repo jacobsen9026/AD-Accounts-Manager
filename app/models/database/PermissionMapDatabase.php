@@ -35,6 +35,7 @@ namespace App\Models\Database;
 use App\Models\User\PrivilegeLevel;
 use App\Models\User\Permission;
 use System\App\AppException;
+use System\App\AppLogger;
 use System\Traits\DomainTools;
 
 abstract class PermissionMapDatabase extends DatabaseModel
@@ -56,7 +57,6 @@ abstract class PermissionMapDatabase extends DatabaseModel
             ->where($referenceColumn, $referenceID)
             ->leftJoin(PrivilegeLevelDatabase::TABLE_NAME, 'Privilege_ID', 'ID');
         $result = $query->run()[0];
-        var_dump($result);
         echo self::buildPrivilegeLevelDropdown()->print();
     }
 
@@ -149,9 +149,8 @@ abstract class PermissionMapDatabase extends DatabaseModel
         try {
             $response = $query->run();
         } catch (\PDOException $ex) {
-            var_dump($ex);
             if ($ex->getCode() == 23000) {
-                \System\App\AppLogger::get()->error($ex);
+                AppLogger::get()->error($ex);
                 throw new AppException("Permission already exists", 1, $ex);
             } else
                 throw $ex;
@@ -170,7 +169,7 @@ abstract class PermissionMapDatabase extends DatabaseModel
         } catch (\PDOException $ex) {
             //var_dump($ex);
             if ($ex->getCode() == 23000) {
-                \System\App\AppLogger::get()->error($ex);
+                AppLogger::get()->error($ex);
                 throw new AppException("Permission already exists", 1, $ex);
             } else
                 throw $ex;

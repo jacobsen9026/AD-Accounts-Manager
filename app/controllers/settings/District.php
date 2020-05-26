@@ -182,9 +182,9 @@ class District extends Controller
             ->setAdNetBIOS($post['adNetBIOS'])
             ->setAdBaseDN($post['adBaseDN'])
             ->setAdPassword($post['adPassword'])
-            ->setAdServer($post['adServer'])
-            ->setAdStudentGroupName($post['adStudentGroup'])
-            ->setAdStaffGroupName($post['adStaffGroup'])
+            //->setAdServer($post['adServer'])
+            //->setAdStudentGroupName($post['adStudentGroup'])
+            //->setAdStaffGroupName($post['adStaffGroup'])
             ->setAdUsername($post['adUsername'])
             ->setUseTLS($post["useTLS"]);
 //$this->district->setGsFQDN($post['gsFQDN']);

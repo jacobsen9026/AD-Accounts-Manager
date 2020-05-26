@@ -34,13 +34,13 @@ namespace App\Lib;
 
 use System\App\Interfaces\AppInterface;
 use System\AppOutput;
-use System\Common\CommonApp;
+use System\Log\CommonApp;
 
 class TestApp extends CommonApp implements AppInterface
 {
 
     //put your code here
-    public function __construct(\System\Request $request, \System\Common\CommonLogger $systemLogger)
+    public function __construct(\System\Request $request, \System\Log\CommonLogger $systemLogger)
     {
         //Did something here
         $this->request = $request;

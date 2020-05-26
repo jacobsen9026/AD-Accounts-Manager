@@ -127,9 +127,7 @@ class AJAXRequest
     private function preprocessData($data)
     {
         if (!is_string($data)) {
-
             if ($data instanceof Form) {
-                // var_dump($data);
                 $data = '$("#' . $data->getId() . '").serializeArray()';
             }
             if (is_array($data)) {

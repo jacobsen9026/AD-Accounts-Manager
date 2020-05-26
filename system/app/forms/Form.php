@@ -84,6 +84,10 @@ class Form
      * @var string
      */
     private $onSubmit;
+    /**
+     * @var string
+     */
+    private $elementModals;
 
     /**
      * This essentially builds the form tag
@@ -105,8 +109,6 @@ class Form
         $this->method = $method;
         $this->name = $name;
         $this->id = $name . 'Form';
-// Build form opening tag from construct parameters
-        $this->formHTML = '<form class="pb-3" name="' . $this->name . '" method="' . $this->method . '" action="' . $this->action . '" enctype="multipart/form-data">';
 // Initialize form row to 0
         $this->currentRow = 0;
         self::$csrfToken = \system\Encryption::encrypt(\System\App\Session::getID());
@@ -209,12 +211,13 @@ console.log(inputVal);
     private function printElement(FormElement $element)
     {
 
-        $html = $element->print();
+        $html = $element->print(true);
+        $this->elementModals .= $element->printModals() . "\n";
 
         return $html;
     }
 
-    public static function getCsrfToken(): String
+    public static function getCsrfToken(): string
     {
         if (self::$csrfToken == null) {
             new self();
@@ -240,9 +243,9 @@ console.log(inputVal);
                 $html .= $this->printArrayOfElements($rowOfElements);
             } else {
 
-                $html .= $this->printElement($element);
+                $html .= $this->printElement($rowOfElements);
             }
-
+            $html .= $this->elementModals;
             $html .= '</div>';
         }
 

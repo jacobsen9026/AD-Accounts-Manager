@@ -129,21 +129,22 @@ class FormText extends FormElement implements FormElementInterface
      */
     public function getElementHTML()
     {
+        $this->addInputClasses('form-control text-center ui-autocomplete-input');
         $html = '';
         $disable = '';
         if ($this->disabled) {
             $disable = 'disabled';
         }
 
-        $html .= '<div class="col"><div class="row pl-3 ui-widget">'
-            . '<div class="pr-0 w-100 row">';
+        $html .= '<div class="col px-0 "><div class="ui-widget">'
+            . '<div class="pr-0 w-100 row mx-0">';
         if ($this->appendIcon != null) {
             $inputCol = 10;
             $html .= '<span class="d-inline-block col-2 pr-0 mr-0 input-group-text h-100 text-center d-inline">' . $this->appendIcon . '</span>';
         }
 
         $html .= '<div class="d-inline-block col mx-auto px-0">'
-            . '<input type="' . $this->type . '" class="form-control text-center ui-autocomplete-input" name="' . $this->getName() . '" id="' . $this->getName() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" ' . $disable . '>'
+            . '<input type="' . $this->type . '" class="' . $this->getinputClasses() . '" name="' . $this->getName() . '" id="' . $this->getName() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" ' . $disable . '>'
             . '</div></div>';
         $html .= '</div></div>';
         return $html;

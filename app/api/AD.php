@@ -47,14 +47,11 @@ class AD
 //put your code here
 // Create a configuration array.
 
-    private $username;
-    private $password;
     private $fqdn;
     private $baseDN;
     private $connection;
     private $testUserDN;
     private $testUserName = "1891351591_SchoolAccountsManager_Test_User";
-    private $districtID;
 
     /**
      *
@@ -78,7 +75,7 @@ class AD
     {
 
         if (isset(self::$instance)) {
-            return self::$instance;
+            return;
         } else {
             $this->initialize($districtID, $fqdn, $username, $password);
         }
@@ -88,12 +85,12 @@ class AD
     {
 
 
-        $this->districtID = $districtID;
+        $districtID1 = $districtID;
 
         $this->district = DistrictDatabase::getDistrict();
         self::$instance = $this;
         $this->logger = LDAPLogger::get();
-        $this->fqdn = DistrictDatabase::getAD_FQDN($this->districtID);
+        $this->fqdn = DistrictDatabase::getAD_FQDN($districtID1);
         if (!is_null($fqdn)) {
             $this->fqdn = $fqdn;
         }
@@ -105,22 +102,22 @@ class AD
             $this->testUserDN = "CN=" . $this->testUserName . "," . $baseDN;
 
             if ((is_null($username))) {
-                $username = DistrictDatabase::getADUsername($this->districtID);
+                $username = DistrictDatabase::getADUsername($districtID1);
                 if (strpos($username, "\\") === false and strpos($username, "@") === false) {
                     $username = $username .
-                        "@" . DistrictDatabase::getAD_FQDN($this->districtID);
+                        "@" . DistrictDatabase::getAD_FQDN($districtID1);
                 }
             }
-            $this->username = $username;
+            $username1 = $username;
 
 
-            $this->password = DistrictDatabase::getADPassword($this->districtID);
+            $password1 = DistrictDatabase::getADPassword($districtID1);
             if (!is_null($password)) {
-                $this->password = $password;
+                $password1 = $password;
             }
-            if (!empty($this->username) and !empty($this->password)) {
+            if (!empty($username1) and !empty($password1)) {
 //var_dump($this->connection);
-                $this->connection = $this->connect($this->fqdn, $this->username, $this->password);
+                $this->connection = $this->connect($this->fqdn, $username1, $password1);
                 if (!is_resource($this->connection) or !get_resource_type($this->connection) == 'ldap link') {
                     $this->connectionStatus = $this->connection;
 //var_dump($this->connection);
@@ -155,39 +152,6 @@ class AD
         return true;
     }
 
-    private function hashPassword($newPassword)
-    {
-        $newPassword = "\"" . $newPassword . "\"";
-        $len = strlen($newPassword);
-        $newPassw = "";
-        for ($i = 0; $i < $len; $i++) {
-            $newPassw .= "{$newPassword {$i}}\000";
-        }
-        return $newPassw;
-    }
-
-    public function setPassword($username, $password)
-    {
-        $userDN = $this->getUserDN($username);
-        $newpw = $this->hashPassword($password);
-
-//$encoded_newPassword = "{SHA}" . base64_encode(pack("H*", sha1($password)));
-        $entry = [];
-        $entry["unicodePwd"] = $newpw;
-        $this->logger->debug($userDN);
-        $this->logger->debug($entry);
-
-        if (ldap_mod_replace($this->connection, $userDN, $entry) === false) {
-            $error = ldap_error($this->connection);
-            $errno = ldap_errno($this->connection);
-            $message[] = "E201 - Your password cannot be change, please contact the administrator.";
-            $message[] = "$errno - $error";
-            var_dump($message);
-            return false;
-        } else {
-            return true;
-        }
-    }
 
     /**
      *
@@ -340,55 +304,6 @@ class AD
         return $this->connectionStatus;
     }
 
-    public function addUserToGroup($groupDN, $userDN)
-    {
-        if (PermissionHandler::hasPermission($this->getOUFromDN($groupDN), PermissionLevel::GROUPS, PermissionLevel::GROUP_CHANGE)) {
-            $this->logger->debug(ldap_mod_add($this->connection, $groupDN, ['member' => $userDN]));
-            $this->logger->debug(ldap_errno($this->connection));
-            if (!ldap_errno($this->connection)) {
-                return true;
-            }
-            throw new AppException(ldap_error($this->connection));
-        } else {
-            throw new AppException("You do not have permission to modify this group.", AppException::FAIL_GROUP_CHANGE_PERM);
-        }
-        return false;
-    }
-
-    public function removeUserFromGroup($groupDN, $userDN)
-    {
-        $this->logger->debug(ldap_mod_del($this->connection, $groupDN, ['member' => $userDN]));
-        $this->logger->debug(ldap_errno($this->connection));
-        if (!ldap_errno($this->connection)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public function createGroup($name, $dn, $email)
-    {
-        $addgroup_ad['cn'] = "$name";
-        $addgroup_ad['objectClass'][0] = "top";
-        $addgroup_ad['objectClass'][1] = "group";
-        $addgroup_ad['groupType'] = "2";
-
-        //$addgroup_ad['member'] = $members;
-        $addgroup_ad["sAMAccountName"] = $name;
-        $this->logger->info($addgroup_ad);
-        $this->logger->info($dn);
-        ldap_add($this->connection, $dn, $addgroup_ad);
-        if (!ldap_errno($this->connection)) {
-            return true;
-        } else {
-            /*
-             * @todo check for proper error
-             */
-            throw new AppException("That group already exists", AppException::GROUP_ADD_EXISTS);
-        }
-        $this->logger->warning(ldap_error($this->connection));
-        return false;
-    }
 
     public function deleteGroup($dn)
     {
@@ -491,23 +406,6 @@ class AD
         return $this->getUser($username, self::FQDNtoDN(DistrictDatabase::getAD_FQDN(1)));
     }
 
-    /**
-     * Same as getUser but applies App permissions
-     *
-     * @param type $username
-     *
-     * @return array Raw LDAP response of user
-     * @throws AppException If the user does not have permission to view
-     */
-    public function searchUser($username)
-    {
-        $user = self::getUser($username);
-        if (self::hasPermission($user, PermissionLevel::USERS, PermissionLevel::USER_READ)) {
-            return $user;
-        } else {
-            throw new AppException("You do not have permission to view this user.", AppException::FAIL_USER_READ_PERM);
-        }
-    }
 
     public function isUserInGroup($username, $groupName)
     {
@@ -527,48 +425,6 @@ class AD
         return false;
     }
 
-
-    public function getGroup($groupName)
-    {
-
-// var_dump($groupName);
-        $studentGroupDN = $this->getGroupDN($this->district->getAdStudentGroupName());
-        $staffGroupDN = $this->getGroupDN($this->district->getAdStaffGroupName());
-        $filter = '(&(objectClass=group)(|(sAMAccountName=' . $groupName . ')(mail=' . $groupName . ')(description=' . $groupName . ')))';
-//var_dump($filter);
-        $result = $this->queryObject($filter);
-        $user = \System\App\App::get()->user;
-        //if ($result == false and $user->privilege >= \App\Models\user\Privilege::ADMIN) {
-        //
-        //     $filter = '(&(objectClass=group)(memberOf:1.2.840.113556.1.4.1941:=' . $staffGroupDN . ')(|(sAMAccountName=' . $groupName . ')(mail=' . $groupName . ')(description=' . $groupName . ')))';
-//var_dump($filter);
-        //    $result = $this->queryObject($filter);
-        // }
-        return $result;
-    }
-
-
-    public function getStaffGroup($groupName)
-    {
-        $staffGroupDN = $this->getGroupDN($this->district->getAdStaffGroupName());
-
-        $filter = '(&(objectClass=group)(memberOf:1.2.840.113556.1.4.1941:=' . $staffGroupDN . ')(|(cn=' . $groupName . ')(mail=' . $groupName . ')(description=' . $groupName . ')))';
-        return $this->queryObject($filter);
-    }
-
-
-    public function unlockUser($username)
-    {
-        $entry = ["lockoutTime" => 0];
-//var_dump($this->getUserDN($username));
-        ldap_mod_replace($this->connection, $this->getUserDN($username), $entry);
-    }
-
-    public function enableUser($username)
-    {
-        $this->setEnabledStatus($username, true);
-//exit;
-    }
 
     private function setEnabledStatus($username, $enable = true)
     {
@@ -853,12 +709,14 @@ class AD
             $filter = '(objectClass=organizationalUnit)';
             $result = $this->list($filter, $dn);
             foreach ($result as $resultEntry) {
-                $ou = $resultEntry["distinguishedname"][0];
-                if ($resultEntry != null and $ou != null and $ou != '' and $ou != $dn) {
-                    if ($this->hasSubOUs($ou)) {
-                        $ous [$ou] = $this->getAllSubOUs($ou, $array);
-                    } else {
-                        $ous[] = $ou;
+                if (is_array($resultEntry)) {
+                    $ou = $resultEntry["distinguishedname"][0];
+                    if ($resultEntry != null and $ou != null and $ou != '' and $ou != $dn) {
+                        if ($this->hasSubOUs($ou)) {
+                            $ous [$ou] = $this->getAllSubOUs($ou, $array);
+                        } else {
+                            $ous[] = $ou;
+                        }
                     }
                 }
             }

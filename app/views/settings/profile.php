@@ -37,7 +37,7 @@ use App\Models\User\User;
     $apiKey->disable()
         ->setId('apiKey')
         //->medium()
-        ->setScript(Javascript::onClick('apiKey', Javascript::copyToClipboard('apiKey')));
+        ->setScript(Javascript::on('apiKey', Javascript::copyToClipboard('apiKey')));
     $saveButton = new FormButton("Save Profile");
     $saveButton->large();
     //$privilegeLevel = new FormText("Privilege");

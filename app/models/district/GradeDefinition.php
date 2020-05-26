@@ -47,7 +47,6 @@ class GradeDefinition
     {
         $query = new Query(self::TABLE_NAME);
         $response = $query->run();
-        var_dump($response);
     }
 
 }

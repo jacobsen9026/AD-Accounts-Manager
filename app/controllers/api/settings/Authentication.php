@@ -33,6 +33,7 @@ namespace App\Controllers\Api\settings;
  */
 
 use App\Controllers\Api\APIController;
+use App\Models\View\Toast;
 
 class Authentication extends APIController
 {
@@ -43,7 +44,8 @@ class Authentication extends APIController
     {
         $authentication = new \App\Controllers\Settings\Authentication($this->app);
         $authentication->indexPost();
-        return $this->returnHTML($this->view('settings/authentication'));
+
+        return $this->returnHTML($this->view('settings/authentication') . $this->settingsSavedToast());
     }
 
 }
