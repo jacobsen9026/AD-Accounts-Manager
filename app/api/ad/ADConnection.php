@@ -89,6 +89,9 @@ class ADConnection extends Adldap
      */
     public static function isConnected(): bool
     {
+        if (self::$instance == null) {
+            self::get();
+        }
         if (self::$instance->connection instanceof Provider === false) {
             return false;
         }
