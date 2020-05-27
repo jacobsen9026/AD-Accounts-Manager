@@ -68,7 +68,8 @@ $(".system-custom-file-input").on("change", function() {
             <label class="system-custom-file-label ' . $this->getLabelClasses() . '" for="' . $this->getId() . '">' . $this->getLabel() . '</label>
             ';
         $browseButton = new FormButton($this->browseButtonText, 'full');
-        $browseButton->setType("button");
+        $browseButton->setType("button")
+            ->removeInputClasses("w-100");
         $triggerBrowseFunction = '$("#' . $this->getId() . '").click();';
         $onClick = Javascript::on($browseButton->getId(), $triggerBrowseFunction);
 
