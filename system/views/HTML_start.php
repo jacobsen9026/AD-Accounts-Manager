@@ -25,13 +25,12 @@ use System\File;
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
     <!-- Custom JQuery UI without Tooltip widget -->
-    <script src="/js/jquery-ui.js"></script>
     <script><?= File::getContents(ROOTPATH . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'jquery.redirect.js') ?></script>
     <script><?= File::getContents(ROOTPATH . DIRECTORY_SEPARATOR . 'system' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'jquery-ui.js') ?></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.30.7/js/jquery.tablesorter.js"></script>
 
-    <script src="js/vendor/modernizr-3.11.2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
 
     <script>
 
@@ -41,7 +40,8 @@ use System\File;
                 if (!(a.originalEvent.touches.length > 1)) {
                     a.preventDefault();
                     var c = a.originalEvent.changedTouches[0], d = document.createEvent("MouseEvents");
-                    d.initMouseEvent(b, !0, !0, window, 1, c.screenX, c.screenY, c.clientX, c.clientY, !1, !1, !1, !1, 0, null), a.target.dispatchEvent(d)
+                    d.initMouseEvent(b, !0, !0, window, 1, c.screenX, c.screenY, c.clientX, c.clientY, !1, !1, !1, !1, 0, null),
+                        a.target.dispatchEvent(d)
                 }
             }
 
@@ -49,7 +49,8 @@ use System\File;
                 var e, b = a.ui.mouse.prototype, c = b._mouseInit, d = b._mouseDestroy;
                 b._touchStart = function (a) {
                     var b = this;
-                    !e && b._mouseCapture(a.originalEvent.changedTouches[0]) && (e = !0, b._touchMoved = !1, f(a, "mouseover"), f(a, "mousemove"), f(a, "mousedown"))
+                    !e && b._mouseCapture(a.originalEvent.changedTouches[0]) && (e = !0, b._touchMoved = !1, f(a, "mouseover"), f(a,
+                        "mousemove"), f(a, "mousedown"))
                 }, b._touchMove = function (a) {
                     e && (this._touchMoved = !0, f(a, "mousemove"))
                 }, b._touchEnd = function (a) {
