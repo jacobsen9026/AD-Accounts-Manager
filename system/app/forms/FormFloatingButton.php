@@ -19,7 +19,7 @@ class FormFloatingButton extends FormButton
 
 
         $this->tiny()
-            ->addElementClass("floating-form-button position-fixed")
+            ->addElementClasses("floating-form-button position-fixed")
             ->addInputClasses('rounded-circle p-2 mr-4 mb-4')
             ->setScript('');
     }
