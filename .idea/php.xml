@@ -27,5 +27,5 @@
       <path value="$PROJECT_DIR$/vendor/illuminate/contracts" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="7" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />
 </project>
