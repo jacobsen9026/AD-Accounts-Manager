@@ -38,9 +38,14 @@ class Modal extends ViewModel
     private $title;
     private $body;
     private $theme;
+    private $size;
 
+    /**
+     * Modal constructor.
+     */
     public function __construct()
     {
+        parent::__construct();
         $this->theme = 'primary';
     }
 
@@ -62,6 +67,32 @@ class Modal extends ViewModel
     public function getTheme()
     {
         return $this->theme;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSize()
+    {
+        return $this->size;
+    }
+
+    public function small()
+    {
+        $this->size = "modal-sm";
+    }
+
+    public function large()
+    {
+
+        $this->size = "modal-lg";
+    }
+
+    public function extraLarge()
+    {
+
+        $this->size = "modal-xl";
+
     }
 
     public function setTheme($theme)
@@ -98,7 +129,7 @@ class Modal extends ViewModel
         $modal = '<div id="'
             . $this->getId()
             . '" class="modal fade" role="dialog">'
-            . '<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            . '<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable ' . $this->getSize() . '">
 
         <!-- Modal content-->
         <div class="modal-content">
