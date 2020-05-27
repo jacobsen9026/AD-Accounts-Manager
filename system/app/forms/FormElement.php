@@ -147,7 +147,7 @@ class FormElement
         $this->logger = AppLogger::get();
     }
 
-    public function addElementClass(string $addClass)
+    public function addElementClasses(string $addClass)
     {
         $this->elementClasses .= trim($addClass) . ' ';
         return $this;
@@ -401,7 +401,7 @@ class FormElement
      */
     public function getId()
     {
-        if (null === $this->id) {
+        if (null === $this->id || '' === $this->id) {
             return htmlspecialchars(str_replace([" ", '"', "'"], "", $this->getName()));
         }
         return $this->id;
