@@ -9,7 +9,7 @@ $createButton->tiny()
     ->setTheme("success")
     ->removeInputClasses(["w-100"])
     ->addInputClasses("")
-    ->addElementClass("float-right");
+    ->addElementClasses("float-right");
 $createModal = new \App\Models\View\Modal();
 $createModal->setBody($this->view('/groups/create'))
     ->setId('createGroup')
