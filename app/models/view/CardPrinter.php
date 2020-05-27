@@ -303,7 +303,7 @@ abstract class CardPrinter extends ViewModel
         $action->hidden();
 
         if ($group === null) {
-            $groupName = new FormText('Add to group', '', 'group', );
+            $groupName = new FormText('Add to group', '', 'group');
             $groupName->autoCompleteGroupName();
 
             $userToAdd = new FormText('Add user', 'Can also serarch by first or last name.', 'usernameToAdd', $user->activeDirectory->getAccountName());
@@ -531,53 +531,94 @@ abstract class CardPrinter extends ViewModel
 
         if (PermissionHandler::hasPermission($user->getOU(), PermissionLevel::USERS, PermissionLevel::USER_CHANGE)) {
 
-            $action = new FormText('', '', 'action', 'uploadPhoto');
-            $action->small();
-            $action->hidden();
-            $uploadPhoto = new FormUpload('', 'Maximum File Size: ' . File::getMaximumUploadSize(), 'photo');
-            $uploadPhoto->setBrowseButtonText("Change Photo");
-            $uploadPhoto->large();
-            $uploadButton = new FormButton('Upload');
-            $form = new Form('', 'uploadPhoto');
-            $form->addElementToNewRow($uploadPhoto)
-                ->addElementToCurrentRow($action);
-            //->addElementToCurrentRow($uploadButton);
-            $output .= $form->print();
 
             /**
              *
-             * make reset password
+             * make reset password modal button
              */
-
-            $action = new FormText('', '', 'action', 'resetPassword');
-            $action->small();
-            $action->hidden();
-            $username = new FormText('', '', 'username', $user->activeDirectory->getAccountName());
-            $username->small();
-            $username->hidden();
-            $newPassword = new FormText('', '', 'password');
-            $newPassword->setPlaceholder("New password")
-                ->large()
-                ->isPassword();
-            $submitButton = new FormButton('<i class="far fa-save"></i>');
-            $submitButton->setId("setPassword_Button")
-                ->addInputClasses("h-100")
-                ->tiny();
-
-            $changePasswordGroup = new FormElementGroup();
-            $changePasswordGroup->addElementToGroup($newPassword)
-                ->addElementToGroup($submitButton);
-
-            $form = new Form('', 'setPassword');
-            $form->addElementToCurrentRow($action)
-                ->addElementToNewRow($username)
-                ->addElementToNewRow($changePasswordGroup);
-            if (ADConnection::isSecure()) {
-                $output .= $form->print();
-            }
+            /**
+             * $action = new FormText('', '', 'action', 'resetPassword');
+             * $action->small();
+             * $action->hidden();
+             * $username = new FormText('', '', 'username', $user->activeDirectory->getAccountName());
+             * $username->small();
+             * $username->hidden();
+             * $newPassword = new FormText('', '', 'password');
+             * $newPassword->setPlaceholder("New password")
+             * ->large()
+             * ->isPassword();
+             * $submitButton = new FormButton('<i class="far fa-save"></i>');
+             * $submitButton->setId("setPassword_Button")
+             * ->addInputClasses("h-100")
+             * ->tiny();
+             *
+             * $changePasswordGroup = new FormElementGroup();
+             * $changePasswordGroup->addElementToGroup($newPassword)
+             * ->addElementToGroup($submitButton);
+             *
+             * $form = new Form('', 'setPassword');
+             * $form->addElementToCurrentRow($action)
+             * ->addElementToNewRow($username)
+             * ->addElementToNewRow($changePasswordGroup);
+             * $newPasswordModal = new Modal();
+             * $newPasswordModal->setTitle("Reset Password")
+             * ->setBody($form->print())
+             * ->setId('newPassword_Modal');
+             * $newPasswordButton = new FormDropdownOption('Reset Password');
+             * $newPasswordButton->addModal($newPasswordModal);
+             *
+             * if (ADConnection::isSecure()) {
+             * $output .= $form->print();
+             * }
+             * */
         }
         $output .= '</div>';
         return $output;
+    }
+
+
+    private static function buildResetPasswordMenuOption(DistrictUser $user)
+    {
+        /**
+         *
+         * make reset password modal button
+         */
+
+        $action = new FormText('', '', 'action', 'resetPassword');
+        $action->small();
+        $action->hidden();
+        $username = new FormText('', '', 'username', $user->activeDirectory->getAccountName());
+        $username->small();
+        $username->hidden();
+        $newPassword = new FormText('', '', 'password');
+        $newPassword->setPlaceholder("New password")
+            ->large()
+            ->isPassword();
+        $submitButton = new FormButton('<i class="far fa-save"></i>');
+        $submitButton->setId("setPassword_Button")
+            ->addInputClasses("h-100")
+            ->tiny();
+
+        $changePasswordGroup = new FormElementGroup();
+        $changePasswordGroup->addElementToGroup($newPassword)
+            ->addElementToGroup($submitButton);
+
+        $form = new Form('', 'setPassword');
+        $form->addElementToCurrentRow($action)
+            ->addElementToNewRow($username)
+            ->addElementToNewRow($changePasswordGroup);
+
+
+        $newPasswordModal = new Modal();
+        $newPasswordModal->setTitle("Reset Password")
+            ->setBody($form->print())
+            ->setBody(Parser::get()->view('users/modals/resetPassword', ["username" => $user->activeDirectory->getAccountName()]))
+            ->setId('newPassword_Modal');
+        $newPasswordButton = new FormDropdownOption('Reset Password');
+        $newPasswordButton->addModal($newPasswordModal);
+
+
+        return $newPasswordButton;
     }
 
 
@@ -588,8 +629,7 @@ abstract class CardPrinter extends ViewModel
      *
      * @return string
      */
-    private
-    static function buildDisabledStatus(DistrictUser $user, User $webUser)
+    private static function buildDisabledStatus(DistrictUser $user, User $webUser)
     {
         $output = '<div class="col text-danger h3"><i data-toggle="tooltip" data-placement="top" title="Account is not enabled." class="fas fa-times-circle"></i>';
 
@@ -637,7 +677,7 @@ abstract class CardPrinter extends ViewModel
             ->setTheme("white")
             ->removeInputClasses("w-100")
             ->addInputClasses("position-absolute right-10 text-danger")
-            ->addElementClass("top right pr-5 d-inline")
+            ->addElementClasses("top right pr-5 d-inline")
             ->setTooltip("Delete " . $groupName);
         $deleteModal = new \App\Models\View\Modal();
         $deleteModal->setBody(Parser::get()->view('/groups/delete', ['name' => $groupName, 'distinguishedName' => $group->activeDirectory->getDistinguishedName()]))
@@ -648,24 +688,32 @@ abstract class CardPrinter extends ViewModel
         return $deleteButton->print();
     }
 
-    private static function printOptionsButton(DistrictUser $user, User $webUser)
+    private static function printOptionsButton(DistrictUser $user, User $webUser): string
     {
-
+        /**
+         * Disable Button/Modal
+         */
         $disableButton = new FormDropdownOption('Disable');
-
-
         $disableModal = new Modal();
         $disableModal->setId('disable_user_modal')
             ->setBody('Really disable this user?<br>' . self::buildDisableAccountButton($user))
-            ->setTitle('Disable User');
+            ->setTitle('Disable User')
+            ->small();
         $disableButton->addModal($disableModal);
+
+
+        /**
+         * Enable Button/Modal
+         */
         $enableButton = new FormDropdownOption('Enable');
         $enableModal = new Modal();
         $enableModal->setId('enable_user_modal')
             ->setBody('Really enable this user?<br>' . self::buildEnableAccountButton($user))
             ->setTitle('Enable User');
         $enableButton->addModal($enableModal);
-        /*
+
+
+        /**
          * Unlock Button/Modal
          */
         $unlockButton = new FormDropdownOption('Unlock');
@@ -676,12 +724,44 @@ abstract class CardPrinter extends ViewModel
         $unlockButton->addModal($unlockModal);
 
         /**
+         * Reset Password Button/Modal
+         */
+        $newPasswordButton = self::buildResetPasswordMenuOption($user);
+
+
+        /**
+         * Upload Photo Button
+         */
+
+        $action = new FormText('', '', 'action', 'uploadPhoto');
+        $action->small();
+        $action->hidden();
+        $uploadPhoto = new FormUpload('', '', 'photo');
+        $uploadPhoto->setBrowseButtonText('<i class="fas fa-sync-alt"></i>');
+        $uploadPhoto->tiny()
+            ->hidden();
+        $uploadButton = new FormButton('Upload');
+        $uploadPhotoForm = new Form('', 'uploadPhoto');
+        $uploadPhotoForm->addElementToNewRow($uploadPhoto)
+            ->addElementToCurrentRow($action);
+
+        $uploadPhotoButton = new FormDropdownOption('Upload New Photo');
+        $uploadPhotoButton->setId('upload_photo_button');
+        $clickUpload = '$("#' . $uploadPhoto->getId() . '").click()';
+        $function = Javascript::on($uploadPhotoButton->getId(), $clickUpload);
+        $uploadPhotoButton->setScript($function);
+        //$newPasswordButton->addModal($newPasswordModal);
+        //->addElementToCurrentRow($uploadButton);
+
+        /**
          * Build the options button by loading in the parts the web user has permission to
          */
 
         $optionsButton = new FormMenuButton('<i class="h5 grow mb-0 fas fa-ellipsis-v"></i>');
         $optionsButton->tiny()
             ->removeInputClasses("btn-primary");
+        $optionsButton->addMenuOptions($uploadPhotoButton);
+        $optionsButton->addMenuOptions($newPasswordButton);
         if ($user->isLockedOut()) {
             $optionsButton->addMenuOptions($unlockButton);
         }
@@ -705,7 +785,8 @@ abstract class CardPrinter extends ViewModel
             $output = $optionsButton->getElementHTML();
         }
 
-        return $output;
+
+        return $output . $uploadPhotoForm->print();
     }
 
 }
