@@ -144,7 +144,7 @@ use App\Models\User\User;
 </nav>
 <?php
 $debugMode = App::get()->inDebugMode();
-if ($this->user->privilege > Privilege::UNAUTHENTICATED and $debugMode and $this->user->privilege == Privilege::TECH) {
+if ($this->user->superAdmin && $debugMode) {
     echo $this->view('modals/debugConfigModal');
 }
 ?>
