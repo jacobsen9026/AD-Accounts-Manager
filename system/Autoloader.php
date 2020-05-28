@@ -58,7 +58,21 @@ abstract class Autoloader
          */
         spl_autoload_register(function ($class) {
             // Check root namspace PSR path
-            $filename = ROOTPATH . DIRECTORY_SEPARATOR . $class . '.php';
+            $class = str_replace("\\", "/", $class);
+            $classPath = '';
+            $fragments = explode("/", $class);
+            $last = count($fragments) - 1;
+            $x = 0;
+            foreach ($fragments as $classFragment) {
+                if ($x < $last) {
+                    $classPath .= lcfirst($classFragment) . "/";
+                } else {
+                    $classPath .= ucfirst($classFragment);
+                }
+                $x++;
+            }
+            $filename = ROOTPATH . DIRECTORY_SEPARATOR . $classPath . '.php';
+            //var_dump($filename);
             if (!class_exists($class)) {
                 if (file_exists($filename)) {
                     try {
