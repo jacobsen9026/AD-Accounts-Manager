@@ -43,9 +43,9 @@ class CommonApp
     /** @var Router|null The system logger */
     public $router;
 
+
     /**
-     *
-     * @var App
+     * @var CommonApp|null
      */
     public static $instance;
 
