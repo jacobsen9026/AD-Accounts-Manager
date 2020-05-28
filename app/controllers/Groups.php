@@ -158,7 +158,7 @@ class Groups extends Controller
                 $this->logger->info("adding member " . $username);
 
                 $user = new DistrictUser($username);
-                if ($group->activeDirectory->addMember($user)) {
+                if ($group->activeDirectory->addMember($user->activeDirectory->getDistinguishedName())) {
                     AuditDatabase::addAudit(new AuditEntry($this->app->request, $this->user, new AddMemberAuditAction($groupName, $username)));
 
                     $this->logger->debug("user was successfully removed");

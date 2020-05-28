@@ -38,7 +38,12 @@ abstract class Encryption
     const CIPHER = "aes-256-cbc";
     const KEY_PATH = CONFIGPATH . DIRECTORY_SEPARATOR . "private.key";
 
-    public static function encrypt($plaintext)
+    /**
+     * @param $plaintext
+     *
+     * @return bool|string
+     */
+    public static function encrypt($plaintext): ?string
     {
         if ($plaintext == '') {
             return $plaintext;

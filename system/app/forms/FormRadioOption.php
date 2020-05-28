@@ -70,13 +70,21 @@ class FormRadioOption extends FormElement implements FormElementInterface
         return $this;
     }
 
-    public function setSelected(bool $selected)
+    /**
+     * @param bool $selected
+     *
+     * @return $this
+     */
+    public function setSelected(bool $selected): FormRadioOption
     {
         $this->selected = $selected;
         return $this;
     }
 
-    public function getElementHTML()
+    /**
+     * @return string
+     */
+    public function getElementHTML(): string
     {
         $disabled = '';
         if ($this->isDisabled()) {
@@ -86,11 +94,10 @@ class FormRadioOption extends FormElement implements FormElementInterface
         if ($this->getSelected()) {
             $checked = ' checked ';
         }
-        $output = '<div class="col-md custom-radio custom-control">'
+        return '<div class="col-md custom-radio custom-control">'
             . '<input class="custom-control-input" type="radio" name="' . $this->getName() . '" id="' . $this->getId() . '_' . $this->getLabel() . '" value="' . $this->getValue() . '" ' . $checked . ' ' . $disabled . '>'
             . '<label class="custom-control-label" for="' . $this->getId() . '_' . $this->getLabel() . '">' . $this->getLabel() . '</label>'
             . '</div>';
-        return $output;
         //$output .=
     }
 

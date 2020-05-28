@@ -32,6 +32,7 @@ $showApplicationSettingsCommand = Javascript::buildAJAXRequest('/api/app', "sett
 $showAuthenticationSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_AUTH_SETTINGS]);
 $showEmailSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_EMAIL_SETTINGS]);
 $showNotificationSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_NOTIF_SETTINGS]);
+$showUpdateSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_UPDATE_SETTINGS]);
 if (!isset($this->tab) or $this->tab == null) {
     $this->tab = "application";
 }
@@ -52,6 +53,9 @@ switch ($this->tab) {
         break;
     case 'notification':
         $goto = '#nav-notification-tab';
+        break;
+    case 'update':
+        $goto = '#nav-update-tab';
         break;
     default:
         $goto = '#nav-app-tab';
@@ -89,6 +93,8 @@ switch ($this->tab) {
            aria-controls="nav-email" aria-selected="false" onclick='<?= $showEmailSettingsCommand ?>'>Email</a>
         <a class="nav-item nav-link" id="nav-notification-tab" data-toggle="tab" href="#nav-notification" role="tab"
            aria-controls="nav-notification" aria-selected="false" onclick='<?= $showNotificationSettingsCommand ?>'>Notification</a>
+        <a class="nav-item nav-link" id="nav-update-tab" data-toggle="tab" href="#nav-update" role="tab"
+           aria-controls="nav-update" aria-selected="false" onclick='<?= $showUpdateSettingsCommand ?>'>Update</a>
     </div>
 </nav>
 <div class="row"></div>

@@ -35,12 +35,11 @@ namespace App\Controllers;
 use App\Controllers\Menu\TopMenuItem;
 use App\Controllers\Menu\SubMenuItem;
 use System\App\AppLogger;
-use System\Parser;
 use App\Models\User\User;
-use System\App\App;
+use App\App\App;
 use App\Models\User\PermissionHandler;
 
-class Menu extends Parser
+class Menu extends Controller
 {
 
     /**

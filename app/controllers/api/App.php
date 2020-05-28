@@ -36,11 +36,12 @@ namespace App\Controllers\Api;
 class App extends APIController
 {
 
-    const GET_APP_SETTINGS = "getApplicationSettings";
-    const GET_AUTH_SETTINGS = "getAuthenticationSettings";
-    const GET_EMAIL_SETTINGS = "getEmailSettings";
-    const GET_NOTIF_SETTINGS = "getNotificationSettings";
-    const GET_CONFIG = "getConfiguration";
+    public const GET_APP_SETTINGS = "getApplicationSettings";
+    public const GET_AUTH_SETTINGS = "getAuthenticationSettings";
+    public const GET_EMAIL_SETTINGS = "getEmailSettings";
+    public const GET_NOTIF_SETTINGS = "getNotificationSettings";
+    public const GET_UPDATE_SETTINGS = "getUpdateSettings";
+    public const GET_CONFIG = "getConfiguration";
 
     protected function getApplicationSettings()
     {
@@ -60,6 +61,11 @@ class App extends APIController
     protected function getNotificationSettings()
     {
         return $this->returnHTML($this->view('settings/notification'));
+    }
+
+    protected function getUpdateSettings()
+    {
+        return $this->returnHTML($this->view('settings/update'));
     }
 
     private function printConfig()

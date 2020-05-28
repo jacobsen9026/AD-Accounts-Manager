@@ -139,15 +139,16 @@ class DebugViewer
         $first = true;
         $loggerOutputs = [];
         /* @var $logger CommonLogger */
-        foreach ($runtimeLoggers as $logger) {
-            if ($logger == null) {
-                continue;
-            }
-            $loggerPanelID = $logger->getName() . '_Runtime_Log_Panel';
-            $loggerTabButtonID = $loggerPanelID . "_Tab";
-            $runtimeLogs .= self::printLogButton($logger, $loggerPanelID, $loggerTabButtonID);
-            $loggerOutputs[] = self::prepareRuntimeLoggerOutput($logger, $loggerPanelID);
-        }
+        // foreach ($runtimeLoggers as $logger) {
+        $logger = $runtimeLoggers[0];
+        /** if ($logger == null) {
+         * continue;
+         * }*/
+        $loggerPanelID = $logger->getName() . '_Runtime_Log_Panel';
+        $loggerTabButtonID = $loggerPanelID . "_Tab";
+        $runtimeLogs .= self::printLogButton($logger, $loggerPanelID, $loggerTabButtonID);
+        $loggerOutputs[] = self::prepareRuntimeLoggerOutput($logger, $loggerPanelID);
+        // }
         $runtimeLogs .= '</div></ul>';
 
         $runtimeLogs .= '<div class = "pt-0 tab-content log-tab-content loggerOutputContainer">';

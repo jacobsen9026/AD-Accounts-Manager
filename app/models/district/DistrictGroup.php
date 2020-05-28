@@ -57,9 +57,9 @@ class DistrictGroup extends ADModel
     {
         parent::__construct();
 
-        $this->logger->debug($group);
+        $this->logger->debug("Searching for group named: " . $group);
         $this->activeDirectory = ADGroups::getGroup($group);
-        //}
+        $this->logger->debug($this);
     }
 
     public function getEmail()

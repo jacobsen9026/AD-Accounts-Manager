@@ -41,7 +41,6 @@ use App\Models\Database\EmailDatabase;
 class Application extends Controller
 {
 
-    public $postables;
 
     function __construct($app)
     {

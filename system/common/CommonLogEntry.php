@@ -35,35 +35,27 @@ namespace System\Common;
  */
 
 use System\Log\CommonLogger;
+use System\Log\CommonLogLevel;
 
 class CommonLogEntry
 {
 
-    const ERROR = "error";
-    const INFO = "info";
-    const DEBUG = "debug";
-    const WARNING = "warning";
 
-    private $elapsedTime;
+    /**
+     * @var mixed Timestamp in microseconds
+     */
+    private $timestamp;
     private $level;
     private $message;
     private $backtrace;
-    private $id;
+    private $loggerName;
 
-    /**
-     *
-     * @var CommonLogger
-     */
-    private $logger;
-
-    public function __construct(CommonLogger $logger)
+    public function __construct($loggerName = "")
     {
-        $this->elapsedTime = floatval(microtime()) - $logger->getStartTime();
+        $this->timestamp = microtime(true);
         $this->backtrace = $this->traceBack();
-        $this->logger = $logger;
-        //var_dump($this->backtrace);
-        $this->id = str_replace(".", "", $this->elapsedTime) . substr(hash("sha256", $this->backtrace[0]['file']), 0, 10);
-        //var_dump($this);
+        $this->loggerName = $loggerName;
+
     }
 
     private function traceBack()
@@ -84,14 +76,14 @@ class CommonLogEntry
         return $backTrace;
     }
 
-    public function getElapsedTime()
+    public function getTimestamp()
     {
-        return htmlspecialchars($this->elapsedTime);
+        return htmlspecialchars($this->timestamp);
     }
 
     public function getId()
     {
-        return 'LogEntry_' . $this->id;
+        return 'LogEntry_' . substr(hash("sha1", $this->getMessage() . $this->getTimestamp()), 0, 10);
     }
 
     /**
@@ -180,9 +172,9 @@ class CommonLogEntry
     public function getAlertLevel()
     {
         switch ($this->getLevel()) {
-            case self::ERROR:
+            case CommonLogLevel::ERROR:
                 return 'danger';
-            case self::DEBUG:
+            case CommonLogLevel::DEBUG:
                 return 'success';
 
             default:
@@ -196,6 +188,11 @@ class CommonLogEntry
             return true;
         }
         return false;
+    }
+
+    public function getLoggerName()
+    {
+        return $this->loggerName;
     }
 
 }

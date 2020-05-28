@@ -32,6 +32,7 @@ namespace App\Controllers\Settings;
  * @author cjacobsen
  */
 
+use App\App\App;
 use App\Controllers\Controller;
 use App\Models\Database\DistrictDatabase;
 use app\database\Schema;
@@ -43,7 +44,7 @@ use System\App\AppException;
 class District extends Controller
 {
 
-    function __construct(\System\App\App $app)
+    function __construct(App $app)
     {
         parent::__construct($app);
         $this->layout = 'default_blank';

@@ -49,15 +49,21 @@ class FormMenuButton extends FormButton
 ';
         $optionsHTML = '';
         $optionModalsHTML = '';
+        $optionScripts = '';
         /* @var $option \System\App\Forms\FormDropdownOption */
         foreach ($this->getMenuOptions() as $option) {
-            // var_dump($option);
-            $optionsHTML .= ' <a class="dropdown-item" href="' . $option->getValue() . '"    data-toggle="modal" data-target="#' . $option->getModal()->getId() . '">' . $option->getLabel() . '</a>';
+            //var_dump($option);
+            $dataTarget = '';
+            if ($option->getModal() !== null) {
+                $dataTarget = $option->getModal()->getId();
+            }
+            $optionsHTML .= ' <a class="dropdown-item" href="' . $option->getValue() . '"    data-toggle="modal" id="' . $option->getId() . '" data-target="#' . $dataTarget . '">' . $option->getLabel() . '</a>';
             $optionModalsHTML .= $option->printModals();
+            $optionScripts .= $option->printScript();
         }
         $html .= $optionsHTML;
         $html .= '    </div>';
-        $html .= $optionModalsHTML .
+        $html .= $optionModalsHTML . $optionScripts .
             ' </li >
                 </ul > ';
 

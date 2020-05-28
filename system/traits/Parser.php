@@ -42,11 +42,11 @@ trait Parser
      *
      * @return boolean
      */
-    public function view($view)
+    public function view($view, array $params = null)
     {
 
         //var_dump($view);
-        $view = $this->sanitize($view);
+        $view = self::sanitize($view);
 
         $path = VIEWPATH . DIRECTORY_SEPARATOR . $view . ".php";
         //var_dump($path);
@@ -137,7 +137,7 @@ trait Parser
      *
      * @return string
      */
-    public function sanitize($path)
+    public static function sanitize($path)
     {
         if ($path[0] == "/" or $path[0] == "\\") {
             $path = substr($path, 1);

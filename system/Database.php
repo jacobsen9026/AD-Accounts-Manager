@@ -40,7 +40,7 @@ namespace System;
 
 use PDO;
 
-class Database extends Parser
+class Database
 {
     /*
      * Database Scheme as Contansts
@@ -48,6 +48,7 @@ class Database extends Parser
 
     /** @var PDO Description */
     private $db;
+
 
     /** @var Database|null */
     public static $instance;
@@ -60,24 +61,34 @@ class Database extends Parser
 
     /**
      *
-     * @return Database
+     * @return void
+     * @throws CoreException
      */
     public static function get()
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
+
+        if (self::$instance !== null) {
+            return self::$instance;
+
+        } else {
+            throw new CoreException("Trying to get database before one is connected");
         }
-        return self::$instance;
+
     }
 
-    function __construct()
+    /**
+     * Database constructor.
+     *
+     * @param $dsn
+     */
+    public function __construct($dsn)
     {
         self::$instance = $this;
         self::$logger = DatabaseLogger::get();
-        $this->connect();
+        $this->connect($dsn);
     }
 
-    public function connect()
+    public function connect($dsn)
     {
         /*
          * If the db file doesn't exist we want to seed it after we connect
@@ -89,7 +100,7 @@ class Database extends Parser
         /**
          * Connect to database, will create file if it doesn't already exist
          */
-        $this->db = new \PDO("sqlite:" . APPCONFIGDBPATH, null, null, [
+        $this->db = new \PDO($dsn, null, null, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false

@@ -33,9 +33,9 @@ namespace System\App;
  */
 
 use System\App\App;
+use System\Common\CommonApp;
 use System\Post;
 use System\Get;
-use System\App\Route;
 
 /**
  * @name CoreRouter
@@ -56,7 +56,7 @@ class Router
      */
     private $route;
 
-    public function __construct(App $app)
+    public function __construct(CommonApp $app)
     {
         /**
          * We want to pull in the application

@@ -32,9 +32,10 @@ namespace System\App;
  * @author cjacobsen
  */
 
+use App\Models\Database\DatabaseModel;
 use App\Models\Database\EmailDatabase as EmailConfig;
 
-class Email extends \system\Parser
+class Email extends DatabaseModel
 {
 
     /**
@@ -68,9 +69,6 @@ class Email extends \system\Parser
 
     public static function sendTest($to = null)
     {
-        if ($to == null) {
-            $to = 'cjacobsen@branchburg.k12.nj.us';
-        }
 // Instantiation and passing `true` enables exceptions
         $mail = self::createMailer();
 //Recipients
@@ -82,8 +80,6 @@ class Email extends \system\Parser
             $mail->Body = 'Your email settings are correct!';
 
             AppLogger::get()->debug(EmailConfig::getSMTPServer());
-//AppLogger::get()->debug($mail->smtpConnect());
-            //var_dump("yoyoyo");
 
             $mail->send();
             return 'Message has been sent successfully';
@@ -102,4 +98,8 @@ class Email extends \system\Parser
         return false;
     }
 
+    public static function saveSettings(array $postData)
+    {
+        // TODO: Implement saveSettings() method.
+    }
 }

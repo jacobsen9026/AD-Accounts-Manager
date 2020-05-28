@@ -46,7 +46,7 @@ use App\Models\Database\SchoolDatabase;
 use App\Models\Database\DistrictDatabase;
 use App\Models\District\Team;
 use App\Models\District\Department;
-use System\App\App;
+use App\App\App;
 use App\Models\Query;
 use App\Models\District\District;
 

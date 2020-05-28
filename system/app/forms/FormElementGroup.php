@@ -16,6 +16,7 @@ class FormElementGroup extends FormElement implements FormElementInterface
     {
         parent::__construct($label, $subLabel, $name, $value);
         $this->auto();
+        $this->setSize('large');
     }
 
 
@@ -58,7 +59,7 @@ class FormElementGroup extends FormElement implements FormElementInterface
     private function preProcessGroupElement(FormElement $element, int $elementIndex, int $lastIndex)
     {
 
-        $element->addElementClass("p-0");
+        $element->addElementClasses("p-0");
         if ($elementIndex < $lastIndex) {
             //var_dump("corner right");
             $element->addInputClasses('rounded-r-0');
