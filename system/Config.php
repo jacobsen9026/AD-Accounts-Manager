@@ -37,6 +37,18 @@
  * The Language of the app. The value must be a valid folder with contents in the lang directory of the app.
  */
 define('DEFAULT_LANG', 'en');
+
+/*
+ * The Class name with namespace to launch
+ */
+//define('APPCLASS', "App\Lib\TestApp");
+define('APPCLASS', "App\App\App");
+/*
+ * Toggle for core debug mode. Has no effect on app debug, but does allow App output directly.
+ */
+define('DEBUG_MODE', true);
+
+
 /*
  * The System directory
  */
@@ -58,21 +70,10 @@ define('CONFIGPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATO
  */
 define('APPCONFIGDBPATH', APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "config.db");
 /*
- * The Database fie path under the application directory
+ * The write directory for the core
  */
-define('APPAUDITDBPATH', APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "audit.db");
-/*
- * The Class name with namespace to launch
- */
-//define('APPCLASS', "System\App\App");
-//define('APPCLASS', "App\Lib\TestApp");
-define('APPCLASS', "App\App\App");
-/*
- * Toggle for core debug mode. Has no effect on app debug, but does allow App output directly.
- */
-define('DEBUG_MODE', true);
+define('WRITEPATH', ROOTPATH . DIRECTORY_SEPARATOR . "writable");
 
-$this->include('system/schema.php');
 
 /*
  * Include other config files like the example below
