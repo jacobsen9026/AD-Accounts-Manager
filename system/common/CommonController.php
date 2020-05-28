@@ -36,8 +36,9 @@ use System\Parser;
 use System\App\App;
 use app\config\MasterConfig;
 
-class CommonController extends Parser
+class CommonController
 {
+    use \System\Traits\Parser;
 
     /** @var App|null The view parser */
     public $app;

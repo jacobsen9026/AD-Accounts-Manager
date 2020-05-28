@@ -36,8 +36,10 @@ use Psr\Log\LoggerInterface;
 use System\Parser;
 use System\Common\CommonLogEntry;
 
-class CommonLogger extends Parser implements LoggerInterface
+class CommonLogger implements LoggerInterface
 {
+    use \System\Traits\Parser;
+
     /**
      * @var float Logger starting time in microseconds
      */

@@ -38,8 +38,10 @@ use App\Models\User\User;
 use App\Controllers\Menu;
 use System\App\AppLogger;
 
-class CommonLayout extends Parser
+class CommonLayout
+
 {
+    use \System\Traits\Parser;
 
     const DEFAULT_LAYOUT_NAME = 'default';
 
