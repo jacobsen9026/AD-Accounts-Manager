@@ -48,7 +48,6 @@ class CommonLogEntry
     private $level;
     private $message;
     private $backtrace;
-    private $id;
     private $loggerName;
 
     public function __construct($loggerName = "")
@@ -84,7 +83,7 @@ class CommonLogEntry
 
     public function getId()
     {
-        return 'LogEntry_' . $this->id;
+        return 'LogEntry_' . substr(hash("sha1", $this->getMessage() . $this->getTimestamp()), 0, 10);
     }
 
     /**
