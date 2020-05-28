@@ -34,16 +34,21 @@ namespace App\Models\Database;
 abstract class UserDatabase extends DatabaseModel
 {
 
-    const TABLE_NAME = "user";
-    const TOKEN = "Token";
-    const USERNAME = "Username";
-    const THEME = "Theme";
-    const ID = "ID";
-    const PRIVILEGE = "Privilege";
+    public const TABLE_NAME = "user";
+    public const TOKEN = "Token";
+    public const USERNAME = "Username";
+    public const THEME = "Theme";
+    public const ID = "ID";
 
     //put your code here
 
-    public static function setUserToken(String $username, String $token)
+    /**
+     * @param String $username
+     * @param String $token
+     *
+     * @return bool
+     */
+    public static function setUserToken(string $username, string $token)
     {
 
         if (self::getID($username) == false) {
@@ -59,7 +64,13 @@ abstract class UserDatabase extends DatabaseModel
         return $query->run();
     }
 
-    public static function setUserTheme(String $username, String $theme)
+    /**
+     * @param String $username
+     * @param String $theme
+     *
+     * @return bool
+     */
+    public static function setUserTheme(string $username, string $theme)
     {
 
         if (self::getID($username) == false) {
@@ -75,7 +86,13 @@ abstract class UserDatabase extends DatabaseModel
         return $query->run();
     }
 
-    public static function setUserPrivilege(String $username, int $privilege)
+    /**
+     * @param String $username
+     * @param int $privilege
+     *
+     * @return bool
+     */
+    public static function setUserPrivilege(string $username, int $privilege)
     {
 
         if (self::getID($username) == false) {
@@ -91,14 +108,24 @@ abstract class UserDatabase extends DatabaseModel
         return $query->run();
     }
 
-    public static function getToken(String $username)
+    /**
+     * @param String $username
+     *
+     * @return bool|string
+     */
+    public static function getToken(string $username)
     {
         $query = new Query(self::TABLE_NAME, Query::SELECT, self::TOKEN);
         $query->where(self::USERNAME, $username);
         return $query->run();
     }
 
-    public static function getTheme(String $username)
+    /**
+     * @param string $username
+     *
+     * @return bool|string
+     */
+    public static function getTheme(string $username)
     {
         $query = new Query(self::TABLE_NAME, Query::SELECT, self::THEME);
         $query->where(self::USERNAME, $username);
@@ -109,7 +136,12 @@ abstract class UserDatabase extends DatabaseModel
         return $theme;
     }
 
-    public static function getID(String $username)
+    /**
+     * @param string $username
+     *
+     * @return bool
+     */
+    public static function getID(string $username)
     {
         $query = new Query(self::TABLE_NAME, Query::SELECT, self::ID);
         $query->where(self::USERNAME, $username);
