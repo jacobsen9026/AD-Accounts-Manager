@@ -32,7 +32,7 @@ namespace App\App;
  * @author cjacobsen
  *
  * This is the main Application class. It manages all steps of app execution. The application flow is as follows.
- * AppLogger->Config->Routing->Controlling->Layout->Output back to core
+ * AppLogger->ConfigDatabase->Routing->Controlling->Layout->Output back to core
  *
  * No application specific data/functions should be present in this class. That should be utilized in classes within
  * the App namespace.
@@ -108,10 +108,12 @@ class App extends CommonApp implements AppInterface
      */
     public static $instance;
 
+    public static $version = '0.1.0';
+
     /**
      *
      * @param Request $req
-     * @param SystemLogger $cLogger
+     * @param CommonLogger $cLogger
      */
     function __construct(Request $req, CommonLogger $cLogger)
     {
@@ -150,6 +152,9 @@ class App extends CommonApp implements AppInterface
         $this->userLogger = new UserLogger();
         $this->logger->info("user logger started");
 
+        $configDSN = "sqlite:" . APPCONFIGDBPATH;
+        new ConfigDatabase($configDSN);
+
         /**
          * Load the request into the app
          */
@@ -161,7 +166,7 @@ class App extends CommonApp implements AppInterface
      *
      * @return App
      */
-    public static function get()
+    public static function get(): App
     {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -172,7 +177,7 @@ class App extends CommonApp implements AppInterface
     /**
      * Load the application configuration
      */
-    public function loadConfig()
+    public function loadConfig(): void
     {
         $this->coreLogger->info("The app config has been loaded");
         define('GAMPATH', CONFIGPATH . DIRECTORY_SEPARATOR . "google");
@@ -246,7 +251,7 @@ class App extends CommonApp implements AppInterface
      * the Router to determine a controller, method,
      * and data to be executed this run.
      */
-    public function route()
+    public function route(): void
     {
         /**
          * HTTPS redirect check
@@ -280,7 +285,7 @@ class App extends CommonApp implements AppInterface
      *
      * @todo Should use Request Object
      */
-    private function handleHttpsRedirect()
+    private function handleHttpsRedirect(): void
     {
         $this->logger->info("Protocol: " . $this->request->getProtocol());
         $this->logger->info("Hostname: " . ($_SERVER["SERVER_NAME"]));
@@ -294,10 +299,10 @@ class App extends CommonApp implements AppInterface
      *
      * @todo Should use Request Object
      */
-    private function handleHostnameRedirect()
+    private function handleHostnameRedirect(): void
     {
         $this->logger->info("Hostname: " . ($_SERVER["SERVER_NAME"]));
-        if (strtolower($_SERVER["SERVER_NAME"]) != strtolower(AppDatabase::getWebsiteFQDN())) {
+        if (strtolower($_SERVER["SERVER_NAME"]) !== strtolower(AppDatabase::getWebsiteFQDN())) {
             if (AppDatabase::getWebsiteFQDN() != "") {
                 $this->redirect($this->request->getProtocol() . "://" . strtolower(AppDatabase::getWebsiteFQDN()) . $_SERVER["REQUEST_URI"]);
             }
@@ -309,13 +314,13 @@ class App extends CommonApp implements AppInterface
      *
      * @return null
      */
-    protected function control()
+    protected function control(): void
     {
         $this->appOutput = new AppOutput($this->request);
         /*
          * Check that the user is logged on and if not, set the route to the login screen
          */
-        if (!isset($this->user) or $this->user == null or $this->user->authenticated === false) {
+        if (!isset($this->user) or $this->user === null or $this->user->authenticated === false) {
             $this->logger->warning('user not logged in');
             // Change route to login if not logged in.
             //$this->route;
@@ -336,8 +341,9 @@ class App extends CommonApp implements AppInterface
             $this->logger->info($this->route);
             $method = $this->route->getMethod();
             if (method_exists($this->controller, $method)) {
-                // Check if there is a parameter set from the request
-
+                /**
+                 * Check if there is a parameter set from the request
+                 */
                 $this->logger->info($method);
                 $data = $this->route->getData();
                 if (empty($data)) {
@@ -365,7 +371,7 @@ class App extends CommonApp implements AppInterface
      * Applies theming, menus, modals, and styling
      *  to the controller output as a final preparation for the core
      */
-    public function layout()
+    public function layout(): void
     {
         $this->layout = new Layout($this);
         //var_dump($this->request);
@@ -379,7 +385,7 @@ class App extends CommonApp implements AppInterface
      * in the webConfig.
      */
 
-    private function setErrorMode()
+    private function setErrorMode(): void
     {
         if ($this->inDebugMode()) {
             enablePHPErrors();
@@ -393,14 +399,14 @@ class App extends CommonApp implements AppInterface
      *
      * @return boolean
      */
-    public function inDebugMode()
+    public function inDebugMode(): bool
     {
 
         if (AppDatabase::getDebugMode()) {
             return true;
-        } else {
-            return false;
         }
+        return false;
+
     }
 
     /**
