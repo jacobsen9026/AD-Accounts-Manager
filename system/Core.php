@@ -45,8 +45,6 @@ use System\Log\CommonLogger;
 class Core
 {
 
-    /** @var Parser|null The view parser that enables printing of views */
-    private $parser;
 
     /** @var SystemLogger|null The system logger */
     public static $systemLogger;
@@ -58,9 +56,10 @@ class Core
     public static $databaseLogger;
     /**
      *
-     * @var DatabaseLogger
+     * @var PostLogger
      */
     public static $postLogger;
+    public static $version = '0.1.0';
 
     /** @var Request|null The Request object */
     public $request;
@@ -118,6 +117,11 @@ class Core
         return self::$instance;
     }
 
+    public static function getVersion()
+    {
+        return self::$version;
+    }
+
     /**
      * Start the system core running. This should be called from the public php index file
      */
@@ -128,6 +132,7 @@ class Core
          *
          * Initialize the application
          */
+
         try {
             $this->initialize();
         } catch (CoreException $ex) {
@@ -167,6 +172,7 @@ class Core
      */
     public function abort($message = null)
     {
+
         self::$systemLogger->error("Aborting App Execution!");
         self::$systemLogger->error($message);
         $this->appLogger = ($this->app->logger);
@@ -182,10 +188,13 @@ class Core
      */
     private function initialize()
     {
+
         /**
          * Run autoloader
          */
         Autoloader::run();
+
+
         /**
          * By instantiating the CoreErrorHandler we trigger errors and exceptions
          * to be caught with our custom handlers.
@@ -193,11 +202,12 @@ class Core
          */
         new CoreErrorHandler();
 
+
         /*
          * Load the parser in the core since it cannot
          * extend the parser.
          */
-        $this->parser = new Parser();
+        //$this->parser = new Parser();
         /*
          * Load the system logger
          */
@@ -216,7 +226,7 @@ class Core
          * Everything depends on the system config being
          * loaded.
          */
-        $this->parser->include("system/Config");
+        Parser::get()->include("system/Config");
         self::$systemLogger->info("Core config loaded");
         /*
          * Set PHP error mode to reflect setting in system config
@@ -250,7 +260,9 @@ class Core
         /**
          * Run app
          */
+
         $this->runApp();
+
         /**
          * We need to retake control of the run-time errors from the app
          * if it was set to do so.
@@ -295,12 +307,12 @@ class Core
                 throw new CoreException("The " . APPCLASS . " does not have a run() method", CoreException::APP_MISSING_RUN);
                 echo("The " . APPCLASS . " does not have a run() method");
 
-                exit;
+                //exit;
             }
         } else {
             throw new CoreException("The " . APPCLASS . " class was not found", CoreException::APP_MISSING);
             echo("The " . APPCLASS . " class was not found");
-            exit;
+            //exit;
         }
 
         /*
