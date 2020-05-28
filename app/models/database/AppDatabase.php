@@ -88,15 +88,6 @@ abstract class AppDatabase extends DatabaseModel
         return self::getDatabaseValue("Force_HTTPS");
     }
 
-    /**
-     *
-     * @return type
-     * @deprecated since version number
-     */
-    public static function getAdminUsernames()
-    {
-        return self::getDatabaseValue("Admin_Usernames");
-    }
 
     /**
      *
@@ -149,15 +140,6 @@ abstract class AppDatabase extends DatabaseModel
         return self::updateDatabaseValue('Force_HTTPS', $value);
     }
 
-    /**
-     *
-     * @return type
-     * @deprecated since version number
-     */
-    public static function setAdminUsernames($value)
-    {
-        return self::updateDatabaseValue('Admin_Usernames', $value);
-    }
 
     /**
      * Update database column so it doesn't say websitie lol
