@@ -80,18 +80,21 @@ class Modal extends ViewModel
     public function small()
     {
         $this->size = "modal-sm";
+        return $this;
     }
 
     public function large()
     {
 
         $this->size = "modal-lg";
+        return $this;
     }
 
     public function extraLarge()
     {
 
         $this->size = "modal-xl";
+        return $this;
 
     }
 
