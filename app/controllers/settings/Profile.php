@@ -32,6 +32,7 @@ namespace App\Controllers\Settings;
  * @author cjacobsen
  */
 
+use App\App\App;
 use App\Controllers\Controller;
 
 class Profile extends Controller
