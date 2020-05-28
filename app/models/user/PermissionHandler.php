@@ -48,11 +48,6 @@ abstract class PermissionHandler
      */
     private static $user;
 
-    /**
-     *
-     * @var array <PrivilegeLevels>
-     */
-    private static $privilegeLevels;
 
     /**
      *
@@ -118,7 +113,7 @@ abstract class PermissionHandler
     {
 
         self::loadUser();
-        if (self::$user == null) {
+        if (null === self::$user) {
             return false;
         }
         if (self::$user->superAdmin) {
@@ -137,7 +132,7 @@ abstract class PermissionHandler
      *
      * @return boolean
      */
-    public static function hasUserPermissions()
+    public static function hasUserPermissions(): bool
     {
         self::loadUser();
         if (self::$user !== null) {
@@ -158,7 +153,7 @@ abstract class PermissionHandler
      * @param string $requestedType  Can be PermissionLevel::GROUPS or PermissionLevel::USERS
      * @param int $requestedLevel
      */
-    private static function testPermissions(array $userPermissions, string $ou, string $requestedType, int $requestedLevel)
+    private static function testPermissions(array $userPermissions, string $ou, string $requestedType, int $requestedLevel): array
     {
         $testResults = [];
         foreach ($userPermissions as $permission) {
@@ -171,7 +166,7 @@ abstract class PermissionHandler
                 $usersPermissionLevel = $permission->$method();
                 self::$logger->info("Checking permission: " . $requestedLevel . " -> " . $usersPermissionLevel);
                 if ($usersPermissionLevel >= $requestedLevel) {
-                    if (!key_exists($distanceFromOU, $testResults) or $testResults[$distanceFromOU] !== false) {
+                    if (!array_key_exists($distanceFromOU, $testResults) || $testResults[$distanceFromOU] !== false) {
                         self::$logger->info("passed");
                         $testResults[$distanceFromOU] = true;
                     }
