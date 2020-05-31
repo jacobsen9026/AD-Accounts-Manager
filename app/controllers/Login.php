@@ -60,8 +60,8 @@ class Login extends Controller
     public function index()
     {
         $logger = AppLogger::get();
-        $logger->debug('logining in');
-        if (isset($_POST) and isset($_POST['username']) and isset($_POST['password'])) {
+        if (isset($_POST) && isset($_POST['username']) && isset($_POST['password'])) {
+            $logger->debug('logining in');
             $username = $_POST['username'];
             $password = $_POST['password'];
             try {
@@ -78,7 +78,10 @@ class Login extends Controller
 
                         $logger->debug('trying LDAP auth');
                         $adAuth = new ADAuth();
-                        $user = $adAuth->authenticate($username, $password);
+                        $user = $adAuth->authenticate2($username, $password);
+                        var_dump($user);
+
+
                     } catch (AuthException $ex) {
                         if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
                             return $this->badCredentials();
@@ -88,7 +91,7 @@ class Login extends Controller
                 }
 
             }
-            if ($user === null) {
+            if (!isset($user) or $user === null) {
 
                 return $this->badCredentials();
             }
@@ -96,8 +99,7 @@ class Login extends Controller
             $logger->debug('Completed login');
             /** @var App|null The system logger */
             $app = App::get();
-            //$config = MasterConfig::get();
-
+            $user->authenticated(true);
             $app->user = $user;
 
 

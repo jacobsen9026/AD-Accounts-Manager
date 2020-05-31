@@ -56,7 +56,7 @@ class CoreErrorHandler
         set_exception_handler([$this, 'handleException']);
 
         if (isset(self::$instance)) {
-            return self::$instance;
+            return;
         } else {
             self::$instance = $this;
         }

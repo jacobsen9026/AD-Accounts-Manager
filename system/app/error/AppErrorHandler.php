@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2020 cjacobsen.
+ * Copyright 2019 cjacobsen.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,57 @@
  * THE SOFTWARE.
  */
 
-namespace System\App;
+namespace System\App\Error;
 
 /**
+ * Description of ErrorHandler
  *
  * @author cjacobsen
  */
-trait RequestRedirection
+
+use app\App;
+use System\App\AppLogger;
+use System\SystemLogger;
+use System\AppException;
+
+class AppErrorHandler
 {
+
+    public static $instance;
+
+    function __construct()
+    {
+
+        set_error_handler([$this, 'handleError']);
+        if (isset(self::$instance)) {
+            return;
+        } else {
+            self::$instance = $this;
+        }
+    }
+
+    /**
+     *
+     * @return AppErrorHandler
+     */
+    public static function get()
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
     //put your code here
 
-    public function redirect($url)
+    public function handleError($code, $description, $file = null, $line = null, $context = null)
     {
-        $app = \System\Core::getAppClass()::get();
-        //$app = App::get();
-
-        if ($app->request->getType() != 'ajax') {
-            if ($app->inDebugMode()) {
-                $app->appOutput->appendBody("In Debug Mode<br/>Would have redirected<br/>"
-                    . "<a href='" . $url . "'>here</a>");
-            } else {
-                header('Location: ' . $url);
-            }
+        $label = $output = "Error: [$code] $description";
+        if ($file != null and $line != null) {
+            $output = "Error: $file:$line [$code] $description";
         }
+        AppLogger::get()->error($output);
+        //die();
     }
 
 }

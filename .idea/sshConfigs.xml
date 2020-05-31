@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig host="demo.adam-app.gq" id="02136da1-c8a9-40f6-8fcf-b75ad46d9f40" keyPath="C:\Users\Chris\Downloads\SSH.ppk" port="22" nameFormat="DESCRIPTIVE" username="centos" />
+      <sshConfig authType="PASSWORD" host="demo.adam-app.gq" id="06d4a267-83f4-4d00-bbaa-44554ed36123" port="22" nameFormat="DESCRIPTIVE" username="demo\website" />
+    </configs>
+  </component>
+</project>

@@ -109,7 +109,9 @@ class District extends APIController
                 break;
             case 'deletePrivilege':
                 $this->controller->deletePrivilegeLevel();
-                return $this->returnHTML($this->view('settings/district/permissions'));
+                $output = $this->returnHTML($this->view('settings/district/permissions'));
+                //var_dump($output);
+                return $output;
 
                 break;
             case 'updatePrivilege':

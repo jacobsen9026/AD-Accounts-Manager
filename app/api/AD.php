@@ -144,7 +144,7 @@ class AD
 //$test = $this->query('(distinguishedName="' . $dn . '")');
         $test = $this->read('(&(objectClass=organizationalUnit))', $dn);
 //var_dump($test);
-        if ($test == "false" or $test["count"] == 0) {
+        if ($test === false or $test["count"] == 0) {
             $this->logger->warning($dn . " is an invalid OU");
             return false;
         }
@@ -163,37 +163,56 @@ class AD
      */
     public static function connect($fqdn, $username, $password)
     {
-
+        $connectionStatus = false;
         $logger = LDAPLogger::get();
-        $connection = ldap_connect("ldap://" . $fqdn);
+        $hostname = "ldap://" . $fqdn;
+        $logger->debug($hostname);
+        $connection = ldap_connect($hostname);
         $logger->info(ldap_error($connection));
         if ($connection) {
             $logger->debug("LDAP URL " . $fqdn . " reachable");
             try {
-                AD::setLDAPOptions($connection);
-                if (DistrictDatabase::getUseSSL()) {
+                $connection = AD::setLDAPOptions($connection);
+                if (DistrictDatabase::getAD_UseTLS()) {
                     if (ldap_start_tls($connection)) {
-                        if (ldap_bind($connection, $username, $password)) {
-                            $connectionStatus = true;
-                            $logger->info("LDAP bind successful to " . $fqdn . " using credentials: " . $username);
-                            return $connection;
-                        } else {
-                            $logger->error(ldap_error($connection));
-                            $connectionStatus = "INVALID CREDENTIALS/ACCOUNT LOCKED";
-                            $logger->warning("LDAP bind failed  to " . $fqdn . " using credentials: " . $username . ' ' . $password);
-                        }
+
                     } else {
                         $logger->error(ldap_error($connection));
                         $connectionStatus = "SSL ERROR: COULD NOT BIND TO TLS";
                         $logger->error("ad SSL Error");
+
+                        throw new AppException($connectionStatus);
+
                     }
                 }
-            } catch (Exception $ex) {
+                $logger->debug($connection);
+                $logger->debug($username);
+                $logger->debug($password);
+                if (ldap_bind($connection, $username, $password)) {
+                    $connectionStatus = true;
+                    $logger->info("LDAP bind successful to " . $fqdn . " using credentials: " . $username);
+                    return $connection;
+                } else {
+                    $logger->error(ldap_error($connection));
+                    $connectionStatus = "INVALID CREDENTIALS/ACCOUNT LOCKED";
+
+                    throw new AppException($connectionStatus);
+                    $logger->warning("LDAP bind failed  to " . $fqdn . " using credentials: " . $username . ' ' . $password);
+                }
+
+
+            } catch
+            (Exception $ex) {
                 $logger->warning($ex);
             }
         } else {
             $connectionStatus = "LDAP SERVER UNREACHABLE";
             $logger->warning("LDAP Server is unreachable");
+            throw new AppException($connectionStatus);
+        }
+
+        if ($connectionStatus === false) {
+            throw new AppException('General Unable to connect to Active Directory!');
         }
         return $connectionStatus;
     }
@@ -205,7 +224,8 @@ class AD
      *
      * @return boolean
      */
-    public function query($filter, $base_dn = null)
+    public
+    function query($filter, $base_dn = null)
     {
         /*
           if (is_null($filter)) {
@@ -230,17 +250,20 @@ class AD
         return false;
     }
 
-    private static function setLDAPOptions($connection)
+    private
+    static function setLDAPOptions($connection)
     {
         ldap_set_option(null, LDAP_OPT_DEBUG_LEVEL, 7);
         ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
         ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($connection, LDAP_OPT_X_TLS_CERTFILE, CONFIGPATH . DIRECTORY_SEPARATOR . "activedirectory" . DIRECTORY_SEPARATOR . "ad.pem");
+        return $connection;
 //ldap_set_option($this->connection, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
     }
 
 
-    public function read($filter = null, $base_dn = null)
+    public
+    function read($filter = null, $base_dn = null)
     {
         if (is_null($filter)) {
             $filter = "(&(objectClass=person)(objectClass=user))";
@@ -250,7 +273,8 @@ class AD
         }
         //$this->logger->info($base_dn);
         //$this->logger->info($filter);
-
+        //var_dump($base_dn);
+        //var_dump($filter);
         $result = ldap_read($this->connection, $base_dn, $filter, ["*"], 0, 50, 10);
         if ($result != false) {
             $info = ldap_get_entries($this->connection, $result);
@@ -261,7 +285,8 @@ class AD
         return false;
     }
 
-    public function list($filter = null, $base_dn = null)
+    public
+    function list($filter = null, $base_dn = null)
     {
         if (is_null($filter)) {
             $filter = "(&(objectClass=person)(objectClass=user))";
@@ -272,25 +297,11 @@ class AD
         // var_dump($filter);
         // var_dump($base_dn);
         $this->logger->info($base_dn);
-        $this->logger->info($filter);
+        //var_dump($filter);
         $result = ldap_list($this->connection, $base_dn, $filter, ["*"], 0, 50, 10);
-
+        //var_dump($result);
         if ($result != false) {
-
-
-            //echo "wtf";
-            //var_dump($this->connection);
-            //var_dump($result);
-            //var_dump(ldap_get_entries($this->connection, $result));
-            //return;
             $info = ldap_get_entries($this->connection, $result);
-            //var_dump(ldap_error($this->connection));
-            //var_dump(ldap_get_entries($this->connection, $result));
-            //return;
-            //echo "wtf";
-            //var_dump($info);
-            //  return;
-            // $this->logger->info($info);
             return $info;
         }
         return false;
@@ -705,10 +716,14 @@ class AD
 
     public function getAllSubOUs($dn, $array = null)
     {
+        $ous = [];
         if ($this->ouExists($dn) or $dn == DistrictDatabase::getAD_BaseDN(1)) {
+            //var_dump('Searching sub ous of ' . $dn);
             $filter = '(objectClass=organizationalUnit)';
             $result = $this->list($filter, $dn);
+            //var_dump($result);
             foreach ($result as $resultEntry) {
+                //var_dump($resultEntry);
                 if (is_array($resultEntry)) {
                     $ou = $resultEntry["distinguishedname"][0];
                     if ($resultEntry != null and $ou != null and $ou != '' and $ou != $dn) {

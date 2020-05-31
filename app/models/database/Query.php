@@ -124,8 +124,8 @@ class Query
         if (is_array($this->targetColumns)) {
             $this->targetColumns = $this->targetColumns[0];
         }
-//var_dump($this->targetColumns);
         $this->query = $this->queryType . ' (' . $this->targetColumns . ') FROM ' . $this->targetTable;
+
     }
 
     /**
@@ -210,10 +210,13 @@ class Query
             case self::UPDATE:
                 $this->prepareUpdate();
                 break;
-            case self::DELETE:
-                $this->prepareDelete();
+
             case self::COUNT:
                 $this->prepareCount();
+                break;
+            case self::DELETE:
+                $this->prepareDelete();
+                break;
             default:
                 break;
         }
@@ -326,7 +329,6 @@ class Query
             $this->query .= $set[0] . '=' . $set[1];
             $firstAction = false;
         }
-        $firstAction = true;
     }
 
     public function sort(string $direction, string $column)

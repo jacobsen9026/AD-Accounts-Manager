@@ -5,6 +5,8 @@ namespace System;
 
 
 use Monolog\Handler\StreamHandler;
+use System\App\AppException;
+use System\Exception\FileException;
 use VisualAppeal\AutoUpdate;
 
 class Updater
@@ -14,13 +16,12 @@ class Updater
      */
     private $updater;
 
-    private $lastCheckedFile = WRITEPATH . DIRECTORY_SEPARATOR . "lastUpdateCheck.log";
+    private $lastCheckedFile;
     /**
      * @var null|int
      */
     private int $lastChecked = 0;
-//    private int $updateCheckInterval = (60 * 60 * 12);
-    private int $updateCheckInterval = (12);
+    private int $updateCheckInterval = (60 * 60 * 12);
     private $logger;
     private $timeout = 120;
     private $checkSSL = true;
@@ -32,42 +33,69 @@ class Updater
 
     /**
      * Update constructor.
+     * Defaults:
+     * updateCheckInterval: 12hrs
+     * checkSSL: true
+     * Timeout (update check): 120s
      *
      * @param AutoUpdate $updater
      */
-    public function __construct(string $url, string $tempFilePath, string $destFilePath, int $currentVersion)
+    public function __construct(string $url, string $tempFilePath, string $destFilePath, $currentVersion)
     {
         $this->logger = SystemLogger::get();
         $this->logger->info('Updater loaded');
         $this->logger->info(time());
-        $this->lastChecked = (int)File::getContents($this->lastCheckedFile);
+
         $this->tempFilePath = $tempFilePath;
         $this->destFilePath = $destFilePath;
         $this->url = $url;
         $this->currentVersion = $currentVersion;
     }
 
-    public
-    function connectToUpdateServer()
+    /**
+     * @throws \Exception
+     */
+    public function connectToUpdateServer(): void
     {
+        $this->logger->info("Connecting to update server");
         $this->updater = new AutoUpdate($this->tempFilePath, $this->destFilePath, $this->timeout);
         $this->updater->setCurrentVersion(Core::getVersion())
             ->setUpdateUrl($this->url)
             ->addLogHandler(new StreamHandler($this->logFile))
             ->setSslVerifyHost($this->checkSSL);
+        $this->logger->debug("Connected to " . $this->url);
 
 
     }
 
+    /**
+     * @return bool|null
+     * @throws AppException
+     * @throws \Exception
+     */
     public function isUpdateAvailable()
     {
+        $this->logger->info("isUpdateAvailable called");
         $this->connectToUpdateServer();
+
+        try {
+            $this->lastChecked = (int)File::getContents($this->lastCheckedFile);
+            $this->logger->debug("Last check time was " . $this->lastChecked);
+        } catch (FileException $ex) {
+            if ($ex->getCode() !== FileException::FILE_NOT_FOUND) {
+                $this->logger->warning("Problem with reading flag file");
+                throw new AppException($ex->getMessage(), $ex->getCode(), $ex);
+            }
+
+        }
+
         if (time() - $this->lastChecked > $this->updateCheckInterval) {
             $this->logger->info("Checking for a new version");
             try {
 
 
                 if ($this->updater->checkUpdate()) {
+                    $this->logger->debug(File::overwriteFile($this->lastCheckedFile, time()));
                     return true;
                 } else {
                     // No new update
@@ -84,8 +112,10 @@ class Updater
 
     }
 
-    public
-    function getLatestVersion()
+    /**
+     * @return string
+     */
+    public function getLatestVersion()
     {
         return $this->updater->getLatestVersion();
     }

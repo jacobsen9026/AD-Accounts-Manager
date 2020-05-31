@@ -21,7 +21,7 @@ class ADGroups extends ADApi
         if ($groupName instanceof Group) {
             return $groupName;
         }
-        $conn = ADConnection::get();
+        $conn = ADConnection::getConnectionProvider();
         $group = $conn
             ->search()
             ->groups()

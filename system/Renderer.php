@@ -32,7 +32,7 @@ namespace System;
  * @author cjacobsen
  */
 
-use System\AppOutput;
+use System\App\AppOutput;
 use System\Models\View\DebugViewer;
 use System\Models\Ajax\AJAXResponse;
 use System\DatabaseLogger;

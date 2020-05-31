@@ -33,7 +33,7 @@ namespace App\Lib;
  */
 
 use System\App\Interfaces\AppInterface;
-use System\AppOutput;
+use System\App\AppOutput;
 use System\Log\CommonApp;
 
 class TestApp extends CommonApp implements AppInterface
@@ -47,7 +47,7 @@ class TestApp extends CommonApp implements AppInterface
         self::$instance = $this;
     }
 
-    public function run(): \System\AppOutput
+    public function run(): \System\App\AppOutput
     {
         $out = new AppOutput($this);
         $out->appendBody("Hello World");

@@ -34,6 +34,7 @@ namespace System\Common;
  * @author cjacobsen
  */
 
+use System\File;
 use System\Log\CommonLogger;
 use System\Log\CommonLogLevel;
 
@@ -49,13 +50,14 @@ class CommonLogEntry
     private $message;
     private $backtrace;
     private $loggerName;
+    private $logFile;
 
     public function __construct($loggerName = "")
     {
+        $this->logFile = WRITEPATH . DIRECTORY_SEPARATOR . "logs" . DIRECTORY_SEPARATOR . "debug.log";
         $this->timestamp = microtime(true);
         $this->backtrace = $this->traceBack();
         $this->loggerName = $loggerName;
-
     }
 
     private function traceBack()
@@ -128,6 +130,8 @@ class CommonLogEntry
     public function setMessage($message)
     {
         $this->message = $this->preProcessMessage($message);
+
+        $this->writeToLogFile();
         return $this;
     }
 
@@ -193,6 +197,15 @@ class CommonLogEntry
     public function getLoggerName()
     {
         return $this->loggerName;
+    }
+
+    private function writeToLogFile()
+    {
+        $logEntry = $this->loggerName . " " . $this->getTimestamp() . ' '
+            . $this->getBacktrace()[0]['file'] . ':' . $this->getBacktrace()[0]['line']
+            . ' ' . $this->getMessage() . "\n";
+
+        File::appendToFile($this->logFile, $logEntry);
     }
 
 }

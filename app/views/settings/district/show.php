@@ -1,6 +1,7 @@
 <?php
 /* @var $district District */
 
+use App\Api\Ad\ADConnection;
 use App\Models\Database\DistrictDatabase;
 use System\App\Forms\Form;
 use App\Api\GAM;
@@ -15,9 +16,12 @@ use System\App\Forms\FormHTML;
 /* @var $district District */
 /** @var District $district */
 $district = $this->district;
-$ad = new App\Api\AD($district->getID());
-$adTestResult = $ad->getConnectionResult();
 
+//$adTestResult = $ad->getConnectionResult();
+$adTestResult = ADConnection::isConnected();
+if (!$adTestResult) {
+    $adTestResult = ADConnection::getError();
+}
 //$clientSecretExists = GAM::get()->clientSecretExists();
 //$google = GAM::get();
 //var_dump($adTestResult);
@@ -34,11 +38,6 @@ $adTestResult = $ad->getConnectionResult();
     </div>
 
 
-    <script>
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
-        })
-    </script>
     <?php
     $form = new Form('/settings/district/edit/' . $district->getId(), 'editDistrict');
 

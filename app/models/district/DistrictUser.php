@@ -62,7 +62,7 @@ class DistrictUser extends ADModel
     {
         parent::__construct();
         if (is_string($user)) {
-            $this->activeDirectory = ADUsers::getUser($user);
+            $this->activeDirectory = ADUsers::getDirectoryUser($user);
         } elseif ($user instanceof User) {
             $this->activeDirectory = $user;
         }

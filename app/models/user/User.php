@@ -85,6 +85,8 @@ class User extends CoreUser
      */
     public function __construct(string $username = null)
     {
+        parent::__construct();
+        $this->username = $username;
         $this->logger = UserLogger::get();
         if ($username == self::ADMINISTRATOR) {
             $this->setAsAdministrator();

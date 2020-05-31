@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 cjacobsen.
+ * Copyright 2020 cjacobsen.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,56 +24,19 @@
  * THE SOFTWARE.
  */
 
-namespace System\App;
+namespace System\Exception;
 
 /**
- * Description of ErrorHandler
+ * Description of CoreException
  *
  * @author cjacobsen
  */
-
-use app\App;
-use System\SystemLogger;
-use System\AppException;
-
-class AppErrorHandler
+class FileException extends \Exception
 {
 
-    public static $instance;
 
-    function __construct()
-    {
-
-        set_error_handler([$this, 'handleError']);
-        if (isset(self::$instance)) {
-            return self::$instance;
-        } else {
-            self::$instance = $this;
-        }
-    }
-
-    /**
-     *
-     * @return AppErrorHandler
-     */
-    public static function get()
-    {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
-    //put your code here
-
-    public function handleError($code, $description, $file = null, $line = null, $context = null)
-    {
-        $label = $output = "Error: [$code] $description";
-        if ($file != null and $line != null) {
-            $output = "Error: $file:$line [$code] $description";
-        }
-        AppLogger::get()->error($output);
-        //die();
-    }
+    const FILE_NOT_FOUND = 404;
 
 }
+
+?>

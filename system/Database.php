@@ -57,7 +57,8 @@ class Database
      *
      * @var DatabaseLogger
      */
-    public static $logger;
+    public $logger;
+    private $dsn;
 
     /**
      *
@@ -84,7 +85,8 @@ class Database
     public function __construct($dsn)
     {
         self::$instance = $this;
-        self::$logger = DatabaseLogger::get();
+        $this->logger = DatabaseLogger::get();
+        $this->dsn = $dsn;
         $this->connect($dsn);
     }
 
@@ -96,7 +98,7 @@ class Database
         if (!file_exists(APPCONFIGDBPATH)) {
             $seedDatabse = true;
         }
-        self::$logger->info("connecting " . APPCONFIGDBPATH);
+        $this->logger->info("connecting " . APPCONFIGDBPATH);
         /**
          * Connect to database, will create file if it doesn't already exist
          */
@@ -119,7 +121,7 @@ class Database
 
     private function seedDatabase()
     {
-        self::$logger->debug("Seeding the configuration database.");
+        $this->logger->debug("Seeding the configuration database.");
         /*
          * Load in DB Schema from file
          */
@@ -148,18 +150,18 @@ class Database
     public function query($query)
     {
 
-        //var_dump($query);
-        /* @var $db PDO */
+        //var_dump($this);
 
-        self::$logger->debug("Query: " . $query);
+        $this->logger->debug("Query: " . $query);
         //var_dump($query);
         try {
             $result = $this->db->query($query);
             /*
+             *
              * Check that the SQL statement completed successfully, log any errors
              */
             if ($this->db->errorCode()[0] != '00000') {
-                self::$logger->error($this->db->errorInfo());
+                $this->logger->error($this->db->errorInfo());
                 return false;
             }
             /*
@@ -185,12 +187,12 @@ class Database
             }
 
             //Return Array
-            self::$logger->debug("Response: " . var_export($return, true));
+            $this->logger->debug("Response: " . var_export($return, true));
 
             //var_dump($return);
             return $return;
         } catch (Exception $ex) {
-            self::$logger->error($ex);
+            $this->logger->error($ex);
             return false;
         }
     }
