@@ -78,7 +78,8 @@ use System\File;
          * Enable Bootstrap Tooltips system-wide
          */
         $(function () {
-            $('[data-toggle="tooltip"]').tooltip({boundary: 'window'})
+            $('[data-toggle="tooltip"]').tooltip({boundary: 'window'});
+            // $('[data-trigger="tooltip"]').tooltip({boundary: 'window'});
         })
 
     </script>

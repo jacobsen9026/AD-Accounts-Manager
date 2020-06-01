@@ -69,10 +69,11 @@ class AppErrorHandler
 
     public function handleError($code, $description, $file = null, $line = null, $context = null)
     {
-        $label = $output = "Error: [$code] $description";
+        $output = "Error: [$code] $description";
         if ($file != null and $line != null) {
             $output = "Error: $file:$line [$code] $description";
         }
+
         AppLogger::get()->error($output);
         //die();
     }

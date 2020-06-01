@@ -83,6 +83,7 @@ abstract class Javascript extends ViewModel
 
                                     $("#' . $outputID . '").' . $outputElement . '(' . $jsonObject . ');
                                     //console.log(data.output.ajax.logs);
+                                    preparePageHooks();
                                     ' . self::$logInjectionScript . '
 
                             });';
@@ -90,6 +91,7 @@ abstract class Javascript extends ViewModel
             $ajaxCommand .= '$.get("' . $url . '", function (data) {
                                     data = JSON.parse(data);
                                     $("#' . $outputID . '").' . $outputElement . '(' . $jsonObject . ');
+                                    preparePageHooks();
                                     ' . self::$logInjectionScript . '
 }
                             );';

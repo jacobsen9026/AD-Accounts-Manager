@@ -211,7 +211,7 @@ class ADAuth
      */
     private function loadWebUser(User $webUser)
     {
-        $adUser = ADUsers::getDomainUser($webUser->getUsername());
+        $adUser = ADUsers::getApplicationScopeUser($webUser->getUsername());
         $allPrivilegeLevels = PrivilegeLevelDatabase::get();
         /* @var $privilegeLevel PrivilegeLevel */
         foreach ($allPrivilegeLevels as $privilegeLevel) {

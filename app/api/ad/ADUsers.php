@@ -37,38 +37,40 @@ class ADUsers extends ADApi
         return $usernames;
     }
 
-    public static function getDirectoryUser(string $username)
+    public static function getDomainScopUser(string $username)
     {
         return self::getUser($username);
     }
 
 
     /**
-     * @param $username
+     * @param $serchTerm
      * @param $baseDN
      *
      * @return User
      * @throws AppException
      */
 
-    private static function getUser($username, $baseDN)
+    private static function getUser($serchTerm, $baseDN = null, $searchAgainst = 'samaccountname')
     {
 
         if (is_null($baseDN) or $baseDN === '') {
             $baseDN = self::getOUFromDN(DistrictDatabase::getAD_BaseDN());
         }
-        LDAPLogger::get()->info("Getting " . $username . " from Active Directory in " . $baseDN);
+        LDAPLogger::get()->info("Getting " . $serchTerm . " from Active Directory in " . $baseDN);
         $adUser = ADConnection::getConnectionProvider()
             ->search()
             ->users()
             ->in($baseDN)
-            ->where('samaccountname', '=', $username)
+            ->where($searchAgainst, '=', $serchTerm)
             ->limit(1)
             ->get()[0];
         LDAPLogger::get()->debug($adUser);
         if ($adUser == null) {
             throw new AppException('That user was not found.', AppException::USER_NOT_FOUND);
         }
+
+
         return $adUser;
     }
 
@@ -78,7 +80,7 @@ class ADUsers extends ADApi
      * @return User
      * @throws AppException
      */
-    public static function getDomainUser(string $username)
+    public static function getApplicationScopeUser(string $username)
     {
         LDAPLogger::get()->info('Searching for ' . $username . ' domain wide.');
 
@@ -108,5 +110,11 @@ class ADUsers extends ADApi
             return true;
         }
         return false;
+    }
+
+    public static function getUserByDN($distinguishedName)
+    {
+        return self::getUser($distinguishedName, null, 'distinguishedname');
+
     }
 }

@@ -79,7 +79,7 @@ class FormText extends FormElement implements FormElementInterface
     public function autoCompleteGroupName()
     {
         $this->autocomplete = true;
-        $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteGroup/', $this->getName());
+        $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteGroup/', $this->getId());
         $this->setScript($script);
         return $this;
     }
@@ -144,7 +144,7 @@ class FormText extends FormElement implements FormElementInterface
         }
 
         $html .= '<div class="d-inline-block col mx-auto px-0">'
-            . '<input type="' . $this->type . '" class="' . $this->getinputClasses() . '" name="' . $this->getName() . '" id="' . $this->getName() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" ' . $disable . '>'
+            . '<input type="' . $this->type . '" class="' . $this->getinputClasses() . '" name="' . $this->getName() . '" id="' . $this->getId() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" ' . $disable . '>'
             . '</div></div>';
         $html .= '</div></div>';
         return $html;

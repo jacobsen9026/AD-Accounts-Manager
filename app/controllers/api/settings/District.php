@@ -54,6 +54,7 @@ namespace App\Controllers\Api\settings;
  * @author cjacobsen
  */
 
+use App\Api\AD;
 use App\Controllers\Api\APIController;
 use App\Controllers\Settings\District as DistrictController;
 use System\Post;
@@ -73,6 +74,12 @@ class District extends APIController
      */
     private $controller;
 
+    /**
+     * @param int $districtID
+     *
+     * @return string[]
+     *
+     */
     public function indexPost($districtID = 1)
     {
 
@@ -81,7 +88,7 @@ class District extends APIController
         $this->district = \App\Models\Database\DistrictDatabase::getDistrict($districtID);
         $this->distictID = $this->district->getId();
 
-        return $this->returnHTML($this->view('settings/district/show'));
+        return $this->returnHTML($this->view('settings/district/show') . $this->settingsSavedToast());
     }
 
     /**
@@ -104,19 +111,19 @@ class District extends APIController
 
             case 'addPrivilege':
                 $this->controller->addDistrictPrivilegeLevel();
-                return $this->returnHTML($this->view('settings/district/permissions'));
+                return $this->returnHTML($this->view('settings/district/permissions') . $this->settingsSavedToast());
 
                 break;
             case 'deletePrivilege':
                 $this->controller->deletePrivilegeLevel();
-                $output = $this->returnHTML($this->view('settings/district/permissions'));
+                $output = $this->returnHTML($this->view('settings/district/permissions') . $this->settingsSavedToast());
                 //var_dump($output);
                 return $output;
 
                 break;
             case 'updatePrivilege':
                 $this->controller->updatePrivilege(Post::get("privilegeID"));
-                return $this->returnHTML($this->view('settings/district/permissions'));
+                return $this->returnHTML($this->view('settings/district/permissions') . $this->settingsSavedToast());
 
                 break;
             case 'modifyPermission':
@@ -150,7 +157,7 @@ class District extends APIController
             case 'addDistrictPermission':
                 // $this->district = \App\Models\Database\DistrictDatabase::getDistrict($districtID);
                 $this->controller->addOUPermission();
-                return $this->returnHTML($this->view('settings/district/permissions/districtLevelPermissions'));
+                return $this->returnHTML($this->view('settings/district/permissions/districtLevelPermissions') . $this->settingsSavedToast());
                 break;
             case 'getManagePrivilegeLevels':
 
@@ -188,7 +195,7 @@ class District extends APIController
             $response = PermissionMapPrinter::printOUPermissions($dn);
             $response .= PermissionMapPrinter::printAddOUPermission($dn);
 
-            $data = $this->returnHTML($response);
+            $data = $this->returnHTML($response . $this->settingsSavedToast());
             $data["ouPermNav"] = $this->getOuNavigation($ou);
             return $data;
         }
@@ -237,6 +244,23 @@ class District extends APIController
         $response .= PermissionMapPrinter::printAddOUPermission($dn);
 
         return $this->returnHTML($response);
+    }
+
+    public function testADPermissionsPost($districtID = 1)
+    {
+        $csrfCheck = Post::get();
+        if ($this->user->superAdmin) {
+            $testResult = false;
+            if ($this->user->superAdmin) {
+                $ad = new AD($districtID);
+                $testResult = $ad->createTestUser();
+            }
+            if ($testResult == 'true') {
+                return $this->returnHTML('<h1><i class="fas fa-check-circle text-success"></i></h1>');
+            } else {
+                return $this->returnHTML('<h1><i class="fas fa-times-circle text-danger"></i></h1>' . $testResult);
+            }
+        }
     }
 
 }

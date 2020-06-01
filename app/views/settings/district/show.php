@@ -94,7 +94,7 @@ if (!$adTestResult) {
         ->setSubLabel($district->getAdBaseDN())
         ->setType("button")
         ->setId("AD_Permission_Test")
-        ->addAJAXRequest('/api/district/testPerms', "AD_Permission_Test_Button_container");
+        ->addAJAXRequest('/api/settings/district/testADPermissions', "AD_Permission_Test_Button_container", ["csrfToken" => Form::getCsrfToken()]);
 
     $action = new FormText('', '', 'action', 'updateDistrict');
     $action->hidden();

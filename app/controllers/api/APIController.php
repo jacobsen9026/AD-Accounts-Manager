@@ -68,8 +68,8 @@ class APIController extends Controller
 
     public function returnHTML($html)
     {
-        $pageHookScript = '<script>preparePageHooks();</script>';
-        return ["html" => $html . $pageHookScript];
+        //$pageHookScript = '<script>preparePageHooks();</script>';
+        return ["html" => $html];
     }
 
     public function returnValue($html)

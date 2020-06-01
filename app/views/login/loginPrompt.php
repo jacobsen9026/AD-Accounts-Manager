@@ -11,7 +11,7 @@ if (isset($params['toast'])) {
 
 }
 if (\System\Request::get()->serverName == 'demo.adam-app.gq') {
-    $toastBody = "<strong>To login use</strong><br>admin<br>password<br><br>";
+    $toastBody = "<strong>To login use</strong><br>demo<br>demo<br><br>";
     $demoToast = new \App\Models\View\Toast('Demo Account', $toastBody, 10000);
     $demoToast->closable();
     echo $demoToast->printToast();

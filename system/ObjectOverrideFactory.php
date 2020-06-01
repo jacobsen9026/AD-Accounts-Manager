@@ -9,12 +9,17 @@ class ObjectOverrideFactory
 
     public function convert($obj, string $targetClas)
     {
+        var_dump($obj);
         /* @var $sourceClass string */
         $sourceClass = get_class($obj);
         $sourceReflectionClass = new \ReflectionClass($sourceClass);
-        var_dump($sourceReflectionClass->getConstructor());
-        $sourceFields = get_class_vars($sourceClass);
-        $newObj = new $targetClas ();
+        $targetReflectionClass = new \ReflectionClass($targetClas);
+        var_dump($targetReflectionClass);
+
+
+        $sourceFields = get_class_methods($sourceClass);
+        var_dump($sourceFields);
+        //$newObj = new $targetClas ();
         foreach ($sourceFields as $sourceField) {
 
         }
