@@ -37,6 +37,7 @@ class FormHTML extends FormElement implements FormElementInterface
     //put your code here
     private $html;
 
+
     public function setHtml($html)
     {
         $this->html = $html;
@@ -45,7 +46,7 @@ class FormHTML extends FormElement implements FormElementInterface
 
     public function getElementHTML()
     {
-        $output = '<div id="' . $this->getId() . '" data-toggle="tooltip" data-placement="top" title="' . $this->getTooltip() . '">';
+        $output = '<div id="' . $this->getId() . '" data-toggle="tooltip" data-placement="top" title="' . $this->getTooltip() . '" class="' . $this->getInputClasses() . '">';
         $output .= $this->html;
         $output .= '</div>';
         return $output;

@@ -79,7 +79,7 @@ class Login extends Controller
                         $logger->debug('trying LDAP auth');
                         $adAuth = new ADAuth();
                         $user = $adAuth->authenticate2($username, $password);
-                        var_dump($user);
+                        //var_dump($user);
 
 
                     } catch (AuthException $ex) {
@@ -91,7 +91,7 @@ class Login extends Controller
                 }
 
             }
-            if (!isset($user) or $user === null) {
+            if (!isset($user) or $user === null or $user === false) {
 
                 return $this->badCredentials();
             }
@@ -116,7 +116,9 @@ class Login extends Controller
     private function badCredentials()
     {
         $toast = new Toast('Bad Credentials', 'The username or password that you entered did not match', 3500);
-        $toast->setImage('<i class="text-danger fas fa-exclamation-circle"></i>');
+
+        $toast->setImage('<i class="text-danger fas fa-exclamation-circle"></i>')
+            ->bottom();
         $data = ['toast' => $toast->printToast()];
 
         return $this->view('login/loginPrompt', $data);

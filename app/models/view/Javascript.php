@@ -38,6 +38,10 @@ use System\App\Forms\Form;
 abstract class Javascript extends ViewModel
 {
 
+    public static $spinner = '\' <div class="mr-5 d-inline-flex straight-loader text-secondary"></div><div class="ml-4 pl-3 d-inline-flex straight-loader delayed text-secondary"></div>\'';
+    public static $hiddenSpinner = '<div class="mr-5 d-inline-flex straight-loader text-secondary hidden"></div><div class="ml-4 pl-3 d-inline-flex straight-loader delayed text-secondary hidden"></div>';
+
+
     public static $logInjectionScript = '  $.each(data.output.ajax.logs, function(key, value){
                                      console.log(key+"_AJAX_Log_Panel");
                                     $("#"+key+"_AJAX_Log_Panel").append(value);
@@ -59,7 +63,6 @@ abstract class Javascript extends ViewModel
     public static function buildAJAXRequest($url, $outputID = '', $data = null, $showLoading = false, $outputElement = 'html')
     {
         $ajaxCommand = '';
-        $spinner = '\' <div class="mr-5 d-inline-flex straight-loader text-secondary"></div><div class="ml-4 pl-3 d-inline-flex straight-loader delayed text-secondary"></div>\'';
         //$spinner = '\'<div class="round-loader text-secondary"></div>\'';
 
 
@@ -73,7 +76,7 @@ abstract class Javascript extends ViewModel
 
 
         if ($outputID != '' and $showLoading) {
-            $ajaxCommand .= '$("#' . $outputID . '").' . $outputElement . '(' . $spinner . ');';
+            $ajaxCommand .= '$("#' . $outputID . '").' . $outputElement . '(' . self::$spinner . ');';
         }
 
 

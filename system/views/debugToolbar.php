@@ -2,9 +2,6 @@
 if ((defined('DEBUG_MODE') and boolval(DEBUG_MODE) and ($this->core->logger != null)) or isset($this->appLogger)) {
 
 
-    echo "<style>";
-    include(ROOTPATH . DIRECTORY_SEPARATOR . "system" . DIRECTORY_SEPARATOR . "system.css");
-    echo "</style>";
     //var_dump($this->appLogger->getLogs());
     //var_dump($this->logger->getLogs());
     ?>

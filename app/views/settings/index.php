@@ -39,43 +39,33 @@ if (!isset($this->tab) or $this->tab == null) {
 switch ($this->tab) {
     case 'application':
         $goto = '#nav-app-tab';
-
-
         break;
     case 'authentication':
         $goto = '#nav-auth-tab';
-
-
-        break;
-    case 'email':
-        $goto = '#nav-email-tab';
-
-        break;
-    case 'notification':
-        $goto = '#nav-notification-tab';
-        break;
-    case 'update':
-        $goto = '#nav-update-tab';
         break;
     default:
-        $goto = '#nav-app-tab';
+        $goto = '#nav-' . $this->tab . '-tab';
         break;
 }
 ?>
 <script>
     //Highlight changed items on all forms
     $(document).ready(function () {
-
+        $('.straight-loader.hidden').removeClass('hidden');
         $('<?= $goto ?>').click();
-        $('input').keyup(function () {
-            $(this).addClass('text-danger border-danger');
 
-        });
 
         $('select').change(function () {
 
             $(this).addClass('border-danger text-danger');
 
+        });
+
+        $(document).on("ajaxSend", function () {
+            $('.straight-loader.hidden').removeClass('hidden');
+        });
+        $(document).on("ajaxComplete ", function () {
+            $('.straight-loader').addClass('hidden');
         });
 
     });
@@ -98,5 +88,8 @@ switch ($this->tab) {
     </div>
 </nav>
 <div class="row"></div>
+
+<?php echo Javascript::$hiddenSpinner ?>
+
 <div class="col pt-4" id="settingsOutput"></div>
 

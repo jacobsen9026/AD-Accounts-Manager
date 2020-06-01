@@ -14,7 +14,6 @@ use System\Traits\DomainTools;
 
 class ADUsers extends ADApi
 {
-    use DomainTools;
 
     public static function listUsers(string $searchTerm)
     {

@@ -10,7 +10,7 @@ class Toast extends ViewModel
     private $timeout = 2000;
     private $image = '';
     private bool $closable = false;
-
+    private string $classes;
 
     public function __construct(string $header, string $body, $timeout = 0)
     {
@@ -18,7 +18,38 @@ class Toast extends ViewModel
         $this->setHeader($header)
             ->addToBody($body)
             ->setTimeout($timeout);
+        $this->classes = 'position-fixed  center top';
+    }
 
+    /**
+     * @return string
+     */
+    public function getClasses(): string
+    {
+        return $this->classes;
+    }
+
+    /**
+     * @param string $classes
+     *
+     * @return Toast
+     */
+    public function addClasses(string $classes): Toast
+    {
+        if (is_string($classes)) {
+            $this->classes = trim(str_replace("  ", " ", $this->classes)) . ' ' . trim($classes);
+        } elseif (is_array($classes)) {
+            foreach ($classes as $class) {
+                $this->classes = trim(str_replace("  ", " ", $this->classes)) . ' ' . trim($class);
+            }
+        }
+        return $this;
+    }
+
+    public function removeClasses(string $classes): Toast
+    {
+        $this->classes = str_replace($classes, '', $this->getClasses());
+        return $this;
     }
 
     /**
@@ -101,7 +132,7 @@ class Toast extends ViewModel
 
     public function printToast()
     {
-        $toast = ['header' => $this->getHeader(), 'body' => $this->getBody(), 'timeout' => $this->getTimeout(), 'image' => $this->getImage(), 'closable' => $this->closable];
+        $toast = ['toastClasses' => $this->getClasses(), 'header' => $this->getHeader(), 'body' => $this->getBody(), 'timeout' => $this->getTimeout(), 'image' => $this->getImage(), 'closable' => $this->closable];
 
         $html = $this->view('layouts/toast', $toast);
 
@@ -111,6 +142,12 @@ class Toast extends ViewModel
     public function closable()
     {
         $this->closable = true;
+    }
+
+    public function bottom()
+    {
+        $this->removeClasses('top')
+            ->addClasses('bottom');
     }
 
 
