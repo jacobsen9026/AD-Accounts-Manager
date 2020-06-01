@@ -32,46 +32,40 @@ $showApplicationSettingsCommand = Javascript::buildAJAXRequest('/api/app', "sett
 $showAuthenticationSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_AUTH_SETTINGS]);
 $showEmailSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_EMAIL_SETTINGS]);
 $showNotificationSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_NOTIF_SETTINGS]);
+$showUpdateSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_UPDATE_SETTINGS]);
 if (!isset($this->tab) or $this->tab == null) {
     $this->tab = "application";
 }
 switch ($this->tab) {
     case 'application':
         $goto = '#nav-app-tab';
-
-
         break;
     case 'authentication':
         $goto = '#nav-auth-tab';
-
-
-        break;
-    case 'email':
-        $goto = '#nav-email-tab';
-
-        break;
-    case 'notification':
-        $goto = '#nav-notification-tab';
         break;
     default:
-        $goto = '#nav-app-tab';
+        $goto = '#nav-' . $this->tab . '-tab';
         break;
 }
 ?>
 <script>
     //Highlight changed items on all forms
     $(document).ready(function () {
-
+        $('.straight-loader.hidden').removeClass('hidden');
         $('<?= $goto ?>').click();
-        $('input').keyup(function () {
-            $(this).addClass('text-danger border-danger');
 
-        });
 
         $('select').change(function () {
 
             $(this).addClass('border-danger text-danger');
 
+        });
+
+        $(document).on("ajaxSend", function () {
+            $('.straight-loader.hidden').removeClass('hidden');
+        });
+        $(document).on("ajaxComplete ", function () {
+            $('.straight-loader').addClass('hidden');
         });
 
     });
@@ -89,8 +83,13 @@ switch ($this->tab) {
            aria-controls="nav-email" aria-selected="false" onclick='<?= $showEmailSettingsCommand ?>'>Email</a>
         <a class="nav-item nav-link" id="nav-notification-tab" data-toggle="tab" href="#nav-notification" role="tab"
            aria-controls="nav-notification" aria-selected="false" onclick='<?= $showNotificationSettingsCommand ?>'>Notification</a>
+        <a class="nav-item nav-link" id="nav-update-tab" data-toggle="tab" href="#nav-update" role="tab"
+           aria-controls="nav-update" aria-selected="false" onclick='<?= $showUpdateSettingsCommand ?>'>Update</a>
     </div>
 </nav>
 <div class="row"></div>
+
+<?php echo Javascript::$hiddenSpinner ?>
+
 <div class="col pt-4" id="settingsOutput"></div>
 

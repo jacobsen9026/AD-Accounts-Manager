@@ -35,7 +35,10 @@ namespace App\Models\District;
 
 use Adldap\Models\Group;
 use Adldap\Models\User;
+use App\Api\Ad\ADConnection;
 use App\Api\Ad\ADGroups;
+use App\Api\Ad\ADUsers;
+use System\App\AppException;
 use System\Traits\DomainTools;
 
 
@@ -53,13 +56,15 @@ class DistrictGroup extends ADModel
      *
      * @param User $group
      */
-    public function __construct($group)
+    public function __construct($group = null)
     {
         parent::__construct();
 
-        $this->logger->debug($group);
+        $this->logger->debug("Searching for group named: " . $group);
         $this->activeDirectory = ADGroups::getGroup($group);
-        //}
+        $this->logger->debug($this);
+
+
     }
 
     public function getEmail()
@@ -71,7 +76,10 @@ class DistrictGroup extends ADModel
     {
         $members = [];
         foreach ($this->activeDirectory->getMembers() as $groupMember) {
-            $members[] = new DistrictUser($groupMember);
+            if ($groupMember instanceof User) {
+                $this->logger->debug($groupMember);
+                $members[] = new DistrictUser($groupMember);
+            }
         }
         return $members;
     }
@@ -89,5 +97,29 @@ class DistrictGroup extends ADModel
         }
         return false;
     }
+
+    public function setName($groupNam)
+    {
+
+    }
+
+    public function addMember($member)
+    {
+        $this->activeDirectory->addMember($member);
+    }
+
+
+    public function addUserMember($userOrDN)
+    {
+        if (is_string($userOrDN)) {
+            $userOrDN = new DistrictUser(ADUsers::getUserByDN($userOrDN));
+        }
+        if (!$this->hasMember($userOrDN->getUsername())) {
+            return $this->activeDirectory->addMember($userOrDN->getDistinguishedName());
+        } else {
+            throw new AppException('User already in group');
+        }
+    }
+
 
 }

@@ -44,17 +44,18 @@
     <link rel="mask-icon" href="/img/favicon/safari-pinned-tab.svg" color="#5bbad5">
 
 
-
     <?php
     /**
      * Handle Themes
      */
-    if ($this->app->user->theme != \app\config\Theme::DEFAULT_THEME and $this->app->user->theme != \app\config\Theme::BLUE_THEME) {
-        System\App\AppLogger::get()->debug("theme is " . $this->app->user->theme);
-        $theme = explode("_", $this->app->user->theme);
-        $theme = $theme[0] . ucfirst($theme[1]);
+    if (isset($this->app->user)) {
+        if ($this->app->user->theme != \app\config\Theme::DEFAULT_THEME and $this->app->user->theme != \app\config\Theme::BLUE_THEME) {
+            System\App\AppLogger::get()->debug("theme is " . $this->app->user->theme);
+            $theme = explode("_", $this->app->user->theme);
+            $theme = $theme[0] . ucfirst($theme[1]);
 
-        echo ' <link rel="stylesheet" href="/css/' . $theme . '.css">';
+            echo ' <link rel="stylesheet" href="/css/' . $theme . '.css">';
+        }
     }
     /**
      * if ($this->app->user->theme == \app\config\Theme::RED_THEME) {

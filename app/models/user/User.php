@@ -32,11 +32,11 @@ namespace App\Models\User;
  * @author cjacobsen
  */
 
+use App\App\App;
 use app\config\Theme;
 use System\App\AppLogger;
 use System\App\Auth\CoreUser;
-use System\App\Session;
-use System\App\App;
+use App\App\Session;
 use App\Models\Database\UserDatabase;
 use System\App\UserLogger;
 use App\Models\Database\PermissionMapDatabase;
@@ -54,7 +54,6 @@ class User extends CoreUser
      * @var array<PrivilegeLevel>
      */
     public $privilegeLevels;
-    public $adGroupName;
     public $superAdmin = false;
 
 
@@ -86,6 +85,8 @@ class User extends CoreUser
      */
     public function __construct(string $username = null)
     {
+        parent::__construct();
+        $this->username = $username;
         $this->logger = UserLogger::get();
         if ($username == self::ADMINISTRATOR) {
             $this->setAsAdministrator();
@@ -224,7 +225,7 @@ class User extends CoreUser
     /**
      * @return array
      */
-    public function getPrivilegeLevels()
+    public function getPrivilegeLevels(): ?array
     {
         $this->logger->debug($this->privilegeLevels);
         return $this->privilegeLevels;
@@ -237,7 +238,7 @@ class User extends CoreUser
      *
      * @return $this
      */
-    public function setPrivilegeLevels($privilegeLevelArray)
+    public function setPrivilegeLevels($privilegeLevelArray): self
     {
         if (!is_array($privilegeLevelArray)) {
             $privilegeLevelArray = [$privilegeLevelArray];
@@ -251,18 +252,22 @@ class User extends CoreUser
      * Save this user to the database
      *
      */
-    public function save()
+    public function save(): ?bool
     {
         try {
-            if ($this->getApiToken() == null or $this->getApiToken() == '')
+            if (($this->getApiToken() === null) || ($this->getApiToken() === '')) {
                 $this->generateAPIToken();
+            }
             $this->logger->debug("Changing theme to " . $this->theme);
             Session::setUser($this);
             //Cookie::set(self::USER . '_' . $this->username, \system\Encryption::encrypt(serialize($this)));
             UserDatabase::setUserToken($this->username, $this->apiToken);
             //var_dump($this->theme);
             UserDatabase::setUserTheme($this->username, $this->theme);
-            if ($this->username != CoreUser::ADMINISTRATOR) {
+            /**
+             * Dont save privilege if we're the local admin
+             */
+            if ($this->username !== CoreUser::ADMINISTRATOR) {
                 UserDatabase::setUserPrivilege($this->username, $this->privilege);
             }
             return true;

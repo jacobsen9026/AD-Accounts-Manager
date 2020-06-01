@@ -3,7 +3,6 @@
   <component name="PhpIncludePathManager">
     <include_path>
       <path value="$PROJECT_DIR$/vendor/phpmailer/phpmailer" />
-      <path value="$PROJECT_DIR$/vendor/directorytree/ldaprecord" />
       <path value="$PROJECT_DIR$/vendor/phpseclib/phpseclib" />
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/streams" />
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/psr7" />
@@ -11,10 +10,7 @@
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/ringphp" />
       <path value="$PROJECT_DIR$/vendor/composer" />
       <path value="$PROJECT_DIR$/vendor/adldap2/adldap2" />
-      <path value="$PROJECT_DIR$/vendor/google/auth" />
       <path value="$PROJECT_DIR$/vendor/react/promise" />
-      <path value="$PROJECT_DIR$/vendor/google/apiclient" />
-      <path value="$PROJECT_DIR$/vendor/google/apiclient-services" />
       <path value="$PROJECT_DIR$/vendor/symfony/translation-contracts" />
       <path value="$PROJECT_DIR$/vendor/symfony/var-dumper" />
       <path value="$PROJECT_DIR$/vendor/psr/simple-cache" />
@@ -29,7 +25,14 @@
       <path value="$PROJECT_DIR$/vendor/tightenco/collect" />
       <path value="$PROJECT_DIR$/vendor/monolog/monolog" />
       <path value="$PROJECT_DIR$/vendor/illuminate/contracts" />
+      <path value="$PROJECT_DIR$/vendor/desarrolla2/cache" />
+      <path value="$PROJECT_DIR$/vendor/visualappeal/php-auto-update" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="7" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />
+  <component name="PhpUnit">
+    <phpunit_settings>
+      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/vendor/autoload.php" />
+    </phpunit_settings>
+  </component>
 </project>

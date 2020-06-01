@@ -33,6 +33,7 @@ namespace System\Models\Post;
  */
 
 use System\File;
+use System\SystemLogger;
 
 class UploadedFile
 {
@@ -45,8 +46,13 @@ class UploadedFile
 
     public function __construct(array $rawFileUpload)
     {
+        $logger = SystemLogger::get();
+        $logger->debug($rawFileUpload);
         $this->name = $rawFileUpload["name"];
         $this->type = $rawFileUpload["type"];
+        if ($this->type === '') {
+            $this->type = explode(".", $this->name)[1];
+        }
         $this->tempFileName = $rawFileUpload["tmp_name"];
         $this->error = $rawFileUpload["error"];
         $this->fileSize = $rawFileUpload["size"];

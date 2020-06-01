@@ -26,6 +26,8 @@
 
 namespace System;
 
+use System\Exception\FileException;
+
 /**
  * Description of File
  *
@@ -148,7 +150,7 @@ abstract class File
 
     public static function overwriteFile($filepath, $contents)
     {
-        file_put_contents($filepath, $contents);
+        return file_put_contents($filepath, $contents);
     }
 
     public static function appendToFile($filepath, $contents)
@@ -163,7 +165,11 @@ abstract class File
 
     public static function getContents($filepath)
     {
-        return file_get_contents($filepath);
+        if (file_exists($filepath)) {
+            return file_get_contents($filepath);
+        } else {
+            throw new FileException("File not found.", FileException::FILE_NOT_FOUND);
+        }
     }
 
     public static function getMaximumUploadSize()

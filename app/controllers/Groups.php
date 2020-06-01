@@ -41,8 +41,8 @@ use App\Models\District\DistrictGroup;
 use App\Models\District\DistrictUser;
 use System\App\AppException;
 use System\Post;
-use App\Models\District\Group;
 use App\Api\AD;
+use System\Request;
 
 class Groups extends Controller
 {
@@ -74,7 +74,7 @@ class Groups extends Controller
         $email = Post::get("email");
         $ou = Post::get("ou");
         if ($name != null and $ou != null) {
-            $newGroup = new Group();
+            $newGroup = new DistrictGroup();
             $dn = "CN=" . Post::get("name") . ',' . Post::get("ou");
             $newGroup->setName(Post::get("name"))
                 ->setDistinguishedName($dn);
@@ -124,6 +124,7 @@ class Groups extends Controller
      *
      * @return type
      * @throws AppException
+     * @throws \System\CoreException
      */
     public function editPost()
     {
@@ -133,18 +134,17 @@ class Groups extends Controller
             case 'removeMember':
                 $username = Post::get('username');
                 $this->logger->info("removing member " . $username);
-
                 $group = new DistrictGroup($groupName);
                 $user = $group->hasMember($username);
 
                 $this->logger->debug($user);
-                if ($user != false) {
+                if ($user !== false) {
                     if ($group->activeDirectory->removeMember($user->activeDirectory)) {
 
                         AuditDatabase::addAudit(new AuditEntry($this->app->request, $this->user, new RemoveMemberAuditAction($groupName, $username)));
 
                         $this->logger->debug("user was successfully removed");
-                        return $this->search($group->activeDirectory->getName());
+                        //return $this->search($group->activeDirectory->getName());
                     } else {
                         throw new AppException('Could not remove member from group');
                     }
@@ -156,19 +156,27 @@ class Groups extends Controller
                 $username = Post::get('usernameToAdd');
                 $group = new DistrictGroup($groupName);
                 $this->logger->info("adding member " . $username);
-
                 $user = new DistrictUser($username);
-                if ($group->activeDirectory->addMember($user)) {
+                if ($group->addUserMember($user->activeDirectory->getDistinguishedName())) {
                     AuditDatabase::addAudit(new AuditEntry($this->app->request, $this->user, new AddMemberAuditAction($groupName, $username)));
 
                     $this->logger->debug("user was successfully removed");
-                    return $this->search($group->activeDirectory->getName());
+                    //return $this->search($group->activeDirectory->getName());
                 }
 
                 break;
             default:
                 break;
+
+
         }
+        if (strpos(Request::get()->getReferer(), "groups") !== false) {
+            return $this->search($group->activeDirectory->getName());
+        } else {
+            $users = new Users($this->app);
+            return $users->search($user->getUsername());
+        }
+
     }
 
     public function deletePost()

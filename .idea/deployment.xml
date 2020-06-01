@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="Samdev-XAMPP">
+  <component name="PublishConfigData" autoUpload="Always" serverName="ADAM" compareModeInSync="SIZE" showNewOnTargetInSync="false">
     <serverData>
+      <paths name="AWS Demo WAMP">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="SamDev-WAMP">
         <serverdata>
           <mappings>
             <mapping deploy="\" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="public" local="$PROJECT_DIR$/public" web="/" />
           </mappings>
         </serverdata>
       </paths>
@@ -13,6 +21,7 @@
         <serverdata>
           <mappings>
             <mapping deploy="\" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="public" local="$PROJECT_DIR$/public" web="/" />
           </mappings>
         </serverdata>
       </paths>

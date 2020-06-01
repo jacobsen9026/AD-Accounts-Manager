@@ -33,6 +33,7 @@
 namespace System\Models\View;
 
 use System\Common\CommonLogEntry;
+use System\Core;
 use System\Log\CommonLogger;
 
 abstract class LogPrinter
@@ -101,17 +102,15 @@ abstract class LogPrinter
      */
     public static function printLogEntry(CommonLogEntry $logEntry): string
     {
+        $timestamp = $logEntry->getTimestamp();
         $logOutput = '';
-
-        $et = substr($logEntry->getElapsedTime(), 0, 5) . ' s';
-        $app = \System\Core::getAppClass()::get();
-        if ($app->request->getType() == "ajax") {
-            $et .= "<br/>" . $app->request->getId();
-        }
-
+        $decimalIndex = strpos($timestamp, ".");
+        $formattedTimestamp = substr($timestamp, $decimalIndex - 2);
+        //$et = substr($logEntry->getTimestamp(), strlen(round($formattedTimestamp, 4)) - 7, 7) . ' us';
+        $et = $formattedTimestamp;
         $entryOutput = ' <div class=" collapse show container-fluid mx-auto my-0 py-1 row rounded-0 alert alert-' . $logEntry->getAlertLevel() . '">
-            <div class="col-md-1">' . $et
-            . '</div>
+            <div class="small col-md-1">' . $et
+            . '<div class="small">' . $logEntry->getLoggerName() . '</div></div>
             <div class="col-md-11 text-break ">
 
                 <p class="clickable" data-toggle="collapse" data-target="#' . $logEntry->getId() . '" aria-expanded="false" aria-controls="">

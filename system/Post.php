@@ -113,4 +113,9 @@ abstract class Post
         }
     }
 
+    public static function getMaxUploadSize()
+    {
+        return ini_get("upload_max_filesize");
+    }
+
 }

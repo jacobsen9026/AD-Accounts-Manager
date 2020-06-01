@@ -36,21 +36,42 @@ use Psr\Log\LoggerInterface;
 use System\Parser;
 use System\Common\CommonLogEntry;
 
-class CommonLogger extends Parser implements LoggerInterface
+class CommonLogger implements LoggerInterface
 {
+    use \System\Traits\Parser;
 
+    /**
+     * @var float Logger starting time in microseconds
+     */
     private $startTime;
-    private $logs;
+    /**
+     * @var string Name of the logger
+     */
     private $name;
-    private $logEntries;
-    private $hasErrors = false;
+    /**
+     * @var array <CommonLogEntry> All the log entries
+     */
+    protected static $logEntries = [];
+    /**
+     * @var bool Error flag
+     */
+    protected $hasErrors = false;
 
+    /**
+     * CommonLogger constructor.
+     */
     function __construct()
     {
-        $this->startTime = (float)microtime();
+        $this->startTime = microtime(true);
     }
 
-    public function setName($name)
+
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function setName(string $name)
     {
         $this->name = $name;
         return $this;
@@ -75,7 +96,16 @@ class CommonLogger extends Parser implements LoggerInterface
      */
     public function getLogEntries()
     {
-        return $this->logEntries;
+        $returnArray = self::$logEntries;
+
+//        usort($returnArray,
+//            function ($a, $b) {
+//                /* @var $a CommonLogEntry */
+//                /* @var $b CommonLogEntry */
+//                return $a->getTimestamp() < $b->getTimestamp();
+//            });
+
+        return $returnArray;
     }
 
 
@@ -87,12 +117,14 @@ class CommonLogger extends Parser implements LoggerInterface
      */
     protected function storeLogEntry($message, string $level)
     {
-        $logEntry = new CommonLogEntry($this);
+        $logEntry = new CommonLogEntry($this->getName());
 
         $logEntry->setMessage($message)
             ->setLevel($level);
-        $this->logEntries[] = $logEntry;
+        self::$logEntries[] = $logEntry;
+        //var_dump(self::$logEntries);
     }
+
 
     /**
      * Detailed debug information.
@@ -166,7 +198,7 @@ class CommonLogger extends Parser implements LoggerInterface
      */
     public function hasLogEntries()
     {
-        if ($this->logEntries !== null and !empty($this->logEntries)) {
+        if (self::$logEntries !== null and !empty(self::$logEntries)) {
             return true;
         }
         return false;

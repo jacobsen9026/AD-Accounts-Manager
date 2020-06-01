@@ -36,8 +36,9 @@ use System\App\AppLogger;
 use System\Log\CommonLogger;
 use System\Parser;
 
-class Model extends Parser
+class Model
 {
+    use \System\Traits\Parser;
 
     /**
      *

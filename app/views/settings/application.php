@@ -38,7 +38,7 @@ $webAppName->large();
 $webFQDN = new FormText("Website FQDN", "If this is set all requests are redirected to this address. Be sure it is correct and stays available.", "webAppFQDN", AppDatabase::getWebsiteFQDN());
 $webFQDN->large()
     ->setPlaceholder("Enter the public FQDN that users use to access this applicaiton.");
-$webHelpDesk = new FormText("user Helpdesk URL", "The url that users should use to access your help portal.", "webHelpdeskURL", AppDatabase::getUserHelpdeskURL());
+$webHelpDesk = new FormText("User Helpdesk URL", "The url that users should use to access your help portal.", "webHelpdeskURL", AppDatabase::getUserHelpdeskURL());
 $webHelpDesk->large()
     ->setPlaceholder("https://helpdesk.company.com");
 

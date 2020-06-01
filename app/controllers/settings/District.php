@@ -32,6 +32,7 @@ namespace App\Controllers\Settings;
  * @author cjacobsen
  */
 
+use App\App\App;
 use App\Controllers\Controller;
 use App\Models\Database\DistrictDatabase;
 use app\database\Schema;
@@ -43,7 +44,7 @@ use System\App\AppException;
 class District extends Controller
 {
 
-    function __construct(\System\App\App $app)
+    function __construct(App $app)
     {
         parent::__construct($app);
         $this->layout = 'default_blank';
@@ -148,13 +149,13 @@ class District extends Controller
         switch (Post::get('action')) {
             case 'updateDistrict':
                 $this->updateDistrict($post);
+                return "Settings Saved";
                 break;
             case 'remove':
                 $id = Post::get('privilegeID');
                 $this->logger->info('Removing Privilege ' . $id);
                 PrivilegeLevelDatabase::removePrivilegeLevel($id);
                 break;
-
             case 'addPermission':
                 $this->addDistrictPermission($districtID);
 
@@ -169,7 +170,7 @@ class District extends Controller
                 break;
         }
 
-        $this->redirect('/settings/district/edit/');
+//        $this->redirect('/settings/district/edit/');
     }
 
     private function updateDistrict($post)

@@ -40,7 +40,7 @@ namespace System;
 
 use PDO;
 
-class Database extends Parser
+class Database
 {
     /*
      * Database Scheme as Contansts
@@ -49,6 +49,7 @@ class Database extends Parser
     /** @var PDO Description */
     private $db;
 
+
     /** @var Database|null */
     public static $instance;
 
@@ -56,28 +57,40 @@ class Database extends Parser
      *
      * @var DatabaseLogger
      */
-    public static $logger;
+    public $logger;
+    private $dsn;
 
     /**
      *
-     * @return Database
+     * @return void
+     * @throws CoreException
      */
     public static function get()
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
+
+        if (self::$instance !== null) {
+            return self::$instance;
+
+        } else {
+            throw new CoreException("Trying to get database before one is connected");
         }
-        return self::$instance;
+
     }
 
-    function __construct()
+    /**
+     * Database constructor.
+     *
+     * @param $dsn
+     */
+    public function __construct($dsn)
     {
         self::$instance = $this;
-        self::$logger = DatabaseLogger::get();
-        $this->connect();
+        $this->logger = DatabaseLogger::get();
+        $this->dsn = $dsn;
+        $this->connect($dsn);
     }
 
-    public function connect()
+    public function connect($dsn)
     {
         /*
          * If the db file doesn't exist we want to seed it after we connect
@@ -85,11 +98,11 @@ class Database extends Parser
         if (!file_exists(APPCONFIGDBPATH)) {
             $seedDatabse = true;
         }
-        self::$logger->info("connecting " . APPCONFIGDBPATH);
+        $this->logger->info("connecting " . APPCONFIGDBPATH);
         /**
          * Connect to database, will create file if it doesn't already exist
          */
-        $this->db = new \PDO("sqlite:" . APPCONFIGDBPATH, null, null, [
+        $this->db = new \PDO($dsn, null, null, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false
@@ -108,7 +121,7 @@ class Database extends Parser
 
     private function seedDatabase()
     {
-        self::$logger->debug("Seeding the configuration database.");
+        $this->logger->debug("Seeding the configuration database.");
         /*
          * Load in DB Schema from file
          */
@@ -137,18 +150,18 @@ class Database extends Parser
     public function query($query)
     {
 
-        //var_dump($query);
-        /* @var $db PDO */
+        //var_dump($this);
 
-        self::$logger->debug("Query: " . $query);
+        $this->logger->debug("Query: " . $query);
         //var_dump($query);
         try {
             $result = $this->db->query($query);
             /*
+             *
              * Check that the SQL statement completed successfully, log any errors
              */
             if ($this->db->errorCode()[0] != '00000') {
-                self::$logger->error($this->db->errorInfo());
+                $this->logger->error($this->db->errorInfo());
                 return false;
             }
             /*
@@ -174,12 +187,12 @@ class Database extends Parser
             }
 
             //Return Array
-            self::$logger->debug("Response: " . var_export($return, true));
+            $this->logger->debug("Response: " . var_export($return, true));
 
             //var_dump($return);
             return $return;
         } catch (Exception $ex) {
-            self::$logger->error($ex);
+            $this->logger->error($ex);
             return false;
         }
     }

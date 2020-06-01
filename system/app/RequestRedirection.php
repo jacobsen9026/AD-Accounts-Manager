@@ -39,10 +39,7 @@ trait RequestRedirection
     {
         $app = \System\Core::getAppClass()::get();
         //$app = App::get();
-        if (strpos($url, ".") !== false) {
-            $url = 'https://' . $url;
-            header('Location: ' . $url);
-        }
+
         if ($app->request->getType() != 'ajax') {
             if ($app->inDebugMode()) {
                 $app->appOutput->appendBody("In Debug Mode<br/>Would have redirected<br/>"

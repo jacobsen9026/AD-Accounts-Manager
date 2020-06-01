@@ -121,6 +121,10 @@ THE SOFTWARE.
     animation-delay: 0s;
 }
 
+.straight-loader.hidden {
+    display: none !important;
+}
+
 .straight-loader {
     font-size: 10px;
     position: relative;

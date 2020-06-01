@@ -35,12 +35,12 @@ namespace App\Controllers;
 use App\Controllers\Menu\TopMenuItem;
 use App\Controllers\Menu\SubMenuItem;
 use System\App\AppLogger;
-use System\Parser;
 use App\Models\User\User;
-use System\App\App;
+use App\App\App;
 use App\Models\User\PermissionHandler;
+use System\Request;
 
-class Menu extends Parser
+class Menu extends Controller
 {
 
     /**
@@ -85,7 +85,7 @@ class Menu extends Parser
         }
 
 
-        if ($this->user->superAdmin) {
+        if ($this->user->superAdmin && Request::get()->getServerName() != 'demo.adam-app.gq') {
             $this->items[] = $this->buildTechMenu();
         }
     }

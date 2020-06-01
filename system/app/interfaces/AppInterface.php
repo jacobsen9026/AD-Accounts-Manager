@@ -34,7 +34,7 @@ namespace System\App\Interfaces;
 
 use System\Request;
 use System\Log\CommonLogger;
-use System\AppOutput;
+use System\App\AppOutput;
 
 interface AppInterface
 {

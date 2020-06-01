@@ -100,7 +100,7 @@ class AJAXResponse
         return $this;
     }
 
-    public function importAppOutput(\System\AppOutput $appOutput)
+    public function importAppOutput(\System\App\AppOutput $appOutput)
     {
         $this->setAjaxOutput(["ajax" => $appOutput->getAjax()]);
         foreach ($appOutput->getLoggers() as $logger) {
@@ -111,7 +111,9 @@ class AJAXResponse
     public function jsonSerialize()
     {
         $jsonResponse['output'] = $this->getRequestOutput();
-        $jsonResponse['output']['ajax']['logs'] = $this->getLogs();
+        if (is_array($jsonResponse['output']['ajax']) && array_key_exists('logs', $jsonResponse['output']['ajax'])) {
+            $jsonResponse['output']['ajax']['logs'] = $this->getLogs();
+        }
         //var_export($this->getLogs());
         $json = json_encode($jsonResponse);
         //var_dump(json_last_error());
