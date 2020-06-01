@@ -130,6 +130,7 @@ use App\Models\User\User;
                             <div class="dropdown-header"><strong> <?php echo $this->user->username; ?></strong></div>
 
                             <a class="dropdown-item" href="/settings/profile">Profile</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#aboutAppModal">About</a>
 
                             <a class="dropdown-item" href="/logout">Logout</a>
                         </div>
@@ -146,7 +147,11 @@ use App\Models\User\User;
 $debugMode = App::get()->inDebugMode();
 if ($this->user->superAdmin && $debugMode) {
     echo $this->view('modals/debugConfigModal');
+
+
 }
+echo $this->view('modals/aboutAppModal');
+
 ?>
 
 

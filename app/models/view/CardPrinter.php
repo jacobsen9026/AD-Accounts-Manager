@@ -45,6 +45,7 @@ use System\App\AppLogger;
 use System\App\Forms\Form;
 use System\App\Forms\FormDropdownOption;
 use System\App\Forms\FormElementGroup;
+use System\App\Forms\FormHTML;
 use System\App\Forms\FormMenuButton;
 use System\App\Forms\FormText;
 use System\App\Forms\FormButton;
@@ -53,6 +54,8 @@ use App\Models\User\PermissionHandler;
 use System\App\Forms\FormUpload;
 use System\File;
 use System\Parser;
+use System\Post;
+use System\Request;
 use System\Traits\DomainTools;
 
 abstract class CardPrinter extends ViewModel
@@ -76,16 +79,16 @@ abstract class CardPrinter extends ViewModel
 
         $output = '<div class="col px-0">'
             . '<div class="card-body p-0 p-sm-3">'
-            . '<div class="position-absolute right text-secondary">'
+            . '<div class="position-absolute right text-secondary"> '
             . self::printOptionsButton($user, $webUser)
             . '</div > ';
 
-        $output .= '<a class="float-left mt-1 h4 clickable" style="z-index:3" href="/users">';
+        $output .= '<a class="float-left mt-1 h4 clickable" style="z-index:3" href="' . Request::get()->getReferer() . '">';
         $output .= '<i class="text-primary text-decoration-none fas fa-arrow-left"></i >'
             . '</a > '
             . '<div class="row mx-auto w-100" > '; //Start Header Row
 
-        if ($user->activeDirectory->isActive()) {
+        if ($user->isActive()) {
             $output .= '<div class="col text-success h3" > '
                 . '<i data-toggle = "tooltip" data-placement = "top" title = "Account is enabled." class="fas fa-check-circle" ></i > '
                 . '</div > ';
@@ -117,40 +120,40 @@ abstract class CardPrinter extends ViewModel
 
         //Begin User Body
         $output .= '<div class="row" ><div class="col" > ';
-        $output .= '<h5 class="card-title text-center" > ' . $user->activeDirectory->adContainerName . '</h5 > ';
+        $output .= '<h5 class="card-title text-center" > ' . $user->getFullName() . '</h5 > ';
 
         $output .= '</div > ';
 
         $output .= '</div > ';
         if ($user instanceof Student) {
-            $output .= self::printRow("Student ID", $user->activeDirectory->getEmployeeID());
+            $output .= self::printRow("Student ID", $user->getEmployeeID());
         } else {
 
-            $output .= self::printRow("Empoyee ID", $user->activeDirectory->getEmployeeID());
+            $output .= self::printRow("Empoyee ID", $user->getEmployeeID());
         }
-        $output .= self::printRow("First Name", $user->activeDirectory->getFirstName());
+        $output .= self::printRow("First Name", $user->getFirstName());
         $output .= self::printRow("Middle Name", $user->getMiddleName());
-        $output .= self::printRow("Last Name", $user->activeDirectory->getLastName());
+        $output .= self::printRow("Last Name", $user->getLastName());
 
         $output .= '<br />';
-        $output .= self::printRow("Home Phone", $user->activeDirectory->getHomePhone());
-        $output .= self::printRow("Street Address", $user->activeDirectory->getStreetAddress());
+        $output .= self::printRow("Home Phone", $user->getHomePhone());
+        $output .= self::printRow("Street Address", $user->getStreetAddress());
         $output .= self::printRow("City", $user->getCity());
         $output .= self::printRow("State", $user->getState());
-        $output .= self::printRow("Zip Code", $user->activeDirectory->getPostalCode());
+        $output .= self::printRow("Zip Code", $user->getPostalCode());
 
         $output .= '<br />';
 
-        $output .= self::printRow(null, $user->activeDirectory->getDepartment());
-        $output .= self::printRow(null, $user->activeDirectory->getDescription());
-        $output .= self::printRow(null, $user->activeDirectory->getCompany());
-        $output .= self::printRow(null, $user->activeDirectory->getPhysicalDeliveryOfficeName());
+        $output .= self::printRow(null, $user->getDepartment());
+        $output .= self::printRow(null, $user->getDescription());
+        $output .= self::printRow(null, $user->getCompany());
+        $output .= self::printRow(null, $user->getOfficeName());
 
         $output .= '<br />';
 
 
-        $output .= self::printRow("Username", $user->activeDirectory->getAccountName());
-        $output .= self::printRow("Email Address", $user->activeDirectory->getEmail());
+        $output .= self::printRow("Username", $user->getUsername());
+        $output .= self::printRow("Email Address", $user->getEmail());
 
 
         /**
@@ -162,7 +165,7 @@ abstract class CardPrinter extends ViewModel
 
 
         /* @var $group \Adldap\Models\Group */
-        foreach ($user->activeDirectory->getGroups() as $group) {
+        foreach ($user->getGroups() as $group) {
             $groupName = $group->getName();
             $groups .= '<div class="row">
  <a href = "/groups/search/' . $groupName . '" class="col"> ' . $groupName . '</a ><br >
@@ -187,29 +190,26 @@ abstract class CardPrinter extends ViewModel
 
     /**
      *
-     * @param Group $group
+     * @param DistrictGroup $group
      * @param User $webUser
      *
      * @return string
+     * @throws AppException
      */
     private static function buildGroupCard(DistrictGroup $group, User $webUser)
     {
 
         $app = \App\App\App::get();
-        $script = '<script>
-    $(function () {
-        $(\'[data-toggle="tooltip"]\').tooltip()})
-  </script>';
 
-        $output = $script . '
-            <div class="col">
+
+        $output = '<div class="col">
   <div class="card-body">';
 
 
         $output .= '<div class="row"><div class="col">';
         $output .= '<h5 class="position-relative d-inline card-title text-center p-5- m-5" style="left:0.5em">' . $group->activeDirectory->getName() . '</h5>';
         $output .= self::printDeleteGroupButton($group);
-        $output .= '<a class="float-left mt-1 h4 clickable" style="z-index:3" href="/groups">';
+        $output .= '<a class="float-left mt-1 h4 clickable" style="z-index:3" href="' . Request::get()->getReferer() . '">';
         $output .= '<i class="text-primary text-decoration-none fas fa-arrow-left"></i >'
             . '</a > ';
         $output .= '</div>';
@@ -223,10 +223,6 @@ abstract class CardPrinter extends ViewModel
         $output .= '</div>';
 
         $output .= '</div>';
-//$output .= '<div class="row"><div class="col h6">Username</div><div class="col">'.$user->getAdUsername().'</div></div>';
-//$output .= '<div class="row"><div class="col h6">Email Address</div><div class="col">'.$user->getAdEmail().'</div></div>';
-//$output .= '<div class="row"><div class="col h6">Groups</div><div class="col">'.var_export($user->getAdGroups(),true).'</div></div></div>';
-
         return $output;
     }
 
@@ -271,10 +267,11 @@ abstract class CardPrinter extends ViewModel
 //'<div class="row"><div class="col h6">' . $label . '</div></div>';
                 /* @var $user DistrictUser */
                 foreach ($groupMembers as $user) {
+
                     $form = new Form(null, "removeGroupMember");
 
                     $output .= '<div class="row">'
-                        . '<div class="col"><a href="/users/search/' . $user->activeDirectory->getAccountName() . '">' . $user->activeDirectory->getAccountName() . '</a></div>'
+                        . '<div class="col"><a href="/users/search/' . $user->getUsername() . '">' . $user->getUsername() . '</a></div>'
                         . '<div class="col">' . $user->getFullName() . '</div>'
                         . '<div class="col">' . self::buildRemoveFromGroupButton($user, $group) . '</div>'
                         . '</div>';
@@ -304,9 +301,10 @@ abstract class CardPrinter extends ViewModel
 
         if ($group === null) {
             $groupName = new FormText('Add to group', '', 'group');
-            $groupName->autoCompleteGroupName();
+            $groupName->setId('groupToAddMemberTo')
+                ->autoCompleteGroupName();
 
-            $userToAdd = new FormText('Add user', 'Can also serarch by first or last name.', 'usernameToAdd', $user->activeDirectory->getAccountName());
+            $userToAdd = new FormText('Add user', 'Can also serarch by first or last name.', 'usernameToAdd', $user->getUsername());
             $userToAdd->autoCompleteDomainUsername()
                 ->hidden();
 
@@ -427,7 +425,7 @@ abstract class CardPrinter extends ViewModel
 
         $userInput->hidden()
             ->setName("username")
-            ->setValue($user->activeDirectory->getAccountName());
+            ->setValue($user->getUsername());
 
         $action = new FormText("action");
         $action->hidden()
@@ -461,7 +459,7 @@ abstract class CardPrinter extends ViewModel
         $userInput = new FormText("username");
         $userInput->hidden()
             ->setName("username")
-            ->setValue($user->activeDirectory->getAccountName());
+            ->setValue($user->getUsername());
 
 
         $action = new FormText("action");
@@ -499,7 +497,7 @@ abstract class CardPrinter extends ViewModel
         $action->hidden();
         $userInput->hidden()
             ->setName("username")
-            ->setValue($user->activeDirectory->getAccountName());
+            ->setValue($user->getUsername());
         $button = new FormButton("Unlock");
         $button->setTheme("success");
         $form->addElementToNewRow($userInput)
@@ -540,7 +538,7 @@ abstract class CardPrinter extends ViewModel
              * $action = new FormText('', '', 'action', 'resetPassword');
              * $action->small();
              * $action->hidden();
-             * $username = new FormText('', '', 'username', $user->activeDirectory->getAccountName());
+             * $username = new FormText('', '', 'username', $user->getUsername());
              * $username->small();
              * $username->hidden();
              * $newPassword = new FormText('', '', 'password');
@@ -587,7 +585,7 @@ abstract class CardPrinter extends ViewModel
         $action = new FormText('', '', 'action', 'resetPassword');
         $action->small();
         $action->hidden();
-        $username = new FormText('', '', 'username', $user->activeDirectory->getAccountName());
+        $username = new FormText('', '', 'username', $user->getUsername());
         $username->small();
         $username->hidden();
         $newPassword = new FormText('', '', 'password');
@@ -612,7 +610,7 @@ abstract class CardPrinter extends ViewModel
         $newPasswordModal = new Modal();
         $newPasswordModal->setTitle("Reset Password")
             ->setBody($form->print())
-            ->setBody(Parser::get()->view('users/modals/resetPassword', ["username" => $user->activeDirectory->getAccountName()]))
+            ->setBody(Parser::get()->view('users/modals/resetPassword', ["username" => $user->getUsername()]))
             ->setId('newPassword_Modal');
         $newPasswordButton = new FormDropdownOption('Reset Password');
         $newPasswordButton->addModal($newPasswordModal);
@@ -677,10 +675,29 @@ abstract class CardPrinter extends ViewModel
             ->setTheme("white")
             ->removeInputClasses("w-100")
             ->addInputClasses("position-absolute right-10 text-danger")
-            ->addElementClasses("top right pr-5 d-inline")
+            ->addElementClasses("top right pr-5 d-inline h-100")
             ->setTooltip("Delete " . $groupName);
+
+        $modalForm = new Form("/groups/delete", "GroupDelete");
+        $action = new FormText('', '', 'action', 'deleteGroup');
+        $action->hidden();
+        $button = new FormButton("Delete");
+        $button->medium()
+            ->setTheme('danger');
+        $text = new FormHTML();
+        $text->setHtml('<h5>Are you absolutely sure you want to delete this group? There is no undo to this action.<br><br> Be sure you are deleting the right group.</h5>');
+        $text->full();
+        $name = new FormText('', '', 'groupDN', $group->activeDirectory->getDistinguishedName());
+        $name->medium()
+            ->hidden();
+        $modalForm->addElementToNewRow($name)
+            ->addElementToNewRow($action)
+            ->addElementToNewRow($text)
+            ->addElementToNewRow($button);
+
+
         $deleteModal = new \App\Models\View\Modal();
-        $deleteModal->setBody(Parser::get()->view('/groups/delete', ['name' => $groupName, 'distinguishedName' => $group->activeDirectory->getDistinguishedName()]))
+        $deleteModal->setBody($modalForm->print())
             ->setId('deleteGroup')
             ->setTheme('danger ')
             ->setTitle("Delete " . $groupName);
@@ -746,7 +763,8 @@ abstract class CardPrinter extends ViewModel
             ->addElementToCurrentRow($action);
 
         $uploadPhotoButton = new FormDropdownOption('Upload New Photo');
-        $uploadPhotoButton->setId('upload_photo_button');
+        $uploadPhotoButton->setId('upload_photo_button')
+            ->setTooltip("Max size: " . Post::getMaxUploadSize());
         $clickUpload = '$("#' . $uploadPhoto->getId() . '").click()';
         $function = Javascript::on($uploadPhotoButton->getId(), $clickUpload);
         $uploadPhotoButton->setScript($function);
@@ -769,7 +787,7 @@ abstract class CardPrinter extends ViewModel
          * Load disable account button if web user has permission and user is disabled
          */
         if (PermissionHandler::hasPermission($user->getOU(), PermissionLevel::USERS, PermissionLevel::USER_DISABLE)) {
-            if ($user->activeDirectory->isDisabled()) {
+            if ($user->isDisabled()) {
                 $optionsButton->addMenuOptions($enableButton);
             } else {
                 $optionsButton->addMenuOptions($disableButton);

@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace System;
+namespace System\App;
 
 /**
  * Description of AppOutput
@@ -33,6 +33,8 @@ namespace System;
  */
 
 use System\Log\CommonLogger;
+use System\Request;
+use System\type;
 
 class AppOutput
 {
@@ -80,15 +82,6 @@ class AppOutput
         return $this;
     }
 
-    /**
-     *
-     * @return type
-     * @deprecated since version number
-     */
-    public function getLogs()
-    {
-        return $this->logs;
-    }
 
     public function setBody($body)
     {
@@ -101,16 +94,6 @@ class AppOutput
         }
     }
 
-    /**
-     *
-     * @param type $logs
-     *
-     * @deprecated since version
-     */
-    public function setLogs($logs)
-    {
-        $this->logs = $logs;
-    }
 
     public function appendBody($body)
     {

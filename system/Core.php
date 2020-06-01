@@ -38,7 +38,7 @@ namespace System;
  */
 require './system/Autoloader.php';
 
-use System\AppOutput;
+use System\App\AppOutput;
 use System\Common\CommonApp;
 use System\Log\CommonLogger;
 
@@ -203,13 +203,16 @@ class Core
         new CoreErrorHandler();
 
 
-        /*
-         * Load the parser in the core since it cannot
-         * extend the parser.
+        /**
+         * The following statement must not ever be removed.
+         * Everything depends on the system config being
+         * loaded.
          */
-        //$this->parser = new Parser();
-        /*
-         * Load the system logger
+        Parser::get()->include("system/Config");
+
+
+        /**
+         * Load the loggers
          */
 
         self::$databaseLogger = new DatabaseLogger();
@@ -221,13 +224,6 @@ class Core
          */
         self::$systemLogger->debug("Session Export Below:");
         self::$systemLogger->debug($_SESSION);
-        /*
-         * The following statement must not ever be removed.
-         * Everything depends on the system config being
-         * loaded.
-         */
-        Parser::get()->include("system/Config");
-        self::$systemLogger->info("Core config loaded");
         /*
          * Set PHP error mode to reflect setting in system config
          * for DEBUG_MODE

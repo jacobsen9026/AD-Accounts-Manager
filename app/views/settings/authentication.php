@@ -37,7 +37,7 @@ $server = $auth->getLDAPServer();
 $username = $auth->getLDAPUsername();
 $password = $auth->getLDAPPassword();
 if (!empty($server) and $auth->getLDAPEnabled()) {
-    $adTestResult = ADAuth::testConnection($server, $username, $password);
+    $adTestResult = ADConnection::isConnected();
 }
 
 

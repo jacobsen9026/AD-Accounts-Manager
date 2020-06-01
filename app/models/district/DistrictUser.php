@@ -62,7 +62,7 @@ class DistrictUser extends ADModel
     {
         parent::__construct();
         if (is_string($user)) {
-            $this->activeDirectory = ADUsers::getUser($user);
+            $this->activeDirectory = ADUsers::getDomainScopUser($user);
         } elseif ($user instanceof User) {
             $this->activeDirectory = $user;
         }
@@ -197,6 +197,91 @@ class DistrictUser extends ADModel
             return false;
         }
         return true;
+    }
+
+    public function isDisabled()
+    {
+        return $this->activeDirectory->isDisabled();
+    }
+
+    public function isActive()
+    {
+        return $this->activeDirectory->isActive();
+    }
+
+    public function getEmployeeId()
+    {
+        return $this->activeDirectory->getEmployeeId();
+    }
+
+    public function getFirstName()
+    {
+        return $this->activeDirectory->getFirstName();
+    }
+
+    public function getLastName()
+    {
+        return $this->activeDirectory->getLastName();
+    }
+
+    public function getHomePhone()
+    {
+        return $this->activeDirectory->getHomePhone();
+    }
+
+    public function getStreetAddress()
+    {
+        return $this->activeDirectory->getStreetAddress();
+    }
+
+    public function getPostalCode()
+    {
+        return $this->activeDirectory->getPostalCode();
+    }
+
+    public function getPOBox()
+    {
+        return $this->activeDirectory->getPostOfficeBox();
+    }
+
+    public function getDepartment()
+    {
+        return $this->activeDirectory->getDepartment();
+    }
+
+    public function getDescription()
+    {
+        return $this->activeDirectory->getDescription();
+    }
+
+    public function getOfficeName()
+    {
+        return $this->activeDirectory->getPhysicalDeliveryOfficeName();
+    }
+
+    public function getCompany()
+    {
+        return $this->activeDirectory->getCompany();
+    }
+
+    public function getUsername()
+    {
+        return $this->activeDirectory->getAccountName();
+    }
+
+    public function getEmail()
+    {
+        return $this->activeDirectory->getEmail();
+    }
+
+    public function getGroups()
+    {
+        return $this->activeDirectory->getGroups();
+    }
+
+    public function getDistinguishedName()
+    {
+        return $this->activeDirectory->getDistinguishedName();
     }
 
 

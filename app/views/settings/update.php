@@ -24,20 +24,13 @@
  * THE SOFTWARE.
  */
 
-use app\database\Schema;
-use App\Models\Database\AppDatabase;
-use App\Models\Database\EmailDatabase;
+use App\App\AppUpdater;
 use App\Models\View\Modal;
 use System\App\Forms\Form;
 use System\App\Forms\FormButton;
-use System\App\Forms\FormFloatingButton;
-use System\App\Forms\FormTextArea;
 use System\Core;
-use System\Updater;
 
-$tmp = ROOTPATH . DIRECTORY_SEPARATOR . "writable" . DIRECTORY_SEPARATOR . "core_update";
-$dst = SYSTEMPATH;
-$updater = new Updater('https://raw.githubusercontent.com/jacobsen9026/Classify/master/update', $tmp, $dst, Core::getVersion());
+$updater = new AppUpdater();
 $updater->setCheckSSL(false);
 $availableVersion = 'Running the latest version!';
 $latestVersion = '';

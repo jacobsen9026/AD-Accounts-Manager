@@ -42,6 +42,8 @@ use app\database\Schema;
 use App\Models\District\ActiveDirectory;
 use App\Models\District\GoogleApps;
 use System\App\AppLogger;
+use System\App\Session;
+use system\Encryption;
 
 class Form
 {
@@ -55,22 +57,9 @@ class Form
 
     /* A 2D array that represents the layout of the form */
     private $rowsOfElements;
-//put your code here
-
-    /**
-     *
-     * @var type
-     * @deprecated since version number
-     */
-    private $formHTML;
 
     /** @var array * */
-    private $inputGroups;
-    private $lastComponentBuilt;
-    private $lastID;
     private $currentRow;
-    private $componentEnd = '</div>';
-    private $subForm = false;
     private $logger;
 
     /**
@@ -99,9 +88,15 @@ class Form
     function __construct($action = null, $name = '', $method = 'post')
     {
 
-// Initialize form logger
+        /*
+         * Initialize form logger
+         */
+
+
         $this->logger = AppLogger::get();
-// Check if action is null and if so set to current URL
+        /*
+         * Check if action is null and if so set to current URL
+         */
         if (is_null($action)) {
             $action = $_SERVER["REQUEST_URI"];
         }
@@ -111,7 +106,7 @@ class Form
         $this->id = $name . 'Form';
 // Initialize form row to 0
         $this->currentRow = 0;
-        self::$csrfToken = \system\Encryption::encrypt(\System\App\Session::getID());
+        self::$csrfToken = Encryption::encrypt(Session::getID());
     }
 
     public function setStyle($style)
@@ -122,7 +117,7 @@ class Form
 
     /**
      *
-     * @param \System\App\Forms\FormElement $element
+     * @param FormElement $element
      *
      * @return $this
      */
@@ -137,11 +132,11 @@ class Form
 
     /**
      *
-     * @param \System\App\Forms\FormElement $element
+     * @param FormElement $element
      *
      * @return $this
      */
-    public function addElementToNewRow(FormElement $element)
+    public function addElementToNewRow(FormElement $element): self
     {
 
         $this->currentRow++;
@@ -160,7 +155,16 @@ class Form
         return $this->id = $id;
     }
 
-    public function setActionVariable(FormElement $element)
+    /**
+     * Changes the form form a Post/Get request to a client uri call
+     *
+     * The element provided as the action variable will have it's value
+     * appended to the forms action URL
+     * (eg: /formSubmitAction/submit[/actionValue])
+     *
+     * @param FormElement $element
+     */
+    public function setActionVariable(FormElement $element): void
     {
         //var_dump($element);
         $elementName = $element->getName();
@@ -245,11 +249,12 @@ console.log(inputVal);
 
                 $html .= $this->printElement($rowOfElements);
             }
-            $html .= $this->elementModals;
+
             $html .= '</div>';
         }
 
         $html .= "</form>";
+        $html .= $this->elementModals;
         return $html;
     }
 

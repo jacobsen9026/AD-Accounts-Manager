@@ -38,6 +38,7 @@ use System\App\AppLogger;
 use App\Models\User\User;
 use App\App\App;
 use App\Models\User\PermissionHandler;
+use System\Request;
 
 class Menu extends Controller
 {
@@ -84,7 +85,7 @@ class Menu extends Controller
         }
 
 
-        if ($this->user->superAdmin) {
+        if ($this->user->superAdmin && Request::get()->getServerName() != 'demo.adam-app.gq') {
             $this->items[] = $this->buildTechMenu();
         }
     }

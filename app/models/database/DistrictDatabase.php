@@ -108,12 +108,12 @@ class DistrictDatabase extends DatabaseModel
         return Database::get()->query('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . 'ID'[Schema::COLUMN] . ' = ' . $districtID);
     }
 
-    public static function getAD_FQDN($districtID)
+    public static function getAD_FQDN($districtID = 1)
     {
         return self::getDatabaseValue('AD_FQDN', $districtID);
     }
 
-    public static function getAD_BaseDN($districtID)
+    public static function getAD_BaseDN($districtID = 1)
     {
         $result = self::getDatabaseValue('AD_BaseDN', $districtID);
         if ($result == "false") {
@@ -200,10 +200,6 @@ class DistrictDatabase extends DatabaseModel
         return false;
     }
 
-    public static function getUseSSL()
-    {
-        return true;
-    }
 
     public static function getAD_UseTLS()
     {

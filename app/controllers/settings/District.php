@@ -149,13 +149,13 @@ class District extends Controller
         switch (Post::get('action')) {
             case 'updateDistrict':
                 $this->updateDistrict($post);
+                return "Settings Saved";
                 break;
             case 'remove':
                 $id = Post::get('privilegeID');
                 $this->logger->info('Removing Privilege ' . $id);
                 PrivilegeLevelDatabase::removePrivilegeLevel($id);
                 break;
-
             case 'addPermission':
                 $this->addDistrictPermission($districtID);
 
@@ -170,7 +170,7 @@ class District extends Controller
                 break;
         }
 
-        $this->redirect('/settings/district/edit/');
+//        $this->redirect('/settings/district/edit/');
     }
 
     private function updateDistrict($post)

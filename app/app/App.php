@@ -39,12 +39,13 @@ namespace App\App;
  */
 
 use App\Controllers\Controller;
+use App\Controllers\Login;
 use System\App\AppLogger;
 use System\App\Layout;
 use System\App\LDAPLogger;
 use System\App\RequestRedirection;
 use System\App\Route;
-use System\App\AppErrorHandler;
+use System\App\Error\AppErrorHandler;
 use System\App\UserLogger;
 use System\Log\CommonLogger;
 use System\App\ControllerFactory;
@@ -52,7 +53,7 @@ use System\Request;
 use System\App\Router;
 use App\Models\User\User;
 use App\Models\Database\AppDatabase;
-use System\AppOutput;
+use System\App\AppOutput;
 use System\App\Interfaces\AppInterface;
 use System\Common\CommonApp;
 use System\App\WindowsLogger;
@@ -323,8 +324,7 @@ class App extends CommonApp implements AppInterface
         if (!isset($this->user) or $this->user === null or $this->user->authenticated === false) {
             $this->logger->warning('user not logged in');
             // Change route to login if not logged in.
-            //$this->route;
-            $this->controller = new \App\Controllers\Login($this);
+            $this->controller = new Login($this);
             $this->appOutput->appendBody($this->controller->index());
             return;
         } else {

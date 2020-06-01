@@ -79,7 +79,7 @@ class FormText extends FormElement implements FormElementInterface
     public function autoCompleteGroupName()
     {
         $this->autocomplete = true;
-        $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteGroup/', $this->getName());
+        $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteGroup/', $this->getId());
         $this->setScript($script);
         return $this;
     }
@@ -110,22 +110,9 @@ class FormText extends FormElement implements FormElementInterface
         return $this;
     }
 
-    /**
-     *
-     * @param string $iconHTML
-     *
-     * @return $this
-     *
-     */
-    public function appendIcon($iconHTML)
-    {
-        $this->appendIcon = $iconHTML;
-        return $this;
-    }
 
     /**
-     *
-     * @param type $value
+     * @return string
      */
     public function getElementHTML()
     {
@@ -137,14 +124,9 @@ class FormText extends FormElement implements FormElementInterface
         }
 
         $html .= '<div class="col px-0 "><div class="ui-widget">'
-            . '<div class="pr-0 w-100 row mx-0">';
-        if ($this->appendIcon != null) {
-            $inputCol = 10;
-            $html .= '<span class="d-inline-block col-2 pr-0 mr-0 input-group-text h-100 text-center d-inline">' . $this->appendIcon . '</span>';
-        }
-
-        $html .= '<div class="d-inline-block col mx-auto px-0">'
-            . '<input type="' . $this->type . '" class="' . $this->getinputClasses() . '" name="' . $this->getName() . '" id="' . $this->getName() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" ' . $disable . '>'
+            . '<div class="pr-0 w-100 row mx-0">'
+            . '<div class="d-inline-block col mx-auto px-0">'
+            . '<input type="' . $this->type . '" class="' . $this->getinputClasses() . '" name="' . $this->getName() . '" id="' . $this->getId() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" ' . $disable . '>'
             . '</div></div>';
         $html .= '</div></div>';
         return $html;

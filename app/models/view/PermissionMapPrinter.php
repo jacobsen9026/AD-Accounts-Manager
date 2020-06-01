@@ -301,7 +301,7 @@ abstract class PermissionMapPrinter extends ViewModel
         $modalForm->addElementToNewRow($removeAction)->addElementToNewRow($reallyDeleteButton)->addElementToNewRow($id);
 
 
-        $removeButton->builcModal("Remove " . $permission->getGroupName() . " From " . $ouPath, "Are you sure you really want to remove this permission mapping?<br/>This will remove the permissions this group has at " . $permission->getOu() . " and lower OU's unless there is a defintion lower.<br/>There is no undo.<br/>" . $modalForm->print(), 'warning');
+        $removeButton->buildModal("Remove " . $permission->getGroupName() . " From " . $ouPath, "Are you sure you really want to remove this permission mapping?<br/>This will remove the permissions this group has at " . $permission->getOu() . " and lower OU's unless there is a defintion lower.<br/>There is no undo.<br/>" . $modalForm->print(), 'warning');
 
 
         //var_dump($permission);

@@ -102,10 +102,12 @@ abstract class LogPrinter
      */
     public static function printLogEntry(CommonLogEntry $logEntry): string
     {
+        $timestamp = $logEntry->getTimestamp();
         $logOutput = '';
-
-        $et = substr($logEntry->getTimestamp(), strlen($logEntry->getTimestamp()) - 5, 5) . ' us';
-
+        $decimalIndex = strpos($timestamp, ".");
+        $formattedTimestamp = substr($timestamp, $decimalIndex - 2);
+        //$et = substr($logEntry->getTimestamp(), strlen(round($formattedTimestamp, 4)) - 7, 7) . ' us';
+        $et = $formattedTimestamp;
         $entryOutput = ' <div class=" collapse show container-fluid mx-auto my-0 py-1 row rounded-0 alert alert-' . $logEntry->getAlertLevel() . '">
             <div class="small col-md-1">' . $et
             . '<div class="small">' . $logEntry->getLoggerName() . '</div></div>

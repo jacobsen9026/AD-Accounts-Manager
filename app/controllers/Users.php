@@ -40,6 +40,7 @@ use App\Models\User\PermissionHandler;
 use App\Models\User\PermissionLevel;
 use App\Models\View\Modal;
 use App\Models\View\Toast;
+use System\App\AppLogger;
 use System\Post;
 use System\App\Picture;
 use System\Models\Post\UploadedFile;
@@ -70,12 +71,17 @@ class Users extends Controller
         $action = Post::get("action");
         switch ($action) {
             case 'uploadPhoto':
-                ini_set('upload_max_filesize', "15M");
+                $this->logger->info("Uploading a new picture for $username");
+
                 $uploadedPicture = new UploadedFile(Post::getFile("photo"));
+                $this->logger->debug($uploadedPicture);
                 if ($uploadedPicture->exists()) {
                     $fileType = $uploadedPicture->getType();
                     $this->logger->debug('File type: ' . $fileType);
+
                     switch ($uploadedPicture->getType()) {
+
+
                         case 'image/png':
                             $picture = imagecreatefrompng($uploadedPicture->getTempFileName());
                             break;

@@ -5,6 +5,7 @@
       <set>
         <option value="activate" />
         <option value="reformat" />
+        <option value="rearrange" />
       </set>
     </option>
   </component>

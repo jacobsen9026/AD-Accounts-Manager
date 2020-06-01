@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace System\App;
+namespace System\App\Error;
 
 /**
  * Description of ErrorHandler
@@ -33,6 +33,7 @@ namespace System\App;
  */
 
 use app\App;
+use System\App\AppLogger;
 use System\SystemLogger;
 use System\AppException;
 
@@ -46,7 +47,7 @@ class AppErrorHandler
 
         set_error_handler([$this, 'handleError']);
         if (isset(self::$instance)) {
-            return self::$instance;
+            return;
         } else {
             self::$instance = $this;
         }
@@ -68,10 +69,11 @@ class AppErrorHandler
 
     public function handleError($code, $description, $file = null, $line = null, $context = null)
     {
-        $label = $output = "Error: [$code] $description";
+        $output = "Error: [$code] $description";
         if ($file != null and $line != null) {
             $output = "Error: $file:$line [$code] $description";
         }
+
         AppLogger::get()->error($output);
         //die();
     }
