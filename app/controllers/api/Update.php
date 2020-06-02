@@ -11,6 +11,6 @@ class Update extends APIController
     public function updateApp()
     {
         $this->updater = new AppUpdater();
-        return $this->returnHTML($this->updater->update());
+        return $this->returnHTML($this->updater->update(false));
     }
 }
