@@ -26,5 +26,10 @@ class AppUpdater extends Updater
         $updateToken = hash("sha256", $this->user->getUsername() . $this->getLatestVersion());
     }
 
+    public function getSimulationResults()
+    {
+        return $this->updater->getSimulationResults();
+    }
+
 
 }
