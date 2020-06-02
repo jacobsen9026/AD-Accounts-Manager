@@ -52,6 +52,40 @@ class AJAXResponse
      */
     public $loggers;
 
+    public function importAppOutput(\System\App\AppOutput $appOutput)
+    {
+        $this->setAjaxOutput(["ajax" => $appOutput->getAjax()]);
+        foreach ($appOutput->getLoggers() as $logger) {
+            $this->addLogger($logger);
+        }
+    }
+
+    public function setAjaxOutput($requestOutput)
+    {
+        $this->ajaxOutput = $requestOutput;
+        return $this;
+    }
+
+    public function addLogger(CommonLogger $log)
+    {
+        $this->loggers[] = $log;
+        return $this;
+    }
+
+    public function jsonSerialize()
+    {
+        $jsonResponse['output'] = $this->getRequestOutput();
+        if (is_array($jsonResponse['output']['ajax'])) {
+            //var_dump('injecting logs');
+            $jsonResponse['output']['ajax']['logs'] = $this->getLogs();
+        }
+        //var_dump($this->getLogs());
+        $json = json_encode($jsonResponse);
+        //var_dump(json_last_error());
+        //var_dump(json_last_error_msg());
+        return $json;
+    }
+
     public function getRequestOutput()
     {
         //return mb_convert_encoding($this->ajaxOutput, 'UTF-8', 'UTF-8');
@@ -86,39 +120,6 @@ class AJAXResponse
         $logs["hasErrors"] = $hasErrors;
         //var_dump($logs);
         return $logs;
-    }
-
-    public function setAjaxOutput($requestOutput)
-    {
-        $this->ajaxOutput = $requestOutput;
-        return $this;
-    }
-
-    public function addLogger(CommonLogger $log)
-    {
-        $this->loggers[] = $log;
-        return $this;
-    }
-
-    public function importAppOutput(\System\App\AppOutput $appOutput)
-    {
-        $this->setAjaxOutput(["ajax" => $appOutput->getAjax()]);
-        foreach ($appOutput->getLoggers() as $logger) {
-            $this->addLogger($logger);
-        }
-    }
-
-    public function jsonSerialize()
-    {
-        $jsonResponse['output'] = $this->getRequestOutput();
-        if (is_array($jsonResponse['output']['ajax']) && array_key_exists('logs', $jsonResponse['output']['ajax'])) {
-            $jsonResponse['output']['ajax']['logs'] = $this->getLogs();
-        }
-        //var_export($this->getLogs());
-        $json = json_encode($jsonResponse);
-        //var_dump(json_last_error());
-        //var_dump(json_last_error_msg());
-        return $json;
     }
 
 }

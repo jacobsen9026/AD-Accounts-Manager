@@ -31,7 +31,6 @@ use System\App\Forms\FormButton;
 use System\Core;
 
 $updater = new AppUpdater();
-$updater->setCheckSSL(false);
 $availableVersion = 'Running the latest version!';
 $latestVersion = '';
 if ($updater->isUpdateAvailable()) {
@@ -40,9 +39,14 @@ if ($updater->isUpdateAvailable()) {
 }
 echo $availableVersion;
 $updateForm = new Form('/update', 'updateApp');
+
+$updateToken = $updater->getUpdateToken();
+$action = new \System\App\Forms\FormText('', '', 'updateToken', $updateToken);
+$action->hidden();
 $updateButton = new \System\App\Forms\FormButton('Update to v' . $latestVersion);
 $updateButton->tiny();
-$updateForm->addElementToCurrentRow($updateButton);
+$updateForm->addElementToCurrentRow($updateButton)
+    ->addElementToNewRow($action);
 
 $modalBody = Core::getVersion() . ' -> ' . $latestVersion . '<br>' . $updateForm->print();
 
