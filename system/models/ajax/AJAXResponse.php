@@ -106,7 +106,7 @@ class AJAXResponse
             /* @var $logEntry CommonLogEntry */
             if ($logger->getLogEntries() !== null) {
                 $collapsedLogID = 'ajaxRequest_' . Core::get()->request->getId();
-                $logs[$logger->getName()] = '<div class="alert-info" data-toggle="collapse" data-target="#' . $collapsedLogID . '"  >AJAX<div id="' . $collapsedLogID . '" class="collapse">';
+                $logs[$logger->getName()] = '<div class="alert-info" data-toggle="collapse" data-target="#' . $collapsedLogID . '"  >AJAX<div id="' . $collapsedLogID . '" class="">';
                 foreach ($logger->getLogEntries() as $logEntry) {
 
                     if ($logEntry !== null) {

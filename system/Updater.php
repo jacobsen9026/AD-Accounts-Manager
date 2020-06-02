@@ -56,26 +56,39 @@ class Updater
 
     }
 
-    /**
-     * @return bool|null
-     * @throws AppException
-     * @throws \Exception
-     */
-    public function isUpdateAvailable()
+    public function update($simulation = true, $deleteDownload = false)
     {
-        $this->logger->info("isUpdateAvailable called");
-        $this->connectToUpdateServer();
-
-
-        if (time() - AppDatabase::getLastUpdateCheck() > $this->updateCheckInterval) {
-            $this->latestVersion = $this->getLatestVersion();
+        if ($this->updater === null) {
+            $this->connectToUpdateServer();
+        }
+        if ($this->latestVersion === null) {
+            $this->getLatestVersion();
+        }
+        $result = $this->updater->update(true, $deleteDownload);
+        if ($result === true && !$simulation) {
+            return $this->updater->update(false, $deleteDownload);
         } else {
-            $this->latestVersion = AppDatabase::getLatestAvailableVersion();
+            $this->logger->warning('Update simulation failed: ' . $result . '!<br>');
+            if ($result === AutoUpdate::ERROR_DOWNLOAD_UPDATE) {
+                $result = 'Could not download update.';
+            } elseif ($result === AutoUpdate::ERROR_SIMULATE) {
+                var_dump($this->updater->getSimulationResults());
+                $this->logger->error($this->updater->getSimulationResults());
+                $result = "Error in simulated install.";
+            } elseif ($result === AutoUpdate::ERROR_DELETE_TEMP_UPDATE) {
+                $result = "Could not delete zip update file.";
+            } elseif ($result === AutoUpdate::ERROR_INSTALL) {
+                $this->logger->error('Error while installing the update.');
+                $result = "Error while installing the update.";
+
+            } elseif ($result === AutoUpdate::ERROR_INSTALL_DIR) {
+                $result = "Install directory does not exist or is not writable";
+            } elseif ($result === AutoUpdate::ERROR_INVALID_ZIP) {
+                $result = "Zip file could not be opened.";
+            } elseif ($result === AutoUpdate::ERROR_VERSION_CHECK) {
+                $result = "Could not check for last version.";
+            }
         }
-        if ($this->latestVersion > $this->currentVersion) {
-            return true;
-        }
-        return false;
 
     }
 
@@ -92,26 +105,14 @@ class Updater
             ->setSslVerifyHost($this->checkSSL);
 
 
-        // Optional Callback function - on each version update
-        function eachUpdateFinishCallback($updatedVersion)
-        {
-            echo '<h3>CALLBACK for version ' . $updatedVersion . '</h3>';
-        }
+        $this->updater->onEachUpdateFinish(function () {
+            $this->logger->info('Finished Update Component');
+        });
 
-        $this->updater->onEachUpdateFinish('eachUpdateFinishCallback');
 
-        // Optional Callback function - on each version update
-        function onAllUpdateFinishCallbacks($updatedVersions)
-        {
-            echo '<h3>CALLBACK for all updated versions:</h3>';
-            echo '<ul>';
-            foreach ($updatedVersions as $v) {
-                echo '<li>' . $v . '</li>';
-            }
-            echo '</ul>';
-        }
-
-        $this->updater->setOnAllUpdateFinishCallbacks('onAllUpdateFinishCallbacks');
+        $this->updater->setOnAllUpdateFinishCallbacks(function () {
+            $this->logger->info('Finished Update Component');
+        });
 
 
         $this->logger->debug("Connected to " . $this->url);
@@ -135,6 +136,7 @@ class Updater
                     AppDatabase::setLastUpdateCheck(time());
                     $this->latestVersion = $this->updater->getLatestVersion();
                     AppDatabase::setLatestAvailableVersion($this->latestVersion);
+                    $this->updater->getVersionsToUpdate();
                     return $this->latestVersion;
                 } else {
                     // No new update
@@ -150,9 +152,27 @@ class Updater
         return $this->latestVersion;
     }
 
-    public function update($simulation = true, $deleteDownload = false)
+    /**
+     * @return bool|null
+     * @throws AppException
+     * @throws \Exception
+     */
+    public function isUpdateAvailable()
     {
-        return $this->updater->update($simulation, $deleteDownload);
+        $this->logger->info("isUpdateAvailable called");
+        $this->connectToUpdateServer();
+
+
+        if (time() - AppDatabase::getLastUpdateCheck() > $this->updateCheckInterval) {
+            $this->latestVersion = $this->getLatestVersion();
+        } else {
+            $this->latestVersion = AppDatabase::getLatestAvailableVersion();
+        }
+        if ($this->latestVersion > $this->currentVersion) {
+            return true;
+        }
+        return false;
+
     }
 
     public function checkForUpdate()

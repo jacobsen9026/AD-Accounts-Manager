@@ -61,38 +61,6 @@ class FormButton extends FormElement implements FormElementInterface
 
     }
 
-    function getTheme()
-    {
-        return $this->theme;
-    }
-
-    function getType()
-    {
-        return $this->type;
-    }
-
-    function setType($type)
-    {
-        $this->type = $type;
-        return $this;
-    }
-
-    public function setTheme($theme)
-    {
-        $this->theme = $theme;
-        return $this;
-    }
-
-    public function getId()
-    {
-        $id = parent::getId();
-        if ($id == null) {
-            return str_replace(" ", "", $this->getName()) . "Button";
-        } else {
-            return $id;
-        }
-    }
-
     /**
      *
      * @return string
@@ -115,6 +83,38 @@ class FormButton extends FormElement implements FormElementInterface
             '</button></div>';
         //var_dump($html);
         return $html;
+    }
+
+    function getTheme()
+    {
+        return $this->theme;
+    }
+
+    public function setTheme($theme)
+    {
+        $this->theme = $theme;
+        return $this;
+    }
+
+    public function getId()
+    {
+        $id = parent::getId();
+        if ($id == null) {
+            return str_replace(" ", "", $this->getName()) . "Button";
+        } else {
+            return $id;
+        }
+    }
+
+    function getType()
+    {
+        return $this->type;
+    }
+
+    function setType($type)
+    {
+        $this->type = $type;
+        return $this;
     }
 
     /**
@@ -152,8 +152,12 @@ class FormButton extends FormElement implements FormElementInterface
             $this->ajaxRequest->setOutputID($outputID);
         if ($outputElement != null)
             $this->ajaxRequest->setOutputElement($outputElement);
-        if ($data != null)
+        if ($data != null) {
+            if (is_array($data)) {
+                $data['csrfToken'] = Form::getCsrfToken();
+            }
             $this->ajaxRequest->setData($data);
+        }
         $this->setType('button');
 
 
