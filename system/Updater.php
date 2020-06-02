@@ -56,7 +56,7 @@ class Updater
 
     }
 
-    public function update($simulation = true, $deleteDownload = false)
+    public function update($simulation = true, $deleteDownload = true)
     {
         if ($this->updater === null) {
             $this->connectToUpdateServer();
@@ -66,7 +66,16 @@ class Updater
         }
         $result = $this->updater->update(true, $deleteDownload);
         if ($result === true && !$simulation) {
-            return $this->updater->update(false, $deleteDownload);
+            $result = $this->updater->update(false, $deleteDownload);
+            var_dump($result);
+            if ($result === true) {
+                $this->logger->debug("Update completed successfully");
+                return true;
+            } else {
+                $this->logger->error("Update did not completed successfully");
+
+                return false;
+            }
         } else {
             $this->logger->warning('Update simulation failed: ' . $result . '!<br>');
             if ($result === AutoUpdate::ERROR_DOWNLOAD_UPDATE) {
@@ -88,6 +97,7 @@ class Updater
             } elseif ($result === AutoUpdate::ERROR_VERSION_CHECK) {
                 $result = "Could not check for last version.";
             }
+            return $result;
         }
 
     }
@@ -105,8 +115,8 @@ class Updater
             ->setSslVerifyHost($this->checkSSL);
 
 
-        $this->updater->onEachUpdateFinish(function () {
-            $this->logger->info('Finished Update Component');
+        $this->updater->onEachUpdateFinish(function ($updateVersion = null) {
+            $this->logger->info('Finished Update Component: ' . $updateVersion);
         });
 
 
