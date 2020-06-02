@@ -13,7 +13,7 @@ class AppUpdater extends Updater
     {
         $this->user = App::get()->user;
         $tmp = ROOTPATH . DIRECTORY_SEPARATOR . "writable" . DIRECTORY_SEPARATOR . "core_update";
-        $dst = SYSTEMPATH;
+        $dst = ROOTPATH;
 
         parent::__construct('https://raw.githubusercontent.com/jacobsen9026/AD-Accounts-Manager/master/update', $tmp, $dst, App::$version);
         $this->logger->info("Creating updater");

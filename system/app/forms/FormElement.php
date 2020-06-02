@@ -40,6 +40,15 @@ use App\Models\View\Modal;
 class FormElement
 {
     /**
+     *
+     * @var AJAXRequest
+     */
+    protected $ajaxRequest;
+    /**
+     * @var AppLogger
+     */
+    protected $logger;
+    /**
      * @var string
      */
     private $size = "";
@@ -99,35 +108,21 @@ class FormElement
      * @var
      */
     private $value;
-
     /**
      *
      * @var array
      */
     private $modal = [];
-
-    /**
-     *
-     * @var AJAXRequest
-     */
-    protected $ajaxRequest;
-
     /**
      *
      * @var type The bootstrap breakpoint for the elements column
      */
     private $breakpoint;
-
     /**
      *
      * @var int|string This is the col size number for BootStrap CSS (1-12 or auto)
      */
     private $colSize;
-
-    /**
-     * @var AppLogger
-     */
-    protected $logger;
 
     /**
      * FormElement constructor.
@@ -154,41 +149,6 @@ class FormElement
     }
 
     /**
-     * @param $value
-     *
-     * @return $this
-     */
-    public function setValue($value)
-    {
-        $this->value = (string)$value;
-        return $this;
-    }
-
-    /**
-     * @param $label
-     *
-     * @return $this
-     */
-    public function setLabel($label): self
-    {
-        $this->label = $label;
-
-        return $this;
-    }
-
-    /**
-     * @param $subLabel
-     *
-     * @return $this
-     */
-    public function setSubLabel($subLabel): self
-    {
-        $this->subLabel = $subLabel;
-
-        return $this;
-    }
-
-    /**
      * @return type
      */
     public function getBreakpoint()
@@ -207,32 +167,6 @@ class FormElement
     {
         $this->breakpoint = $breakpoint;
         return $this;
-    }
-
-    /**
-     *
-     * @return Modal
-     */
-    public function getModal(int $index = 0): ?Modal
-    {
-        if (!empty($this->modal)) {
-
-            return $this->modal[$index];
-        }
-        return null;
-    }
-
-    /**
-     *
-     * @return array
-     */
-    public function getModals(): ?array
-    {
-        if (!empty($this->modal)) {
-
-            return $this->modal;
-        }
-        return null;
     }
 
     /**
@@ -349,25 +283,6 @@ class FormElement
     }
 
     /**
-     * @return string
-     */
-    public function getInputClasses(): string
-    {
-        return $this->inputClasses;
-    }
-
-    /**
-     * @param $inputClasses
-     *
-     * @return $this
-     */
-    public function setInputClasses($inputClasses): self
-    {
-        $this->inputClasses = $inputClasses;
-        return $this;
-    }
-
-    /**
      *
      * @param string|array $inputClasses
      *
@@ -386,28 +301,6 @@ class FormElement
     }
 
     /**
-     * @param $inputClasses
-     *
-     * @return $this
-     */
-    public function removeInputClasses($inputClasses): self
-    {
-        $this->inputClasses = str_replace($inputClasses, '', $this->getInputClasses());
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getId()
-    {
-        if (null === $this->id || '' === $this->id) {
-            return htmlspecialchars(str_replace([" ", '"', "'"], "", $this->getName()));
-        }
-        return $this->id;
-    }
-
-    /**
      * @return mixed
      */
     public function getValue()
@@ -416,13 +309,13 @@ class FormElement
     }
 
     /**
-     * @param string $id
+     * @param $value
      *
-     * @return self
+     * @return $this
      */
-    public function setId(string $id): self
+    public function setValue($value)
     {
-        $this->id = $id;
+        $this->value = (string)$value;
         return $this;
     }
 
@@ -432,82 +325,6 @@ class FormElement
     public function getElementClasses(): string
     {
         return $this->elementClasses;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSize(): string
-    {
-        return $this->size;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isHidden(): bool
-    {
-        return $this->hidden;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLabel()
-    {
-        return $this->label;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSubLabel()
-    {
-        return $this->subLabel;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTooltip()
-    {
-        return $this->tooltip;
-    }
-
-    /**
-     * @param string $contents
-     *
-     * @return $this
-     */
-    public function setTooltip(string $contents): self
-    {
-        $this->tooltip = $contents;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param $name
-     *
-     * @return $this
-     */
-    public function setName($name)
-    {
-        if (is_array($name)) {
-            if (key_exists("name", $name)) {
-                $this->name = $name["name"];
-            }
-        } else {
-            $this->name = $name;
-        }
-        return $this;
     }
 
     /**
@@ -522,106 +339,53 @@ class FormElement
     }
 
     /**
-     *  Should be one of ["tiny","small","medium","large","full"]
-     *
-     * @param $size
-     *
-     * @return $this
-     */
-    public function setSize($size): self
-    {
-        $this->size = $size;
-        return $this;
-    }
-
-    /**
-     * Appends to the existing script
-     *
-     * @param $script
-     *
-     * @return $this
-     */
-    public function setScript($script): self
-    {
-        // $this->logger->debug("Script set for " . $this->getName() . ': ' . $script);
-        $this->script .= $script;
-        return $this;
-    }
-
-    /**
      * @return string
      */
-    public function getScript(): string
+    public function printModal($index = 1): ?string
     {
-        return $this->script;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLabelClasses(): string
-    {
-        return $this->labelClasses;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubLabelClasses(): string
-    {
-        return $this->subLabelClasses;
-    }
-
-    /**
-     * @param $labelClasses
-     *
-     * @return $this
-     */
-    public function setLabelClasses($labelClasses): self
-    {
-        $this->labelClasses = $labelClasses;
-        return $this;
-    }
-
-    /**
-     * @param $subLabelClasses
-     *
-     * @return $this
-     */
-    public function setSubLabelClasses($subLabelClasses): self
-    {
-        $this->subLabelClasses = $subLabelClasses;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function printScript(): string
-    {
-        $script = $this->getScript();
-        if ($script != '') {
-            return '<script>' . $script . '</script>';
+        if (!empty($this->modal)) {
+            //$this->logger->info($this->getName() . " has a modal");
+            $modal = $this->getModal($index)->print();
+            return $modal;
         }
-
-        return '';
-    }
-
-    public function getColSize()
-    {
-        return $this->colSize;
+        return null;
     }
 
     /**
-     * @param $colSize
      *
-     * @return $this
+     * @return Modal
      */
-    public function setColSize($colSize)
+    public function getModal(int $index = 0): ?Modal
     {
-        $this->colSize = $colSize;
+        if (!empty($this->modal)) {
 
-        return $this;
+            return $this->modal[$index];
+        }
+        return null;
+    }
+
+    /**
+     * Returns the HTML for this form element
+     *
+     * @return string
+     */
+    public function print(bool $fromForm = false): string
+    {
+        $this->preProcess();
+        $html = $this->printHeader() . "\n";
+
+        if ($this->hideLabels === false && $this instanceof FormTextArea === false) {
+            $html .= $this->printLabel() . "\n";
+            $html .= $this->printSubLabel() . "\n";
+        }
+        $html .= $this->getElementHTML() . "\n";
+        $html .= $this->printScript() . "\n";
+        $html .= $this->printAJAX() . "\n";
+        $html .= $this->printFooter() . "\n";
+        if (!$fromForm) {
+            $html .= $this->printModals() . "\n";
+        }
+        return $html . "\n";
     }
 
     protected function preProcess()
@@ -670,6 +434,57 @@ class FormElement
     /**
      * @return string
      */
+    public function getSize(): string
+    {
+        return $this->size;
+    }
+
+    /**
+     *  Should be one of ["tiny","small","medium","large","full"]
+     *
+     * @param $size
+     *
+     * @return $this
+     */
+    public function setSize($size): self
+    {
+        $this->size = $size;
+        return $this;
+    }
+
+    /**
+     * @param $inputClasses
+     *
+     * @return $this
+     */
+    public function removeInputClasses($inputClasses): self
+    {
+        $this->inputClasses = str_replace($inputClasses, '', $this->getInputClasses());
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInputClasses(): string
+    {
+        return $this->inputClasses;
+    }
+
+    /**
+     * @param $inputClasses
+     *
+     * @return $this
+     */
+    public function setInputClasses($inputClasses): self
+    {
+        $this->inputClasses = $inputClasses;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     protected function printHeader(): string
     {
         if ($this->breakpoint === null) {
@@ -693,12 +508,142 @@ class FormElement
         return $html . '';
     }
 
+    public function getColSize()
+    {
+        return $this->colSize;
+    }
+
+    /**
+     * @param $colSize
+     *
+     * @return $this
+     */
+    public function setColSize($colSize)
+    {
+        $this->colSize = $colSize;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHidden(): bool
+    {
+        return $this->hidden;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTooltip()
+    {
+        return $this->tooltip;
+    }
+
+    /**
+     * @param string $contents
+     *
+     * @return $this
+     */
+    public function setTooltip(string $contents): self
+    {
+        $this->tooltip = $contents;
+        return $this;
+    }
+
     /**
      * @return string
      */
     protected function printLabel(): string
     {
         return '<label class="' . $this->getLabelClasses() . '" for="' . $this->getId() . '">' . $this->getLabel() . '</label>';
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabelClasses(): string
+    {
+        return $this->labelClasses;
+    }
+
+    /**
+     * @param $labelClasses
+     *
+     * @return $this
+     */
+    public function setLabelClasses($labelClasses): self
+    {
+        $this->labelClasses = $labelClasses;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        if (null === $this->id || '' === $this->id) {
+            return htmlspecialchars(str_replace([" ", '"', "'", '.'], "", $this->getName()));
+        }
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return self
+     */
+    public function setId(string $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param $name
+     *
+     * @return $this
+     */
+    public function setName($name)
+    {
+        if (is_array($name)) {
+            if (key_exists("name", $name)) {
+                $this->name = $name["name"];
+            }
+        } else {
+            $this->name = $name;
+        }
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLabel()
+    {
+        return $this->label;
+    }
+
+    /**
+     * @param $label
+     *
+     * @return $this
+     */
+    public function setLabel($label): self
+    {
+        $this->label = $label;
+
+        return $this;
     }
 
     /**
@@ -712,22 +657,97 @@ class FormElement
     /**
      * @return string
      */
-    protected function printFooter(): string
+    public function getSubLabelClasses(): string
     {
-        return '</div>';
+        return $this->subLabelClasses;
+    }
+
+    /**
+     * @param $subLabelClasses
+     *
+     * @return $this
+     */
+    public function setSubLabelClasses($subLabelClasses): self
+    {
+        $this->subLabelClasses = $subLabelClasses;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSubLabel()
+    {
+        return $this->subLabel;
+    }
+
+    /**
+     * @param $subLabel
+     *
+     * @return $this
+     */
+    public function setSubLabel($subLabel): self
+    {
+        $this->subLabel = $subLabel;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function printModal($index = 1): ?string
+    public function printScript(): string
     {
-        if (!empty($this->modal)) {
-            //$this->logger->info($this->getName() . " has a modal");
-            $modal = $this->getModal($index)->print();
-            return $modal;
+        $script = $this->getScript();
+        if ($script != '') {
+            return '<script>' . $script . '</script>';
         }
-        return null;
+
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getScript(): string
+    {
+        return $this->script;
+    }
+
+    /**
+     * Appends to the existing script
+     *
+     * @param $script
+     *
+     * @return $this
+     */
+    public function setScript($script): self
+    {
+        // $this->logger->debug("Script set for " . $this->getName() . ': ' . $script);
+        $this->script .= $script;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    protected function printAJAX()
+    {
+        if ($this->ajaxRequest !== null) {
+            $this->logger->debug("creating ajax for " . $this->getName());
+            $ajax = $this->ajaxRequest->print();
+            $onclick = Javascript::on($this->getId(), $ajax);
+            $script = "<script>" . $onclick . "</script>";
+            return $script;
+        }
+    }
+
+    /**
+     * @return string
+     */
+    protected function printFooter(): string
+    {
+        return '</div>';
     }
 
     /**
@@ -747,41 +767,16 @@ class FormElement
     }
 
     /**
-     * @return string
-     */
-    protected function printAJAX()
-    {
-        if ($this->ajaxRequest !== null) {
-            $this->logger->debug("creating ajax for " . $this->getName());
-            $ajax = $this->ajaxRequest->print();
-            $onclick = Javascript::on($this->getId(), $ajax);
-            $script = "<script>" . $onclick . "</script>";
-            return $script;
-        }
-    }
-
-    /**
-     * Returns the HTML for this form element
      *
-     * @return string
+     * @return array
      */
-    public function print(bool $fromForm = false): string
+    public function getModals(): ?array
     {
-        $this->preProcess();
-        $html = $this->printHeader() . "\n";
+        if (!empty($this->modal)) {
 
-        if ($this->hideLabels === false && $this instanceof FormTextArea === false) {
-            $html .= $this->printLabel() . "\n";
-            $html .= $this->printSubLabel() . "\n";
+            return $this->modal;
         }
-        $html .= $this->getElementHTML() . "\n";
-        $html .= $this->printScript() . "\n";
-        $html .= $this->printAJAX() . "\n";
-        $html .= $this->printFooter() . "\n";
-        if (!$fromForm) {
-            $html .= $this->printModals() . "\n";
-        }
-        return $html . "\n";
+        return null;
     }
 
 }
