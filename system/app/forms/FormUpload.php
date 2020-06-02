@@ -46,7 +46,7 @@ class FormUpload extends FormElement implements FormElementInterface
         parent::__construct($label, $subLabel, $name, $value);
         $showFileNameScript = '// Add the following code if you want the name of the file appear on select
 $(".system-custom-file-input").on("change", function() {
-    console.log("a file update was prepared");
+    console.log("a file upload was prepared");
   var fileName = $(this).val().split("\\\\").pop();
   fileName= fileName.substring(0,30);
   console.log("Filename: "+fileName);

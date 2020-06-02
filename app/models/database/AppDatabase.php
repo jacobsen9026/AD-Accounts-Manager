@@ -49,9 +49,18 @@ abstract class AppDatabase extends DatabaseModel
      *
      * @return string
      */
-    public static function getAppName()
+    public static function getLatestAvailableVersion()
     {
-        return self::getDatabaseValue("Name");
+        return self::getDatabaseValue("Latest_Available_Version");
+    }
+
+    /**
+     *
+     * @return integer
+     */
+    public static function getLastUpdateCheck()
+    {
+        return (int)self::getDatabaseValue("Last_Update_Check");
     }
 
     /**
@@ -67,6 +76,15 @@ abstract class AppDatabase extends DatabaseModel
         }
 //var_dump($result);
         return $abbreviation;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public static function getAppName()
+    {
+        return self::getDatabaseValue("Name");
     }
 
     /**
@@ -107,57 +125,6 @@ abstract class AppDatabase extends DatabaseModel
         return self::getDatabaseValue("User_Helpdesk_URL");
     }
 
-    /**
-     *
-     * @param bool $value
-     *
-     * @return bool
-     */
-    public static function setDebugMode($value)
-    {
-        return self::updateDatabaseValue('Debug_Mode', $value);
-    }
-
-    /**
-     *
-     * @param string $value
-     *
-     * @return bool
-     */
-    public static function setAppName($value)
-    {
-        return self::updateDatabaseValue('Name', $value);
-    }
-
-    public static function setMOTD($value)
-    {
-        $value = str_replace("'", "''", $value);
-        return self::updateDatabaseValue('MOTD', $value);
-    }
-
-    public static function setForceHTTPS($value)
-    {
-        return self::updateDatabaseValue('Force_HTTPS', $value);
-    }
-
-
-    /**
-     * Update database column so it doesn't say websitie lol
-     *
-     * @param type $value
-     *
-     * @return type
-     */
-    public static function setWebsiteFQDN($value)
-    {
-        return self::updateDatabaseValue('Websitie_FQDN', $value);
-    }
-
-    public static function setUserHelpdeskURL($value)
-    {
-        return self::updateDatabaseValue('User_Helpdesk_URL', $value);
-    }
-
     public static function saveSettings($postedData)
     {
         foreach ($postedData as $key => $data) {
@@ -189,6 +156,66 @@ abstract class AppDatabase extends DatabaseModel
                     break;
             }
         }
+    }
+
+    /**
+     *
+     * @param string $value
+     *
+     * @return bool
+     */
+    public static function setAppName($value)
+    {
+        return self::updateDatabaseValue('Name', $value);
+    }
+
+    public static function setMOTD($value)
+    {
+        $value = str_replace("'", "''", $value);
+        return self::updateDatabaseValue('MOTD', $value);
+    }
+
+    /**
+     * Update database column so it doesn't say websitie lol
+     *
+     * @param type $value
+     *
+     * @return type
+     */
+    public static function setWebsiteFQDN($value)
+    {
+        return self::updateDatabaseValue('Websitie_FQDN', $value);
+    }
+
+    public static function setForceHTTPS($value)
+    {
+        return self::updateDatabaseValue('Force_HTTPS', $value);
+    }
+
+    /**
+     *
+     * @param bool $value
+     *
+     * @return bool
+     */
+    public static function setDebugMode($value)
+    {
+        return self::updateDatabaseValue('Debug_Mode', $value);
+    }
+
+    public static function setUserHelpdeskURL($value)
+    {
+        return self::updateDatabaseValue('User_Helpdesk_URL', $value);
+    }
+
+    public static function setLastUpdateCheck($value)
+    {
+        return self::updateDatabaseValue('Last_Update_Check', $value);
+    }
+
+    public static function setLatestAvailableVersion($value)
+    {
+        return self::updateDatabaseValue('Latest_Available_Version', $value);
     }
 
 }
