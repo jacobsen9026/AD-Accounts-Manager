@@ -43,18 +43,23 @@ $updateForm = new Form('/update', 'updateApp');
 $updateToken = $updater->getUpdateToken();
 $action = new \System\App\Forms\FormText('', '', 'updateToken', $updateToken);
 $action->hidden();
-$updateButton = new \System\App\Forms\FormButton('Update to v' . $latestVersion);
-$updateButton->tiny();
-$updateForm->addElementToCurrentRow($updateButton)
-    ->addElementToNewRow($action);
-
-$modalBody = Core::getVersion() . ' -> ' . $latestVersion . '<br>' . $updateForm->print();
 
 $updateModal = new Modal();
 $updateModal->setTitle('Update App')
-    ->setBody($modalBody)
     ->small()
     ->setId('update_app_modal');
+
+
+$updateButton = new FormButton('Update to v' . $latestVersion);
+$updateButton->tiny()
+    ->addAJAXRequest('/api/update', 'settingsOutput', ['action' => 'updateApp']);
+$updateForm->addElementToCurrentRow($updateButton)
+    ->addElementToNewRow($action);
+$closeModalFunction = '$(\'#' . $updateModal->getId() . '\').modal(\'hide\')';
+$closeModalFunction = \App\Models\View\Javascript::on($updateButton->getId(), $closeModalFunction);
+$updateButton->setScript($closeModalFunction);
+$modalBody = Core::getVersion() . ' -> ' . $latestVersion . '<br>' . $updateForm->print();
+$updateModal->setBody($modalBody);
 
 $updateModalButton = new FormButton('Update App');
 $updateModalButton->addModal($updateModal)
