@@ -11,12 +11,19 @@ class AppUpdater extends Updater
 {
     public function __construct()
     {
+        $this->user = App::get()->user;
         $tmp = ROOTPATH . DIRECTORY_SEPARATOR . "writable" . DIRECTORY_SEPARATOR . "core_update";
         $dst = SYSTEMPATH;
-        $this->setLogger(AppLogger::get());
-        parent::__construct('https://raw.githubusercontent.com/jacobsen9026/Classify/master/update', $tmp, $dst, App::$version);
-        $this->setCheckSSL(false)
-            ->setLastCheckedFile(WRITEPATH . DIRECTORY_SEPARATOR . 'lastUpdateCheck.log');
+
+        parent::__construct('https://raw.githubusercontent.com/jacobsen9026/AD-Accounts-Manager/master/update', $tmp, $dst, App::$version);
+        $this->logger->info("Creating updater");
+        $this->setCheckSSL(false);
+    }
+
+    public function getUpdateToken()
+    {
+
+        $updateToken = hash("sha256", $this->user->getUsername() . $this->getLatestVersion());
     }
 
 

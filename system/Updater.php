@@ -4,6 +4,7 @@
 namespace System;
 
 
+use App\Models\Database\AppDatabase;
 use Monolog\Handler\StreamHandler;
 use System\App\AppException;
 use System\Exception\FileException;
@@ -14,22 +15,23 @@ class Updater
     /**
      * @var AutoUpdate
      */
-    private $updater;
+    protected $updater;
 
-    private $lastCheckedFile;
+
     /**
-     * @var null|int
+     * @var null|self
      */
-    private int $lastChecked = 0;
-    private int $updateCheckInterval = (60 * 60 * 12);
-    private $logger;
-    private $timeout = 120;
-    private $checkSSL = true;
-    private $url;
-    private $currentVersion;
-    private $tempFilePath;
-    private $destFilePath;
-    private $logFile = ROOTPATH . DIRECTORY_SEPARATOR . "writable" . DIRECTORY_SEPARATOR . "update.log";
+    //protected int $updateCheckInterval = (1);
+    protected int $updateCheckInterval = (60 * 60 * 12);
+    protected $logger;
+    protected int $timeout = 120;
+    protected bool $checkSSL = true;
+    protected string $url;
+    protected $currentVersion;
+    protected string $tempFilePath;
+    protected string $destFilePath;
+    protected string $logFile = ROOTPATH . DIRECTORY_SEPARATOR . "writable" . DIRECTORY_SEPARATOR . "update.log";
+    private $latestVersion;
 
     /**
      * Update constructor.
@@ -53,6 +55,29 @@ class Updater
     }
 
     /**
+     * @return bool|null
+     * @throws AppException
+     * @throws \Exception
+     */
+    public function isUpdateAvailable()
+    {
+        $this->logger->info("isUpdateAvailable called");
+        $this->connectToUpdateServer();
+
+
+        if (time() - AppDatabase::getLastUpdateCheck() > $this->updateCheckInterval) {
+            $this->latestVersion = $this->getLatestVersion();
+        } else {
+            $this->latestVersion = AppDatabase::getLatestAvailableVersion();
+        }
+        if ($this->latestVersion > $this->currentVersion) {
+            return true;
+        }
+        return false;
+
+    }
+
+    /**
      * @throws \Exception
      */
     public function connectToUpdateServer(): void
@@ -69,34 +94,22 @@ class Updater
     }
 
     /**
-     * @return bool|null
-     * @throws AppException
-     * @throws \Exception
+     * @return string
      */
-    public function isUpdateAvailable()
+    public function getLatestVersion()
     {
-        $this->logger->info("isUpdateAvailable called");
-        $this->connectToUpdateServer();
-
-        try {
-            $this->lastChecked = (int)File::getContents($this->lastCheckedFile);
-            $this->logger->debug("Last check time was " . $this->lastChecked);
-        } catch (FileException $ex) {
-            if ($ex->getCode() !== FileException::FILE_NOT_FOUND) {
-                $this->logger->warning("Problem with reading flag file");
-                throw new AppException($ex->getMessage(), $ex->getCode(), $ex);
-            }
-
+        if ($this->updater === null) {
+            $this->connectToUpdateServer();
         }
-
-        if (time() - $this->lastChecked > $this->updateCheckInterval) {
+        if ($this->latestVersion === null || $this->latestVersion === '') {
             $this->logger->info("Checking for a new version");
             try {
 
-
                 if ($this->updater->checkUpdate()) {
-                    $this->logger->debug(File::overwriteFile($this->lastCheckedFile, time()));
-                    return true;
+                    AppDatabase::setLastUpdateCheck(time());
+                    $this->latestVersion = $this->updater->getLatestVersion();
+                    AppDatabase::setLatestAvailableVersion($this->latestVersion);
+                    return $this->latestVersion;
                 } else {
                     // No new update
                     $this->logger->info('Your application is up to date');
@@ -107,38 +120,20 @@ class Updater
                 $this->logger->error($ex);
 
             }
-
         }
-
+        return $this->latestVersion;
     }
 
-    /**
-     * @return string
-     */
-    public function getLatestVersion()
+    public function update($simulation = true)
     {
-        return $this->updater->getLatestVersion();
+        return $this->updater->update($simulation);
     }
 
-    /**
-     * @return string
-     */
-    public
-    function getLastCheckedFile(): string
+    public function checkForUpdate()
     {
-        return $this->lastCheckedFile;
+
     }
 
-    /**
-     * @param string $lastCheckedFile
-     *
-     * @return Updater
-     */
-    public function setLastCheckedFile(string $lastCheckedFile): Updater
-    {
-        $this->lastCheckedFile = $lastCheckedFile;
-        return $this;
-    }
 
     /**
      * @return string
@@ -164,6 +159,7 @@ class Updater
      */
     public function getCurrentVersion(): int
     {
+
         return $this->currentVersion;
     }
 
@@ -235,23 +231,9 @@ class Updater
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getLastChecked(): ?int
+    public function getLastCheckedState()
     {
-        return $this->lastChecked;
-    }
-
-    /**
-     * @param int|null $lastChecked
-     *
-     * @return Updater
-     */
-    public function setLastChecked(?int $lastChecked): Updater
-    {
-        $this->lastChecked = $lastChecked;
-        return $this;
+        return $this->lastCheckedState;
     }
 
     /**
