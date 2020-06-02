@@ -52,6 +52,8 @@ class Updater
         $this->destFilePath = $destFilePath;
         $this->url = $url;
         $this->currentVersion = $currentVersion;
+
+
     }
 
     /**
@@ -88,6 +90,30 @@ class Updater
             ->setUpdateUrl($this->url)
             ->addLogHandler(new StreamHandler($this->logFile))
             ->setSslVerifyHost($this->checkSSL);
+
+
+        // Optional Callback function - on each version update
+        function eachUpdateFinishCallback($updatedVersion)
+        {
+            echo '<h3>CALLBACK for version ' . $updatedVersion . '</h3>';
+        }
+
+        $this->updater->onEachUpdateFinish('eachUpdateFinishCallback');
+
+        // Optional Callback function - on each version update
+        function onAllUpdateFinishCallbacks($updatedVersions)
+        {
+            echo '<h3>CALLBACK for all updated versions:</h3>';
+            echo '<ul>';
+            foreach ($updatedVersions as $v) {
+                echo '<li>' . $v . '</li>';
+            }
+            echo '</ul>';
+        }
+
+        $this->updater->setOnAllUpdateFinishCallbacks('onAllUpdateFinishCallbacks');
+
+
         $this->logger->debug("Connected to " . $this->url);
 
 
@@ -124,9 +150,9 @@ class Updater
         return $this->latestVersion;
     }
 
-    public function update($simulation = true)
+    public function update($simulation = true, $deleteDownload = false)
     {
-        return $this->updater->update($simulation);
+        return $this->updater->update($simulation, $deleteDownload);
     }
 
     public function checkForUpdate()
