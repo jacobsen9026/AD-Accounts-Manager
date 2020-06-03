@@ -34,7 +34,7 @@ $updater = new AppUpdater();
 $availableVersion = 'Running the latest version!';
 $latestVersion = '';
 if ($updater->isUpdateAvailable()) {
-    $latestVersion = $updater->getLatestVersion();
+    $latestVersion = $updater->getLatestVersionsFromURL();
     $availableVersion = 'Verison: ' . $latestVersion . ' is available.';
 }
 echo $availableVersion;

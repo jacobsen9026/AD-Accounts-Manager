@@ -165,6 +165,7 @@ abstract class File
 
     public static function getContents($filepath)
     {
+        SystemLogger::get()->debug($filepath);
         if (file_exists($filepath)) {
             return file_get_contents($filepath);
         } else {
@@ -175,6 +176,22 @@ abstract class File
     public static function getMaximumUploadSize()
     {
         return ini_get('upload_max_filesize');
+    }
+
+    public static function exists(string $liveFile)
+    {
+        return file_exists($liveFile);
+    }
+
+    public static function removeDirectory(string $dir)
+    {
+
+        foreach (scandir($dir) as $file) {
+            if ('.' === $file || '..' === $file) continue;
+            if (is_dir("$dir/$file")) self::removeDirectory("$dir/$file");
+            else unlink("$dir/$file");
+        }
+        rmdir($dir);
     }
 
 }
