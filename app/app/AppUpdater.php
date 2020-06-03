@@ -20,11 +20,6 @@ class AppUpdater extends Updater
         $this->setCheckSSL(false);
     }
 
-    public function getUpdateToken()
-    {
-
-        $updateToken = hash("sha256", $this->user->getUsername() . $this->getLatestVersionsFromURL());
-    }
 
     /**
      * @inheritDoc

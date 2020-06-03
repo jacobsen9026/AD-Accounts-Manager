@@ -142,18 +142,21 @@ class Updater
 
                 if (!$simulation && $this->backupApp()) {
                     if ($this->run()) {
+                        $this->logger->info("Update completed successfully");
                         $this->deleteRollback();
                     } else {
                         $this->rollbackUpdate();
                     }
                 }
             } else {
-
+                throw new AppException("Update Simulation Failed");
             }
             if ($deleteDownload) {
                 $this->deleteDownloadedUpdate();
             }
             return true;
+        } else {
+            return "There is no update available";
         }
 
 
@@ -239,6 +242,7 @@ class Updater
                     }
                     if (!$simulation) {
                         copy($file->getPathname(), $liveFile);
+                        $this->logger->debug("Processed file: $pathname");
                     }
                     //var_dump($pathname);
                 }
@@ -246,6 +250,42 @@ class Updater
             }
         }
         File::removeDirectory($extractPath);
+        return true;
+    }
+
+    private function backupApp()
+    {
+        /**
+         * @todo Make backup app
+         */
+        return true;
+    }
+
+    private function deleteRollback()
+    {
+        return true;
+    }
+
+    private function rollbackUpdate()
+    {
+        /**
+         * @todo Make rollback update from backup before update
+         */
+        $this->logger->error("Trying to roll back update");
+        return true;
+    }
+
+    private function deleteDownloadedUpdate()
+    {
+        File::deleteFile($this->downloadedFile);
+    }
+
+    public function getLatestVersion()
+    {
+        if ($this->latestVersion === null) {
+            $this->getLatestVersionsFromURL();
+        }
+        return $this->latestVersion;
     }
 
     /**
