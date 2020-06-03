@@ -21,17 +21,23 @@ class Updater
     /**
      * @var null|self
      */
-    //protected int $updateCheckInterval = (1);
-    protected int $updateCheckInterval = (60 * 60 * 12);
+    protected int $updateCheckInterval = (1);
+    // protected int $updateCheckInterval = (60 * 60 * 12);
     protected $logger;
     protected int $timeout = 120;
     protected bool $checkSSL = true;
-    protected string $url;
+    protected string $jsonURL;
     protected $currentVersion;
     protected string $tempFilePath;
     protected string $destFilePath;
-    protected string $logFile = ROOTPATH . DIRECTORY_SEPARATOR . "writable" . DIRECTORY_SEPARATOR . "update.log";
-    private $latestVersion;
+    //protected string $logFile = ROOTPATH . DIRECTORY_SEPARATOR . "writable" . DIRECTORY_SEPARATOR . "update.log";
+    protected $latestVersion;
+    protected $latestVersionURL;
+    /**
+     * @var mixed
+     */
+    protected $updatesAvailable;
+    private string $downloadedFile;
 
     /**
      * Update constructor.
@@ -40,9 +46,12 @@ class Updater
      * checkSSL: true
      * Timeout (update check): 120s
      *
-     * @param AutoUpdate $updater
+     * @param string $jsonURL
+     * @param string $tempFilePath
+     * @param string $destFilePath
+     * @param $currentVersion
      */
-    public function __construct(string $url, string $tempFilePath, string $destFilePath, $currentVersion)
+    public function __construct(string $jsonURL, string $tempFilePath, string $destFilePath, $currentVersion)
     {
         $this->logger = SystemLogger::get();
         $this->logger->info('Updater loaded');
@@ -50,19 +59,109 @@ class Updater
 
         $this->tempFilePath = $tempFilePath;
         $this->destFilePath = $destFilePath;
-        $this->url = $url;
+        $this->jsonURL = $jsonURL;
         $this->currentVersion = $currentVersion;
-
+        $this->isUpdateAvailable();
 
     }
 
-    public function update($simulation = true, $deleteDownload = true)
+    /**
+     * @return bool|null
+     * @throws AppException
+     * @throws \Exception
+     */
+    public
+    function isUpdateAvailable()
     {
+        $this->logger->info("isUpdateAvailable called");
+        //$this->connectToUpdateServer();
+
+
+        if (time() - AppDatabase::getLastUpdateCheck() > $this->updateCheckInterval) {
+            $this->latestVersion = $this->getLatestVersionsFromURL();
+        } else {
+            $this->latestVersion = json_decode(AppDatabase::getLatestAvailableVersion())[0];
+        }
+        if ($this->latestVersion > $this->currentVersion) {
+            return true;
+        }
+        return false;
+
+    }
+
+    /**
+     * Connectes to the JSON URL set in the updater and determines the latest version
+     *
+     * @return string
+     */
+    public function getLatestVersionsFromURL()
+    {
+
+        /**
+         * Check to make sure an update json url has been set
+         */
+        if ($this->jsonURL !== null && $this->jsonURL !== '') {
+            /**
+             * A Random number to send so we don't deal with caching
+             */
+            $sendGet = rand(1000000000, 9999999999);
+
+            $this->logger->info("Checking for a new version at " . $this->jsonURL);
+            /**
+             * Get the JSON contents into a PHP array
+             */
+            $this->updatesAvailable = (array)(json_decode(file_get_contents($this->jsonURL . "?rand=" . $sendGet)));
+            $this->logger->debug($this->updatesAvailable);
+            /**
+             * Sort the array from highest to loweest
+             */
+            $this->logger->debug(ksort($this->updatesAvailable));
+            $this->updatesAvailable = array_reverse($this->updatesAvailable);
+            $this->logger->debug($this->updatesAvailable);
+            /**
+             * Pull the latest version from the first key name
+             */
+            $this->latestVersion = array_key_first($this->updatesAvailable);
+            $this->latestVersionURL = $this->updatesAvailable[$this->latestVersion];
+            $this->logger->debug($this->latestVersion);
+            $this->logger->debug($this->latestVersionURL);
+            return $this->latestVersion;
+        } else {
+            /**
+             * There was no JSON url set
+             */
+            throw new AppException('Update URL is not set');
+        }
+    }
+
+    public
+    function update($simulation = true, $deleteDownload = true)
+    {
+        if ($this->isUpdateAvailable()) {
+            if ($this->run(true)) {
+
+                if (!$simulation && $this->backupApp()) {
+                    if ($this->run()) {
+                        $this->deleteRollback();
+                    } else {
+                        $this->rollbackUpdate();
+                    }
+                }
+            } else {
+
+            }
+            if ($deleteDownload) {
+                $this->deleteDownloadedUpdate();
+            }
+            return true;
+        }
+
+
         if ($this->updater === null) {
             $this->connectToUpdateServer();
         }
         if ($this->latestVersion === null) {
-            $this->getLatestVersion();
+            $this->getLatestVersionsFromURL();
         }
         $result = $this->updater->update(true, $deleteDownload);
         if ($result === true && !$simulation) {
@@ -102,240 +201,51 @@ class Updater
 
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function connectToUpdateServer(): void
+    private function run($simulation = false)
     {
-        $this->logger->info("Connecting to update server");
-        $this->updater = new AutoUpdate($this->tempFilePath, $this->destFilePath, $this->timeout);
-        $this->updater->setCurrentVersion(Core::getVersion())
-            ->setUpdateUrl($this->url)
-            ->addLogHandler(new StreamHandler($this->logFile))
-            ->setSslVerifyHost($this->checkSSL);
-
-
-        $this->updater->onEachUpdateFinish(function ($updateVersion = null) {
-            $this->logger->info('Finished Update Component: ' . $updateVersion);
-        });
-
-
-        $this->updater->setOnAllUpdateFinishCallbacks(function () {
-            $this->logger->info('Finished Update Component');
-        });
-
-
-        $this->logger->debug("Connected to " . $this->url);
-
-
-    }
-
-    /**
-     * @return string
-     */
-    public function getLatestVersion()
-    {
-        if ($this->updater === null) {
-            $this->connectToUpdateServer();
+        if ($simulation) {
+            $this->logger->info("Running update in simulation mode");
+        } else {
+            $this->logger->info("Running update");
         }
-        if ($this->latestVersion === null || $this->latestVersion === '') {
-            $this->logger->info("Checking for a new version");
-            try {
+        $extractPath = $this->tempFilePath . DIRECTORY_SEPARATOR . "extract";
+        $this->logger->debug($this->tempFilePath);
+        $this->downloadedFile = $this->tempFilePath . DIRECTORY_SEPARATOR . "update.zip";
+        File::overwriteFile($this->downloadedFile, fopen($this->latestVersionURL, 'r'));
+        $zip = new \ZipArchive();
+        if ($zip->open($this->downloadedFile)) {
+            $zip->extractTo($extractPath);
+            $dir = new\RecursiveDirectoryIterator ($extractPath);
+            /**
+             * @var \SplFileInfo $file
+             */
+            foreach (new \RecursiveIteratorIterator($dir) as $file) {
 
-                if ($this->updater->checkUpdate()) {
-                    AppDatabase::setLastUpdateCheck(time());
-                    $this->latestVersion = $this->updater->getLatestVersion();
-                    AppDatabase::setLatestAvailableVersion($this->latestVersion);
-                    $this->updater->getVersionsToUpdate();
-                    return $this->latestVersion;
-                } else {
-                    // No new update
-                    $this->logger->info('Your application is up to date');
-                    return false;
+                //var_dump($file);
+                $pathname = str_replace([$extractPath . DIRECTORY_SEPARATOR], "", $file->getPathname());
+                $filename = basename($pathname);
+
+                if ($filename !== "." && $filename !== "..") {
+                    //var_dump($filename);
+                    $pathname = str_replace("\\", "/", $pathname);
+                    $liveFile = ROOTPATH . DIRECTORY_SEPARATOR . $pathname;
+                    //var_dump($liveFile);
+                    if (File::exists($liveFile)) {
+                        $this->logger->debug("Will overwrite $liveFile");
+
+                    } else {
+                        $this->logger->debug("Will create $liveFile");
+
+                    }
+                    if (!$simulation) {
+                        copy($file->getPathname(), $liveFile);
+                    }
+                    //var_dump($pathname);
                 }
-            } catch
-            (\Exception $ex) {
-                $this->logger->error($ex);
 
             }
         }
-        return $this->latestVersion;
-    }
-
-    /**
-     * @return bool|null
-     * @throws AppException
-     * @throws \Exception
-     */
-    public function isUpdateAvailable()
-    {
-        $this->logger->info("isUpdateAvailable called");
-        $this->connectToUpdateServer();
-
-
-        if (time() - AppDatabase::getLastUpdateCheck() > $this->updateCheckInterval) {
-            $this->latestVersion = $this->getLatestVersion();
-        } else {
-            $this->latestVersion = AppDatabase::getLatestAvailableVersion();
-        }
-        if ($this->latestVersion > $this->currentVersion) {
-            return true;
-        }
-        return false;
-
-    }
-
-    public function checkForUpdate()
-    {
-
-    }
-
-
-    /**
-     * @return string
-     */
-    public function getUrl(): string
-    {
-        return $this->url;
-    }
-
-    /**
-     * @param string $url
-     *
-     * @return Updater
-     */
-    public function setUrl(string $url): Updater
-    {
-        $this->url = $url;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCurrentVersion(): int
-    {
-
-        return $this->currentVersion;
-    }
-
-    /**
-     * @param int $currentVersion
-     *
-     * @return Updater
-     */
-    public function setCurrentVersion(int $currentVersion): Updater
-    {
-        $this->currentVersion = $currentVersion;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTempFilePath(): string
-    {
-        return $this->tempFilePath;
-    }
-
-    /**
-     * @param string $tempFilePath
-     *
-     * @return Updater
-     */
-    public function setTempFilePath(string $tempFilePath): Updater
-    {
-        $this->tempFilePath = $tempFilePath;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDestFilePath(): string
-    {
-        return $this->destFilePath;
-    }
-
-    /**
-     * @param string $destFilePath
-     *
-     * @return Updater
-     */
-    public function setDestFilePath(string $destFilePath): Updater
-    {
-        $this->destFilePath = $destFilePath;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLogFile(): string
-    {
-        return $this->logFile;
-    }
-
-    /**
-     * @param string $logFile
-     *
-     * @return Updater
-     */
-    public function setLogFile(string $logFile): Updater
-    {
-        $this->logFile = $logFile;
-        return $this;
-    }
-
-    public function getLastCheckedState()
-    {
-        return $this->lastCheckedState;
-    }
-
-    /**
-     * @return int
-     */
-    public function getUpdateCheckInterval(): int
-    {
-        return $this->updateCheckInterval;
-    }
-
-    /**
-     * @param int $updateCheckInterval
-     *
-     * @return Updater
-     */
-    public function setUpdateCheckInterval(int $updateCheckInterval): Updater
-    {
-        $this->updateCheckInterval = $updateCheckInterval;
-        return $this;
-    }
-
-    /**
-     * @return DatabaseLogger|SystemLogger|null
-     */
-    public function getLogger()
-    {
-        return $this->logger;
-    }
-
-    /**
-     * @param DatabaseLogger|SystemLogger|null $logger
-     *
-     * @return Updater
-     */
-    public function setLogger($logger)
-    {
-        $this->logger = $logger;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTimeout(): int
-    {
-        return $this->timeout;
+        File::removeDirectory($extractPath);
     }
 
     /**
@@ -351,22 +261,42 @@ class Updater
     }
 
     /**
-     * @return bool
-     */
-    public function isCheckSSL(): bool
-    {
-        return $this->checkSSL;
-    }
-
-    /**
      * @param bool $checkSSL
      *
      * @return Updater
      */
-    public function setCheckSSL(bool $checkSSL): Updater
+    public
+    function setCheckSSL(bool $checkSSL): Updater
     {
         $this->checkSSL = $checkSSL;
         return $this;
+    }
+
+    /**
+     *
+     * Compares two versions (x.x.x) and returns true if $a
+     * is higher
+     *
+     * @param $a
+     * @param $b
+     *
+     * @return bool
+     */
+    protected
+    function versionIsHigher($a, $b)
+    {
+        $a = explode(".", $a);
+        $b = explode(".", $b);
+        if ($a[0] > $b[0]) {
+            return true;
+        }
+        if ($a[1] > $b[1]) {
+            return true;
+        }
+        if ($a[2] > $b[2]) {
+            return true;
+        }
+        return false;
     }
 
 
