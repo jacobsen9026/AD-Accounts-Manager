@@ -32,6 +32,7 @@ namespace App\Controllers\Settings;
  * @author cjacobsen
  */
 
+use App\App\AppUpdater;
 use App\Controllers\Controller;
 use System\App\AppLogger;
 use App\Models\Database\AppDatabase;
@@ -58,12 +59,15 @@ class Update extends Controller
 
     public function indexPost()
     {
-        AppLogger::get()->info('Editing Settings');
-        $post = \system\Post::getAll();
-        AppDatabase::saveSettings($post);
+        if (Post::get('action') === 'updateApp') {
+            $this->updateApp();
+        }
+    }
 
-        EmailDatabase::saveSettings($post);
-        $this->redirect('/settings/application');
+    private function updateApp()
+    {
+        $this->updater = new AppUpdater();
+        return $this->updater->update(false);
     }
 
 }

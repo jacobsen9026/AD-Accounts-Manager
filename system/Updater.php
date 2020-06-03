@@ -70,7 +70,7 @@ class Updater
             var_dump($result);
             if ($result === true) {
                 $this->logger->debug("Update completed successfully");
-                return true;
+                return "Update completed successfully";
             } else {
                 $this->logger->error("Update did not completed successfully");
 

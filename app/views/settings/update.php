@@ -51,8 +51,8 @@ $updateModal->setTitle('Update App')
 
 
 $updateButton = new FormButton('Update to v' . $latestVersion);
-$updateButton->tiny()
-    ->addAJAXRequest('/api/update', 'settingsOutput', ['action' => 'updateApp']);
+$updateButton->tiny();
+// ->addAJAXRequest('/api/update', 'settingsOutput', ['action' => 'updateApp']);
 $updateForm->addElementToCurrentRow($updateButton)
     ->addElementToNewRow($action);
 $closeModalFunction = '$(\'#' . $updateModal->getId() . '\').modal(\'hide\')';

@@ -5,7 +5,6 @@
 
             <strong class="ml-1 mr-auto">
                 <?= $params['header'] ?></strong>
-
             <?php
             if ($params['timeout'] === 0 || $params['closable']) {
                 ?>
