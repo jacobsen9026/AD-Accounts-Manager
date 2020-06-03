@@ -34,15 +34,12 @@ $updater = new AppUpdater();
 $availableVersion = 'Running the latest version!';
 $latestVersion = '';
 if ($updater->isUpdateAvailable()) {
-    $latestVersion = $updater->getLatestVersionsFromURL();
+    $latestVersion = $updater->getLatestVersion();
     $availableVersion = 'Verison: ' . $latestVersion . ' is available.';
 }
 echo $availableVersion;
 $updateForm = new Form('/update', 'updateApp');
 
-$updateToken = $updater->getUpdateToken();
-$action = new \System\App\Forms\FormText('', '', 'updateToken', $updateToken);
-$action->hidden();
 
 $updateModal = new Modal();
 $updateModal->setTitle('Update App')
@@ -53,8 +50,7 @@ $updateModal->setTitle('Update App')
 $updateButton = new FormButton('Update to v' . $latestVersion);
 $updateButton->tiny();
 // ->addAJAXRequest('/api/update', 'settingsOutput', ['action' => 'updateApp']);
-$updateForm->addElementToCurrentRow($updateButton)
-    ->addElementToNewRow($action);
+$updateForm->addElementToCurrentRow($updateButton);
 $closeModalFunction = '$(\'#' . $updateModal->getId() . '\').modal(\'hide\')';
 $closeModalFunction = \App\Models\View\Javascript::on($updateButton->getId(), $closeModalFunction);
 $updateButton->setScript($closeModalFunction);
