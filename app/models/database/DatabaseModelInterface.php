@@ -33,5 +33,5 @@ namespace App\Models\Database;
 interface DatabaseModelInterface
 {
 
-    public static function saveSettings(array $postData);
+
 }
