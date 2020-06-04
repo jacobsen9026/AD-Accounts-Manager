@@ -1,3 +1,18 @@
 {
-  "0.1.1": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.1/install.zip"
+  "0.1.1": {
+    "version": "0.1.1",
+    "downloadURL": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.1/install.zip"
+  },
+  "1.1.1": {
+    "version": "0.1.1",
+    "downloadURL": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.1/install.zip"
+  },
+  "0.0.9": {
+    "version": "0.1.1",
+    "downloadURL": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.1/install.zip"
+  },
+  "0.0.1": {
+    "version": "0.1.1",
+    "downloadURL": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.1/install.zip"
+  }
 }
