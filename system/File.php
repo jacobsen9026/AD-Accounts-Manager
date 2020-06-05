@@ -26,6 +26,8 @@
 
 namespace System;
 
+use mysql_xdevapi\Exception;
+use System\App\AppException;
 use System\Exception\FileException;
 
 /**
@@ -160,7 +162,7 @@ abstract class File
 
     public static function deleteFile($filepath)
     {
-        unlink($filepath);
+        return unlink($filepath);
     }
 
     public static function getContents($filepath)
@@ -192,6 +194,78 @@ abstract class File
             else unlink("$dir/$file");
         }
         rmdir($dir);
+        return true;
+    }
+
+    public static function dirEmpty(string $dir)
+    {
+        $iterator = new \FilesystemIterator($dir);
+        return !$iterator->valid();
+    }
+
+    /**
+     * @param $dir
+     * @param bool $recursive
+     *
+     * @return int
+     */
+    public static function fileCount($dir, $recursive = true): int
+    {
+
+
+        $count = 0;
+
+
+        $dir = new\RecursiveDirectoryIterator ($dir);
+        /**
+         * @var \SplFileInfo $file
+         */
+        foreach (new \RecursiveIteratorIterator($dir) as $file) {
+            if ($file->getBasename() !== '.' && $file->getBasename() !== '..') {
+
+                $count++;
+            }
+
+        }
+
+        return $count;
+
+    }
+
+    public static function createDirectory(string $dir)
+    {
+        if (!file_exists($dir)) {
+            if (!mkdir($dir) && !is_dir($dir)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static function getModTime($filepath)
+    {
+        if (file_exists($filepath)) {
+
+            return filemtime($filepath);
+        }
+        return 0;
+    }
+
+    public static function getSize($filepath)
+    {
+
+        if (file_exists($filepath)) {
+            return filesize($filepath);
+        }
+        return 0;
+    }
+
+    public static function getMD5($sourceFile)
+    {
+        if (file_exists($sourceFile)) {
+            return md5_file($sourceFile);
+        }
+        return null;
     }
 
 }
