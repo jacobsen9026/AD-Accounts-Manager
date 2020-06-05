@@ -115,7 +115,7 @@ class Updater
                 if ($this->run(true)) {
                     $this->logger->info("Update simulation completed successfully");
                     if (!$simulation && $this->backupApp()) {
-                        if ($this->run() && $this->runPostInstall()) {
+                        if ($this->run(false) && $this->runPostInstall()) {
                             $this->logger->info("Update completed successfully");
                             $this->deleteRollback();
                         } else {
@@ -207,7 +207,7 @@ class Updater
 
         if ($simulation) {
             $this->logger->info("Running update in simulation mode");
-            $progressTitle = $progressTitle;
+            $progressTitle = 'Running Simulation';
         } else {
             $this->logger->info("Running update");
             $progressTitle = "Applying Update";
@@ -339,6 +339,7 @@ class Updater
      */
     protected function backupApp(): bool
     {
+        return true;
         //$zip = new \ZipArchive($this->backupPath);
         $dir = new\RecursiveDirectoryIterator (ROOTPATH);
         /**
@@ -391,7 +392,7 @@ class Updater
         /**
          * @todo Make rollback update from backup before update
          */
-        $this->logger->error("Trying to roll back update");
+        //$this->logger->error("Trying to roll back update");
         return true;
     }
 
