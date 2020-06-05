@@ -1,4 +1,4 @@
-<div class="<?= $params['toastClasses'] ?>" style="z-index:2000">
+<div class="<?= $params['toastClasses'] ?>" style="z-index:1030">
     <div class="toast mx-auto" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true">
         <div class="toast-header">
             <?= $params['image'] ?>
