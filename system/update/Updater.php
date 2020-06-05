@@ -112,24 +112,19 @@ class Updater
                 //$this->updateFileCount = File::fileCount($this->extractPath);
                 $this->logger->info("Total update files: $this->updateFileCount");
                 //return;
-                if ($this->run(true)) {
-                    $this->logger->info("Update simulation completed successfully");
-                    if (!$simulation && $this->backupApp()) {
-                        if ($this->run(false) && $this->runPostInstall()) {
-                            $this->logger->info("Update completed successfully");
-                            $this->deleteRollback();
-                        } else {
-                            $this->rollbackUpdate();
-                        }
-
+                $this->logger->info("Update simulation completed successfully");
+                if (!$simulation && $this->backupApp()) {
+                    if ($this->run($simulation) && $this->runPostInstall()) {
+                        $this->logger->info("Update completed successfully");
+                        $this->deleteRollback();
+                    } else {
+                        $this->rollbackUpdate();
                     }
-                    $this->logger->info("Running post-installation script");
-                    $this->deleteExtractedUpdateFiles();
-                } else {
-                    $this->deleteExtractedUpdateFiles();
-                    throw new CoreException("Update Simulation Failed");
 
                 }
+                $this->logger->info("Running post-installation script");
+                $this->deleteExtractedUpdateFiles();
+
             }
             if ($deleteDownload) {
                 $this->deleteDownloadedUpdate();
@@ -188,6 +183,29 @@ class Updater
         }
 
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function backupApp(): bool
+    {
+        return true;
+        //$zip = new \ZipArchive($this->backupPath);
+        $dir = new\RecursiveDirectoryIterator (ROOTPATH);
+        /**
+         * @var \SplFileInfo $file
+         */
+        foreach (new \RecursiveIteratorIterator($dir) as $file) {
+            if (strpos($file->getPathname(), $this->tempFrilePath) === false) {
+                //$zip->addFile();
+                $this->logger->debug("Backing up file " . $file->getFilename());
+                $destinationFilepath = ROOTPATH . str_replace(ROOTPATH, '', $file->getPathname());
+                copy($file->getPathname(), $destinationFilepath);
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -332,29 +350,6 @@ class Updater
 
         }
         return false;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function backupApp(): bool
-    {
-        return true;
-        //$zip = new \ZipArchive($this->backupPath);
-        $dir = new\RecursiveDirectoryIterator (ROOTPATH);
-        /**
-         * @var \SplFileInfo $file
-         */
-        foreach (new \RecursiveIteratorIterator($dir) as $file) {
-            if (strpos($file->getPathname(), $this->tempFrilePath) === false) {
-                //$zip->addFile();
-                $this->logger->debug("Backing up file " . $file->getFilename());
-                $destinationFilepath = ROOTPATH . str_replace(ROOTPATH, '', $file->getPathname());
-                copy($file->getPathname(), $destinationFilepath);
-            }
-        }
-
-        return true;
     }
 
     /**
