@@ -59,7 +59,7 @@ class DebugViewer
             $buttonColorClass = 'danger';
         }
         $logToolsOutput = ' <button type="button" id = "showDebugButton" class="mx-auto btn btn-' . $buttonColorClass . '  dark-shadow" data-toggle="modal" data-target="#logsModal" onclick="' . $toggleDebugToolsOutputFunction . '">Debug</button>';
-        $logToolsOutput .= "<style>" . File::getContents(ROOTPATH . DIRECTORY_SEPARATOR . "system" . DIRECTORY_SEPARATOR . "system.css") . "</style>";
+        //$logToolsOutput .= "<style>" . File::getContents(ROOTPATH . DIRECTORY_SEPARATOR . "system" . DIRECTORY_SEPARATOR . "system.css") . "</style>";
 
         $logToolsOutput .= '<div class="debugToolboxContainer resizable-y bg-dark" style="display: none;">';
         $logToolsOutput .= '<div class="container-fluid mb-0 bg-secondary text-light text-center pb-2 h2 debugToolboxContainerHandle">'
@@ -124,6 +124,48 @@ class DebugViewer
 
     }
 
+    public static function printLogTools($loggers)
+    {
+        $logToolsOutput = '<div class = "border-0 text-light">
+<ul id="loggerToolboxMenusList" class = "tab-list nav nav-pills bg-secondary row mx-0" role="tablist">';
+        $logToolsOutput .= self::printLogGroupButton('Runtime Logs', 'loggerRuntimeLogs', 'showRuntimeLogButtton');
+        $logToolsOutput .= self::printLogGroupButton('AJAX Logs', 'loggerAJAXLogs', 'showAJAXLogButtton');
+        $logToolsOutput .= '</ul>
+
+        </div>
+
+        <div class = "pt-0 tab-content log-groups-content">';
+
+        $logToolsOutput .= self::printRuntimeLogs($loggers);
+        //$logToolsOutput .= '</div>'
+        //   . '<div class = ""tab-pane container-fluid p-0">';
+        $logToolsOutput .= self::printAJAXLogs($loggers);
+        $logToolsOutput .= '</div>';
+        return $logToolsOutput;
+    }
+
+    /**
+     *
+     * @param string $label
+     * @param string $targetShowID
+     * @param string $listenerButtonID
+     *
+     * @return type
+     */
+    public static function printLogGroupButton(string $label, string $targetShowID, string $listenerButtonID): ?string
+    {
+        $tabButton = new FormButton(ucfirst($label));
+        $tabButton->setId($listenerButtonID)
+            ->setTheme('dark')
+            ->setType($listenerButtonID);
+        $function = '$(".log-groups-content .active").removeClass("active");'
+            . '$("#' . $targetShowID . '").addClass("active");';
+        $script = \App\Models\View\Javascript::on($listenerButtonID, $function);
+        $tabButton->setScript($script);
+        $tabButton->setBreakPoint('');
+        return $tabButton->print();
+    }
+
     /**
      * @param $runtimeLoggers
      *
@@ -163,6 +205,43 @@ class DebugViewer
 
 
         return $runtimeLogs;
+    }
+
+    /**
+     *
+     * @param CommonLogger $logger
+     * @param string $loggerPanelID
+     * @param string $loggerTabButtonID
+     *
+     * @return type
+     */
+    public static function printLogButton(CommonLogger $logger, string $loggerPanelID, string $loggerTabButtonID): ?string
+    {
+        $tabButton = new FormButton(ucfirst($logger->getName()));
+        $tabButton->setId($loggerTabButtonID)
+            ->setTheme('light')
+            ->auto()
+            ->setType("button");
+        $function = '$(".log-tab-content .active").removeClass("active");'
+            . '$("#' . $loggerPanelID . '").addClass("active");';
+        $script = \App\Models\View\Javascript::on($loggerTabButtonID, $function);
+        $tabButton->setScript($script);
+        $tabButton->setBreakPoint('');
+        return $tabButton->print();
+    }
+
+    /**
+     * @param $logger
+     * @param $loggerPaneID
+     *
+     * @return string
+     */
+    public static function prepareRuntimeLoggerOutput($logger, $loggerPaneID): string
+    {
+        $loggerOutput = '<div class = "tab-pane container-fluid  p-0" id = "' . $loggerPaneID . '" role="tabpanel">';
+        $loggerOutput .= LogPrinter::printLog($logger);
+        $loggerOutput .= '</div>';
+        return $loggerOutput;
     }
 
     /**
@@ -206,65 +285,6 @@ class DebugViewer
     }
 
     /**
-     *
-     * @param CommonLogger $logger
-     * @param string $loggerPanelID
-     * @param string $loggerTabButtonID
-     *
-     * @return type
-     */
-    public static function printLogButton(CommonLogger $logger, string $loggerPanelID, string $loggerTabButtonID): ?string
-    {
-        $tabButton = new FormButton(ucfirst($logger->getName()));
-        $tabButton->setId($loggerTabButtonID)
-            ->setTheme('light')
-            ->auto()
-            ->setType("button");
-        $function = '$(".log-tab-content .active").removeClass("active");'
-            . '$("#' . $loggerPanelID . '").addClass("active");';
-        $script = \App\Models\View\Javascript::on($loggerTabButtonID, $function);
-        $tabButton->setScript($script);
-        $tabButton->setBreakPoint('');
-        return $tabButton->print();
-    }
-
-    /**
-     *
-     * @param string $label
-     * @param string $targetShowID
-     * @param string $listenerButtonID
-     *
-     * @return type
-     */
-    public static function printLogGroupButton(string $label, string $targetShowID, string $listenerButtonID): ?string
-    {
-        $tabButton = new FormButton(ucfirst($label));
-        $tabButton->setId($listenerButtonID)
-            ->setTheme('dark')
-            ->setType($listenerButtonID);
-        $function = '$(".log-groups-content .active").removeClass("active");'
-            . '$("#' . $targetShowID . '").addClass("active");';
-        $script = \App\Models\View\Javascript::on($listenerButtonID, $function);
-        $tabButton->setScript($script);
-        $tabButton->setBreakPoint('');
-        return $tabButton->print();
-    }
-
-    /**
-     * @param $logger
-     * @param $loggerPaneID
-     *
-     * @return string
-     */
-    public static function prepareRuntimeLoggerOutput($logger, $loggerPaneID): string
-    {
-        $loggerOutput = '<div class = "tab-pane container-fluid  p-0" id = "' . $loggerPaneID . '" role="tabpanel">';
-        $loggerOutput .= LogPrinter::printLog($logger);
-        $loggerOutput .= '</div>';
-        return $loggerOutput;
-    }
-
-    /**
      * @param $logger
      * @param $loggerPaneID
      *
@@ -276,26 +296,6 @@ class DebugViewer
         // $loggerOutput .= LogPrinter::printLog($logger);
         $loggerOutput .= '</div>';
         return $loggerOutput;
-    }
-
-    public static function printLogTools($loggers)
-    {
-        $logToolsOutput = '<div class = "border-0 text-light">
-<ul id="loggerToolboxMenusList" class = "tab-list nav nav-pills bg-secondary row mx-0" role="tablist">';
-        $logToolsOutput .= self::printLogGroupButton('Runtime Logs', 'loggerRuntimeLogs', 'showRuntimeLogButtton');
-        $logToolsOutput .= self::printLogGroupButton('AJAX Logs', 'loggerAJAXLogs', 'showAJAXLogButtton');
-        $logToolsOutput .= '</ul>
-
-        </div>
-
-        <div class = "pt-0 tab-content log-groups-content">';
-
-        $logToolsOutput .= self::printRuntimeLogs($loggers);
-        //$logToolsOutput .= '</div>'
-        //   . '<div class = ""tab-pane container-fluid p-0">';
-        $logToolsOutput .= self::printAJAXLogs($loggers);
-        $logToolsOutput .= '</div>';
-        return $logToolsOutput;
     }
 
 }

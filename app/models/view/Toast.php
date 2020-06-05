@@ -18,7 +18,7 @@ class Toast extends ViewModel
         $this->setHeader($header)
             ->addToBody($body)
             ->setTimeout($timeout);
-        $this->classes = 'position-fixed w-auto center top';
+        $this->classes = 'position-fixed center top';
     }
 
     /**

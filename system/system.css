@@ -61,7 +61,17 @@
     bottom: 1em;
 }
 
+.collapse-no-animation {
+    display: none;
+}
+
+.collapse-no-animation.show {
+    display: block;
+}
+
 .center {
+
+    max-width: 100vh;
     right: 0;
     left: 0;
     margin-right: auto;

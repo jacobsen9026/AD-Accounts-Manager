@@ -32,10 +32,12 @@
 
 namespace System\Models\Ajax;
 
+use System\App\AppLogger;
 use System\Models\View\LogPrinter;
 use System\Log\CommonLogger;
 use System\Log\CommonLogEntry;
 use System\Core;
+use System\Request;
 
 class AJAXResponse
 {
@@ -106,17 +108,19 @@ class AJAXResponse
             /* @var $logEntry CommonLogEntry */
             if ($logger->getLogEntries() !== null) {
                 $collapsedLogID = 'ajaxRequest_' . Core::get()->request->getId();
-                $logs[$logger->getName()] = '<div class="alert-info" data-toggle="collapse" data-target="#' . $collapsedLogID . '"  >AJAX<div id="' . $collapsedLogID . '" class="">';
+                $logs[$logger->getName()] = '<div class="alert-info"   >AJAX<div id="' . $collapsedLogID . '" class="">';
+                $logs['system'] = '<div class="alert-info"   >AJAX<div id="' . $collapsedLogID . '" class="">';
                 foreach ($logger->getLogEntries() as $logEntry) {
 
                     if ($logEntry !== null) {
-
-                        $logs[$logger->getName()] .= mb_convert_encoding(LogPrinter::printLogEntry($logEntry), 'UTF-8', 'UTF-8');
+                        $logs['system'] .= mb_convert_encoding(LogPrinter::printLogEntry($logEntry), 'UTF-8', 'UTF-8');
+                        //$logs[$logger->getName()] .= mb_convert_encoding(LogPrinter::printLogEntry($logEntry), 'UTF-8', 'UTF-8');
                     }
                 }
                 $logs[$logger->getName()] .= '</div></div>';
             }
         }
+
         $logs["hasErrors"] = $hasErrors;
         //var_dump($logs);
         return $logs;
