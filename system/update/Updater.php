@@ -114,7 +114,7 @@ class Updater
                 //return;
                 $this->logger->info("Update simulation completed successfully");
                 if (!$simulation && $this->backupApp()) {
-                    if ($this->run($simulation) && $this->runPostInstall()) {
+                    if ($this->run($simulation) && $this->runPostInstall($simulation)) {
                         $this->logger->info("Update completed successfully");
                         $this->deleteRollback();
                     } else {
@@ -355,7 +355,7 @@ class Updater
     /**
      * @return bool
      */
-    private function runPostInstall(): bool
+    private function runPostInstall($simulation = true): bool
     {
         $this->logger->info("Running post install script");
 
