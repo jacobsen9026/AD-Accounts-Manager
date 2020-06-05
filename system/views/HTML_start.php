@@ -80,6 +80,11 @@ use System\File;
         $(function () {
             $('[data-toggle="tooltip"]').tooltip({boundary: 'window'});
             // $('[data-trigger="tooltip"]').tooltip({boundary: 'window'});
+            $('[data-toggle="show"]').on('click', function () {
+                let target = $(this).data('target');
+                console.log(target);
+                $(target).toggleClass('show');
+            });
         })
 
     </script>
