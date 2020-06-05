@@ -346,7 +346,7 @@ class Updater
             if (strpos($file->getPathname(), $this->tempFrilePath) === false) {
                 //$zip->addFile();
                 $this->logger->debug("Backing up file " . $file->getFilename());
-                $destinationFilepath = $this->tempFilePath . str_replace(ROOTPATH, '', $file->getPathname());
+                $destinationFilepath = ROOTPATH . str_replace(ROOTPATH, '', $file->getPathname());
                 copy($file->getPathname(), $destinationFilepath);
             }
         }
