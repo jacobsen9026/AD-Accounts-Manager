@@ -24,6 +24,7 @@
  * THE SOFTWARE.
  */
 
+use App\App\App;
 use App\App\AppUpdater;
 use App\Models\View\Modal;
 use System\App\Forms\Form;
@@ -37,8 +38,15 @@ if ($updater->isUpdateAvailable()) {
     $latestVersion = $updater->getLatestVersion();
     $availableVersion = 'Verison: ' . $latestVersion . ' is available.';
 }
-echo $availableVersion;
-$updateForm = new Form('/update', 'updateApp');
+?>
+<div class="w-auto d-inline-flex font-weight-bold p-3">
+    <?php echo $availableVersion; ?></div>
+
+<?php
+/**
+ *  Form Button that opens a modal with a form in it
+ */
+$updateForm = new Form('/settings/update', 'updateApp');
 
 
 $updateModal = new Modal();
@@ -47,14 +55,37 @@ $updateModal->setTitle('Update App')
     ->setId('update_app_modal');
 
 
+$simulationSlider = new \System\App\Forms\FormSlider('Simulation Mode', '', 'simulationMode', 0);
+$simulationSlider->addOption('Real Update', 0, true)
+    ->addOption('Simulation', 1, false);
+if (!App::get()->inDebugMode()) {
+    $simulationSlider->hidden();
+}
+
+$action = new \System\App\Forms\FormText('', '', 'action', 'updateApp');
+$action->hidden();
+
+
 $updateButton = new FormButton('Update to v' . $latestVersion);
-$updateButton->tiny();
+$updateButton->tiny()
+    ->addElementClasses('mt-5');
 // ->addAJAXRequest('/api/update', 'settingsOutput', ['action' => 'updateApp']);
-$updateForm->addElementToCurrentRow($updateButton);
+
+
+$updateForm->addElementToCurrentRow($simulationSlider)
+    ->addElementToNewRow($action)
+    ->addElementToNewRow($updateButton);
+
+/**
+ * Now that the update form has been made we can continue the modal
+ */
 $closeModalFunction = '$(\'#' . $updateModal->getId() . '\').modal(\'hide\')';
 $closeModalFunction = \App\Models\View\Javascript::on($updateButton->getId(), $closeModalFunction);
+
+
 $updateButton->setScript($closeModalFunction);
-$modalBody = Core::getVersion() . ' -> ' . $latestVersion . '<br>' . $updateForm->print();
+
+$modalBody = 'Current Version: ' . Core::getVersion() . '<br><br>' . $updateForm->print();
 $updateModal->setBody($modalBody);
 
 $updateModalButton = new FormButton('Update App');

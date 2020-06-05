@@ -114,6 +114,7 @@
                 $(this).text($(this).data('text-alt'));
                 $(this).data('text-alt', $(this).data('text-original'));
             });
+
             $(document).on('click', '.clickable[data-text-alt]', function () {
                 console.log($(this).data('text-alt'));
                 $(this).data('text-original', $(this).html());

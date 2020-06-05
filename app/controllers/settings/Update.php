@@ -38,6 +38,7 @@ use System\App\AppLogger;
 use App\Models\Database\AppDatabase;
 use App\Models\Database\AuthDatabase;
 use App\Models\Database\EmailDatabase;
+use System\Post;
 
 class Update extends Controller
 {
@@ -64,10 +65,17 @@ class Update extends Controller
         }
     }
 
+
     private function updateApp()
     {
+        $simulate = false;
+        if (Post::get("simulationMode")) {
+            $simulate = Post::get("simulationMode");
+        }
         $this->updater = new AppUpdater();
-        return $this->updater->update(false);
+//        var_dump($simulate);
+//        return;
+        return $this->updater->update($simulate);
     }
 
 }
