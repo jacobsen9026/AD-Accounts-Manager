@@ -207,8 +207,10 @@ class Updater
 
         if ($simulation) {
             $this->logger->info("Running update in simulation mode");
+            $progressTitle = $progressTitle;
         } else {
             $this->logger->info("Running update");
+            $progressTitle = "Applying Update";
         }
         $dir = new\RecursiveDirectoryIterator ($this->extractPath);
         /**
@@ -222,7 +224,7 @@ class Updater
         /**
          * Set the starting progress
          */
-        $this->refreshUpdateStatus('Running Simulation', 'Checking files...', ($fileIndex / $this->updateFileCount) * 100);
+        $this->refreshUpdateStatus($progressTitle, 'Checking files...', ($fileIndex / $this->updateFileCount) * 100);
         /**
          * Loop recursively through the extract directory
          */
@@ -242,7 +244,7 @@ class Updater
                  * Lets update the progress if we are at a 20% mark
                  */
                 if ($statusRefreshCounter > ($this->updateFileCount / 5)) {
-                    $this->refreshUpdateStatus('Running Simulation', 'Checking files...', ($fileIndex / $this->updateFileCount) * 100);
+                    $this->refreshUpdateStatus($progressTitle, 'Checking files...', ($fileIndex / $this->updateFileCount) * 100);
                     $statusRefreshCounter = 0;
                 }
                 /**
@@ -294,7 +296,7 @@ class Updater
             }
 
         }
-        $this->refreshUpdateStatus('Running Simulation', 'Simulation Complete', 99);
+        $this->refreshUpdateStatus($progressTitle, 'Simulation Complete', 99);
 
         $this->logger->debug("Total Files Processed: " . $fileIndex);
 
