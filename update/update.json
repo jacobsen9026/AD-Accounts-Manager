@@ -1,23 +1,23 @@
 {
   "0.1.1": {
     "version": "0.1.1",
-    "downloadURL": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.1/install.zip",
+    "downloadURL": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.1/v0.1.1.zip",
     "postInstallScriptPath": "app/update.0.1.1.php",
     "fileCount": 1236
   },
   "1.1.1": {
     "version": "1.1.1",
-    "downloadURL": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.1/install.zip",
+    "downloadURL": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.1/v0.1.1.zip",
     "fileCount": 1236
   },
   "0.0.9": {
     "version": "0.0.9",
-    "downloadURL": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.1/install.zip",
+    "downloadURL": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.1/v0.1.1.zip",
     "fileCount": 1236
   },
   "0.0.1": {
     "version": "0.0.1",
-    "downloadURL": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.1/install.zip",
+    "downloadURL": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.1/v0.1.1.zip",
     "fileCount": 1236
   }
 }
