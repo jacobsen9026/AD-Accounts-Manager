@@ -285,7 +285,7 @@ class App extends CommonApp implements AppInterface
     {
         $this->logger->info("Protocol: " . $this->request->getProtocol());
         $this->logger->info("Hostname: " . ($_SERVER["SERVER_NAME"]));
-        if ($this->request->getProtocol() == +"http" && AppDatabase::getForceHTTPS()) {
+        if ($this->request->getProtocol() === "http" && AppDatabase::getForceHTTPS()) {
             $this->redirect("https://" . $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"]);
         }
     }
