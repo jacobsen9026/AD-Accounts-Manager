@@ -32,14 +32,12 @@ namespace System\App\Interfaces;
  * @author cjacobsen
  */
 
-use System\Request;
-use System\Log\CommonLogger;
 use System\App\AppOutput;
 
 interface AppInterface
 {
 
-    public function __construct(Request $request, CommonLogger $systemLogger);
+    public function __construct();
 
     public function run(): AppOutput;
 }

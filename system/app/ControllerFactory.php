@@ -26,6 +26,9 @@
 
 namespace System\App;
 
+use System\Common\CommonApp;
+use System\Common\CommonController;
+
 /**
  * Description of Factory
  *
@@ -40,9 +43,9 @@ abstract class ControllerFactory
 
     /**
      *
-     * @param App $app
+     * @param CommonApp $app
      *
-     * @return Controller The appropriate Controller object based on the given route, already instantiated.
+     * @return CommonController|bool The appropriate Controller object based on the given route, already instantiated.
      */
     public static function buildController($app)
     {

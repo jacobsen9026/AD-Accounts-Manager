@@ -26,6 +26,13 @@
 
 namespace System\Common;
 
+use System\App\AppOutput;
+use System\App\Layout;
+use System\App\Route;
+use System\App\Router;
+use System\App\Session;
+use System\Request;
+
 /**
  * Description of CommonApp
  *
@@ -36,31 +43,16 @@ class CommonApp
 
     /** @var Request|null The system logger */
     public $request;
-
     /** @var Session|null The system logger */
     public $session;
-
     /** @var Router|null The system logger */
     public $router;
+    /** @var Route|null The system logger */
+    public $route;
+    /** @var Layout|null The system logger */
+    public $layout;
+    /** @var AppOutput The application output */
+    public $appOutput;
 
-
-    /**
-     * @var CommonApp|null
-     */
-    public static $instance;
-
-    /**
-     * Get the current App instance
-     *
-     * @return App
-     */
-    public static function get()
-    {
-        $class = \System\Core::getAppClass();
-        if ($class::$instance === null) {
-            $class::$instance = new $class();
-        }
-        return $class::$instance;
-    }
 
 }

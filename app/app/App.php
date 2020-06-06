@@ -40,14 +40,13 @@ namespace App\App;
 
 use App\Controllers\Controller;
 use App\Controllers\Login;
+use Exception;
 use System\App\AppLogger;
 use System\App\Layout;
 use System\App\LDAPLogger;
 use System\App\RequestRedirection;
-use System\App\Route;
 use System\App\Error\AppErrorHandler;
 use System\App\UserLogger;
-use System\Log\CommonLogger;
 use System\App\ControllerFactory;
 use System\Request;
 use System\App\Router;
@@ -67,56 +66,25 @@ class App extends CommonApp implements AppInterface
     use RequestRedirection;
     use Parser;
 
-    /** @var SystemLogger|null The system logger */
-    private $coreLogger;
+    public static $version = '0.1.1';
 
+    /** @var App */
+    public static $instance;
     /** @var AppLogger|null The system logger */
     public $logger;
 
-    /** @var string|null The system logger */
-    public $output;
-
-    /** @var Route|null The system logger */
-    public $route;
-
-    /** @var Layout|null The system logger */
-    public $layout;
-
-    /** @var AppOutput The application output */
-    public $appOutput;
-
-    /** @var LDAPLogger */
-    public $ldapLogger;
-
-    /** @var WindowsLogger */
-    public $windowsLogger;
-
-    /** @var UserLogger */
-    public $userLogger;
-
-    /**
-     *
-     * @var Controller
-     */
+    /** @var Controller */
     public $controller;
 
     /** @var User|null The web user object */
     public $user;
+    /** @var SystemLogger|null The system logger */
+    private $coreLogger;
 
     /**
      *
-     * @var App
      */
-    public static $instance;
-
-    public static $version = '0.1.0';
-
-    /**
-     *
-     * @param Request $req
-     * @param CommonLogger $cLogger
-     */
-    function __construct(Request $req, CommonLogger $cLogger)
+    public function __construct()
     {
 
 
@@ -126,32 +94,16 @@ class App extends CommonApp implements AppInterface
          * Start up the coreLogger to be used only by the config
          */
         new AppErrorHandler();
-        $this->coreLogger = $cLogger;
+        $this->coreLogger = SystemLogger::get();
 
 
-        $this->request = $req;
+        $this->request = Request::get();
         /**
          * Set up the appLogger
          */
         $this->logger = new AppLogger;
         $this->coreLogger->info("The app logger has been created");
 
-        /**
-         * Set up the ad API LDAP Logger
-         */
-        $this->ldapLogger = new LDAPLogger();
-        $this->logger->info("LDAP logger started");
-        /**
-         * Set up the ad API LDAP Logger
-         */
-        $this->windowsLogger = new WindowsLogger();
-        $this->logger->info("Windows logger started");
-
-        /**
-         * Set up the ad API LDAP Logger
-         */
-        $this->userLogger = new UserLogger();
-        $this->logger->info("user logger started");
 
         $configDSN = "sqlite:" . APPCONFIGDBPATH;
         new ConfigDatabase($configDSN);
@@ -160,19 +112,6 @@ class App extends CommonApp implements AppInterface
          * Load the request into the app
          */
         $this->loadConfig();
-    }
-
-    /**
-     * Get the current App instance
-     *
-     * @return App
-     */
-    public static function get(): App
-    {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
     }
 
     /**
@@ -191,6 +130,62 @@ class App extends CommonApp implements AppInterface
     }
 
     /**
+     * Set the php errror mode repective of the setting
+     * in the webConfig.
+     */
+
+    private function setErrorMode(): void
+    {
+        if ($this->inDebugMode()) {
+            enablePHPErrors();
+        } else {
+            disablePHPErrors();
+        }
+    }
+
+    /**
+     * Check if the application is currently in debug mode
+     *
+     * @return boolean
+     */
+    public function inDebugMode(): bool
+    {
+
+        if (AppDatabase::getDebugMode()) {
+            return true;
+        }
+        return false;
+
+    }
+
+    /**
+     * Get the current App instance
+     *
+     * @return App
+     */
+    public static function get(): App
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    /**
+     * Get the application database ID
+     *
+     * @return int Always returns 1
+     */
+    public static function getID()
+    {
+        /**
+         * We always return one because there is currently only one application running on this core.
+         * It allows flexabillity if that ever changes.
+         */
+        return '1';
+    }
+
+    /**
      * Run the application
      *
      * @return AppOutput
@@ -198,7 +193,7 @@ class App extends CommonApp implements AppInterface
     public function run(): AppOutput
     {
 
-        $this->appOutput = new AppOutput($this->request);
+        $this->appOutput = new AppOutput();
         $this->logger->info("Creating Session");
         User::load($this);
         try {
@@ -217,7 +212,7 @@ class App extends CommonApp implements AppInterface
              * determined by the routing.
              */
             $this->control();
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             /**
              * If a minor error happens during routing or permission checks we get kick up to here.
              * We log the error to the app logger so we can debug later.
@@ -239,9 +234,9 @@ class App extends CommonApp implements AppInterface
              * We need to inject the logs into the appOutput so the core can handle it.
              */
             $this->appOutput->addLogger($this->logger)
-                ->addLogger($this->ldapLogger)
-                ->addLogger($this->windowsLogger)
-                ->addLogger($this->userLogger);
+                ->addLogger(LDAPLogger::get())
+                ->addLogger(WindowsLogger::get())
+                ->addLogger(UserLogger::get());
         }
 
         return $this->appOutput;
@@ -290,7 +285,7 @@ class App extends CommonApp implements AppInterface
     {
         $this->logger->info("Protocol: " . $this->request->getProtocol());
         $this->logger->info("Hostname: " . ($_SERVER["SERVER_NAME"]));
-        if ($this->request->getProtocol() == "http" && AppDatabase::getForceHTTPS()) {
+        if ($this->request->getProtocol() == +"http" && AppDatabase::getForceHTTPS()) {
             $this->redirect("https://" . $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"]);
         }
     }
@@ -317,7 +312,7 @@ class App extends CommonApp implements AppInterface
      */
     protected function control(): void
     {
-        $this->appOutput = new AppOutput($this->request);
+        $this->appOutput = new AppOutput();
         /*
          * Check that the user is logged on and if not, set the route to the login screen
          */
@@ -375,52 +370,9 @@ class App extends CommonApp implements AppInterface
     {
         $this->layout = new Layout($this);
         //var_dump($this->request);
-        if ($this->request->getType() == 'http') {
+        if ($this->request->getType() === 'http') {
             $this->appOutput->setBody($this->layout->apply());
         }
-    }
-
-    /**
-     * Set the php errror mode repective of the setting
-     * in the webConfig.
-     */
-
-    private function setErrorMode(): void
-    {
-        if ($this->inDebugMode()) {
-            enablePHPErrors();
-        } else {
-            disablePHPErrors();
-        }
-    }
-
-    /**
-     * Check if the application is currently in debug mode
-     *
-     * @return boolean
-     */
-    public function inDebugMode(): bool
-    {
-
-        if (AppDatabase::getDebugMode()) {
-            return true;
-        }
-        return false;
-
-    }
-
-    /**
-     * Get the application database ID
-     *
-     * @return int Always returns 1
-     */
-    public static function getID()
-    {
-        /**
-         * We always return one because there is currently only one application running on this core.
-         * It allows flexabillity if that ever changes.
-         */
-        return '1';
     }
 
 }
