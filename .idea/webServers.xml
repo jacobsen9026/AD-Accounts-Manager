@@ -22,7 +22,6 @@
         <servers>
           <name value="Samdev-XAMPP" />
           <name value="SamDev-WAMP" />
-          <name value="AWS Demo WAMP" />
         </servers>
       </group>
     </groups>

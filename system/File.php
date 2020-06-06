@@ -174,7 +174,8 @@ abstract class File
         if (file_exists($filepath)) {
             return file_get_contents($filepath);
         } else {
-            throw new FileException("File not found.", FileException::FILE_NOT_FOUND);
+            SystemLogger::get()->warning('File not found: ' . $filepath);
+            //throw new FileException("File not found.", FileException::FILE_NOT_FOUND);
         }
     }
 
