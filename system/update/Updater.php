@@ -135,7 +135,7 @@ class Updater
             if ($simulation) {
                 $successMessage = 'Simulation completed without error!';
             } else {
-                $successMessage = "Application was successfully updated to version {$this->latestUpdate}<br> Please refresh your browser at this point.";
+                $successMessage = "Application was successfully updated to version {$this->latestUpdate->version}<br> Please refresh your browser at this point.";
 
             }
             return $successMessage;
