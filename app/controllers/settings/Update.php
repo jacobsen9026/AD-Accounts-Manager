@@ -61,7 +61,7 @@ class Update extends Controller
     public function indexPost()
     {
         if (Post::get('action') === 'updateApp') {
-            $this->updateApp();
+            return $this->updateApp();
         }
     }
 

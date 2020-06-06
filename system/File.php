@@ -162,7 +162,10 @@ abstract class File
 
     public static function deleteFile($filepath)
     {
-        return unlink($filepath);
+        if (file_exists($filepath)) {
+            return unlink($filepath);
+        }
+        return true;
     }
 
     public static function getContents($filepath)

@@ -29,6 +29,8 @@ use App\App\AppUpdater;
 use App\Models\View\Modal;
 use System\App\Forms\Form;
 use System\App\Forms\FormButton;
+use System\App\Forms\FormSlider;
+use System\App\Forms\FormText;
 use System\Core;
 
 $updater = new AppUpdater();
@@ -39,6 +41,7 @@ if ($updater->isUpdateAvailable()) {
     $availableVersion = 'Verison: ' . $latestVersion . ' is available.';
 }
 ?>
+
 <div class="w-auto d-inline-flex font-weight-bold p-3">
     <?php echo $availableVersion; ?></div>
 
@@ -55,22 +58,22 @@ $updateModal->setTitle('Update App')
     ->setId('update_app_modal');
 
 
-$simulationSlider = new \System\App\Forms\FormSlider('Simulation Mode', '', 'simulationMode', 0);
+$simulationSlider = new FormSlider('Simulation Mode', '', 'simulationMode', 0);
 $simulationSlider->addOption('Real Update', 0, true)
     ->addOption('Simulation', 1, false);
+
 if (!App::get()->inDebugMode()) {
     $simulationSlider->hidden();
 }
 
-$action = new \System\App\Forms\FormText('', '', 'action', 'updateApp');
+$action = new FormText('', '', 'action', 'updateApp');
 $action->hidden();
 
 
 $updateButton = new FormButton('Update to v' . $latestVersion);
 $updateButton->tiny()
-    ->addElementClasses('mt-5');
-// ->addAJAXRequest('/api/update', 'settingsOutput', ['action' => 'updateApp']);
-
+    ->addElementClasses('mt-5')
+    ->addAJAXRequest('/api/update', 'settingsOutput', $updateForm);
 
 $updateForm->addElementToCurrentRow($simulationSlider)
     ->addElementToNewRow($action)

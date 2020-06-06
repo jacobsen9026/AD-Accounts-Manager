@@ -72,6 +72,7 @@ class Updater
         } catch (CoreException $e) {
             $this->logger->warning($e);
         }
+        File::deleteFile($this->progressFilePath);
 
     }
 
@@ -108,17 +109,19 @@ class Updater
     {
         $this->logger->info("Running an update. Simulation Mode:$simulation Purge Downloaded Update:$deleteDownload");
         if ($this->isUpdateAvailable()) {
+
             if ($this->downloadUpdateFiles()) {
                 //$this->updateFileCount = File::fileCount($this->extractPath);
                 $this->logger->info("Total update files: $this->updateFileCount");
-                //return;
-                $this->logger->info("Update simulation completed successfully");
-                if (!$simulation && $this->backupApp()) {
+
+                if ($this->backupApp()) {
                     if ($this->run($simulation) && $this->runPostInstall($simulation)) {
                         $this->logger->info("Update completed successfully");
                         $this->deleteRollback();
                     } else {
-                        $this->rollbackUpdate();
+                        if (!$simulation) {
+                            $this->rollbackUpdate();
+                        }
                     }
 
                 }
@@ -129,7 +132,13 @@ class Updater
             if ($deleteDownload) {
                 $this->deleteDownloadedUpdate();
             }
-            return true;
+            if ($simulation) {
+                $successMessage = 'Simulation completed without error!';
+            } else {
+                $successMessage = "Application was successfully updated to version {$this->latestUpdate}<br> Please refresh your browser at this point.";
+
+            }
+            return $successMessage;
         } else {
             $this->logger->info("There is no update available");
         }
@@ -220,15 +229,18 @@ class Updater
      *
      * @return bool
      */
-    private function run($simulation = false): bool
+    protected function run($simulation = false): bool
     {
 
         if ($simulation) {
             $this->logger->info("Running update in simulation mode");
             $progressTitle = 'Running Simulation';
+            $progressMessage = 'Checking files...';
         } else {
             $this->logger->info("Running update");
             $progressTitle = "Applying Update";
+            $progressMessage = 'Copying files...';
+
         }
         $dir = new\RecursiveDirectoryIterator ($this->extractPath);
         /**
@@ -242,7 +254,7 @@ class Updater
         /**
          * Set the starting progress
          */
-        $this->refreshUpdateStatus($progressTitle, 'Checking files...', ($fileIndex / $this->updateFileCount) * 100);
+        $this->refreshUpdateStatus($progressTitle, $progressMessage, ($fileIndex / $this->updateFileCount) * 100);
         /**
          * Loop recursively through the extract directory
          */
@@ -262,7 +274,7 @@ class Updater
                  * Lets update the progress if we are at a 20% mark
                  */
                 if ($statusRefreshCounter > ($this->updateFileCount / 5)) {
-                    $this->refreshUpdateStatus($progressTitle, 'Checking files...', ($fileIndex / $this->updateFileCount) * 100);
+                    $this->refreshUpdateStatus($progressTitle, $progressMessage, ($fileIndex / $this->updateFileCount) * 100);
                     $statusRefreshCounter = 0;
                 }
                 /**
@@ -277,6 +289,7 @@ class Updater
                  */
                 $pathname = str_replace("\\", "/", $pathname);
                 $liveFile = ROOTPATH . DIRECTORY_SEPARATOR . $pathname;
+
                 //var_dump($liveFile);
                 /**
                  * Lets check to see if the destionation file would exist and
@@ -288,15 +301,13 @@ class Updater
                     if ($this->shouldOverwrite($file->getPathname(), $liveFile)) {
                         $this->logger->debug("$liveFile selected for overwrite");
                         if (!$simulation) {
-
                             copy($file->getPathname(), $liveFile);
-                            $this->logger->debug("Created file: $pathname");
+                            $this->logger->debug("file: $liveFile");
                         }
                     } else {
-                        $this->logger->debug("$liveFile skipped");
+                        //$this->logger->debug("$liveFile skipped");
 
                     }
-                    //$this->logger->debug("Will overwrite $liveFile");
 
                 } else {
                     /**
@@ -314,10 +325,9 @@ class Updater
             }
 
         }
-        $this->refreshUpdateStatus($progressTitle, 'Simulation Complete', 99);
+        $this->refreshUpdateStatus($progressTitle, 'Simulation Complete', 100);
 
         $this->logger->debug("Total Files Processed: " . $fileIndex);
-
         return true;
     }
 
@@ -330,7 +340,7 @@ class Updater
      * @param string $message
      * @param int|null $progress
      */
-    private function refreshUpdateStatus(string $title, string $message, int $progress = null): void
+    protected function refreshUpdateStatus(string $title, string $message, int $progress = null): void
     {
         $json = ["title" => $title, "message" => $message];
         if (!is_null($progress)) {
@@ -345,7 +355,7 @@ class Updater
         /**
          * @todo Add check for excluded files and directories
          */
-        if (File::getMD5($sourceFile) !== File::getMD5($destFile)) {
+        if (File::getMD5($sourceFile) !== File::getMD5($destFile) && strpos($sourceFile, ".db") === false) {
             return true;
 
         }
@@ -355,7 +365,7 @@ class Updater
     /**
      * @return bool
      */
-    private function runPostInstall($simulation = true): bool
+    protected function runPostInstall($simulation = true): bool
     {
         $this->logger->info("Running post install script");
 
@@ -372,7 +382,7 @@ class Updater
     /**
      * @return bool
      */
-    private function deleteRollback(): bool
+    protected function deleteRollback(): bool
     {
         $this->logger->info("Deleting update rollback");
 
@@ -382,7 +392,7 @@ class Updater
     /**
      * @return bool
      */
-    private function rollbackUpdate(): bool
+    protected function rollbackUpdate(): bool
     {
         /**
          * @todo Make rollback update from backup before update
@@ -394,7 +404,7 @@ class Updater
     /**
      * @return bool
      */
-    private function deleteExtractedUpdateFiles(): bool
+    protected function deleteExtractedUpdateFiles(): bool
     {
         $this->logger->info("Deleting extracted update");
 
@@ -408,7 +418,7 @@ class Updater
     /**
      * @return bool
      */
-    private function deleteDownloadedUpdate(): bool
+    protected function deleteDownloadedUpdate(): bool
     {
         $this->logger->info("Deleting downloaded update");
         if (File::deleteFile($this->downloadedFile)) {
@@ -491,7 +501,7 @@ class Updater
      *
      * @param array $updatesAvailable
      */
-    private function translateJSONArray(array $updatesAvailable): array
+    protected function translateJSONArray(array $updatesAvailable): array
     {
         $this->logger->debug($updatesAvailable);
         $updates = [];
