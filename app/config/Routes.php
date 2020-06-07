@@ -1,4 +1,12 @@
 <?php
+/**
+ *
+ * Example custom route
+ *
+ * $this->customRoutes[]=["triggerController","triggerMethod","customController","customMethod"];
+ *
+ */
+
 
 $this->customRoutes[] = ["install", "index", "home", "index"];
 
