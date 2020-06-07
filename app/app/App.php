@@ -66,7 +66,7 @@ class App extends CommonApp implements AppInterface
     use RequestRedirection;
     use Parser;
 
-    public static $version = '0.1.1';
+    public static $version = '0.1.2';
 
     /** @var App */
     public static $instance;
@@ -322,12 +322,12 @@ class App extends CommonApp implements AppInterface
             $this->controller = new Login($this);
             $this->appOutput->appendBody($this->controller->index());
             return;
-        } else {
-            /**
-             * user is logged in so update the timeout to reflect new activity
-             */
-            Session::updateTimeout();
         }
+
+        /**
+         * user is logged in so update the timeout to reflect new activity
+         */
+        Session::updateTimeout();
         /**
          * Build the controller based on the previously computed settings
          */
