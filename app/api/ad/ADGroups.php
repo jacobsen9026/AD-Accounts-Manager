@@ -5,18 +5,19 @@ namespace App\Api\Ad;
 
 
 use Adldap\Models\Group;
-use App\Api\Ad\ADConnection;
 use App\Models\Database\DistrictDatabase;
+use App\Models\User\PermissionHandler;
+use App\Models\User\PermissionLevel;
 use System\App\AppException;
 use System\App\LDAPLogger;
-use System\SystemLogger;
 
 class ADGroups extends ADApi
 {
 
     /**
+     *  This should be a unique samaccountname or DN
      *
-     * @param $groupName This should be a unique samaccountname or DN
+     * @param $groupName
      */
     public static function getGroup($groupName, $baseDN = null)
     {
@@ -47,5 +48,27 @@ class ADGroups extends ADApi
             throw new AppException('That group was not found.', AppException::GROUP_NOT_FOUND);
         }
         return $group;
+    }
+
+    public static function listGroups(string $searchTerm)
+    {
+        //$andFilter = ["objectClass" => "user"];
+        $groups = ADConnection::getConnectionProvider()->search()
+            ->groups()
+            ->select('samaccountname', 'dn')
+            ->orWhereContains("name", $searchTerm)
+            ->orWhereContains("mail", $searchTerm)
+            ->orWhereContains("description", $searchTerm)
+            ->orWhereContains("samaccountname", $searchTerm)
+            // ->where($andFilter)
+            ->get();
+        $groupNames = [];
+        /* @var $group \Adldap\Models\Group */
+        foreach ($groups as $group) {
+            if (PermissionHandler::hasPermission(self::getOUFromDN($group->getDistinguishedName()), PermissionLevel::GROUPS, PermissionLevel::GROUP_READ)) {
+                $groupNames[] = $group->getAccountName();
+            }
+        }
+        return $groupNames;
     }
 }
