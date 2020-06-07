@@ -108,11 +108,6 @@ class DistrictDatabase extends DatabaseModel
         return Database::get()->query('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . 'ID'[Schema::COLUMN] . ' = ' . $districtID);
     }
 
-    public static function getAD_FQDN($districtID = 1)
-    {
-        return self::getDatabaseValue('AD_FQDN', $districtID);
-    }
-
     public static function getAD_BaseDN($districtID = 1)
     {
         $result = self::getDatabaseValue('AD_BaseDN', $districtID);
@@ -120,6 +115,11 @@ class DistrictDatabase extends DatabaseModel
             $result = self::FQDNtoDN(self::getAD_FQDN($districtID));
         }
         return $result;
+    }
+
+    public static function getAD_FQDN($districtID = 1)
+    {
+        return self::getDatabaseValue('AD_FQDN', $districtID);
     }
 
     public static function getADUsername($districtID)
@@ -130,7 +130,7 @@ class DistrictDatabase extends DatabaseModel
 
     public static function getADPassword($districtID)
     {
-        return Encryption::decrypt(self::getDatabaseValue('AD_Password', $districtID));
+        return (string)Encryption::decrypt(self::getDatabaseValue('AD_Password', $districtID));
     }
 
 
@@ -172,28 +172,12 @@ class DistrictDatabase extends DatabaseModel
         return $result;
     }
 
-    public static function setADStudentGroup($districtID, $studentGroup)
-    {
-
-        $query = new Query(self::TABLE_NAME, Query::UPDATE, 'AD_Student_Group');
-        $query->where('ID', $districtID);
-        $query->set('AD_Student_Group', $studentGroup);
-        return $query->run();
-    }
 
     public static function setName($districtID, $name)
     {
         return self::updateDatabaseValue('Name', $name);
     }
 
-    public static function setADStaffGroup($districtID, $staffGroup)
-    {
-
-        $query = new Query(self::TABLE_NAME, Query::UPDATE, 'AD_Staff_Group');
-        $query->where('ID', $districtID);
-        $query->set('AD_Staff_Group', $staffGroup);
-        return $query->run();
-    }
 
     public static function saveSettings(array $postData)
     {
