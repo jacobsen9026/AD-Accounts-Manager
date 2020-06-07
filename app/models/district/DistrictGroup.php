@@ -50,6 +50,7 @@ class DistrictGroup extends ADModel
      * @var \Adldap\Models\Group;
      */
     public $activeDirectory;
+    public $id;
 
     /**
      * DistrictUser constructor.
@@ -63,7 +64,8 @@ class DistrictGroup extends ADModel
         $this->logger->debug("Searching for group named: " . $group);
         $this->activeDirectory = ADGroups::getGroup($group);
         $this->logger->debug($this);
-
+        //$this->logger->debug(bin2hex($this->activeDirectory->getObjectSid()));
+        $this->id = (bin2hex($this->activeDirectory->getObjectGuid()));
 
     }
 
@@ -84,6 +86,28 @@ class DistrictGroup extends ADModel
         return $members;
     }
 
+    public function setName($groupNam)
+    {
+
+    }
+
+    public function addMember($member)
+    {
+        $this->activeDirectory->addMember($member);
+    }
+
+    public function addUserMember($userOrDN)
+    {
+        if (is_string($userOrDN)) {
+            $userOrDN = new DistrictUser(ADUsers::getUserByDN($userOrDN));
+        }
+        if (!$this->hasMember($userOrDN->getUsername())) {
+            return $this->activeDirectory->addMember($userOrDN->getDistinguishedName());
+        } else {
+            throw new AppException('User already in group');
+        }
+    }
+
     public function hasMember($username)
     {
         /* @var $member User */
@@ -96,29 +120,6 @@ class DistrictGroup extends ADModel
             }
         }
         return false;
-    }
-
-    public function setName($groupNam)
-    {
-
-    }
-
-    public function addMember($member)
-    {
-        $this->activeDirectory->addMember($member);
-    }
-
-
-    public function addUserMember($userOrDN)
-    {
-        if (is_string($userOrDN)) {
-            $userOrDN = new DistrictUser(ADUsers::getUserByDN($userOrDN));
-        }
-        if (!$this->hasMember($userOrDN->getUsername())) {
-            return $this->activeDirectory->addMember($userOrDN->getDistinguishedName());
-        } else {
-            throw new AppException('User already in group');
-        }
     }
 
 
