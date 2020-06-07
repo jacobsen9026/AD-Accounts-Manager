@@ -37,16 +37,6 @@ use System\App\Forms\FormRadioOption;
 
 class FormSlider extends FormRadio implements FormElementInterface
 {
-    public function getValue()
-    {
-        $value = parent::getValue();
-        if ($value === null) {
-            $value = 0;
-        }
-        return $value;
-    }
-
-
     public function getElementHTML()
     {
 
@@ -76,6 +66,15 @@ class FormSlider extends FormRadio implements FormElementInterface
         $html = '<input  type="range" class="custom-range h-50" name="' . $this->getName() . '" style="max-width:50px;" min="0" max="1" id="' . $this->getId() . '" value="' . $this->getValue() . '">';
         $html .= '<div class="text-muted small" id="' . $this->getId() . '_Status_Text">' . $selectedOption->getLabel() . '</div>';
         return $html;
+    }
+
+    public function getValue()
+    {
+        $value = parent::getValue();
+        if ($value === null) {
+            $value = 0;
+        }
+        return $value;
     }
 
 
