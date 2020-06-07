@@ -74,22 +74,21 @@ use System\File;
         }(jQuery);
         //End TouchPunch
 
-        /**
-         * Enable Bootstrap Tooltips system-wide
-         */
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip({boundary: 'window'});
-            // $('[data-trigger="tooltip"]').tooltip({boundary: 'window'});
-            $('[data-toggle="show"]').on('click', function () {
-                let target = $(this).data('target');
-                console.log(target);
-                $(target).toggleClass('show');
-            });
-        })
 
     </script>
 
     <meta name="theme-color" content="#ffffff">
 
+    <style>
+        <?php
+
+        include(ROOTPATH .
+        DIRECTORY_SEPARATOR .
+        "system" .
+        DIRECTORY_SEPARATOR .
+        "system.css"
+        );
+        ?>
+    </style>
 
 </head>
