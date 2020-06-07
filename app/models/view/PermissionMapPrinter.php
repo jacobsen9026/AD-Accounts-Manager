@@ -47,11 +47,12 @@ use App\Models\User\Permission;
 use System\App\Forms\FormSlider;
 use App\Models\District\District;
 use System\Database;
+use System\Traits\DomainTools;
 
 abstract class PermissionMapPrinter extends ViewModel
 {
 
-    use \System\Traits\DomainTools;
+    use DomainTools;
 
     /**
      * @var array
@@ -89,15 +90,21 @@ abstract class PermissionMapPrinter extends ViewModel
                 $id = new FormText('', '', 'privilegeID', $level->getId());
                 $id->hidden();
                 $groupName = new FormText('', 'Group Name', 'groupName', $level->getAdGroup());
-                $groupName->autoCompleteDomainGroupName();
+                $groupName->autoCompleteDomainGroupName()
+                    ->auto();
 
                 $superUserSlider = new FormSlider('', 'Super Admin', 'superAdmin', $level->getSuperAdmin());
                 $superUserSlider->addOption("Yes", 1, $level->getSuperAdmin())
                     ->addOption("No", 0, !$level->getSuperAdmin())
-                    ->setId('superUser_' . $level->getId());
+                    ->setId('superUser_' . $level->getId())
+                    ->auto()
+                    ->setTooltip('When enabled this group will have permission to the whole directory as well as settings and setup pages.');
+
+
                 $updateButton = new FormButton('Update');
                 $updateButton->setId('Update_Privilege_Level_' . $level->getId())
-                    ->addAJAXRequest('/api/settings/district/permissions', 'permissionSettingsContainer', $form);
+                    ->addAJAXRequest('/api/settings/district/permissions', 'permissionSettingsContainer', $form)
+                    ->auto();
 
                 $updateButton->setTheme('success');
                 $deleteButtonID = 'Delete_' . $level->getId();
@@ -123,8 +130,8 @@ abstract class PermissionMapPrinter extends ViewModel
                 $deleteButton = new FormButton('Delete');
                 $deleteButton->setTheme('danger')
                     ->setId($deleteButtonID)
-                    ->buildModal("Delete " . $level->getAdGroup(), "Are you sure you really want to delete this privilege level?<br/><br/>This will remove all mapped permissions. There is no undo.<br/>" . $modalForm->print(), 'danger');
-                //var_dump($deleteButton);
+                    ->buildModal("Delete " . $level->getAdGroup(), "Are you sure you really want to delete this privilege level?<br/><br/>This will remove all mapped permissions. There is no undo.<br/>" . $modalForm->print(), 'danger')
+                    ->auto();                //var_dump($deleteButton);
                 $form->addElementToNewRow($groupName)
                     ->addElementToCurrentRow($superUserSlider)
                     ->addElementToCurrentRow($action)
@@ -137,6 +144,22 @@ abstract class PermissionMapPrinter extends ViewModel
             return $output;
         }
         return "Nothing created yet";
+    }
+
+    /**
+     *
+     * @return type
+     */
+    public
+    static function getPrivilegeLevels()
+    {
+        if (self::$privilegeLevels == null) {
+            $levels = PrivilegeLevelDatabase::get();
+            self::$privilegeLevels = $levels;
+            return $levels;
+        } else {
+            return self::$privilegeLevels;
+        }
     }
 
     /**
@@ -165,39 +188,174 @@ abstract class PermissionMapPrinter extends ViewModel
     }
 
     /**
-     * Prints a form for adding a privilege level
      *
-     * @param type $districtID
+     * @param Permission $permission
+     * @param string $ou
      *
      * @return string
      */
-    public static function printAddPrivilegeLevelForm($districtID): string
+    public static function printModifyPermission(Permission $permission, string $ou = null): string
     {
-        $form = new Form('/settings/district/permissions/' . $districtID, 'addPrivilegeLevel');
-        $newGroupName = new FormText('', 'LDAP group name', 'ldapGroupName');
-        $newGroupName->autoCompleteDomainGroupName();
-        $action = new FormText('', '', 'action', 'addPrivilege');
-        $action->hidden();
-        $addButton = new FormButton('Add');
-        $addButton->addAJAXRequest('/api/settings/district/permissions/' . $districtID, 'permissionSettingsContainer', $form, true);
-        $form->addElementToNewRow($newGroupName)
-            ->addElementToCurrentRow($addButton)
-            ->addElementToCurrentRow($action);
+        $ou = self::getHTML_ID_FromOU($ou);
+        $ouPath = '';
+        $path = explode("OU=", str_replace(',', '', $permission->getOu()));
+        foreach (array_reverse($path) as $part) {
+            if ($part != '' && strpos($part, 'DC=') == false) {
+                $ouPath .= '/' . $part;
+            }
+        }
 
-        return $form->print();
+        $form = new Form('', 'Modify_Permissions_' . $permission->getId() . '_' . $ou);
+        $privilegeLevel = self::buildPrivilegeLevelDropdown($permission->getPrivilegeID());
+        $privilegeLevel->hidden();
+        $action = new FormText('', '', 'action', 'modifyPermission');
+        $action->hidden();
+        $permissionID = new FormText('', '', 'id', $permission->getId());
+        $permissionID->hidden();
+
+        $removeButton = new FormButton('<i class="fas fa-times"></i>', 'tiny');
+        $removeButton->setTheme('primary')
+            ->setId('Remove_Permission_' . $permission->getId())
+            ->addElementClasses('position-absolute right top');
+
+
+        $modalForm = new Form('', "Remove_Permission_" . $permission->getId() . "_" . $ou);
+
+        $id = new FormText('', '', 'id', $permission->getId());
+        $id->hidden();
+        $removeAction = new FormText('', '', 'action', 'removePermission');
+        $removeAction->hidden();
+        $reallyDeleteButton = new FormButton("Confirm");
+        $reallyDeleteButton->setTheme('danger')
+            ->setId("Really_Delete_Permission_" . $permission->getId() . "_" . $ou)
+            ->addAJAXRequest('/api/settings/district/permissions', 'ouPermissionsContainer', $modalForm, true);
+        $reallyDeleteButton->setScript(Javascript::on($reallyDeleteButton->getId(), 'console.log("hide modal"); $("#' . $removeButton->getId() . 'Modal").modal("toggle")'));
+
+
+        $modalForm->addElementToNewRow($removeAction)->addElementToNewRow($reallyDeleteButton)->addElementToNewRow($id);
+
+
+        $removeButton->buildModal("Remove " . $permission->getGroupName() . " From " . $ouPath, "Are you sure you really want to remove this permission mapping?<br/>This will remove the permissions this group has at " . $permission->getOu() . " and lower OU's unless there is a defintion lower.<br/>There is no undo.<br/>" . $modalForm->print(), 'danger');
+
+
+        //var_dump($permission);
+
+        $saveButton = new FormButton('Save', 'small');
+        $saveButton->setId("Save_Button_" . $permission->getId() . '_' . $ou);
+        $saveButton->addAJAXRequest('/api/settings/district/permissions', $ou, $form, true);
+
+        $form//->addElementToNewRow($privilegeLevel->disable())
+        ->addElementToCurrentRow($action)
+            ->addElementToCurrentRow($permissionID)
+            ->addElementToNewRow(self::buildUserPermissionDropdown($permission->getUserPermissionLevel()))
+            ->addElementToCurrentRow(self::buildGroupPermissionDropdown($permission->getGroupPermissionLevel()))
+            ->addElementToCurrentRow($removeButton)
+            ->addElementToNewRow($saveButton)
+            ->addClass('p-4');
+        $output = '<div class="card rounded shadow-sm mb-5">'
+            . '<h5 class="container-fluid p-2 mb-2 bg-primary text-light">'
+            . $permission->getGroupName()
+            . '</h5>'
+            . $form->print()
+            . "</div>";
+        return $output;
+
     }
 
-
     /**
+     * Removes spaces, commas, and ='s from the OU
+     * to make safe for use as an HTML id
      *
      * @param string $ou
      *
      * @return string
      */
-    public static function cleanOU($ou): string
+    public static function getHTML_ID_FromOU($ou): string
     {
-        $search = [' ', 'OU=', ',', 'DC='];
-        return str_replace($search, '', $ou);
+        $remove = [" ", ",", "="];
+        return str_replace($remove, "_", $ou);
+        //var_dump($ou);
+    }
+
+    /**
+     *
+     * @return FormDropdown
+     */
+    private static function buildPrivilegeLevelDropdown($selectedPrivilege = null, $privilegeIDsToOmit = null)
+    {
+        $levels = self::getPrivilegeLevels();
+
+        $dropDown = new FormDropdown('', 'Privilege Level', "privilegeID");
+        $dropDown->setSize("auto");
+        foreach ($levels as $level) {
+            //var_dump($privilegeIDsToOmit);
+            //var_d ump($level->getId());
+            //var_dump(in_array($level->getId(), $privilegeIDsToOmit));
+            $option = new FormDropdownOption($level->getAdGroup(), $level->getId());
+            if ($level->getId() !== null && $level->getId() == $selectedPrivilege) {
+                $option->selected();
+            }
+
+            if ($privilegeIDsToOmit === null || ($privilegeIDsToOmit !== null && !in_array($level->getId(), $privilegeIDsToOmit))) {
+                $dropDown->addOption($option);
+            }
+        }
+        if ($dropDown->getOptions() != null) {
+            return $dropDown;
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param int $selectedType
+     *
+     * @return FormDropdown
+     */
+    private
+    static function buildUserPermissionDropdown($selectedType = 0): FormDropdown
+    {
+        AppLogger::get()->debug($selectedType);
+        return self::generatePermissionTypeDropdown(PermissionLevel::getUserTypes(), '', 'User', "userPermissionType", $selectedType);
+    }
+
+    /**
+     * Takes an array of PermissionTypes and returns a FormDropdown of it
+     *
+     * @param array $types
+     * @param string $label    FormDropdown label
+     * @param string $subLabel FormDropdown sub label
+     * @param string $name     FormDropdown name for post
+     *
+     * @param int $selectedType
+     *
+     * @return FormDropdown
+     */
+    private
+    static function generatePermissionTypeDropdown(array $types, string $label, string $subLabel, string $name, int $selectedType): FormDropdown
+    {
+        $dropDown = new FormDropdown($label, $subLabel, $name);
+        foreach ($types as $type) {
+            $option = new FormDropdownOption($type->getName(), $type->getId());
+            if ($option->getValue() == $selectedType) {
+                $option->selected();
+            }
+            $dropDown->addOption($option);
+        }
+        $dropDown->medium();
+        return $dropDown;
+    }
+
+    /**
+     *
+     * @param int $selectedType
+     *
+     * @return FormDropdown
+     */
+    private
+    static function buildGroupPermissionDropdown($selectedType = 0): FormDropdown
+    {
+        return self::generatePermissionTypeDropdown(PermissionLevel::getGroupTypes(), '', 'Groups', "groupPermissionType", $selectedType);
     }
 
     /**
@@ -239,145 +397,26 @@ abstract class PermissionMapPrinter extends ViewModel
     }
 
     /**
-     * Removes spaces, commas, and ='s from the OU
-     * to make safe for use as an HTML id
+     * Prints a form for adding a privilege level
      *
-     * @param string $ou
-     *
-     * @return string
-     */
-    public static function getHTML_ID_FromOU($ou): string
-    {
-        $remove = [" ", ",", "="];
-        return str_replace($remove, "_", $ou);
-        //var_dump($ou);
-    }
-
-    /**
-     *
-     * @param Permission $permission
-     * @param string $ou
+     * @param type $districtID
      *
      * @return string
      */
-    public static function printModifyPermission(Permission $permission, string $ou = null): string
+    public static function printAddPrivilegeLevelForm($districtID): string
     {
-        $ou = self::getHTML_ID_FromOU($ou);
-        $ouPath = '';
-        $path = explode("OU=", str_replace(',', '', $permission->getOu()));
-        foreach (array_reverse($path) as $part) {
-            if ($part != '' && strpos($part, 'DC=') == false) {
-                $ouPath .= '/' . $part;
-            }
-        }
-
-        $form = new Form('', 'Modify_Permissions_' . $permission->getId() . '_' . $ou);
-        $privilegeLevel = self::buildPrivilegeLevelDropdown($permission->getPrivilegeID());
-        $privilegeLevel->hidden();
-        $action = new FormText('', '', 'action', 'modifyPermission');
+        $form = new Form('/settings/district/permissions/' . $districtID, 'addPrivilegeLevel');
+        $newGroupName = new FormText('', 'LDAP group name', 'ldapGroupName');
+        $newGroupName->autoCompleteDomainGroupName();
+        $action = new FormText('', '', 'action', 'addPrivilege');
         $action->hidden();
-        $permissionID = new FormText('', '', 'id', $permission->getId());
-        $permissionID->hidden();
+        $addButton = new FormButton('Add');
+        $addButton->addAJAXRequest('/api/settings/district/permissions/' . $districtID, 'permissionSettingsContainer', $form, true);
+        $form->addElementToNewRow($newGroupName)
+            ->addElementToCurrentRow($addButton)
+            ->addElementToCurrentRow($action);
 
-        $removeButton = new FormButton('Remove');
-        $removeButton->setTheme('warning')
-            ->setId('Remove_Permission_' . $permission->getId())
-            ->setSize("auto");
-
-
-        $modalForm = new Form('', "Remove_Permission_" . $permission->getId() . "_" . $ou);
-
-        $id = new FormText('', '', 'id', $permission->getId());
-        $id->hidden();
-        $removeAction = new FormText('', '', 'action', 'removePermission');
-        $removeAction->hidden();
-        $reallyDeleteButton = new FormButton("Confirm");
-        $reallyDeleteButton->setTheme('warning')
-            ->setId("Really_Delete_Permission_" . $permission->getId() . "_" . $ou)
-            ->addAJAXRequest('/api/settings/district/permissions', 'ouPermissionsContainer', $modalForm, true);
-        $reallyDeleteButton->setScript(Javascript::on($reallyDeleteButton->getId(), 'console.log("hide modal"); $("#' . $removeButton->getId() . 'Modal").modal("toggle")'));
-
-
-        $modalForm->addElementToNewRow($removeAction)->addElementToNewRow($reallyDeleteButton)->addElementToNewRow($id);
-
-
-        $removeButton->buildModal("Remove " . $permission->getGroupName() . " From " . $ouPath, "Are you sure you really want to remove this permission mapping?<br/>This will remove the permissions this group has at " . $permission->getOu() . " and lower OU's unless there is a defintion lower.<br/>There is no undo.<br/>" . $modalForm->print(), 'warning');
-
-
-        //var_dump($permission);
-
-        $saveButton = new FormButton('Save', 'small');
-        $saveButton->setId("Save_Button_" . $permission->getId() . '_' . $ou);
-        $saveButton->addAJAXRequest('/api/settings/district/permissions', $ou, $form, true);
-
-        $form->addElementToNewRow($privilegeLevel->disable())
-            ->addElementToCurrentRow($action)
-            ->addElementToCurrentRow($permissionID)
-            ->addElementToNewRow(self::buildUserPermissionDropdown((bool)$permission->getUserPermissionLevel()))
-            ->addElementToCurrentRow(self::buildGroupPermissionDropdown((bool)$permission->getGroupPermissionLevel()))
-            ->addElementToNewRow($saveButton);
-        //->addElementToCurrentRow($removeButton);
-        $output = '<div class="card rounded shadow-sm mb-5">'
-            . '<h5 class="container-fluid p-2 mb-2 bg-primary text-light">'
-            . $permission->getGroupName()
-            . '</h5>'
-            . $form->print()
-            . "</div>";
-        return $output;
-
-    }
-
-    /**
-     *
-     * @return FormDropdown
-     */
-    private static function buildPrivilegeLevelDropdown($selectedPrivilege = null, $privilegeIDsToOmit = null)
-    {
-        $levels = self::getPrivilegeLevels();
-
-        $dropDown = new FormDropdown('', 'Privilege Level', "privilegeID");
-        $dropDown->setSize("auto");
-        foreach ($levels as $level) {
-            //var_dump($privilegeIDsToOmit);
-            //var_d ump($level->getId());
-            //var_dump(in_array($level->getId(), $privilegeIDsToOmit));
-            $option = new FormDropdownOption($level->getAdGroup(), $level->getId());
-            if ($level->getId() !== null && $level->getId() == $selectedPrivilege) {
-                $option->selected();
-            }
-
-            if ($privilegeIDsToOmit === null || ($privilegeIDsToOmit !== null && !in_array($level->getId(), $privilegeIDsToOmit))) {
-                $dropDown->addOption($option);
-            }
-        }
-        if ($dropDown->getOptions() != null) {
-            return $dropDown;
-        }
-        return false;
-    }
-
-    /**
-     *
-     * @param int $selectedType
-     *
-     * @return FormDropdown
-     */
-    private
-    static function buildUserPermissionDropdown($selectedType = 0): FormDropdown
-    {
-        return self::generatePermissionTypeDropdown(PermissionLevel::getUserTypes(), '', 'user', "userPermissionType", $selectedType);
-    }
-
-    /**
-     *
-     * @param int $selectedType
-     *
-     * @return FormDropdown
-     */
-    private
-    static function buildGroupPermissionDropdown($selectedType = 0): FormDropdown
-    {
-        return self::generatePermissionTypeDropdown(PermissionLevel::getGroupTypes(), '', 'Groups', "groupPermissionType", $selectedType);
+        return $form->print();
     }
 
     /**
@@ -399,50 +438,6 @@ abstract class PermissionMapPrinter extends ViewModel
         }
         return $output;
 
-    }
-
-
-    /**
-     * Takes an array of PermissionTypes and returns a FormDropdown of it
-     *
-     * @param array $types
-     * @param string $label    FormDropdown label
-     * @param string $subLabel FormDropdown sub label
-     * @param string $name     FormDropdown name for post
-     *
-     * @param int $selectedType
-     *
-     * @return FormDropdown
-     */
-    private
-    static function generatePermissionTypeDropdown(array $types, string $label, string $subLabel, string $name, int $selectedType): FormDropdown
-    {
-        $dropDown = new FormDropdown($label, $subLabel, $name);
-        foreach ($types as $type) {
-            $option = new FormDropdownOption($type->getName(), $type->getId());
-            if ($option->getValue() == $selectedType) {
-                $option->selected();
-            }
-            $dropDown->addOption($option)
-                ->setSize("auto");
-        }
-        return $dropDown;
-    }
-
-    /**
-     *
-     * @return type
-     */
-    public
-    static function getPrivilegeLevels()
-    {
-        if (self::$privilegeLevels == null) {
-            $levels = PrivilegeLevelDatabase::get();
-            self::$privilegeLevels = $levels;
-            return $levels;
-        } else {
-            return self::$privilegeLevels;
-        }
     }
 
     /**
@@ -491,6 +486,18 @@ abstract class PermissionMapPrinter extends ViewModel
 
         //var_dump($output);
         return $output;
+    }
+
+    /**
+     *
+     * @param string $ou
+     *
+     * @return string
+     */
+    public static function cleanOU($ou): string
+    {
+        $search = [' ', 'OU=', ',', 'DC='];
+        return str_replace($search, '', $ou);
     }
 
     /**
