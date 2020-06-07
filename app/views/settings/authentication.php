@@ -62,7 +62,7 @@ $button->setId('floatingSaveButton')
 
 
 $form->addElementToNewRow($sessionTimeout)
-    ->addElementToCurrentRow($adminPassword)
+    ->addElementToNewRow($adminPassword)
     ->addElementToNewRow($ldapEnabled)
     ->addElementToNewRow($button);
 echo $form->print();

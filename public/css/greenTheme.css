@@ -16,7 +16,6 @@
 
 .nav-item.nav-link.active {
     color: #000 !important;
-    color:
 }
 
 .custom-control-input:not(:disabled):active ~ .custom-control-label::before {

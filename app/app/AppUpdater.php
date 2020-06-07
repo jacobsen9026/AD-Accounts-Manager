@@ -57,7 +57,10 @@ class AppUpdater extends Updater
             if (time() - AppDatabase::getLastUpdateCheck() > $this->updateCheckInterval) {
                 $this->latestUpdate = $this->getLatestUpdateFromURL();
             } else {
-                $this->latestUpdate = unserialize(AppDatabase::getLatestAvailableVersion(), AvailableUpdate::class);
+                $latestUpdate = unserialize(AppDatabase::getLatestAvailableVersion());
+                if ($latestUpdate !== false) {
+                    $this->latestUpdate = $latestUpdate;
+                }
             }
             return $this->latestUpdate->version > $this->currentVersion;
         }

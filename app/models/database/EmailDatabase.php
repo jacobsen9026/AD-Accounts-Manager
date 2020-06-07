@@ -248,7 +248,7 @@ class EmailDatabase extends DatabaseModel
 
     public function getUseSMTPEncryption()
     {
-        return self::getDatabaseValue('Use_SMTP_Encyption');
+        return self::getDatabaseValue('Use_SMTP_Encryption');
     }
 
 }

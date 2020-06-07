@@ -93,7 +93,7 @@ $district = $this->district;
 
 </script>
 <div class="row ">
-    <div class="col-4 border">
+    <div class="col-sm-4 border">
         <div class="permissionCountBadge">
             <p>
                 <?php
@@ -114,7 +114,7 @@ $district = $this->district;
             ?>
         </div>
     </div>
-    <div class="col-8 px-4 border" id="ouPermissionsContainer">
+    <div class="col-sm-8 px-4 border" id="ouPermissionsContainer">
 
     </div>
 

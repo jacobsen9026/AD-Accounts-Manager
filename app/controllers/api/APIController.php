@@ -84,7 +84,8 @@ class APIController extends Controller
 
     public function settingsSavedToast()
     {
-        $toast = new Toast('Settings Saved', 'Yipee!', 3000);
+        $toast = new Toast('Settings Saved', '', 3000);
+        $toast->setImage('<i class="far fa-save"></i>');
         return $toast->printToast();
     }
 

@@ -15,9 +15,15 @@
             }
             ?>
         </div>
-        <div class="toast-body">
-            <?= $params['body'] ?>
-        </div>
+        <?php
+        if ($params['body'] != '') {
+            ?>
+            <div class="toast-body">
+                <?= $params['body'] ?>
+            </div>
+            <?php
+        }
+        ?>
         <script>
 
             $(".toast").toast({'animation': true, 'autohide': true, 'delay':<?=$params['timeout']?>});

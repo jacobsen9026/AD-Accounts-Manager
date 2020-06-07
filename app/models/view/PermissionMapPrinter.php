@@ -91,7 +91,7 @@ abstract class PermissionMapPrinter extends ViewModel
                 $id->hidden();
                 $groupName = new FormText('', 'Group Name', 'groupName', $level->getAdGroup());
                 $groupName->autoCompleteDomainGroupName()
-                    ->auto();
+                    ->medium();
 
                 $superUserSlider = new FormSlider('', 'Super Admin', 'superAdmin', $level->getSuperAdmin());
                 $superUserSlider->addOption("Yes", 1, $level->getSuperAdmin())
@@ -104,7 +104,7 @@ abstract class PermissionMapPrinter extends ViewModel
                 $updateButton = new FormButton('Update');
                 $updateButton->setId('Update_Privilege_Level_' . $level->getId())
                     ->addAJAXRequest('/api/settings/district/permissions', 'permissionSettingsContainer', $form)
-                    ->auto();
+                    ->small();
 
                 $updateButton->setTheme('success');
                 $deleteButtonID = 'Delete_' . $level->getId();
@@ -131,7 +131,7 @@ abstract class PermissionMapPrinter extends ViewModel
                 $deleteButton->setTheme('danger')
                     ->setId($deleteButtonID)
                     ->buildModal("Delete " . $level->getAdGroup(), "Are you sure you really want to delete this privilege level?<br/><br/>This will remove all mapped permissions. There is no undo.<br/>" . $modalForm->print(), 'danger')
-                    ->auto();                //var_dump($deleteButton);
+                    ->small();                //var_dump($deleteButton);
                 $form->addElementToNewRow($groupName)
                     ->addElementToCurrentRow($superUserSlider)
                     ->addElementToCurrentRow($action)

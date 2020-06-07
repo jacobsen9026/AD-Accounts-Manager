@@ -55,7 +55,7 @@ $useSMTPSSL = new FormRadio('Use SMTP over SSL', 'Sends emails securly', 'useSMT
 $useSMTPSSL->addOption('False', 0, !$email->getUseSMTPSSL());
 $useSMTPSSL->addOption('True', 1, $email->getUseSMTPSSL());
 
-$useEncryption = new FormRadio('Use Encryption', 'Sends emails securly', 'useEncryption');
+$useEncryption = new FormSlider('Use Encryption', 'Sends emails securly', 'useEncryption');
 $useEncryption->addOption('False', 0, !$email->getUseSMTPEncryption());
 $useEncryption->addOption('TLS', 1, $email->getUseSMTPEncryption());
 $useEncryption->addOption('SSL', 2, $email->getUseSMTPEncryption());
@@ -82,7 +82,7 @@ $form->addElementToNewRow($smtpServer)
     ->addElementToNewRow($smtpUsername)
     ->addElementToCurrentRow($smtpPassword)
     ->addElementToNewRow($useSMTPAuth)
-    ->addElementToCurrentRow($useSMTPSSL)
+    //->addElementToCurrentRow($useSMTPSSL)
     ->addElementToCurrentRow($useEncryption)
     ->addElementToNewRow($fromAddress)
     ->addElementToCurrentRow($fromName)

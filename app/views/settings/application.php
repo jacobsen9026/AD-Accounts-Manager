@@ -42,11 +42,11 @@ $webHelpDesk->large()
     ->setPlaceholder("https://helpdesk.company.com");
 
 
-$forceHTTPS = new FormSlider("Force HTTPS", "Redirect all HTTP requests to HTTPS", "forceHTTPS");
+$forceHTTPS = new FormSlider("Force HTTPS", "Redirect all HTTP requests to HTTPS", "forceHTTPS", AppDatabase::getForceHTTPS());
 $forceHTTPS->addOption("False", '0', !AppDatabase::getForceHTTPS());
 $forceHTTPS->addOption("True", '1', AppDatabase::getForceHTTPS());
 
-$debugMode = new FormSlider("Debug Mode", "Caution: Enabling debug mode is a security risk and should only be used on development systems.", "debugMode");
+$debugMode = new FormSlider("Debug Mode", "Caution: Enabling debug mode is a security risk and should only be used on development systems.", "debugMode", AppDatabase::getDebugMode());
 $debugMode->addOption("False", '0', !AppDatabase::getDebugMode());
 $debugMode->addOption("True", '1', AppDatabase::getDebugMode());
 $homepageMessage = new System\App\Forms\FormTextArea();
