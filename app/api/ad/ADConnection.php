@@ -10,20 +10,22 @@ namespace App\Api\Ad;
  * @package App\Api\Ad
  */
 
-use Adldap\AdldapException;
-use Adldap\Auth\BindException;
+use Adldap\Adldap\Auth\PasswordRequiredException;
+use Adldap\Adldap\Auth\UsernameRequiredException;
 use Adldap\Connections\Provider;
 use Adldap\Connections\ProviderInterface;
-use app\app\LDAPErrorHandler;
 use App\Models\Database\DistrictDatabase;
 use Adldap\Adldap;
+use Error;
+use Exception;
+use System\App\AppException;
 use System\App\Error\AppErrorHandler;
 use System\App\LDAPLogger;
 
 class ADConnection extends Adldap
 {
     /**
-     * @var TestADConnection
+     * @var ADConnection
      */
     private static $instance;
     /**
@@ -56,7 +58,7 @@ class ADConnection extends Adldap
                 'password' => DistrictDatabase::getADPassword(1),
                 'port' => 389
             ];
-
+            self::$logger->debug($configuration);
             if (DistrictDatabase::getAD_UseTLS()) {
                 $this->ldapLogger->info('Connecting to ' . $fqdn . ' with TLS enabled');
                 $configuration['use_tls'] = true;
@@ -64,7 +66,7 @@ class ADConnection extends Adldap
 
             try {
                 new self($configuration);
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
 
                 self::$lastError = $exception->getMessage();
                 $this->ldapLogger->error(get_class($exception));
@@ -76,24 +78,56 @@ class ADConnection extends Adldap
 
         $this->addProvider($configuration);
         try {
-            new LDAPErrorHandler();
-            $this->connection = $this->connect();
+            set_error_handler([$this, 'handleError']);
+
+            if ($configuration["username"] !== '' && $configuration["password"] !== '') {
+                $this->connection = $this->connect();
+            } else {
+                throw new AppException("Missing username or password");
+            }
             new AppErrorHandler();
-        } catch (BindException $exception) {
-            self::$lastError = $exception->getMessage();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
 
             self::$lastError = $exception->getMessage();
             $this->ldapLogger->error(get_class($exception));
             $this->ldapLogger->error($exception);
 
-        } catch (\Error $error) {
+        } catch (Error $error) {
             self::$lastError = $error->getMessage();
             $this->ldapLogger->error($error);
         }
 
 
         self::$instance = $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isConnected(): bool
+    {
+        /**
+         * If we haven't connected yet, attempt to connect.
+         */
+        if (self::$instance == null) {
+            self::getConnectionProvider();
+        }
+        /**
+         * Now check if connection is legit
+         */
+        if (self::$instance->connection instanceof Provider === false) {
+            return false;
+        }
+        /**
+         * Now check if the connection is connected
+         */
+        self::$logger->debug(self::$instance->connection->getConnection()->getLastError());
+        if (!self::$instance->connection->getConnection()->getLastError()) {
+            return false;
+        }
+
+
+        return true;
     }
 
     /**
@@ -120,32 +154,10 @@ class ADConnection extends Adldap
             new self();
 
             return self::$instance;
-        } else {
-            return self::$instance;
         }
 
-    }
+        return self::$instance;
 
-    /**
-     * @return bool
-     */
-    public static function isConnected(): bool
-    {
-        /**
-         * If we haven't connected yet, attempt to connect.
-         */
-        if (self::$instance == null) {
-            self::getConnectionProvider();
-        }
-        /**
-         * Now check if connection is legit
-         */
-        if (self::$instance->connection instanceof Provider === false) {
-            return false;
-        }
-
-
-        return true;
     }
 
     /**
@@ -161,10 +173,7 @@ class ADConnection extends Adldap
     public
     static function isSecure()
     {
-        if (self::$instance->connection->getConnection()->isUsingSSL() || self::$instance->connection->getConnection()->isUsingTLS()) {
-            return true;
-        }
-        return false;
+        return self::$instance->connection->getConnection()->isUsingSSL() || self::$instance->connection->getConnection()->isUsingTLS();
     }
 
     /**
@@ -179,14 +188,14 @@ class ADConnection extends Adldap
             if ($this->auth()->attempt($ldapUser, $password)) {
                 // Passed.
                 return true;
-            } else {
-                // Failed.
-                return false;
             }
-        } catch (Adldap\Auth\UsernameRequiredException $e) {
+
+            // Failed.
+            return false;
+        } catch (UsernameRequiredException $e) {
             $this->ldapLogger->warning($e);
             // The user didn't supply a username.
-        } catch (Adldap\Auth\PasswordRequiredException $e) {
+        } catch (PasswordRequiredException $e) {
             // The user didn't supply a password.
             $this->ldapLogger->warning($e);
 
@@ -197,6 +206,16 @@ class ADConnection extends Adldap
     public function isInGroup($username, $groupname)
     {
         return ADUsers::isUserInGroup($username, $groupname);
+    }
+
+    public function handleError($code, $description, $file = null, $line = null, $context = null)
+    {
+        self::$logger->error($code);
+        self::$logger->error($description);
+        $description = str_replace("ldap_bind(): ", '', $description);
+        self::$lastError = $description;
+        throw new AppException($description);
+
     }
 
 }
