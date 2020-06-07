@@ -10,21 +10,20 @@ use App\Models\User\PermissionLevel;
 use App\Models\User\User;
 use System\App\AppException;
 use System\App\LDAPLogger;
-use System\Traits\DomainTools;
 
 class ADUsers extends ADApi
 {
 
     public static function listUsers(string $searchTerm)
     {
-        $andFilter = ["objectClass" => "user"];
+        //$andFilter = ["objectClass" => "user"];
         $users = ADConnection::getConnectionProvider()->search()
             ->users()
             ->select('samaccountname', 'dn')
             ->orWhereContains("sn", $searchTerm)
             ->orWhereContains("givenname", $searchTerm)
             ->orWhereContains("samaccountname", $searchTerm)
-            ->where($andFilter)
+            //->where($andFilter)
             ->get();
         $usernames = [];
         /* @var $user \Adldap\Models\User */
