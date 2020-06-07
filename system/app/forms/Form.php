@@ -48,35 +48,33 @@ use system\Encryption;
 class Form
 {
 
-    private $method = "post";
-    private $action;
-    private $name;
-    private $style;
-    private $id;
-
-
-    /* A 2D array that represents the layout of the form */
-    private $rowsOfElements;
-
-    /** @var array * */
-    private $currentRow;
-    private $logger;
-
     /**
      *
      * @var String
      */
     public static $csrfToken;
+    protected $method = "post";
+    protected $action;
+    protected $name;
+    protected $style;
+    protected $id;
 
+
+    /* A 2D array that represents the layout of the form */
+    protected $classes = '';
+    protected $rowsOfElements;
+    /** @var array * */
+    protected $currentRow;
+    protected $logger;
     /**
      *
      * @var string
      */
-    private $onSubmit;
+    protected $onSubmit;
     /**
      * @var string
      */
-    private $elementModals;
+    protected $elementModals;
 
     /**
      * This essentially builds the form tag
@@ -85,7 +83,7 @@ class Form
      * @param string $name   The name attribute of the form tag
      * @param string $method
      */
-    function __construct($action = null, $name = '', $method = 'post')
+    public function __construct($action = null, $name = '', $method = 'post')
     {
 
         /*
@@ -109,9 +107,39 @@ class Form
         self::$csrfToken = Encryption::encrypt(Session::getID());
     }
 
+    public static function getCsrfToken(): string
+    {
+        if (self::$csrfToken == null) {
+            new self();
+        }
+        return self::$csrfToken;
+    }
+
     public function setStyle($style)
     {
         $this->style = $style;
+        return $this;
+    }
+
+    public function addClass(string $addClass)
+    {
+        $this->logger->info("Adding class to form. Class: $addClass");
+        $this->classes .= trim($addClass) . ' ';
+        return $this;
+    }
+
+    /**
+     *
+     * @param FormElement $element
+     *
+     * @return $this
+     */
+    public function addElementToNewRow(FormElement $element): self
+    {
+
+        $this->currentRow++;
+        $this->addElementToCurrentRow($element);
+
         return $this;
     }
 
@@ -128,21 +156,6 @@ class Form
 
         return $this;
         $this->logger->debug($this->rowsOfElements);
-    }
-
-    /**
-     *
-     * @param FormElement $element
-     *
-     * @return $this
-     */
-    public function addElementToNewRow(FormElement $element): self
-    {
-
-        $this->currentRow++;
-        $this->addElementToCurrentRow($element);
-
-        return $this;
     }
 
     public function getId()
@@ -184,6 +197,41 @@ console.log(inputVal);
     }
 
     /**
+     * Generate the HTML output for the form
+     * This is the final step
+     *
+     * @return string
+     */
+    public function print()
+    {
+
+        $html = "<form action='$this->action' method='$this->method' name='$this->name' id='$this->id' style='$this->style' class='" . $this->getClasses() . "' onclick='$this->onSubmit' enctype='multipart/form-data'>";
+        $html .= '<input type="hidden" name="csrfToken" value="' . self::$csrfToken . '"/>';
+        foreach ($this->rowsOfElements as $rowOfElements) {
+
+            $html .= '<div class="row">';
+            if (is_array($rowOfElements)) {
+                $html .= $this->printArrayOfElements($rowOfElements);
+            } else {
+
+                $html .= $this->printElement($rowOfElements);
+            }
+
+            $html .= '</div>';
+        }
+
+        $html .= "</form>";
+        $html .= $this->elementModals;
+        return $html;
+    }
+
+    protected function getClasses()
+    {
+        $this->logger->info("Getting classes: " . $this->classes);
+        return $this->classes;
+    }
+
+    /**
      * Returns the output of an array of elements
      *
      * Useful for printing rows at a time
@@ -193,7 +241,7 @@ console.log(inputVal);
      *
      * @return type
      */
-    private function printArrayOfElements($arrayOfElements, $html = '')
+    protected function printArrayOfElements($arrayOfElements, $html = '')
     {
         //var_dump($arrayOfElements);
 
@@ -212,49 +260,12 @@ console.log(inputVal);
         return $html;
     }
 
-    private function printElement(FormElement $element)
+    protected function printElement(FormElement $element)
     {
 
         $html = $element->print(true);
         $this->elementModals .= $element->printModals() . "\n";
 
-        return $html;
-    }
-
-    public static function getCsrfToken(): string
-    {
-        if (self::$csrfToken == null) {
-            new self();
-        }
-        return self::$csrfToken;
-    }
-
-    /**
-     * Generate the HTML output for the form
-     * This is the final step
-     *
-     * @return string
-     */
-    public function print()
-    {
-
-        $html = "<form action='$this->action' method='$this->method' name='$this->name' id='$this->id' style='$this->style' onclick='$this->onSubmit' enctype='multipart/form-data'>";
-        $html .= '<input type="hidden" name="csrfToken" value="' . self::$csrfToken . '"/>';
-        foreach ($this->rowsOfElements as $rowOfElements) {
-
-            $html .= '<div class="row">';
-            if (is_array($rowOfElements)) {
-                $html .= $this->printArrayOfElements($rowOfElements);
-            } else {
-
-                $html .= $this->printElement($rowOfElements);
-            }
-
-            $html .= '</div>';
-        }
-
-        $html .= "</form>";
-        $html .= $this->elementModals;
         return $html;
     }
 
