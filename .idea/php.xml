@@ -27,6 +27,7 @@
       <path value="$PROJECT_DIR$/vendor/illuminate/contracts" />
       <path value="$PROJECT_DIR$/vendor/desarrolla2/cache" />
       <path value="$PROJECT_DIR$/vendor/visualappeal/php-auto-update" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php80" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />
