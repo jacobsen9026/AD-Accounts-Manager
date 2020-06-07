@@ -3,6 +3,9 @@
         "guzzlehttp/guzzle": "~5.3.1",
         "phpmailer/phpmailer": "^6.1",
         "adldap2/adldap2": "^10.2",
-        "visualappeal/php-auto-update": "^0.12.3"
+        "visualappeal/php-auto-update": "^0.12.3",
+        "ext-zip": "*",
+        "ext-json": "*",
+        "ext-pdo": "*"
     }
 }

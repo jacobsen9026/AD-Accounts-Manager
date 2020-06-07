@@ -66,7 +66,7 @@ class App extends CommonApp implements AppInterface
     use RequestRedirection;
     use Parser;
 
-    public static $version = '0.1.2';
+    public static $version = '0.1.3';
 
     /** @var App */
     public static $instance;

@@ -26,10 +26,9 @@
 
 use App\Models\Database\AppDatabase;
 use System\App\Forms\Form;
-use System\App\Forms\FormButton;
 use System\App\Forms\FormFloatingButton;
+use System\App\Forms\FormSlider;
 use System\App\Forms\FormText;
-use System\App\Forms\FormRadio;
 
 $form = new Form('/settings/application', 'application');
 
@@ -43,10 +42,11 @@ $webHelpDesk->large()
     ->setPlaceholder("https://helpdesk.company.com");
 
 
-$forceHTTPS = new FormRadio("Force HTTPS", "Redirect all HTTP requests to HTTPS", "forceHTTPS");
+$forceHTTPS = new FormSlider("Force HTTPS", "Redirect all HTTP requests to HTTPS", "forceHTTPS");
 $forceHTTPS->addOption("False", '0', !AppDatabase::getForceHTTPS());
 $forceHTTPS->addOption("True", '1', AppDatabase::getForceHTTPS());
-$debugMode = new FormRadio("Debug Mode", "Caution: Enabling debug mode is a security risk and should only be used on development systems.", "debugMode");
+
+$debugMode = new FormSlider("Debug Mode", "Caution: Enabling debug mode is a security risk and should only be used on development systems.", "debugMode");
 $debugMode->addOption("False", '0', !AppDatabase::getDebugMode());
 $debugMode->addOption("True", '1', AppDatabase::getDebugMode());
 $homepageMessage = new System\App\Forms\FormTextArea();

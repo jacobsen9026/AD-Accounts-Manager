@@ -26,14 +26,13 @@
 
 namespace App\Models\Database;
 
+use System\App\AppLogger;
+
 /**
  * Description of Auth
  *
  * @author cjacobsen
  */
-
-use app\database\Schema;
-
 class EmailDatabase extends DatabaseModel
 {
 
@@ -135,58 +134,6 @@ class EmailDatabase extends DatabaseModel
         return self::getDatabaseValue("Use_SMTP_Auth");
     }
 
-    public static function setSMTPServer(string $value)
-    {
-        return self::updateDatabaseValue("SMTP_Server", $value);
-    }
-
-    public static function setSMTPUsername(string $value)
-    {
-        return self::updateDatabaseValue("SMTP_Username", $value);
-    }
-
-    public static function setSMTPPassword(string $value)
-    {
-        return self::updateDatabaseValue("SMTP_Password", $value);
-    }
-
-    public static function setSMTPPort(int $value)
-    {
-
-        return self::updateDatabaseValue("SMTP_Port", $value);
-    }
-
-    public static function setFromAddress(string $value)
-    {
-        return self::updateDatabaseValue("From_Address", $value);
-    }
-
-    public static function setFromName(string $value)
-    {
-        return self::updateDatabaseValue("From_Name", $value);
-    }
-
-    public static function setReplyToAddress(string $value)
-    {
-        return self::updateDatabaseValue("Reply_To_Address", $value);
-    }
-
-    public static function setReplyToName(string $value)
-    {
-        return self::updateDatabaseValue("Reply_To_Name", $value);
-    }
-
-    public static function setUseSMTPAuth(bool $value)
-    {
-        return self::updateDatabaseValue("Use_SMTP_Auth", $value);
-    }
-
-    public static function setUseSMTPSSL(bool $value)
-    {
-
-        return self::updateDatabaseValue("Use_SMTP_SSL", $value);
-    }
-
     /**
      * Takes the raw Post data from the auth
      * setting form and translates it into
@@ -197,8 +144,8 @@ class EmailDatabase extends DatabaseModel
     public static function saveSettings(array $postedData)
     {
         foreach ($postedData as $key => $data) {
-            \System\App\AppLogger::get()->debug($key);
-            \System\App\AppLogger::get()->debug($data);
+            AppLogger::get()->debug($key);
+            AppLogger::get()->debug($data);
             switch ($key) {
                 case "fromAddress":
                     self::setFromAddress($data);
@@ -245,6 +192,63 @@ class EmailDatabase extends DatabaseModel
                     break;
             }
         }
+    }
+
+    public static function setFromAddress(string $value)
+    {
+        return self::updateDatabaseValue("From_Address", $value);
+    }
+
+    public static function setUseSMTPAuth(bool $value)
+    {
+        return self::updateDatabaseValue("Use_SMTP_Auth", $value);
+    }
+
+    public static function setSMTPPassword(string $value)
+    {
+        return self::updateDatabaseValue("SMTP_Password", $value);
+    }
+
+    public static function setSMTPUsername(string $value)
+    {
+        return self::updateDatabaseValue("SMTP_Username", $value);
+    }
+
+    public static function setSMTPServer(string $value)
+    {
+        return self::updateDatabaseValue("SMTP_Server", $value);
+    }
+
+    public static function setSMTPPort(int $value)
+    {
+
+        return self::updateDatabaseValue("SMTP_Port", $value);
+    }
+
+    public static function setUseSMTPSSL(bool $value)
+    {
+
+        return self::updateDatabaseValue("Use_SMTP_SSL", $value);
+    }
+
+    public static function setFromName(string $value)
+    {
+        return self::updateDatabaseValue("From_Name", $value);
+    }
+
+    public static function setReplyToAddress(string $value)
+    {
+        return self::updateDatabaseValue("Reply_To_Address", $value);
+    }
+
+    public static function setReplyToName(string $value)
+    {
+        return self::updateDatabaseValue("Reply_To_Name", $value);
+    }
+
+    public function getUseSMTPEncryption()
+    {
+        return self::getDatabaseValue('Use_SMTP_Encyption');
     }
 
 }

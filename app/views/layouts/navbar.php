@@ -1,9 +1,7 @@
 <?php
 
 use App\App\App;
-use App\Models\User\Privilege;
 use App\Models\Database\AppDatabase;
-use App\Models\User\User;
 
 ?>
 
@@ -110,6 +108,8 @@ use App\Models\User\User;
 
                                 <a class="dropdown-item" href="/settings/application">Settings</a>
                                 <a class="dropdown-item" href="/settings/district/edit">Setup</a>
+                                <a class="dropdown-item" href="#" data-toggle="modal"
+                                   data-target="#aboutAppModal">About</a>
 
 
                             </div>
@@ -130,7 +130,6 @@ use App\Models\User\User;
                             <div class="dropdown-header"><strong> <?php echo $this->user->username; ?></strong></div>
 
                             <a class="dropdown-item" href="/settings/profile">Profile</a>
-                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#aboutAppModal">About</a>
 
                             <a class="dropdown-item" href="/logout">Logout</a>
                         </div>

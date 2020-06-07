@@ -5,9 +5,8 @@
 
 <!--
 Site Written By: Chris Jacobsen
-With Credit to Codiad and IceCoder
-Creation: September-October 2017
-Updated: October 2019
+With Credit to PHPStorm
+Creation: November 2019
 -->
 
 </body>

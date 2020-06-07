@@ -27,6 +27,7 @@
 use App\Models\Database\EmailDatabase;
 use System\App\Forms\Form;
 use System\App\Forms\FormFloatingButton;
+use System\App\Forms\FormSlider;
 use System\App\Forms\FormText;
 use System\App\Forms\FormRadio;
 use System\App\Forms\FormButton;
@@ -40,7 +41,7 @@ $smtpServer = new FormText("SMTP Server", 'Enter the SMTP server address',
 
 $smtpPort = new FormText('SMTP Port', 'Enter the SMTP server port', 'smtpPort', $email->getSMTPPort());
 
-$useSMTPAuth = new FormRadio('Use SMTP Auth', 'Use SMTP user authentication', 'useSMTPAuth');
+$useSMTPAuth = new FormSlider('Use SMTP Auth', 'Use SMTP user authentication', 'useSMTPAuth');
 $useSMTPAuth->addOption('False', 0, !$email->getUseSMTPAuth());
 $useSMTPAuth->addOption('True', 1, $email->getUseSMTPAuth());
 
@@ -53,6 +54,11 @@ $smtpPassword = new FormText("SMTP Password", 'SMTP Auth password',
 $useSMTPSSL = new FormRadio('Use SMTP over SSL', 'Sends emails securly', 'useSMTPSSL');
 $useSMTPSSL->addOption('False', 0, !$email->getUseSMTPSSL());
 $useSMTPSSL->addOption('True', 1, $email->getUseSMTPSSL());
+
+$useEncryption = new FormRadio('Use Encryption', 'Sends emails securly', 'useEncryption');
+$useEncryption->addOption('False', 0, !$email->getUseSMTPEncryption());
+$useEncryption->addOption('TLS', 1, $email->getUseSMTPEncryption());
+$useEncryption->addOption('SSL', 2, $email->getUseSMTPEncryption());
 
 $replyAddress = new FormText("Reply-To Address", 'The reply-to address for emails sent from this app',
     'replyAddress', $email->getReplyToAddress());
@@ -77,6 +83,7 @@ $form->addElementToNewRow($smtpServer)
     ->addElementToCurrentRow($smtpPassword)
     ->addElementToNewRow($useSMTPAuth)
     ->addElementToCurrentRow($useSMTPSSL)
+    ->addElementToCurrentRow($useEncryption)
     ->addElementToNewRow($fromAddress)
     ->addElementToCurrentRow($fromName)
     ->addElementToNewRow($replyAddress)

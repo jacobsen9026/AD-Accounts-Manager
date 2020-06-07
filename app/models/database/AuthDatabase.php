@@ -26,6 +26,8 @@
 
 namespace App\Models\Database;
 
+use System\App\AppLogger;
+
 /**
  * Description of Auth
  *
@@ -35,16 +37,6 @@ class AuthDatabase extends DatabaseModel
 {
 
     const TABLE_NAME = 'Auth';
-
-    /**
-     *
-     * @return string The hashed local admin password
-     */
-    public static function getAdminPassword()
-    {
-
-        return self::getDatabaseValue("Admin_Password");
-    }
 
     /**
      *
@@ -195,24 +187,11 @@ class AuthDatabase extends DatabaseModel
         return self::getDatabaseValue('LDAP_Password');
     }
 
-    public static function setAdminPassword(string $value)
-    {
-        if ($value != self::getAdminPassword()) {
-            return self::updateDatabaseValue("Admin_Password", hash("sha256", $value));
-        }
-    }
-
-    public static function setSessionTimeout(int $value)
-    {
-
-        return self::updateDatabaseValue("Session_Timeout", $value);
-    }
-
     /**
      *
      * @param string $value
      *
-     * @return type
+     * @return bool
      * @deprecated since version number
      */
     public static function setTechGAGroup(string $value)
@@ -225,7 +204,7 @@ class AuthDatabase extends DatabaseModel
      *
      * @param string $value
      *
-     * @return type
+     * @return bool
      * @deprecated since version number
      */
     public static function setAdminGAGroup(string $value)
@@ -237,7 +216,7 @@ class AuthDatabase extends DatabaseModel
      *
      * @param string $value
      *
-     * @return type
+     * @return bool
      * @deprecated since version number
      */
     public static function setPowerGAGroup(string $value)
@@ -249,7 +228,7 @@ class AuthDatabase extends DatabaseModel
      *
      * @param string $value
      *
-     * @return type
+     * @return bool
      * @deprecated since version number
      */
     public static function setBasicGAGroup(string $value)
@@ -257,73 +236,18 @@ class AuthDatabase extends DatabaseModel
         return self::updateDatabaseValue("Basic_GA_Group", $value);
     }
 
-    public static function setTechADGroup(string $value)
-    {
-        return self::updateDatabaseValue("Tech_AD_Group", $value);
-    }
-
-    public static function setAdminADGroup(string $value)
-    {
-        return self::updateDatabaseValue("Admin_AD_Group", $value);
-    }
-
-    public static function setPowerADGroup(string $value)
-    {
-        return self::updateDatabaseValue("Power_AD_Group", $value);
-    }
-
-    public static function setBasicADGroup(string $value)
-    {
-        return self::updateDatabaseValue("Basic_AD_Group", $value);
-    }
-
-    public static function setLDAPEnabled(bool $value)
-    {
-        return self::updateDatabaseValue("LDAP_Enabled", $value);
-    }
-
-    public static function setLDAPUseSSL(bool $value)
-    {
-        return self::updateDatabaseValue("LDAP_Use_SSL", $value);
-    }
-
-    public static function setLDAPServer(string $value)
-    {
-        return self::updateDatabaseValue("LDAP_Server", $value);
-    }
-
-    public static function setLDAP_FQDN(string $value)
-    {
-        return self::updateDatabaseValue("LDAP_FQDN", $value);
-    }
-
-    public static function setLDAP_Port(int $value)
-    {
-        return self::updateDatabaseValue("LDAP_Port", $value);
-    }
-
-    public static function setLDAPUsername(string $value)
-    {
-        return self::updateDatabaseValue("LDAP_Username", $value);
-    }
-
-    public static function setLDAPPassword(string $value)
-    {
-        return self::updateDatabaseValue("LDAP_Password", $value);
-    }
-
     /**
      * Takes the raw Post data from the auth
      * setting form and translates it into
      * the database.
      *
-     * @param type $postedData
+     * @param array $postedData
      */
     public static function saveSettings(array $postedData)
     {
         foreach ($postedData as $key => $data) {
-            \System\App\AppLogger::get()->debug($key);
-            \System\App\AppLogger::get()->debug($data);
+            AppLogger::get()->debug($key);
+            AppLogger::get()->debug($data);
             switch ($key) {
                 case "sessionTimeout":
                     self::setSessionTimeout($data);
@@ -381,6 +305,84 @@ class AuthDatabase extends DatabaseModel
                     break;
             }
         }
+    }
+
+    public static function setSessionTimeout(int $value)
+    {
+
+        return self::updateDatabaseValue("Session_Timeout", $value);
+    }
+
+    public static function setAdminPassword(string $value)
+    {
+        if ($value != self::getAdminPassword()) {
+            return self::updateDatabaseValue("Admin_Password", hash("sha256", $value));
+        }
+    }
+
+    /**
+     *
+     * @return string The hashed local admin password
+     */
+    public static function getAdminPassword()
+    {
+
+        return self::getDatabaseValue("Admin_Password");
+    }
+
+    public static function setLDAPEnabled(bool $value)
+    {
+        return self::updateDatabaseValue("LDAP_Enabled", (int)$value);
+    }
+
+    public static function setLDAPUseSSL(bool $value)
+    {
+        return self::updateDatabaseValue("LDAP_Use_SSL", $value);
+    }
+
+    public static function setLDAPServer(string $value)
+    {
+        return self::updateDatabaseValue("LDAP_Server", $value);
+    }
+
+    public static function setLDAP_FQDN(string $value)
+    {
+        return self::updateDatabaseValue("LDAP_FQDN", $value);
+    }
+
+    public static function setLDAP_Port(int $value)
+    {
+        return self::updateDatabaseValue("LDAP_Port", $value);
+    }
+
+    public static function setLDAPUsername(string $value)
+    {
+        return self::updateDatabaseValue("LDAP_Username", $value);
+    }
+
+    public static function setLDAPPassword(string $value)
+    {
+        return self::updateDatabaseValue("LDAP_Password", $value);
+    }
+
+    public static function setBasicADGroup(string $value)
+    {
+        return self::updateDatabaseValue("Basic_AD_Group", $value);
+    }
+
+    public static function setPowerADGroup(string $value)
+    {
+        return self::updateDatabaseValue("Power_AD_Group", $value);
+    }
+
+    public static function setAdminADGroup(string $value)
+    {
+        return self::updateDatabaseValue("Admin_AD_Group", $value);
+    }
+
+    public static function setTechADGroup(string $value)
+    {
+        return self::updateDatabaseValue("Tech_AD_Group", $value);
     }
 
 }

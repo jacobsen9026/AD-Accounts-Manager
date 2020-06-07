@@ -6,6 +6,7 @@ namespace App\Models\Database;
 
 class SchemaDatabase extends DatabaseModel
 {
+    const TABLE_NAME = "Schema";
 
     /**
      * @return mixed

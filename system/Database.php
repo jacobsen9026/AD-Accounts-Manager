@@ -38,6 +38,7 @@ namespace System;
  * @todo   Generalize class
  */
 
+use Exception;
 use PDO;
 
 class Database
@@ -46,36 +47,16 @@ class Database
      * Database Scheme as Contansts
      */
 
-    /** @var PDO Description */
-    private $db;
-
-
     /** @var Database|null */
     public static $instance;
-
     /**
      *
      * @var DatabaseLogger
      */
     public $logger;
+    /** @var PDO Description */
+    private $db;
     private $dsn;
-
-    /**
-     *
-     * @return void
-     * @throws CoreException
-     */
-    public static function get()
-    {
-
-        if (self::$instance !== null) {
-            return self::$instance;
-
-        } else {
-            throw new CoreException("Trying to get database before one is connected");
-        }
-
-    }
 
     /**
      * Database constructor.
@@ -102,7 +83,7 @@ class Database
         /**
          * Connect to database, will create file if it doesn't already exist
          */
-        $this->db = new \PDO($dsn, null, null, [
+        $this->db = new PDO($dsn, null, null, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false
@@ -125,7 +106,7 @@ class Database
         /*
          * Load in DB Schema from file
          */
-        $query = file_get_contents(APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "seeds" . DIRECTORY_SEPARATOR . "0-1-0.sql");
+        $query = file_get_contents(APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "seeds" . DIRECTORY_SEPARATOR . "Config.sql");
         $this->db->exec($query);
         /*
          * Seed the Grade Definitions Table
@@ -140,12 +121,48 @@ class Database
     }
 
     /**
+     *
+     * @return Database|null
+     * @throws CoreException
+     */
+    public static function get()
+    {
+
+        if (self::$instance !== null) {
+            return self::$instance;
+
+        }
+
+        throw new CoreException("Trying to get database before one is connected");
+
+    }
+
+    /**
+     * Returns all tables in the config database
+     * as an array
+     *
+     * @return array A list of table names
+     */
+    public function getAllTables()
+    {
+        /*
+         * Generic get all tables function for SQLite3
+         */
+        $query = "SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%';";
+        $result = $this->query($query);
+        foreach ($result as $field => $tableName) {
+            $tables[] = $tableName["name"];
+        }
+        return $tables;
+    }
+
+    /**
      * Performs a query on the config database
      * Should be in the form of a standard SQL query
      *
      * @param string $query
      *
-     * @return boolean
+     * @return array|boolean
      */
     public function query($query)
     {
@@ -195,25 +212,6 @@ class Database
             $this->logger->error($ex);
             return false;
         }
-    }
-
-    /**
-     * Returns all tables in the config database
-     * as an array
-     *
-     * @return array A list of table names
-     */
-    public function getAllTables()
-    {
-        /*
-         * Generic get all tables function for SQLite3
-         */
-        $query = "SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%';";
-        $result = $this->query($query);
-        foreach ($result as $field => $tableName) {
-            $tables[] = $tableName["name"];
-        }
-        return $tables;
     }
 
     /**

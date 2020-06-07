@@ -4,9 +4,13 @@
 namespace System\Update;
 
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
 use System\CoreException;
 use System\File;
 use System\SystemLogger;
+use ZipArchive;
 
 class Updater
 {
@@ -83,10 +87,7 @@ class Updater
     public function isUpdateAvailable(): ?bool
     {
         $this->logger->info("isUpdateAvailable called");
-        if ($this->latestUpdate->version > $this->currentVersion) {
-            return true;
-        }
-        return false;
+        return $this->latestUpdate->version > $this->currentVersion;
 
     }
 
@@ -139,9 +140,9 @@ class Updater
 
             }
             return $successMessage;
-        } else {
-            $this->logger->info("There is no update available");
         }
+
+        $this->logger->info("There is no update available");
         return false;
 
 
@@ -162,9 +163,9 @@ class Updater
          * Download the update
          */
         File::createDirectory($this->tempFilePath);
-        File::overwriteFile($this->downloadedFile, fopen($this->latestUpdate->downloadURL, 'r'));
+        File::overwriteFile($this->downloadedFile, fopen($this->latestUpdate->downloadURL, 'rb'));
 
-        $zip = new \ZipArchive();
+        $zip = new ZipArchive();
         /**
          * Check to make sure we can open the zip
          */
@@ -183,9 +184,9 @@ class Updater
                  * That's it the update has been downloaded
                  */
                 return true;
-            } else {
-                $this->logger->error('Couldn\'t extract the zip');
             }
+
+            $this->logger->error('Couldn\'t extract the zip');
         } else {
             $this->logger->error("Couldn't open the zip file");
             return false;
@@ -201,12 +202,12 @@ class Updater
     {
         return true;
         //$zip = new \ZipArchive($this->backupPath);
-        $dir = new\RecursiveDirectoryIterator (ROOTPATH);
+        $dir = new RecursiveDirectoryIterator (ROOTPATH);
         /**
-         * @var \SplFileInfo $file
+         * @var SplFileInfo $file
          */
-        foreach (new \RecursiveIteratorIterator($dir) as $file) {
-            if (strpos($file->getPathname(), $this->tempFrilePath) === false) {
+        foreach (new RecursiveIteratorIterator($dir) as $file) {
+            if (strpos($file->getPathname(), $this->tempFilePath) === false) {
                 //$zip->addFile();
                 $this->logger->debug("Backing up file " . $file->getFilename());
                 $destinationFilepath = ROOTPATH . str_replace(ROOTPATH, '', $file->getPathname());
@@ -242,9 +243,9 @@ class Updater
             $progressMessage = 'Copying files...';
 
         }
-        $dir = new\RecursiveDirectoryIterator ($this->extractPath);
+        $dir = new RecursiveDirectoryIterator($this->extractPath);
         /**
-         * @var \SplFileInfo $file
+         * @var SplFileInfo $file
          */
         /**
          * Initialize some counters for progress tracking
@@ -258,74 +259,10 @@ class Updater
         /**
          * Loop recursively through the extract directory
          */
-        foreach (new \RecursiveIteratorIterator($dir) as $file) {
-            //var_dump($file);
-            /**
-             * Prepare relative file pathing by removing the extract path
-             * from each file path
-             */
-            $pathname = str_replace([$this->extractPath . DIRECTORY_SEPARATOR], "", $file->getPathname());
-            $filename = basename($pathname);
-            /**
-             * Skip those pesky dots
-             */
-            if ($filename !== "." && $filename !== "..") {
-                /**
-                 * Lets update the progress if we are at a 20% mark
-                 */
-                if ($statusRefreshCounter > ($this->updateFileCount / 5)) {
-                    $this->refreshUpdateStatus($progressTitle, $progressMessage, ($fileIndex / $this->updateFileCount) * 100);
-                    $statusRefreshCounter = 0;
-                }
-                /**
-                 * Update them counters
-                 */
-                $statusRefreshCounter++;
-                $fileIndex++;
-
-                /**
-                 * Prepare the destination filename, it could be a
-                 * live file if it exists
-                 */
-                $pathname = str_replace("\\", "/", $pathname);
-                $liveFile = ROOTPATH . DIRECTORY_SEPARATOR . $pathname;
-
-                //var_dump($liveFile);
-                /**
-                 * Lets check to see if the destionation file would exist and
-                 * if so we should make sure that is a file we should be overwriting.
-                 *
-                 * AKA Not on exclude list or identical to update file.
-                 */
-                if (File::exists($liveFile)) {
-                    if ($this->shouldOverwrite($file->getPathname(), $liveFile)) {
-                        $this->logger->debug("$liveFile selected for overwrite");
-                        if (!$simulation) {
-                            copy($file->getPathname(), $liveFile);
-                            $this->logger->debug("file: $liveFile");
-                        }
-                    } else {
-                        //$this->logger->debug("$liveFile skipped");
-
-                    }
-
-                } else {
-                    /**
-                     * Otherwise the update file does not yet exist on this live install
-                     * so we can just copy the update file over
-                     */
-                    //$this->logger->debug("Will create $liveFile");
-                    if (!$simulation) {
-                        copy($file->getPathname(), $liveFile);
-                        $this->logger->debug("Created file: $pathname");
-                    }
-                }
-
-                //var_dump($pathname);
-            }
+        foreach (new RecursiveIteratorIterator($dir) as $file) {
+            $this->updateFile($file, $simulation);
 
         }
-        $this->refreshUpdateStatus($progressTitle, 'Simulation Complete', 100);
 
         $this->logger->debug("Total Files Processed: " . $fileIndex);
         return true;
@@ -350,16 +287,68 @@ class Updater
         File::overwriteFile($this->progressFilePath, json_encode($json));
     }
 
+    protected function updateFile(SplFileInfo $file, bool $simulation = true)
+    {
+        //var_dump($file);
+        /**
+         * Prepare relative file pathing by removing the extract path
+         * from each file path
+         */
+        $pathname = str_replace([$this->extractPath . DIRECTORY_SEPARATOR], "", $file->getPathname());
+        $filename = basename($pathname);
+        /**
+         * Skip those pesky dots
+         */
+        if ($filename !== "." && $filename !== "..") {
+            /**
+             * Prepare the destination filename, it could be a
+             * live file if it exists
+             */
+            $pathname = str_replace("\\", "/", $pathname);
+            $liveFile = ROOTPATH . DIRECTORY_SEPARATOR . $pathname;
+
+            //var_dump($liveFile);
+            /**
+             * Lets check to see if the destionation file would exist and
+             * if so we should make sure that is a file we should be overwriting.
+             *
+             * AKA Not on exclude list or identical to update file.
+             */
+            if (File::exists($liveFile)) {
+                if ($this->shouldOverwrite($file->getPathname(), $liveFile)) {
+                    $this->logger->debug("$liveFile selected for overwrite");
+                    if (!$simulation) {
+                        copy($file->getPathname(), $liveFile);
+                        $this->logger->debug("file: $liveFile");
+                    }
+                } else {
+                    //$this->logger->debug("$liveFile skipped");
+
+                }
+
+            } else {
+                /**
+                 * Otherwise the update file does not yet exist on this live install
+                 * so we can just copy the update file over
+                 */
+                //$this->logger->debug("Will create $liveFile");
+                if (!$simulation) {
+                    copy($file->getPathname(), $liveFile);
+                    $this->logger->debug("Created file: $pathname");
+                }
+            }
+
+            //var_dump($pathname);
+        }
+
+    }
+
     protected function shouldOverwrite($sourceFile, $destFile)
     {
         /**
          * @todo Add check for excluded files and directories
          */
-        if (File::getMD5($sourceFile) !== File::getMD5($destFile) && strpos($sourceFile, ".db") === false) {
-            return true;
-
-        }
-        return false;
+        return File::getMD5($sourceFile) !== File::getMD5($destFile) && strpos($sourceFile, ".db") === false;
     }
 
     /**
@@ -370,7 +359,7 @@ class Updater
         $this->logger->info("Running post install script");
 
         if ($this->latestUpdate->postInstallScriptPath !== null && $this->latestUpdate->postInstallScriptPath !== '') {
-            $this->logger - debug($this->latestUpdate->postInstallScriptPath);
+            $this->logger->debug($this->latestUpdate->postInstallScriptPath);
             if (File::exists(ROOTPATH . DIRECTORY_SEPARATOR . $this->latestUpdate->postInstallScriptPath)) {
                 $this->logger->debug("The post install script was found.");
                 return true;
@@ -436,7 +425,7 @@ class Updater
      */
     public function getLatestVersion()
     {
-        if ($this->latestUpdate === null) {
+        if (!isset($this->latestUpdate) || $this->latestUpdate === null) {
             $this->getLatestUpdateFromURL();
         }
         return $this->latestUpdate->version;
@@ -457,7 +446,7 @@ class Updater
             /**
              * A Random number to send so we don't deal with caching
              */
-            $sendGet = rand(1000000000, 9999999999);
+            $sendGet = random_int(1000000000, 9999999999);
 
             $this->logger->info("Checking for a new version at " . $this->jsonURL);
             /**
@@ -472,10 +461,7 @@ class Updater
             $this->logger->debug(usort($this->availableUpdates, function ($a, $b) {
                 /* @var AvailableUpdate $a */
                 /* @var AvailableUpdate $b */
-                if ($a->version < $b->version) {
-                    return true;
-                }
-                return false;
+                return $a->version < $b->version;
             }));
 
             $this->logger->debug($this->availableUpdates);
@@ -486,12 +472,12 @@ class Updater
 
             $this->logger->debug($this->latestUpdate);
             return $this->latestUpdate;
-        } else {
-            /**
-             * There was no JSON url set
-             */
-            throw new CoreException('Update URL is not set');
         }
+
+        /**
+         * There was no JSON url set
+         */
+        throw new CoreException('Update URL is not set');
     }
 
     /**

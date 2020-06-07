@@ -1,14 +1,4 @@
-</div>
+<?php
 
-</div>
-
-
-<!--
-Site Written By: Chris Jacobsen
-With Credit to Codiad and IceCoder
-Creation: September-October 2017
-Updated: October 2019
--->
-
-</body>
-
+echo $this->view("/layouts/default_footer");
+?>

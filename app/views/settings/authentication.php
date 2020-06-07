@@ -26,23 +26,20 @@
 
 use App\Models\Database\AuthDatabase;
 use System\App\Forms\Form;
-use App\Auth\ADAuth;
 use System\App\Forms\FormFloatingButton;
 use System\App\Forms\FormText;
 use App\Api\Ad\ADConnection;
 
 $auth = new AuthDatabase();
 
-$server = $auth->getLDAPServer();
-$username = $auth->getLDAPUsername();
-$password = $auth->getLDAPPassword();
-if (!empty($server) and $auth->getLDAPEnabled()) {
+if ($auth->getLDAPEnabled()) {
     $adTestResult = ADConnection::isConnected();
 }
 
 
 $form = new Form('/settings/authentication', "authentication");
 $sessionTimeout = new FormText("Session Timeout", "The length of time a session can remain idle in seconds", "sessionTimeout", $auth->getSessionTimeout());
+$sessionTimeout->small();
 $adminPassword = new FormText("Admin Password", "Set a new admin password", "adminPassword", $auth->getAdminPassword());
 $adminPassword->isPassword();
 
@@ -51,11 +48,13 @@ $ldapConnected = false;
 if (ADConnection::isConnected()) {
     $ldapConnected = true;
 }
-$ldapEnabled = new System\App\Forms\FormSlider("AD Logon Enabled", "Allow logon with Active Directory accounts", "ldapEnabled", $ldapConnected);
+
+$isLDAPEnabled = $auth->getLDAPEnabled();
+$ldapEnabled = new System\App\Forms\FormSlider("AD Logon Enabled", "Allow logon with Active Directory accounts", "ldapEnabled", $isLDAPEnabled);
 
 
-$ldapEnabled->addOption("False", 0, !$auth->getLDAPEnabled())
-    ->addOption("True", 1, $auth->getLDAPEnabled());
+$ldapEnabled->addOption("False", 0, !$isLDAPEnabled)
+    ->addOption("True", 1, $isLDAPEnabled);
 
 $button = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
 $button->setId('floatingSaveButton')

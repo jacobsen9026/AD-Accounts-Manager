@@ -5,7 +5,11 @@ namespace App\App;
 
 
 use App\Models\Database\AppDatabase;
+use App\Models\Database\SchemaDatabase;
 use App\Models\User\User;
+use RecursiveDirectoryIterator;
+use SplFileInfo;
+use system\update\AvailableUpdate;
 use System\Update\Updater;
 
 class AppUpdater extends Updater
@@ -22,11 +26,29 @@ class AppUpdater extends Updater
         $this->setCheckSSL(false);
     }
 
+    public function update($simulation = true, $deleteDownload = false)
+    {
+        if ($this->isUpdateAvailable()) {
+            if (parent::update($simulation, $deleteDownload)) {
+                if ($this->updateConfigSchema($simulation)) {
+                    return true;
+                }
+                return false;
+            }
+        }
+        return false;
+    }
+
     /**
      * @inheritDoc
      */
     public function isUpdateAvailable(): ?bool
     {
+        if (App::get()->inDebugMode()) {
+            $this->latestUpdate = $this->getLatestUpdateFromURL();
+
+            return true;
+        }
         if ($this->user->getUsername() !== 'demo') {
             $this->logger->info("isUpdateAvailable called");
             //$this->connectToUpdateServer();
@@ -35,17 +57,13 @@ class AppUpdater extends Updater
             if (time() - AppDatabase::getLastUpdateCheck() > $this->updateCheckInterval) {
                 $this->latestUpdate = $this->getLatestUpdateFromURL();
             } else {
-                $this->latestUpdate = unserialize(AppDatabase::getLatestAvailableVersion());
+                $this->latestUpdate = unserialize(AppDatabase::getLatestAvailableVersion(), AvailableUpdate::class);
             }
-            if ($this->latestUpdate->version > $this->currentVersion) {
-                return true;
-            }
-            return false;
+            return $this->latestUpdate->version > $this->currentVersion;
         }
         return false;
 
     }
-
 
     /**
      * @inheritDoc
@@ -63,6 +81,40 @@ class AppUpdater extends Updater
          */
         AppDatabase::setLatestAvailableVersion(serialize($this->latestUpdate));
         return $return;
+    }
+
+    private function updateConfigSchema(bool $simulation)
+    {
+        if ($simulation) {
+            $this->logger->debug('Simulate Config Schema Update');
+
+        } else {
+            $this->logger->debug('Run Config Schema Update');
+        }
+
+
+        $dir = new RecursiveDirectoryIterator (APPPATH . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'updates');
+        /**
+         * @var SplFileInfo $file
+         */
+        foreach (new \RecursiveIteratorIterator($dir) as $file) {
+            if ($file->getBasename() !== "." && $file->getBasename() !== ".." && $file->getExtension() === 'sql') {
+                if (SchemaDatabase::getSchemaVersion() < str_replace(["v", ".sql"], "", $file->getBasename())) {
+                    if ($simulation) {
+                        $this->logger->info("Simulate running sql update script: " . $file->getBasename());
+                    } else {
+                        /**
+                         * Use Database Class to run the sql script
+                         */
+                    }
+                } else {
+                    $this->logger->debug("Database schema version is higher than the update file: " . $file->getBasename());
+                }
+            }
+
+
+        }
+
     }
 
 

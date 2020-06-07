@@ -103,11 +103,18 @@ CREATE TABLE IF NOT EXISTS "App"
     PRIMARY KEY ("ID"),
     CHECK (ID = 1)
 );
+CREATE TABLE IF NOT EXISTS Schema
+(
+    ID             INTEGER default 1,
+    Schema_Version TEXT    default '0.1.1'
+);
+
 CREATE TRIGGER init
     AFTER INSERT
     ON App
 BEGIN
     INSERT INTO Auth (ID) VALUES (1);
     INSERT INTO Email (ID) VALUES (1);
+    INSERT INTO Schema (ID) VALUES (1);
 END;
 COMMIT;

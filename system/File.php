@@ -26,9 +26,10 @@
 
 namespace System;
 
-use mysql_xdevapi\Exception;
-use System\App\AppException;
-use System\Exception\FileException;
+
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 /**
  * Description of File
@@ -46,20 +47,13 @@ abstract class File
      *
      * @return File $files
      */
-    const SCHEMA_FILE_PATH = \APPPATH . \DIRECTORY_SEPARATOR . "database" . \DIRECTORY_SEPARATOR . "Schema.php";
+    const SCHEMA_FILE_PATH = APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "Schema.php";
 
     public static function getFiles($dir)
     {
         $files = null;
-        //echo 'Dir';
-        //var_dump($dir);
         foreach (scandir($dir) as $file) {
-            //echo $dir.DIRECTORY_SEPARATOR.$file;
-            if ($file != "." and $file != ".." and is_file($dir . DIRECTORY_SEPARATOR . $file)) {
-                //echo 'file';
-                //var_dump($file);
-
-
+            if ($file !== "." and $file !== ".." and is_file($dir . DIRECTORY_SEPARATOR . $file)) {
                 $files[] = realpath($dir . DIRECTORY_SEPARATOR . $file);
             }
         }
@@ -72,7 +66,7 @@ abstract class File
         $folderPath = scandir($dir . DIRECTORY_SEPARATOR);
         $folders = [];
         foreach ($folderPath as $folder) {
-            if ($folder != "." and $folder != ".." and is_dir($folder) and $folder[0] != ".") {
+            if ($folder !== "." and $folder !== ".." and is_dir($folder) and $folder[0] !== ".") {
                 $folders[] = realpath($dir . DIRECTORY_SEPARATOR . $folder);
                 //echo "Scaned folder " . $folder . "<br/>";
             }
@@ -89,66 +83,19 @@ abstract class File
      */
     public static function getAllFiles($dir)
     {
-        $rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir));
+        $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
         $files[] = null;
-        //echo 'Dir';
-        //var_dump($dir);
         foreach ($rii as $file) {
 
-            if (basename($file) == "." or basename($file) == ".." or is_dir($file)) {
+            if (basename($file) === "." or basename($file) === ".." or is_dir($file)) {
                 continue;
             }
 
             $files[] = realpath($file);
         }
-        //var_dump($files);
         return $files;
     }
 
-    /**
-     * Writes to app/database/schema to update the column constants
-     * Only used during development
-     *
-     * @param type $constantsTable
-     */
-    public static function refreshSchemaDefinitions($constantsTable)
-    {
-        $writeFooter = false;
-        if (!file_exists(self::SCHEMA_FILE_PATH)) {
-            touch(self::SCHEMA_FILE_PATH);
-            $output = "<?php \n"
-                . " namespace app\database; \n"
-                . " class Schema { \n"
-                . "\n"
-                . "    const NAME = 'name';\n"
-                . "    const TABLE = 'table';\n"
-                . "    const COLUMN = 'column';\n";
-            foreach (Database::get()->getAllTables() as $table) {
-                $output .= "    const " . strtoupper($table) . " = '$table';\n";
-            }
-            $output .= "Pop This"
-                . "\n Pop This";
-            file_put_contents(self::SCHEMA_FILE_PATH, $output, FILE_APPEND);
-            $writeFooter = true;
-        }
-        $contents = file(File::SCHEMA_FILE_PATH);
-        array_pop($contents);
-        array_pop($contents);
-        file_put_contents(File::SCHEMA_FILE_PATH, $contents);
-        // $output = file_put_contents(self::SCHEMA_FILE_PATH, $output, FILE_APPEND);
-        foreach ($constantsTable as $title => $value) {
-            //var_dump($title);
-
-            $output = "    const " . strtoupper($title) . " = ";
-            $output .= "array('table'=>'" . explode("_", $title)[0] . "','column'=>'" . $value . "','name'=>'" . $title . "');\n";
-
-            if (!in_array($output, $contents)) {
-                file_put_contents(self::SCHEMA_FILE_PATH, $output, FILE_APPEND);
-            }
-        }
-        file_put_contents(self::SCHEMA_FILE_PATH, "\n }", FILE_APPEND);
-        //$this->redirect('/settings');
-    }
 
     public static function overwriteFile($filepath, $contents)
     {
@@ -168,7 +115,8 @@ abstract class File
         return true;
     }
 
-    public static function getContents($filepath)
+    public
+    static function getContents($filepath)
     {
         SystemLogger::get()->debug($filepath);
         if (file_exists($filepath)) {
@@ -179,17 +127,20 @@ abstract class File
         }
     }
 
-    public static function getMaximumUploadSize()
+    public
+    static function getMaximumUploadSize()
     {
         return ini_get('upload_max_filesize');
     }
 
-    public static function exists(string $liveFile)
+    public
+    static function exists(string $liveFile)
     {
         return file_exists($liveFile);
     }
 
-    public static function removeDirectory(string $dir)
+    public
+    static function removeDirectory(string $dir)
     {
 
         foreach (scandir($dir) as $file) {
@@ -201,9 +152,10 @@ abstract class File
         return true;
     }
 
-    public static function dirEmpty(string $dir)
+    public
+    static function dirEmpty(string $dir)
     {
-        $iterator = new \FilesystemIterator($dir);
+        $iterator = new FilesystemIterator($dir);
         return !$iterator->valid();
     }
 
@@ -213,18 +165,19 @@ abstract class File
      *
      * @return int
      */
-    public static function fileCount($dir, $recursive = true): int
+    public
+    static function fileCount($dir, $recursive = true): int
     {
 
 
         $count = 0;
 
 
-        $dir = new\RecursiveDirectoryIterator ($dir);
+        $dir = new RecursiveDirectoryIterator ($dir);
         /**
          * @var \SplFileInfo $file
          */
-        foreach (new \RecursiveIteratorIterator($dir) as $file) {
+        foreach (new RecursiveIteratorIterator($dir) as $file) {
             if ($file->getBasename() !== '.' && $file->getBasename() !== '..') {
 
                 $count++;
@@ -236,7 +189,8 @@ abstract class File
 
     }
 
-    public static function createDirectory(string $dir)
+    public
+    static function createDirectory(string $dir)
     {
         if (!file_exists($dir)) {
             if (!mkdir($dir) && !is_dir($dir)) {
@@ -246,7 +200,8 @@ abstract class File
         return true;
     }
 
-    public static function getModTime($filepath)
+    public
+    static function getModTime($filepath)
     {
         if (file_exists($filepath)) {
 
@@ -255,7 +210,8 @@ abstract class File
         return 0;
     }
 
-    public static function getSize($filepath)
+    public
+    static function getSize($filepath)
     {
 
         if (file_exists($filepath)) {
@@ -264,13 +220,15 @@ abstract class File
         return 0;
     }
 
-    public static function getMD5($sourceFile)
+    public
+    static function getMD5($sourceFile)
     {
         if (file_exists($sourceFile)) {
             return md5_file($sourceFile);
         }
         return null;
     }
+
 
 }
 
