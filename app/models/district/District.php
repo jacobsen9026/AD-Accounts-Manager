@@ -43,8 +43,6 @@ class District extends Model
 
     private $id;
     private $name;
-    private $gradeMin;
-    private $gradeMax;
     private $abbr;
     private $adFQDN;
     private $adServer;
@@ -52,8 +50,6 @@ class District extends Model
     private $adNetBIOS;
     private $adUsername;
     private $adPassword;
-    private $adStudentGroupName;
-    private $adStaffGroupName;
     private $gsFQDN;
     private $parentEmailGroup;
     private $rootOU;
@@ -69,8 +65,6 @@ class District extends Model
     {
         $this->setId($LDAPReponse["ID"])
             ->setName($LDAPReponse["Name"])
-            ->setGradeMin($LDAPReponse["Grade_Span_From"])
-            ->setGradeMax($LDAPReponse["Grade_Span_To"])
             ->setAbbr($LDAPReponse["Abbreviation"])
             ->setAdFQDN($LDAPReponse["AD_FQDN"])
             ->setAdServer($LDAPReponse["AD_Server"])
@@ -78,8 +72,6 @@ class District extends Model
             ->setAdNetBIOS($LDAPReponse["AD_NetBIOS"])
             ->setAdUsername($LDAPReponse["AD_Username"])
             ->setAdPassword(Encryption::decrypt($LDAPReponse["AD_Password"]))
-            ->setAdStudentGroupName($LDAPReponse["AD_Student_Group"])
-            ->setAdStaffGroupName($LDAPReponse["AD_Staff_Group"])
             ->setGsFQDN($LDAPReponse["GA_FQDN"])
             ->setUseTLS($LDAPReponse["AD_Use_TLS"]);
 
@@ -87,14 +79,15 @@ class District extends Model
         return $this;
     }
 
-    public function getId()
-    {
-        return $this->id;
-    }
-
     public function getName()
     {
         return $this->name;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
     }
 
     public function getGradeMin()
@@ -102,9 +95,21 @@ class District extends Model
         return $this->gradeMin;
     }
 
+    public function setGradeMin($gradeMin)
+    {
+        $this->gradeMin = $gradeMin;
+        return $this;
+    }
+
     public function getGradeMax()
     {
         return $this->gradeMax;
+    }
+
+    public function setGradeMax($gradeMax)
+    {
+        $this->gradeMax = $gradeMax;
+        return $this;
     }
 
     /**
@@ -131,100 +136,15 @@ class District extends Model
         return $this->abbr;
     }
 
-    public function getAdFQDN()
-    {
-        return $this->adFQDN;
-    }
-
-    public function getAdServer()
-    {
-        return $this->adServer;
-    }
-
-    public function getAdBaseDN()
-    {
-        $this->logger->debug($this->adFQDN);
-        if (!is_null($this->adBaseDN) and $this->adBaseDN != '') {
-            return $this->adBaseDN;
-        } elseif ($this->adFQDN !== null and $this->adFQDN != '') {
-            return $this->FQDNtoDN($this->adFQDN);
-        }
-    }
-
-    public function getAdStaffGroupName()
-    {
-        return $this->adStaffGroupName;
-    }
-
-    public function setAdStaffGroupName($adStaffGroupName)
-    {
-        $this->adStaffGroupName = $adStaffGroupName;
-        return $this;
-    }
-
-    public function getRootOU()
-    {
-        return $this->rootOU;
-    }
-
-    public function getAdNetBIOS()
-    {
-        return $this->adNetBIOS;
-    }
-
-    public function getAdUsername()
-    {
-        return $this->adUsername;
-    }
-
-    public function getAdPassword()
-    {
-        return $this->adPassword;
-    }
-
-    public function getAdStudentGroupName()
-    {
-        return $this->adStudentGroupName;
-    }
-
-    public function getGsFQDN()
-    {
-        return $this->gsFQDN;
-    }
-
-    public function getParentEmailGroup()
-    {
-        return $this->parentEmailGroup;
-    }
-
-    public function setId($id)
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    public function setGradeMin($gradeMin)
-    {
-        $this->gradeMin = $gradeMin;
-        return $this;
-    }
-
-    public function setGradeMax($gradeMax)
-    {
-        $this->gradeMax = $gradeMax;
-        return $this;
-    }
-
     public function setAbbr($abbr)
     {
         $this->abbr = $abbr;
         return $this;
+    }
+
+    public function getAdFQDN()
+    {
+        return $this->adFQDN;
     }
 
     public function setAdFQDN($adFQDN)
@@ -233,17 +153,21 @@ class District extends Model
         return $this;
     }
 
+    public function getAdServer()
+    {
+        return $this->adServer;
+    }
+
     public function setAdServer($adServer)
     {
         $this->adServer = $adServer;
         return $this;
     }
 
-    public function setAdBaseDN($adBaseDN)
+
+    public function getAdNetBIOS()
     {
-        $this->adBaseDN = $adBaseDN;
-        $this->rootOU = $adBaseDN;
-        return $this;
+        return $this->adNetBIOS;
     }
 
     public function setAdNetBIOS($adNetBIOS)
@@ -252,10 +176,20 @@ class District extends Model
         return $this;
     }
 
+    public function getAdUsername()
+    {
+        return $this->adUsername;
+    }
+
     public function setAdUsername($adUsername)
     {
         $this->adUsername = $adUsername;
         return $this;
+    }
+
+    public function getAdPassword()
+    {
+        return $this->adPassword;
     }
 
     public function setAdPassword($adPassword)
@@ -264,16 +198,21 @@ class District extends Model
         return $this;
     }
 
-    public function setAdStudentGroupName($adStudentGroupName)
+
+    public function getGsFQDN()
     {
-        $this->adStudentGroupName = $adStudentGroupName;
-        return $this;
+        return $this->gsFQDN;
     }
 
     public function setGsFQDN($gsFQDN)
     {
         $this->gsFQDN = $gsFQDN;
         return $this;
+    }
+
+    public function getParentEmailGroup()
+    {
+        return $this->parentEmailGroup;
     }
 
     public function setParentEmailGroup($parentEmailGroup)
@@ -292,10 +231,26 @@ class District extends Model
         return $ous;
     }
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
     public function getDirectoryTree()
     {
         $ad = \App\Api\AD::get();
         return $ad->getAllSubOUs($this->getRootOU());
+    }
+
+    public function getRootOU()
+    {
+        return $this->rootOU;
     }
 
     public function saveToDB()
@@ -307,10 +262,25 @@ class District extends Model
         DistrictDatabase::setADUsername(1, $this->adUsername);
         DistrictDatabase::setADBaseDN(1, $this->getAdBaseDN());
         DistrictDatabase::setADNetBIOS(1, $this->adNetBIOS);
-        DistrictDatabase::setADStudentGroup(1, $this->adStudentGroupName);
-        DistrictDatabase::setADStaffGroup(1, $this->adStaffGroupName);
         DistrictDatabase::setName(1, $this->name);
         DistrictDatabase::setAD_UseTLS(1, $this->useTLS);
+    }
+
+    public function getAdBaseDN()
+    {
+        $this->logger->debug($this->adFQDN);
+        if (!is_null($this->adBaseDN) and $this->adBaseDN != '') {
+            return $this->adBaseDN;
+        } elseif ($this->adFQDN !== null and $this->adFQDN != '') {
+            return $this->FQDNtoDN($this->adFQDN);
+        }
+    }
+
+    public function setAdBaseDN($adBaseDN)
+    {
+        $this->adBaseDN = $adBaseDN;
+        $this->rootOU = $adBaseDN;
+        return $this;
     }
 
 }
