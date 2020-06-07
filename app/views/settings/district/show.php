@@ -64,8 +64,8 @@ if (!$adTestResult) {
     $adUsername = new FormText("Active Directory Username", "Enter an account with admin privileges to the district OU's", "adUsername", $district->getAdUsername());
     $adPassword = new FormText("Active Directory Password", "Enter password for admin user", "adPassword", Encryption::encrypt($district->getAdPassword()));
     $adPassword->isPassword();
-    $adStudentGroup = new FormText("Active Directory Student Group", "This group should contain all active and inactive students as well as all student groups", "adStudentGroup", $district->getAdStudentGroupName());
-    $adStaffGroup = new FormText("Active Directory Staff Group", "This group should contain all active staff as well as all staff groups", "adStaffGroup", $district->getAdStaffGroupName());
+    //$adStudentGroup = new FormText("Active Directory Student Group", "This group should contain all active and inactive students as well as all student groups", "adStudentGroup", $district->getAdStudentGroupName());
+    //$adStaffGroup = new FormText("Active Directory Staff Group", "This group should contain all active staff as well as all staff groups", "adStaffGroup", $district->getAdStaffGroupName());
 
     $adConnectionCheck = new FormHTML();
     $useTLS = DistrictDatabase::getAD_UseTLS();
