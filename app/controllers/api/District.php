@@ -33,8 +33,11 @@ namespace App\Controllers\Api;
  */
 
 use App\Api\AD;
-use App\Api\Ad\ADConnection;
+use App\Api\Ad\ADGroups;
 use App\Api\Ad\ADUsers;
+use App\Models\Database\DistrictDatabase;
+use System\App\LDAPLogger;
+use system\Post;
 
 class District extends APIController
 {
@@ -54,30 +57,11 @@ class District extends APIController
             $testResult = $this->getPermissionCheckResult($districtID);
             if ($testResult == 'true') {
                 return '<h1><i class="fas fa-check-circle text-success"></i></h1>';
-            } else {
-                return '<h1><i class="fas fa-times-circle text-danger"></i></h1>' . $testResult;
             }
-        }
-    }
 
-    /**
-     * District ID's are being dropped use non post version of this method
-     *
-     * @return string
-     * @deprecated since version number
-     */
-    public function testPermsPost()
-    {
-
-        if ($this->user->superAdmin) {
-            $districtID = \system\Post::get("districtID");
-            $testResult = $this->getPermissionCheckResult($districtID);
-            if ($testResult == 'true') {
-                return '<h1><i class="fas fa-check-circle text-success"></i></h1>';
-            } else {
-                return '<h1><i class="fas fa-times-circle text-danger"></i></h1>' . $testResult;
-            }
+            return '<h1><i class="fas fa-times-circle text-danger"></i></h1>' . $testResult;
         }
+
     }
 
     /**
@@ -96,22 +80,29 @@ class District extends APIController
         if ($this->user->superAdmin) {
             $ad = new AD($districtID);
             $testResult = $ad->createTestUser();
-            // var_dump($testResult);
+            LDAPLogger::get()->debug($testResult);
             return $testResult;
         }
     }
 
-
     /**
-     * Converts encoded spaces back to literal spaces
+     * District ID's are being dropped use non post version of this method
      *
-     * @param string $input
-     *
-     * @return type
+     * @return string
+     * @deprecated since version number
      */
-    private function parseInput(string $input)
+    public function testPermsPost()
     {
-        return str_replace("%20", " ", $input);
+
+        if ($this->user->superAdmin) {
+            $districtID = Post::get("districtID");
+            $testResult = $this->getPermissionCheckResult($districtID);
+            if ($testResult == 'true') {
+                return '<h1><i class="fas fa-check-circle text-success"></i></h1>';
+            }
+
+            return '<h1><i class="fas fa-times-circle text-danger"></i></h1>' . $testResult;
+        }
     }
 
     /**
@@ -121,7 +112,7 @@ class District extends APIController
      */
     public function autocompleteOU(string $searchTerm)
     {
-        $appBaseDN = \App\Models\Database\DistrictDatabase::getAD_BaseDN(1);
+        $appBaseDN = DistrictDatabase::getAD_BaseDN(1);
         $searchTerm = $this->parseInput($searchTerm);
         $ous = AD::get()->listOUs($searchTerm);
         foreach ($ous as $ou) {
@@ -135,15 +126,26 @@ class District extends APIController
                 }
                 return $b;
             });
-            $display = substr($display, 0, strlen($display) - 1);
+            $display = substr($display, 0, -1);
             // $display = str_replace("OU=", '/', $display);
             $return[] = ["label" => $display, "value" => $ou];
             ksort($return);
         }
         return (["autocomplete" => $return]);
-        return (["autocomplete" => $ous]);
+        //return (["autocomplete" => $ous]);
     }
 
+    /**
+     * Converts encoded spaces back to literal spaces
+     *
+     * @param string $input
+     *
+     * @return type
+     */
+    private function parseInput(string $input)
+    {
+        return str_replace("%20", " ", $input);
+    }
 
     /**
      * Prints an array of matching groups for both student and staff groups
@@ -161,6 +163,24 @@ class District extends APIController
     }
 
     /**
+     * Returns an array of matching staff groups
+     *
+     * @param string $searchTerm
+     *
+     * @return array
+     */
+    private function searchGroups(string $searchTerm)
+    {
+        $groups = ADGroups::listGroups($searchTerm);
+        if ($groups == false) {
+            $groups = [];
+        }
+        return ($groups);
+
+
+    }
+
+    /**
      * Prints an array of matching users for both student and staff groups
      * respecting permissions
      *
@@ -174,23 +194,6 @@ class District extends APIController
         $users2 = ADUsers::listUsers($searchTerm);
 
         return (["autocomplete" => $users2]);
-    }
-
-
-    /**
-     * Returns an array of matching staff groups
-     *
-     * @param string $searchTerm
-     *
-     * @return array
-     */
-    private function searchGroups(string $searchTerm)
-    {
-        $groups = AD::get()->listStudentGroups($searchTerm);
-        if ($groups == false) {
-            $groups = [];
-        }
-        return ($groups);
     }
 
     /**
