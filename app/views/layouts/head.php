@@ -97,6 +97,18 @@
             $(document).find('input').keyup(handler);
 
 
+            /**
+             * Enable Bootstrap Tooltips system-wide
+             */
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip({boundary: 'window'});
+                // $('[data-trigger="tooltip"]').tooltip({boundary: 'window'});
+                $('[data-toggle="show"]').on('click', function () {
+                    let target = $(this).data('target');
+                    console.log(target);
+                    $(target).toggleClass('show');
+                });
+            })
         }
 
         $(document).ready(function () {
