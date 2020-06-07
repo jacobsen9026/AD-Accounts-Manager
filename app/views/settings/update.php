@@ -39,6 +39,55 @@ $latestVersion = '';
 if ($updater->isUpdateAvailable()) {
     $latestVersion = $updater->getLatestVersion();
     $availableVersion = 'Verison: ' . $latestVersion . ' is available.';
+
+    /**
+     *  Form Button that opens a modal with a form in it
+     */
+    $updateForm = new Form('/settings/update', 'updateApp');
+
+
+    $updateModal = new Modal();
+    $updateModal->setTitle('Update App')
+        ->small()
+        ->setId('update_app_modal');
+
+
+    $simulationSlider = new FormSlider('Simulation Mode', '', 'simulationMode', 0);
+    $simulationSlider->addOption('Real Update', 0, true)
+        ->addOption('Simulation', 1, false);
+
+    if (!App::get()->inDebugMode()) {
+        $simulationSlider->hidden();
+    }
+
+    $action = new FormText('', '', 'action', 'updateApp');
+    $action->hidden();
+
+
+    $updateButton = new FormButton('Update to v' . $latestVersion);
+    $updateButton->tiny()
+        ->addElementClasses('mt-5')
+        ->addAJAXRequest('/api/update', 'settingsOutput', $updateForm);
+
+    $updateForm->addElementToCurrentRow($simulationSlider)
+        ->addElementToNewRow($action)
+        ->addElementToNewRow($updateButton);
+
+    /**
+     * Now that the update form has been made we can continue the modal
+     */
+    $closeModalFunction = '$(\'#' . $updateModal->getId() . '\').modal(\'hide\')';
+    $closeModalFunction = \App\Models\View\Javascript::on($updateButton->getId(), $closeModalFunction);
+
+
+    $updateButton->setScript($closeModalFunction);
+
+    $modalBody = 'Current Version: ' . Core::getVersion() . '<br><br>' . $updateForm->print();
+    $updateModal->setBody($modalBody);
+
+    $updateModalButton = new FormButton('Update App');
+    $updateModalButton->addModal($updateModal)
+        ->tiny();
 }
 ?>
 
@@ -46,54 +95,8 @@ if ($updater->isUpdateAvailable()) {
     <?php echo $availableVersion; ?></div>
 
 <?php
-/**
- *  Form Button that opens a modal with a form in it
- */
-$updateForm = new Form('/settings/update', 'updateApp');
-
-
-$updateModal = new Modal();
-$updateModal->setTitle('Update App')
-    ->small()
-    ->setId('update_app_modal');
-
-
-$simulationSlider = new FormSlider('Simulation Mode', '', 'simulationMode', 0);
-$simulationSlider->addOption('Real Update', 0, true)
-    ->addOption('Simulation', 1, false);
-
-if (!App::get()->inDebugMode()) {
-    $simulationSlider->hidden();
+if ($availableVersion !== 'Running the latest version!') {
+    echo $updateModalButton->print();
 }
-
-$action = new FormText('', '', 'action', 'updateApp');
-$action->hidden();
-
-
-$updateButton = new FormButton('Update to v' . $latestVersion);
-$updateButton->tiny()
-    ->addElementClasses('mt-5')
-    ->addAJAXRequest('/api/update', 'settingsOutput', $updateForm);
-
-$updateForm->addElementToCurrentRow($simulationSlider)
-    ->addElementToNewRow($action)
-    ->addElementToNewRow($updateButton);
-
-/**
- * Now that the update form has been made we can continue the modal
- */
-$closeModalFunction = '$(\'#' . $updateModal->getId() . '\').modal(\'hide\')';
-$closeModalFunction = \App\Models\View\Javascript::on($updateButton->getId(), $closeModalFunction);
-
-
-$updateButton->setScript($closeModalFunction);
-
-$modalBody = 'Current Version: ' . Core::getVersion() . '<br><br>' . $updateForm->print();
-$updateModal->setBody($modalBody);
-
-$updateModalButton = new FormButton('Update App');
-$updateModalButton->addModal($updateModal)
-    ->tiny();
-echo $updateModalButton->print();
 ?>
 
