@@ -44,10 +44,9 @@ use System\Get;
 class Router
 {
 
-    private $logger;
-
     /** @var array|null */
     public $customRoutes = null;
+    private $logger;
     private $request = null;
 
     /**
@@ -77,22 +76,11 @@ class Router
         $this->includeCustomRoutes();
     }
 
-    /**
-     *
-     * @return string
-     */
-    public static function getDefaultController()
+    private function includeCustomRoutes()
     {
-        return "Home";
-    }
 
-    /**
-     *
-     * @return string
-     */
-    public static function getDefaultMethod()
-    {
-        return "index";
+        require(CONFIGPATH . DIRECTORY_SEPARATOR . "Routes.php");
+
     }
 
     /**
@@ -114,62 +102,6 @@ class Router
         //$route = $this->replaceCustomRoutes($route);
         $this->logger->debug($this->route);
         return $this->route;
-    }
-
-    /**
-     * Replaces custom routes
-     */
-    private function replaceCustomRoutes()
-    {
-//Inset custom routes over computed route
-        $controller = $this->route->getControler();
-        $method = $this->route->getMethod();
-        foreach ($this->customRoutes as $customRoute) {
-            if ($customRoute[0] == $controller) {
-                $this->route->setControler($customRoute[2]);
-            }
-        }
-    }
-
-    private function includeCustomRoutes()
-    {
-        require(CONFIGPATH . DIRECTORY_SEPARATOR . "Routes.php");
-    }
-
-    /**
-     *
-     * @param Route $route
-     */
-    private function setRouteFromRequest(Route $route)
-    {
-        /**
-         * First we pull the uri from the request supplied when the router
-         * was instantiated.
-         */
-        $uri = $this->request->uri;
-        $this->logger->debug($uri);
-        /*
-         * Break up the request by slashes into /controller/method/data
-         */
-        $exploded = explode("/", $uri, 4);
-        //var_export($exploded);
-        if (sizeof($exploded) > 0) {
-            if (isset($exploded[1]) and $exploded[1] != '') {
-                $route->setControler(ucfirst(strtolower($exploded[1])));
-            }
-            if (isset($exploded[2]))
-                $this->logger->debug($exploded[2]);
-            if (isset($exploded[2]) and $exploded[2] != '') {
-                $route->setMethod($exploded[2]);
-            }
-            if (isset($exploded[3]) and $exploded[3] != '') {
-                $route->setData($exploded[3]);
-            }
-        }
-        /**
-         * Let's log what the initial generated route is so far
-         */
-        $this->logger->debug("Request made: " . $this->route->getControler() . "->" . $this->route->getMethod() . "->" . $this->route->getData());
     }
 
     /**
@@ -227,13 +159,81 @@ class Router
 
     /**
      *
+     * @param Route $route
+     */
+    private function setRouteFromRequest(Route $route)
+    {
+        /**
+         * First we pull the uri from the request supplied when the router
+         * was instantiated.
+         */
+        $uri = $this->request->uri;
+        $this->logger->debug($uri);
+        /*
+         * Break up the request by slashes into /controller/method/data
+         */
+        $exploded = explode("/", $uri, 4);
+        //var_export($exploded);
+        if (sizeof($exploded) > 0) {
+            if (isset($exploded[1]) and $exploded[1] != '') {
+                $route->setControler(ucfirst(strtolower($exploded[1])));
+            }
+            if (isset($exploded[2]))
+                $this->logger->debug($exploded[2]);
+            if (isset($exploded[2]) and $exploded[2] != '') {
+                $route->setMethod($exploded[2]);
+            }
+            if (isset($exploded[3]) and $exploded[3] != '') {
+                $route->setData($exploded[3]);
+            }
+        }
+        /**
+         * Let's log what the initial generated route is so far
+         */
+        $this->logger->debug("Request made: " . $this->route->getControler() . "->" . $this->route->getMethod() . "->" . $this->route->getData());
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public static function getDefaultController()
+    {
+        return "Home";
+    }
+
+    /**
+     *
+     * @param type $string
+     *
+     * @return type
+     */
+    private function preProcessController($string)
+    {
+
+        $this->controller = $string;
+
+        return $this->controller;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public static function getDefaultMethod()
+    {
+        return "index";
+    }
+
+    /**
+     *
      * @param type $string
      *
      * @return type
      */
     private function preProcess($string)
     {
-        /*
+        /**
          * Break down a request like /students-cms/account-status
          * and convert it to a call to the method accountStatus
          * on an object of the class StudentsCms
@@ -260,36 +260,6 @@ class Router
 //return $piece;
         }
         return $string;
-    }
-
-    /**
-     * Shifts controller, method and data, left one function, removing the controller.
-     *
-     * @deprecated since version number
-     * */
-    private function shiftLeft($route)
-    {
-        if (!is_null($this->method)) {
-            $this->controller = $this->method;
-            $this->method = $this->data;
-            if (is_null($this->method)) {
-                $this->method = $this->getDefaultMethod();
-            }
-        }
-    }
-
-    /**
-     *
-     * @param type $string
-     *
-     * @return type
-     */
-    private function preProcessController($string)
-    {
-
-        $this->controller = $string;
-
-        return $this->controller;
     }
 
     private function handleAPIRequests()
@@ -336,6 +306,38 @@ class Router
         }
     }
 
+    /**
+     * Replaces custom routes
+     */
+    private function replaceCustomRoutes()
+    {
+//Inset custom routes over computed route
+        $controller = $this->route->getControler();
+        $method = $this->route->getMethod();
+        foreach ($this->customRoutes as $customRoute) {
+            if ($customRoute[0] == $controller) {
+                $this->route->setControler($customRoute[2]);
+            }
+        }
+    }
+
+    /**
+     * Shifts controller, method and data, left one function, removing the controller.
+     *
+     * @deprecated since version number
+     * */
+    private function shiftLeft($route)
+    {
+        if (!is_null($this->method)) {
+            $this->controller = $this->method;
+            $this->method = $this->data;
+            if (is_null($this->method)) {
+                $this->method = $this->getDefaultMethod();
+            }
+        }
+    }
+
 }
+
 
 ?>
