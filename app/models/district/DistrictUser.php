@@ -34,6 +34,9 @@ namespace App\Models\District;
 
 use Adldap\Models\User;
 use App\Api\Ad\ADUsers;
+use App\Models\User\PermissionHandler;
+use App\Models\User\PermissionLevel;
+use System\App\AppException;
 use System\App\LDAPLogger;
 use System\Traits\DomainTools;
 
@@ -66,6 +69,10 @@ class DistrictUser extends ADModel
         } elseif ($user instanceof User) {
             $this->activeDirectory = $user;
         }
+        if (!PermissionHandler::hasPermission(self::getOUFromDN($this->activeDirectory->getDistinguishedName()), PermissionLevel::USERS, PermissionLevel::USER_READ)) {
+            throw new AppException('That user was not found.', AppException::FAIL_USER_READ_PERM);
+
+        }
     }
 
     /**
@@ -86,16 +93,6 @@ class DistrictUser extends ADModel
     public function getCity()
     {
         return $this->getAttribute('l');
-    }
-
-    /**
-     * Get the user's middle name
-     *
-     * @return string
-     */
-    public function getMiddleName()
-    {
-        return $this->getAttribute('middlename');
     }
 
     /**
@@ -127,11 +124,6 @@ class DistrictUser extends ADModel
     public function disable()
     {
         $this->setEnabledStatus(0);
-    }
-
-    public function enable()
-    {
-        $this->setEnabledStatus(1);
     }
 
     /**
@@ -175,6 +167,11 @@ class DistrictUser extends ADModel
         return $modifiedUser->save();
     }
 
+    public function enable()
+    {
+        $this->setEnabledStatus(1);
+    }
+
     /**
      * Gets the full name in (First [Middle] Last) format
      *
@@ -188,6 +185,16 @@ class DistrictUser extends ADModel
         }
         $fullname = $this->activeDirectory->getFirstName() . $middle . $this->activeDirectory->getLastName();
         return $fullname;
+    }
+
+    /**
+     * Get the user's middle name
+     *
+     * @return string
+     */
+    public function getMiddleName()
+    {
+        return $this->getAttribute('middlename');
     }
 
     public function isLockedOut()
@@ -276,7 +283,15 @@ class DistrictUser extends ADModel
 
     public function getGroups()
     {
-        return $this->activeDirectory->getGroups();
+        $allowedGroups = [];
+        $groups = $this->activeDirectory->getGroups();
+        foreach ($groups as $group) {
+            if (PermissionHandler::hasPermission(self::getOUFromDN($group->getDistinguishedName()), PermissionLevel::GROUPS, PermissionLevel::GROUP_READ)) {
+                //throw new AppException('That user was not found.', AppException::FAIL_GROUP_READ_PERM);
+                $allowedGroups[] = $group;
+            }
+        }
+        return $allowedGroups;
     }
 
     public function getDistinguishedName()

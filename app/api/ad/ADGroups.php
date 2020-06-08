@@ -47,6 +47,10 @@ class ADGroups extends ADApi
         if ($group == null || !$group->exists) {
             throw new AppException('That group was not found.', AppException::GROUP_NOT_FOUND);
         }
+        if (!PermissionHandler::hasPermission(self::getOUFromDN($group->getDistinguishedName()), PermissionLevel::GROUPS, PermissionLevel::GROUP_READ)) {
+            throw new AppException('That group was not found.', AppException::FAIL_GROUP_READ_PERM);
+
+        }
         return $group;
     }
 

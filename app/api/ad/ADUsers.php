@@ -25,12 +25,15 @@ class ADUsers extends ADApi
             ->orWhereContains("samaccountname", $searchTerm)
             //->where($andFilter)
             ->get();
-        $usernames = [];
+        //$usernames = [0 => 'No users found.'];
         /* @var $user \Adldap\Models\User */
         foreach ($users as $user) {
             if (PermissionHandler::hasPermission(self::getOUFromDN($user->getDistinguishedName()), PermissionLevel::USERS, PermissionLevel::USER_READ)) {
                 $usernames[] = $user->getAccountName();
             }
+        }
+        if (empty($usernames)) {
+            return ["No users found"];
         }
         return $usernames;
     }

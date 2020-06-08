@@ -38,6 +38,8 @@ use Adldap\Models\User;
 use App\Api\Ad\ADConnection;
 use App\Api\Ad\ADGroups;
 use App\Api\Ad\ADUsers;
+use App\Models\User\PermissionHandler;
+use App\Models\User\PermissionLevel;
 use System\App\AppException;
 use System\Traits\DomainTools;
 
@@ -66,7 +68,10 @@ class DistrictGroup extends ADModel
         $this->logger->debug($this);
         //$this->logger->debug(bin2hex($this->activeDirectory->getObjectSid()));
         $this->id = (bin2hex($this->activeDirectory->getObjectGuid()));
+        if (!PermissionHandler::hasPermission(self::getOUFromDN($this->activeDirectory->getDistinguishedName()), PermissionLevel::GROUPS, PermissionLevel::GROUP_READ)) {
+            throw new AppException('That group was not found.', AppException::FAIL_GROUP_READ_PERM);
 
+        }
     }
 
     public function getEmail()
@@ -80,7 +85,11 @@ class DistrictGroup extends ADModel
         foreach ($this->activeDirectory->getMembers() as $groupMember) {
             if ($groupMember instanceof User) {
                 $this->logger->debug($groupMember);
-                $members[] = new DistrictUser($groupMember);
+                try {
+                    $members[] = new DistrictUser($groupMember);
+                } catch (AppException $exception) {
+                    $this->logger->warning($exception);
+                }
             }
         }
         return $members;
