@@ -667,7 +667,9 @@ abstract class CardPrinter extends ViewModel
 
         $output .= '<div class="row"><div class="col">';
         $output .= '<h5 class="position-relative d-inline card-title text-center p-5- m-5" style="left:0.5em">' . $group->activeDirectory->getName() . '</h5>';
-        $output .= self::printDeleteGroupButton($group);
+        if (PermissionHandler::hasPermission($group->getOU(), PermissionLevel::GROUPS, PermissionLevel::GROUP_DELETE)) {
+            $output .= self::printDeleteGroupButton($group);
+        }
         $output .= '<a class="float-left mt-1 h4 clickable" style="z-index:3" href="' . Request::get()->getReferer() . '">';
         $output .= '<i class="text-primary text-decoration-none fas fa-arrow-left"></i >'
             . '</a > ';
