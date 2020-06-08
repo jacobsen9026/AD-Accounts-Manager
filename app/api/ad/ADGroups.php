@@ -75,4 +75,9 @@ class ADGroups extends ADApi
         }
         return $groupNames;
     }
+
+    public static function createGroup(\App\Models\District\AddDistrictGroup $param)
+    {
+
+    }
 }
