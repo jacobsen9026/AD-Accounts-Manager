@@ -42,7 +42,7 @@ abstract class AppDatabase extends DatabaseModel
      */
     public static function getDebugMode()
     {
-        return self::getDatabaseValue("Debug_Mode");
+        return (bool)self::getDatabaseValue("Debug_Mode");
     }
 
     /**

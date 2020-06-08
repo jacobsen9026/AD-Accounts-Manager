@@ -78,47 +78,15 @@ class CommonLogEntry
         return $backTrace;
     }
 
-    public function getTimestamp()
-    {
-        return htmlspecialchars($this->timestamp);
-    }
-
     public function getId()
     {
         return 'LogEntry_' . substr(hash("sha1", $this->getMessage() . $this->getTimestamp()), 0, 10);
-    }
-
-    /**
-     * Returns one of the following
-     *
-     * @return type
-     */
-    public function getLevel()
-    {
-        return $this->level;
     }
 
     public function getMessage()
     {
         return $this->message;
         return htmlspecialchars($this->message);
-    }
-
-    public function getBacktrace()
-    {
-        return $this->backtrace;
-    }
-
-    /**
-     *
-     * @param type $level
-     *
-     * @return $this
-     */
-    public function setLevel($level)
-    {
-        $this->level = $level;
-        return $this;
     }
 
     /**
@@ -131,8 +99,13 @@ class CommonLogEntry
     {
         $this->message = $this->preProcessMessage($message);
 
-        $this->writeToLogFile();
+        //$this->writeToLogFile();
         return $this;
+    }
+
+    public function getTimestamp()
+    {
+        return htmlspecialchars($this->timestamp);
     }
 
     /**
@@ -186,6 +159,28 @@ class CommonLogEntry
         }
     }
 
+    /**
+     * Returns one of the following
+     *
+     * @return type
+     */
+    public function getLevel()
+    {
+        return $this->level;
+    }
+
+    /**
+     *
+     * @param type $level
+     *
+     * @return $this
+     */
+    public function setLevel($level)
+    {
+        $this->level = $level;
+        return $this;
+    }
+
     public function isError()
     {
         if ($this->getLevel() == self::ERROR) {
@@ -206,6 +201,11 @@ class CommonLogEntry
             . ' ' . $this->getMessage() . "\n";
 
         File::appendToFile($this->logFile, $logEntry);
+    }
+
+    public function getBacktrace()
+    {
+        return $this->backtrace;
     }
 
 }

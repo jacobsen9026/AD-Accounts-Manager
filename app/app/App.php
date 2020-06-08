@@ -233,10 +233,10 @@ class App extends CommonApp implements AppInterface
             /**
              * We need to inject the logs into the appOutput so the core can handle it.
              */
-            $this->appOutput->addLogger($this->logger)
-                ->addLogger(LDAPLogger::get())
-                ->addLogger(WindowsLogger::get())
-                ->addLogger(UserLogger::get());
+//            $this->appOutput->addLogger($this->logger)
+//                ->addLogger(LDAPLogger::get())
+//                ->addLogger(WindowsLogger::get())
+//                ->addLogger(UserLogger::get());
         }
 
         return $this->appOutput;

@@ -70,6 +70,13 @@ class District extends Controller
 //return $this->view('settings/district/index');
     }
 
+    public function show($districtID = 1)
+    {
+        $this->districtID = $districtID;
+        $this->district = DistrictDatabase::getDistrict($districtID);
+        return $this->view('settings/district/show');
+    }
+
     public function permissions($districtID = 1)
     {
         $this->district = DistrictDatabase::getDistrict($districtID);
@@ -82,7 +89,7 @@ class District extends Controller
         $this->preProcessDistrictID($districtID);
         switch (Post::get('action')) {
             case 'updateDistrict':
-                $this->updateDistrict(Post::getAll());
+                $this->updateDistrict($post);
                 break;
             case 'deletePrivilege':
                 $this->deletePrivilegeLevel();
@@ -117,62 +124,6 @@ class District extends Controller
         $this->redirect('/settings/district/permissions');
     }
 
-    public function edit($districtID = 1)
-    {
-        $this->districts = DistrictDatabase::getDistricts();
-        if (!empty($this->districts)) {
-            return $this->show($districtID);
-        } else {
-            return $this->view('settings/district/create');
-        }
-    }
-
-    public function show($districtID = 1)
-    {
-        $this->districtID = $districtID;
-        $this->district = DistrictDatabase::getDistrict($districtID);
-        return $this->view('settings/district/show');
-    }
-
-    public function createPost()
-    {
-        $post = Post::getAll();
-        DistrictDatabase::createDistrict($post['name']);
-        $this->redirect('/settings/district/edit');
-    }
-
-    public function editPost($districtID = 1)
-    {
-        $this->district = DistrictDatabase::getDistrict($districtID);
-        $post = Post::getAll();
-        $this->preProcessDistrictID($districtID);
-        switch (Post::get('action')) {
-            case 'updateDistrict':
-                $this->updateDistrict($post);
-                return "Settings Saved";
-                break;
-            case 'remove':
-                $id = Post::get('privilegeID');
-                $this->logger->info('Removing Privilege ' . $id);
-                PrivilegeLevelDatabase::removePrivilegeLevel($id);
-                break;
-            case 'addPermission':
-                $this->addDistrictPermission($districtID);
-
-                break;
-            case 'updatePrivilege':
-                $id = Post::get("privilegeID");
-                $this->updatePrivilege($id);
-            default:
-                if (Post::get("ldapGroupName")) {
-                    PrivilegeLevelDatabase::addPrivilegeLevel(Post::get("ldapGroupName"), $districtID);
-                }
-                break;
-        }
-
-//        $this->redirect('/settings/district/edit/');
-    }
-
     private function updateDistrict($post)
     {
 //var_dump($post);
@@ -183,41 +134,19 @@ class District extends Controller
             ->setAdNetBIOS($post['adNetBIOS'])
             ->setAdBaseDN($post['adBaseDN'])
             ->setAdPassword($post['adPassword'])
-            //->setAdServer($post['adServer'])
-            //->setAdStudentGroupName($post['adStudentGroup'])
-            //->setAdStaffGroupName($post['adStaffGroup'])
             ->setAdUsername($post['adUsername'])
             ->setUseTLS($post["useTLS"]);
-//$this->district->setGsFQDN($post['gsFQDN']);
-//$this->district->setParentEmailGroup($post['parentEmailGroup']);
-//var_dump($this->district);
         $this->district->saveToDB();
 //DatabasePost::setPost(Schema::DISTRICT, $districtID, $post);
 
         return true;
     }
 
-    public function delete($districtID = null)
+    public function deletePrivilegeLevel()
     {
-        DistrictDatabase::deleteDistrict($districtID);
-        $this->redirect('/district/edit');
-    }
-
-    /**
-     *
-     * @param type $districtID
-     *
-     * @return boolean
-     * @deprecated since version number
-     */
-    public function hasSchools($districtID)
-    {
-//$schools = DistrictDatabase::getSchools($districtID);
-        return false;
-        if ($schools == false or count($schools) < 1) {
-            return false;
-        }
-        return true;
+        $id = Post::get('privilegeID');
+        $this->logger->info('Removing Privilege ' . $id);
+        return PrivilegeLevelDatabase::removePrivilegeLevel($id);
     }
 
     private function addDistrictPermission($districtID = 1)
@@ -277,12 +206,6 @@ class District extends Controller
         $privilege->saveToDatabase();
     }
 
-    public function removeOUPermission()
-    {
-        $id = Post::get('id');
-        return PermissionMapDatabase::removePermissionByID($id);
-    }
-
     public function addDistrictPrivilegeLevel($districtID = 1)
     {
         if (Post::get("ldapGroupName")) {
@@ -290,11 +213,82 @@ class District extends Controller
         }
     }
 
-    public function deletePrivilegeLevel()
+    public function removeOUPermission()
     {
-        $id = Post::get('privilegeID');
-        $this->logger->info('Removing Privilege ' . $id);
-        return PrivilegeLevelDatabase::removePrivilegeLevel($id);
+        $id = Post::get('id');
+        return PermissionMapDatabase::removePermissionByID($id);
+    }
+
+    public function edit($districtID = 1)
+    {
+        $this->districts = DistrictDatabase::getDistricts();
+        if (!empty($this->districts)) {
+            return $this->show($districtID);
+        } else {
+            return $this->view('settings/district/create');
+        }
+    }
+
+    public function createPost()
+    {
+        $post = Post::getAll();
+        DistrictDatabase::createDistrict($post['name']);
+        $this->redirect('/settings/district/edit');
+    }
+
+    public function editPost($districtID = 1)
+    {
+        $this->district = DistrictDatabase::getDistrict($districtID);
+        $post = Post::getAll();
+        $this->preProcessDistrictID($districtID);
+        switch (Post::get('action')) {
+            case 'updateDistrict':
+                $this->updateDistrict($post);
+                return "Settings Saved";
+                break;
+            case 'remove':
+                $id = Post::get('privilegeID');
+                $this->logger->info('Removing Privilege ' . $id);
+                PrivilegeLevelDatabase::removePrivilegeLevel($id);
+                break;
+            case 'addPermission':
+                $this->addDistrictPermission($districtID);
+
+                break;
+            case 'updatePrivilege':
+                $id = Post::get("privilegeID");
+                $this->updatePrivilege($id);
+            default:
+                if (Post::get("ldapGroupName")) {
+                    PrivilegeLevelDatabase::addPrivilegeLevel(Post::get("ldapGroupName"), $districtID);
+                }
+                break;
+        }
+
+//        $this->redirect('/settings/district/edit/');
+    }
+
+    public function delete($districtID = null)
+    {
+        DistrictDatabase::deleteDistrict($districtID);
+        $this->redirect('/district/edit');
+    }
+
+    /**
+     *
+     * @param type $districtID
+     *
+     * @return boolean
+     * @deprecated since version number
+     */
+    public function hasSchools($districtID)
+    {
+//$schools = DistrictDatabase::getSchools($districtID);
+        return false;
+        if ($schools == false or count($schools) < 1) {
+            return false;
+        }
+        return true;
     }
 
 }

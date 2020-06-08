@@ -32,7 +32,10 @@ namespace App\Models\Database;
  * @author cjacobsen
  */
 
+use App\Api\Ad\ADGroups;
+use App\Models\District\DistrictGroup;
 use App\Models\User\PrivilegeLevel;
+use System\App\AppException;
 
 abstract class PrivilegeLevelDatabase extends DatabaseModel
 {
@@ -106,10 +109,15 @@ abstract class PrivilegeLevelDatabase extends DatabaseModel
             if ($dbTable != false) {
                 foreach ($dbTable as $row) {
                     $level = new PrivilegeLevel();
-                    $level->setId($row['ID'])
-                        ->setAdGroup($row['AD_Group_Name'])
-                        ->setSuperAdmin($row['Super_Admin']);
-                    $levels[] = $level;
+                    try {
+                        $level->setId($row['ID'])
+                            //->setAdGroup(ADGroups::getGroupById($row['AD_Group_Name'])->getAccountName())
+                            ->setAdGroup($row['AD_Group_Name'])
+                            ->setSuperAdmin($row['Super_Admin']);
+                        $levels[] = $level;
+                    } catch (AppException $e) {
+
+                    }
                 }
                 return $levels;
             }

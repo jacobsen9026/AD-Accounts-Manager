@@ -95,6 +95,9 @@ class Renderer extends Parser
                 if ($this->appOutput !== null) {
                     $ajaxResponse->importAppOutput($this->appOutput);
                 }
+                /**
+                 * @todo Only return ajax logs if in debug mode
+                 */
                 $ajaxResponse->addLogger($this->logger)
                     ->addLogger(DatabaseLogger::get())
                     ->addLogger(PostLogger::get())
