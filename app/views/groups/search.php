@@ -46,7 +46,8 @@ $appendImg->setHtml('<i class="fas fa-search"></i>')
 
 $inputGroup = new \System\App\Forms\FormElementGroup("Group", "Can search by name, email, or description");
 $inputGroup->addElementToGroup($appendImg)
-    ->addElementToGroup($textBox);
+    ->addElementToGroup($textBox)
+    ->medium();
 $form
     ->addElementToNewRow($inputGroup)
     ->addElementToNewRow($button)

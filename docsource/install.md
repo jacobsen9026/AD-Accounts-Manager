@@ -1,5 +1,7 @@
 # Installation
-
+!!! info
+    This information is very preliminary. There may be missing steps or incorrect instructions.
+    
 ## Web Server Setup
 - URL rewriting must be enabled and pointing to `/public/index.php`
 ### Windows

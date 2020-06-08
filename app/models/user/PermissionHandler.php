@@ -58,11 +58,11 @@ abstract class PermissionHandler
     /**
      * Determines if a user has the necessary permission to match the request
      *
-     * @param string $requestedType Options are "user" or "group"
-     * @param int $requestedLevel   Options are int(0-4) Meaning differs based on permission type, but generally
-     *                              (Read,Change,Write,Delete)
+     * @param string $permissionType Options are "user" or "group"
+     * @param int $requestedLevel    Options are int(0-4) Meaning differs based on permission type, but generally
+     *                               (Read,Change,Write,Delete)
      */
-    public static function hasPermission(string $ou, string $requestedType, int $requestedLevel)
+    public static function hasPermission(string $ou, string $permissionType, int $requestedLevel)
     {
         $testResults = [];
 
@@ -77,7 +77,7 @@ abstract class PermissionHandler
 
 
         /* @var $permission Permission */
-        $testResults = self::testPermissions($userPermissions, $ou, $requestedType, $requestedLevel);
+        $testResults = self::testPermissions($userPermissions, $ou, $permissionType, $requestedLevel);
 
         if (empty($testResults)) {
             return false;
