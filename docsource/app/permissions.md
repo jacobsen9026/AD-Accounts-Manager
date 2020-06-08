@@ -9,9 +9,46 @@ Setting a group as super user is only advisable for IT staff.
 !!! question "Changing Groups"
     If a group name changes, or you want to move a set of permissions to another group, you can simply rename the Privilege
     Level group name.
-!!! danger "Deleting"
+!!! danger "Deleting Privilege Levels"
     At the current state deleting a Privilege Level removes all mapped permissions and permanently deletes the Privilege Level.
     In a future update this will be improved to allow recovery. 
+## Permission Levels
+Each permission defined has options for User and Group permission levels. These levels define the access type the user should have at that respective OU branch.
+There are currently five levels each with the follow effects.
+
+### User
+- **None**
+    - Cannot read user information
+    - Cannot add users to groups even with associated group permission
+- **Read**
+    - Can read user information
+    - Can add user to groups with associated group permission
+- **Change**
+    - Can reset user passwords
+- **Unlock**
+    - Can unlock users
+- **Disable**
+    - Can enable and disable users
+    
+    !!! danger "Disable"
+            For obvious reasons, be extremely careful about both who you give this permission and where in your OU structure it is applied.
+    
+### Group
+- **None**
+    - Cannot read group information
+    - Cannot add users to groups even with associated user permission
+- **Read**
+    - Can read group information
+    - Can add group to groups with associated group permission
+- **Change**
+    - Can add users to group
+- **Add**
+    - Can create new groups
+- **Delete**
+    - Can delete entire groups
+    
+    !!! danger "Delete"
+        For obvious reasons, be extremely careful about both who you give this permission and where in your OU structure it is applied.
 
 ## OU Permission Navigator
 

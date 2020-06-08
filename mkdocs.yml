@@ -7,15 +7,8 @@ nav:
       - Installation: 'install.md'
       - 'help.md'
   - App:
-      - 'app/index.md'
-      - Tutorials:
-          - 'app/tutorials/firstPage.md'
       - Setup:
           - 'app/permissions.md'
-      - 'app/routing.md'
-      - 'app/controllers.md'
-      - 'app/models.md'
-      - 'app/views.md'
 theme:
   name: material
   favicon: images/small-logo.png
