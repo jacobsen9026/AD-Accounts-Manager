@@ -95,10 +95,6 @@ class DistrictGroup extends ADModel
         return $members;
     }
 
-    public function setName($groupNam)
-    {
-
-    }
 
     public function addMember($member)
     {
@@ -129,6 +125,11 @@ class DistrictGroup extends ADModel
             }
         }
         return false;
+    }
+
+    public function getOU()
+    {
+        return self::getOUFromDN($this->activeDirectory->getDistinguishedName());
     }
 
 
