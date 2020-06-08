@@ -1,0 +1,42 @@
+docs_dir: 'docsource'
+site_dir: 'docs'
+site_name: ADAM
+nav:
+  - Intro:
+      - 'requirements.md'
+      - Installation: 'install.md'
+      - 'help.md'
+  - App:
+      - 'app/index.md'
+      - Tutorials:
+          - 'app/tutorials/firstPage.md'
+      - Setup:
+          - 'app/permissions.md'
+      - 'app/routing.md'
+      - 'app/controllers.md'
+      - 'app/models.md'
+      - 'app/views.md'
+theme:
+  name: material
+  favicon: images/small-logo.png
+  logo: images/small-logo.png
+  features:
+    - instant
+  palette:
+    primary: blue grey
+    accent: indigo
+
+repo_name: jacobsen9026/AD-Accounts-Manager
+repo_url: https://github.com/jacobsen9026/AD-Accounts-Manager
+
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/jacobsen9026
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - toc:
+      permalink: true
