@@ -74,29 +74,12 @@ class Groups extends Controller
         $email = Post::get("email");
         $ou = Post::get("ou");
         if ($name != null and $ou != null) {
-            $newGroup = new DistrictGroup();
+            $newGroup = new AddDistrictGroup();
             $dn = "CN=" . Post::get("name") . ',' . Post::get("ou");
             $newGroup->setName(Post::get("name"))
                 ->setDistinguishedName($dn);
             $newGroup->createInAD();
         }
-    }
-
-    /**
-     * Searches for groups by name and returns a display view
-     *
-     * @param string $groupName
-     *
-     * @return type
-     */
-    public function search(string $groupName)
-    {
-        $this->group = new DistrictGroup($groupName);
-        AuditDatabase::addAudit(new AuditEntry($this->app->request, $this->user, new SearchGroupAuditAction($groupName)));
-        //var_dump($this->group);
-        $return = $this->view('/groups/show');
-        //$return .= $this->view('/groups/create');
-        return $return;
     }
 
     /**
@@ -117,6 +100,23 @@ class Groups extends Controller
              * for post only requests. Can check the $group variable
              */
         }
+    }
+
+    /**
+     * Searches for groups by name and returns a display view
+     *
+     * @param string $groupName
+     *
+     * @return type
+     */
+    public function search(string $groupName)
+    {
+        $this->group = new DistrictGroup($groupName);
+        AuditDatabase::addAudit(new AuditEntry($this->app->request, $this->user, new SearchGroupAuditAction($groupName)));
+        //var_dump($this->group);
+        $return = $this->view('/groups/show');
+        //$return .= $this->view('/groups/create');
+        return $return;
     }
 
     /**
