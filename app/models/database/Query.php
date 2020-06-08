@@ -60,6 +60,19 @@ class Query
 
     /**
      *
+     * @param const $table    Target Table
+     * @param const $type     If not supplied will be a SELECT
+     * @param stirng $columns If not supplied will be '*'
+     */
+    function __construct($table, $type = self::SELECT, $columns = '*')
+    {
+        $this->targetTable = $table;
+        $this->targetColumns = $this->preProcessColumns($table, $columns);
+        $this->queryType = $type;
+    }
+
+    /**
+     *
      * @param type $columns
      *
      * @return string|array
@@ -84,71 +97,18 @@ class Query
 
     /**
      *
-     * @param const $table    Target Table
-     * @param const $type     If not supplied will be a SELECT
-     * @param stirng $columns If not supplied will be '*'
-     */
-    function __construct($table, $type = self::SELECT, $columns = '*')
-    {
-        $this->targetTable = $table;
-        $this->targetColumns = $this->preProcessColumns($table, $columns);
-        $this->queryType = $type;
-    }
-
-    private function prepareSelect()
-    {
-        if (is_array($this->targetColumns)) {
-            $targetColumns = "";
-            $firstColumn = true;
-            foreach ($this->targetColumns as $column) {
-                if ($firstColumn) {
-                    $firstColumn = false;
-                    $targetColumns .= $column;
-                } else {
-
-                    $targetColumns .= ', ' . $column;
-                }
-            }
-            $this->targetColumns = $targetColumns;
-        }
-//var_dump($this->targetColumns);
-        $this->query = $this->queryType .
-            ' ' .
-            $this->targetColumns .
-            ' FROM ' .
-            $this->targetTable;
-    }
-
-    private function prepareCount()
-    {
-        if (is_array($this->targetColumns)) {
-            $this->targetColumns = $this->targetColumns[0];
-        }
-        $this->query = $this->queryType . ' (' . $this->targetColumns . ') FROM ' . $this->targetTable;
-
-    }
-
-    /**
-     *
      * @param type $whereArray
      *
      * @return Query
      */
-    public function where($column, $value, $like = false)
+    public function where($column, $value, $operator = '=')
     {
+        $operator = " " . trim($operator) . " ";
 
-        $operator = "=";
-        $wildcard = '';
-        if ($like) {
-            $operator = "LIKE";
-            $wildcard = '%';
-        }
-        $value = $wildcard . $value . $wildcard;
-//\System\App\AppLogger::get()->debug($column);
         if (!is_int($value) and is_string($value)) {
             $value = "'" . $value . "'";
         }
-        $where = $column . ' ' . $operator . ' ' . $value;
+        $where = $column . $operator . $value;
 
 
         $this->targetWhere[] = $where;
@@ -252,30 +212,28 @@ class Query
         return \system\Database::get()->query($this->query . ';');
     }
 
-    public function orWhere($column, $value)
+    private function prepareSelect()
     {
-        if (!is_int($value) and is_string($value)) {
-            $value = "'" . $value . "'";
-        }
-//\System\App\AppLogger::get()->debug($column);
-        if (is_array($value)) {
-            $where = '(';
-            $first = true;
-            foreach ($value as $v) {
-                if (!is_int($v) and is_string($v)) {
-                    $v = "'" . $v . "'";
+        if (is_array($this->targetColumns)) {
+            $targetColumns = "";
+            $firstColumn = true;
+            foreach ($this->targetColumns as $column) {
+                if ($firstColumn) {
+                    $firstColumn = false;
+                    $targetColumns .= $column;
+                } else {
+
+                    $targetColumns .= ', ' . $column;
                 }
-                if (!$first) {
-                    $where .= ' OR ';
-                }
-                $where .= $column . ' = ' . $v;
-                $first = false;
             }
-        } elseif (is_string($column)) {
-            $where = $column . ' = ' . $value;
+            $this->targetColumns = $targetColumns;
         }
-        $this->targetWhere[] = $where . ')';
-        return $this;
+//var_dump($this->targetColumns);
+        $this->query = $this->queryType .
+            ' ' .
+            $this->targetColumns .
+            ' FROM ' .
+            $this->targetTable;
     }
 
     private function prepareInsert()
@@ -308,15 +266,6 @@ class Query
 //exit;
     }
 
-    private function prepareDelete()
-    {
-        $firstAction = true;
-
-        $this->query = $this->queryType . ' FROM ' . $this->targetTable . ' ';
-
-        $firstAction = true;
-    }
-
     private function prepareUpdate()
     {
         $firstAction = true;
@@ -329,6 +278,50 @@ class Query
             $this->query .= $set[0] . '=' . $set[1];
             $firstAction = false;
         }
+    }
+
+    private function prepareCount()
+    {
+        if (is_array($this->targetColumns)) {
+            $this->targetColumns = $this->targetColumns[0];
+        }
+        $this->query = $this->queryType . ' (' . $this->targetColumns . ') FROM ' . $this->targetTable;
+
+    }
+
+    private function prepareDelete()
+    {
+        $firstAction = true;
+
+        $this->query = $this->queryType . ' FROM ' . $this->targetTable . ' ';
+
+        $firstAction = true;
+    }
+
+    public function orWhere($column, $value)
+    {
+        if (!is_int($value) and is_string($value)) {
+            $value = "'" . $value . "'";
+        }
+//\System\App\AppLogger::get()->debug($column);
+        if (is_array($value)) {
+            $where = '(';
+            $first = true;
+            foreach ($value as $v) {
+                if (!is_int($v) and is_string($v)) {
+                    $v = "'" . $v . "'";
+                }
+                if (!$first) {
+                    $where .= ' OR ';
+                }
+                $where .= $column . ' = ' . $v;
+                $first = false;
+            }
+        } elseif (is_string($column)) {
+            $where = $column . ' = ' . $value;
+        }
+        $this->targetWhere[] = $where . ')';
+        return $this;
     }
 
     public function sort(string $direction, string $column)

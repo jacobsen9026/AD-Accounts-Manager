@@ -31,7 +31,7 @@ namespace System\Traits;
  * @author cjacobsen
  */
 
-use System\App\AppLogger;
+use System\SystemLogger;
 
 trait Parser
 {
@@ -44,7 +44,10 @@ trait Parser
      */
     public function view($view, array $params = null)
     {
-
+        $logger = SystemLogger::get();
+        if (!is_null($params)) {
+            $logger->debug($params);
+        }
         //var_dump($view);
         $view = self::sanitize($view);
 
@@ -54,23 +57,37 @@ trait Parser
 
             ob_start();
             try {
-                AppLogger::get()->info("Rendering view file: " . $path);
-                if (include $path) {
+                $logger->info("Rendering view file: " . $path);
+                if (include($path)) {
                     return ob_get_clean();
                 } else {
-
-                    AppLogger::get()->warning("Could not include view file: " . $path);
+                    $logger->warning("Could not include view file: " . $path);
                 }
             } catch (Exception $ex) {
-                var_dump($ex);
+                $logger->warning($ex);
             }
 
-            ob_get_clean();
+            ob_clean();
         } else {
 
-            AppLogger::get()->warning("Could not find view file: " . $path);
+            $logger->warning("Could not find view file: " . $path);
         }
         return false;
+    }
+
+    /**
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    public static function sanitize($path)
+    {
+        if ($path[0] == "/" or $path[0] == "\\") {
+            $path = substr($path, 1);
+        }
+        $path = str_replace(['/', '\\'], (string)DIRECTORY_SEPARATOR, $path);
+        return $path;
     }
 
     /**
@@ -92,16 +109,16 @@ trait Parser
             // echo "test";
             //var_dump($path);
             ob_start();
-            if (include $path) {
+            if (include($path)) {
                 return ob_get_clean();
             } else {
-                AppLogger::get()->info("Rendering include file: " . $path);
-                AppLogger::get()->warning("Could not include file: " . $path);
+                SystemLogger::get()->info("Rendering include file: " . $path);
+                SystemLogger::get()->warning("Could not include file: " . $path);
             }
-            ob_get_clean();
+            ob_clean();
         } else {
 
-            AppLogger::get()->warning("Could not find include file: " . $path);
+            SystemLogger::get()->warning("Could not find include file: " . $path);
         }
         return false;
     }
@@ -129,21 +146,6 @@ trait Parser
 
             return false;
         }
-    }
-
-    /**
-     *
-     * @param string $path
-     *
-     * @return string
-     */
-    public static function sanitize($path)
-    {
-        if ($path[0] == "/" or $path[0] == "\\") {
-            $path = substr($path, 1);
-        }
-        $path = str_replace(['/', '\\'], strval(DIRECTORY_SEPARATOR), $path);
-        return $path;
     }
 
     /**

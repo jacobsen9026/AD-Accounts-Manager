@@ -55,19 +55,6 @@ abstract class PermissionHandler
      */
     private static $logger;
 
-    private static function loadUser()
-    {
-
-        if (self::$user == null) {
-            UserLogger::get()->info('Trying to load user for permission handling');
-            $appClass = APPCLASS;
-            self::$logger = $appClass::get()->logger;
-            self::$user = $appClass::get()->user;
-            UserLogger::get()->info('Loaded user:');
-            UserLogger::get()->info(self::$user);
-        }
-    }
-
     /**
      * Determines if a user has the necessary permission to match the request
      *
@@ -103,47 +90,17 @@ abstract class PermissionHandler
         }
     }
 
-    /**
-     * Checks if the user has any group permissions
-     * defined anywhere within the permission mappings
-     *
-     * @return boolean
-     */
-    public static function hasGroupPermissions()
+    private static function loadUser()
     {
 
-        self::loadUser();
-        if (null === self::$user) {
-            return false;
+        if (self::$user == null) {
+            UserLogger::get()->info('Trying to load user for permission handling');
+            $appClass = APPCLASS;
+            self::$logger = $appClass::get()->logger;
+            self::$user = $appClass::get()->user;
+            UserLogger::get()->info('Loaded user:');
+            UserLogger::get()->info(self::$user);
         }
-        if (self::$user->superAdmin) {
-            return true;
-        }
-        if (self::$user->getPrivilegeLevels() !== null) {
-            return PermissionMapDatabase::hasPermissionType(PermissionLevel::GROUPS, self::$user->getPrivilegeLevels(),);
-        }
-        UserLogger::get()->info("The user has no group permissions found.");
-        return false;
-    }
-
-    /**
-     * Checks if the user has any group permissions
-     * defined anywhere within the permission mappings
-     *
-     * @return boolean
-     */
-    public static function hasUserPermissions(): bool
-    {
-        self::loadUser();
-        if (self::$user !== null) {
-            if (self::$user->superAdmin) {
-                return true;
-            }
-            if (self::$user->getPrivilegeLevels() !== null) {
-                return PermissionMapDatabase::hasPermissionType(PermissionLevel::USERS, self::$user->getPrivilegeLevels(),);
-            }
-        }
-        return false;
     }
 
     /**
@@ -177,6 +134,49 @@ abstract class PermissionHandler
             }
         }
         return $testResults;
+    }
+
+    /**
+     * Checks if the user has any group permissions
+     * defined anywhere within the permission mappings
+     *
+     * @return boolean
+     */
+    public static function hasGroupPermissions($permissionLevel = PermissionLevel::GROUP_READ)
+    {
+
+        self::loadUser();
+        if (null === self::$user) {
+            return false;
+        }
+        if (self::$user->superAdmin) {
+            return true;
+        }
+        if (self::$user->getPrivilegeLevels() !== null) {
+            return PermissionMapDatabase::hasPermissionType(PermissionLevel::GROUPS, self::$user->getPrivilegeLevels(), $permissionLevel);
+        }
+        UserLogger::get()->info("The user has no group permissions found.");
+        return false;
+    }
+
+    /**
+     * Checks if the user has any group permissions
+     * defined anywhere within the permission mappings
+     *
+     * @return boolean
+     */
+    public static function hasUserPermissions(): bool
+    {
+        self::loadUser();
+        if (self::$user !== null) {
+            if (self::$user->superAdmin) {
+                return true;
+            }
+            if (self::$user->getPrivilegeLevels() !== null) {
+                return PermissionMapDatabase::hasPermissionType(PermissionLevel::USERS, self::$user->getPrivilegeLevels(),);
+            }
+        }
+        return false;
     }
 
 }

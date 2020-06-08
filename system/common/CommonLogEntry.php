@@ -99,7 +99,7 @@ class CommonLogEntry
     {
         $this->message = $this->preProcessMessage($message);
 
-        //$this->writeToLogFile();
+        $this->writeToLogFile();
         return $this;
     }
 
@@ -144,6 +144,20 @@ class CommonLogEntry
         var_dump($object);
         return ob_get_clean();
         //return htmlspecialchars(print_r($object, true));
+    }
+
+    private function writeToLogFile()
+    {
+        $logEntry = $this->loggerName . " " . $this->getTimestamp() . ' '
+            . $this->getBacktrace()[0]['file'] . ':' . $this->getBacktrace()[0]['line']
+            . ' ' . $this->getMessage() . "\n";
+
+        File::appendToFile($this->logFile, $logEntry . "\n");
+    }
+
+    public function getBacktrace()
+    {
+        return $this->backtrace;
     }
 
     public function getAlertLevel()
@@ -192,20 +206,6 @@ class CommonLogEntry
     public function getLoggerName()
     {
         return $this->loggerName;
-    }
-
-    private function writeToLogFile()
-    {
-        $logEntry = $this->loggerName . " " . $this->getTimestamp() . ' '
-            . $this->getBacktrace()[0]['file'] . ':' . $this->getBacktrace()[0]['line']
-            . ' ' . $this->getMessage() . "\n";
-
-        File::appendToFile($this->logFile, $logEntry);
-    }
-
-    public function getBacktrace()
-    {
-        return $this->backtrace;
     }
 
 }

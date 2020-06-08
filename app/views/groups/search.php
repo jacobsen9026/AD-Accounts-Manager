@@ -26,7 +26,9 @@ $createButton->addModal($createModal);
         </h3>
 
         <?php
-        echo $createButton->print();
+        if (\App\Models\User\PermissionHandler::hasGroupPermissions(\App\Models\User\PermissionLevel::GROUP_ADD)) {
+            echo $createButton->print();
+        }
         ?>
     </div>
 <?php
@@ -36,7 +38,7 @@ $button->small();
 $textBox = new FormText("Group", "Can search by name, email, or description", "group");
 $textBox->autoCompleteGroupName()
     ->setId("group")
-    // ->appendIcon('<i class="fas fa-search"></i>')
+// ->appendIcon('<i class="fas fa-search"></i>')
     ->medium();
 $appendImg = new \System\App\Forms\FormHTML();
 $appendImg->setHtml('<i class="fas fa-search"></i>')

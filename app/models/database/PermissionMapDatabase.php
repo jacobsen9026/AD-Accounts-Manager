@@ -36,6 +36,7 @@ use App\Models\User\PrivilegeLevel;
 use App\Models\User\Permission;
 use System\App\AppException;
 use System\App\AppLogger;
+use System\App\UserLogger;
 use System\Traits\DomainTools;
 
 abstract class PermissionMapDatabase extends DatabaseModel
@@ -230,35 +231,46 @@ abstract class PermissionMapDatabase extends DatabaseModel
      * @param string $permissionType
      * @param array $privilegeLevels An array of PrivilegeLevels
      */
-    public static function hasPermissionType(string $permissionType, array $privilegeLevels)
+    public static function hasPermissionType(string $permissionType, array $privilegeLevels, int $permissionLevel = 1)
     {
-        \System\App\UserLogger::get()->info('Checking if user has any defined permissions for ' . $permissionType);
+        UserLogger::get()->info('Checking if user has any defined permissions for ' . $permissionType);
         $ids = [];
         foreach ($privilegeLevels as $level) {
             $ids[] = $level->getId();
         }
+
         $query = new Query(self::TABLE_NAME, Query::SELECT);
-        //return;
+//return;
 
         $query->orWhere('Privilege_ID', $ids)
-            ->orWhere($permissionType, [1, 2, 3, 4])
+            //->orWhere($permissionType, [1, 2, 3, 4])
+            ->Where($permissionType, $permissionLevel, '>=')
             ->sort(Query::DESC, self::TABLE_NAME . '.OU');
         $result = $query->run();
-        if (count($result) > 0) {
-            return true;
+        if (is_array($result)) {
+            if (count($result) > 0) {
+                return true;
+            }
         }
         return false;
     }
 
-    public static function getOUPermissionsCount(string $ou, $subOus = false)
+    public
+    static function getSubOUPermissionsCount(string $ou)
     {
-        $query = new Query(self::TABLE_NAME, Query::COUNT, 'ID');
-        $query->where('OU', $ou, $subOus);
-        return $query->run();
+        return self::getOUPermissionsCount("," . $ou, "LIKE");
     }
 
-    public static function getSubOUPermissionsCount(string $ou)
+    public
+    static function getOUPermissionsCount(string $ou, $operator = '=')
     {
-        return self::getOUPermissionsCount("," . $ou, true);
+        if (strtoupper($operator) === 'LIKE') {
+            $ou = "%" . $ou . "%";
+        }
+
+        $query = new Query(self::TABLE_NAME, Query::COUNT, 'ID');
+
+        $query->where('OU', $ou, $operator);
+        return $query->run();
     }
 }

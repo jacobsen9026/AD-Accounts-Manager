@@ -141,6 +141,7 @@ class District extends APIController
 
                 //return $this->returnHTML("berms test");
                 $response = ($this->view('settings/district/permissions/ouLevelPermissions'));
+                //$response = "test";
                 //var_export($response);
                 //var_export($this->returnHTML($response));
                 return ($this->returnHTML($response));
@@ -170,17 +171,6 @@ class District extends APIController
     }
 
     /**
-     * @param $ou
-     *
-     * @return string
-     */
-    private function showOUPermissions($ou)
-    {
-        $response = PermissionMapPrinter::printOUPermissions($ou);
-        return $response;
-    }
-
-    /**
      *
      * @return type
      */
@@ -199,16 +189,6 @@ class District extends APIController
             $data["ouPermNav"] = $this->getOuNavigation($ou);
             return $data;
         }
-    }
-
-    private function addOUPermission()
-    {
-        $ou = Post::get("ou");
-        $this->controller->addOUPermission();
-//var_dump("xhr");
-        $data = $this->returnHTML($this->showOUPermissions($ou));
-        $data["ouPermNav"] = $this->getOuNavigation($ou);
-        return $data;
     }
 
     private function getOuNavigation($ou)
@@ -231,6 +211,27 @@ class District extends APIController
             }
         }
         return $return;
+    }
+
+    private function addOUPermission()
+    {
+        $ou = Post::get("ou");
+        $this->controller->addOUPermission();
+//var_dump("xhr");
+        $data = $this->returnHTML($this->showOUPermissions($ou));
+        $data["ouPermNav"] = $this->getOuNavigation($ou);
+        return $data;
+    }
+
+    /**
+     * @param $ou
+     *
+     * @return string
+     */
+    private function showOUPermissions($ou)
+    {
+        $response = PermissionMapPrinter::printOUPermissions($ou);
+        return $response;
     }
 
     private function removePermission()

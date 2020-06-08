@@ -193,6 +193,7 @@ abstract class Javascript extends ViewModel
         $("#' . $targetID . '").autocomplete({
             source: ' . $targetID . ',
             select: selectItem,
+            delay:350,
             minLength: 1,
             change: function() {
                 $("#' . $targetID . '").css("display", 2);

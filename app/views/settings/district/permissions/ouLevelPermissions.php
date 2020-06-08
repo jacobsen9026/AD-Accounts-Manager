@@ -25,6 +25,7 @@
 
 use App\Api\AD;
 use App\Models\Database\DistrictDatabase;
+use App\Models\Database\PermissionMapDatabase;
 use App\Models\View\PermissionMapPrinter;
 use App\Models\View\Javascript;
 use System\App\Forms\Form;
@@ -97,7 +98,7 @@ $district = $this->district;
         <div class="permissionCountBadge">
             <p>
                 <?php
-                echo \App\Models\Database\PermissionMapDatabase::getSubOUPermissionsCount($district->getAdBaseDN());
+                echo PermissionMapDatabase::getSubOUPermissionsCount($district->getAdBaseDN());
                 ?>
             </p>
         </div>
