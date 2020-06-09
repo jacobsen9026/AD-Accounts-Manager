@@ -46,9 +46,7 @@ $forceHTTPS = new FormSlider("Force HTTPS", "Redirect all HTTP requests to HTTPS
 $forceHTTPS->addOption("False", '0', !AppDatabase::getForceHTTPS());
 $forceHTTPS->addOption("True", '1', AppDatabase::getForceHTTPS());
 
-$debugMode = new FormSlider("Debug Mode", "Caution: Enabling debug mode is a security risk and should only be used on development systems.", "debugMode", AppDatabase::getDebugMode());
-$debugMode->addOption("False", '0', !AppDatabase::getDebugMode());
-$debugMode->addOption("True", '1', AppDatabase::getDebugMode());
+
 $homepageMessage = new System\App\Forms\FormTextArea();
 $homepageMessage->setLabel("Homepage Message")
     ->setSubLabel("Accepts HTML and inline style")
@@ -64,7 +62,6 @@ $form->addElementToNewRow($webAppName)
     ->addElementToNewRow($homepageMessage)
     ->addElementToNewRow($webFQDN)
     ->addElementToNewRow($forceHTTPS)
-    ->addElementToCurrentRow($debugMode)
     ->addElementToNewRow($webHelpDesk)
     ->addElementToNewRow($submitButton);
 echo $form->print();

@@ -51,9 +51,6 @@ $smtpUsername = new FormText("SMTP Username", 'SMTP Auth username',
 $smtpPassword = new FormText("SMTP Password", 'SMTP Auth password',
     'smtpPassword', $email->getSMTPPassword());
 
-$useSMTPSSL = new FormRadio('Use SMTP over SSL', 'Sends emails securly', 'useSMTPSSL');
-$useSMTPSSL->addOption('False', 0, !$email->getUseSMTPSSL());
-$useSMTPSSL->addOption('True', 1, $email->getUseSMTPSSL());
 
 $useEncryption = new FormSlider('Use Encryption', 'Sends emails securly', 'useEncryption');
 $useEncryption->addOption('False', 0, !$email->getUseSMTPEncryption());

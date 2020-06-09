@@ -48,6 +48,7 @@ use System\App\RequestRedirection;
 use System\App\Error\AppErrorHandler;
 use System\App\UserLogger;
 use System\App\ControllerFactory;
+use System\Core;
 use System\Request;
 use System\App\Router;
 use App\Models\User\User;
@@ -151,10 +152,7 @@ class App extends CommonApp implements AppInterface
     public function inDebugMode(): bool
     {
 
-        if (AppDatabase::getDebugMode()) {
-            return true;
-        }
-        return false;
+        return Core::inDebugMode();
 
     }
 

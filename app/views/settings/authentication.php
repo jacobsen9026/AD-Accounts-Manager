@@ -33,7 +33,7 @@ use App\Api\Ad\ADConnection;
 $auth = new AuthDatabase();
 
 if ($auth->getLDAPEnabled()) {
-    $adTestResult = ADConnection::isConnected();
+    $ldapConnected = ADConnection::isConnected();
 }
 
 
@@ -44,17 +44,16 @@ $adminPassword = new FormText("Admin Password", "Set a new admin password", "adm
 $adminPassword->isPassword();
 
 
-$ldapConnected = false;
-if (ADConnection::isConnected()) {
-    $ldapConnected = true;
-}
-
 $isLDAPEnabled = $auth->getLDAPEnabled();
 $ldapEnabled = new System\App\Forms\FormSlider("AD Logon Enabled", "Allow logon with Active Directory accounts", "ldapEnabled", $isLDAPEnabled);
 
 
 $ldapEnabled->addOption("False", 0, !$isLDAPEnabled)
     ->addOption("True", 1, $isLDAPEnabled);
+if (!$ldapConnected) {
+    $ldapEnabled->disable();
+}
+
 
 $button = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
 $button->setId('floatingSaveButton')

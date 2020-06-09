@@ -114,26 +114,26 @@ and open the template in the editor.
 }
 
 .form-element {
-    margin-bottom: 2em !important;
+    margin-bottom: 2em;
 }
 
 @media only screen and (min-width: 576px) {
     .form-element {
-        margin-bottom: 2em !important;
+        margin-bottom: 2em;
     }
 }
 
 @media only screen and (min-width: 768px) {
     .form-element {
 
-        margin-bottom: 1em !important;
+        margin-bottom: 1em;
     }
 }
 
 @media only screen and (min-width: 992px) {
     .form-element {
 
-        margin-bottom: 1em !important;
+        margin-bottom: 1em;
     }
 }
 

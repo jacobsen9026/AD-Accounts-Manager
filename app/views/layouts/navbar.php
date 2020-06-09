@@ -108,8 +108,6 @@ use App\Models\Database\AppDatabase;
 
                                 <a class="dropdown-item" href="/settings/application">Settings</a>
                                 <a class="dropdown-item" href="/settings/district/edit">Setup</a>
-                                <a class="dropdown-item" href="#" data-toggle="modal"
-                                   data-target="#aboutAppModal">About</a>
 
 
                             </div>
@@ -130,7 +128,9 @@ use App\Models\Database\AppDatabase;
                             <div class="dropdown-header"><strong> <?php echo $this->user->username; ?></strong></div>
 
                             <a class="dropdown-item" href="/settings/profile">Profile</a>
-
+                            <a class="dropdown-item" href="#" data-toggle="modal"
+                               data-target="#aboutAppModal">About</a>
+                            <a class="dropdown-item" href="https://jacobsen9026.github.io/AD-Accounts-Manager/">Help</a>
                             <a class="dropdown-item" href="/logout">Logout</a>
                         </div>
                     </li>

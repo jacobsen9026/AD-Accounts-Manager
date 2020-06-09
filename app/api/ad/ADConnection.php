@@ -12,6 +12,7 @@ namespace App\Api\Ad;
 
 use Adldap\Adldap\Auth\PasswordRequiredException;
 use Adldap\Adldap\Auth\UsernameRequiredException;
+use Adldap\AdldapException;
 use Adldap\Connections\Provider;
 use Adldap\Connections\ProviderInterface;
 use App\Models\Database\DistrictDatabase;
@@ -75,17 +76,20 @@ class ADConnection extends Adldap
             }
         }
 
-
-        $this->addProvider($configuration);
         try {
+            $this->addProvider($configuration);
+
             set_error_handler([$this, 'handleError']);
 
-            if ($configuration["username"] !== '' && $configuration["password"] !== '') {
+            if ($configuration["username"] !== '' && $configuration["password"] !== '' && $configuration["base_dn"] !== '') {
                 $this->connection = $this->connect();
             } else {
                 throw new AppException("Missing username or password");
             }
             new AppErrorHandler();
+        } catch (AdldapException $exception) {
+            $this->ldapLogger->warning($exception);
+
         } catch (Exception $exception) {
 
             self::$lastError = $exception->getMessage();
@@ -116,6 +120,7 @@ class ADConnection extends Adldap
          * Now check if connection is legit
          */
         if (self::$instance->connection instanceof Provider === false) {
+            self::$logger->info("AD not connected");
             return false;
         }
         /**
@@ -123,9 +128,12 @@ class ADConnection extends Adldap
          */
         self::$logger->debug(self::$instance->connection->getConnection()->getLastError());
         if (!self::$instance->connection->getConnection()->getLastError()) {
+            self::$logger->info("AD not connected");
+
             return false;
         }
 
+        self::$logger->info("AD connected");
 
         return true;
     }
