@@ -29,8 +29,8 @@ theme:
     primary: blue grey
     accent: indigo
 
-repo_name: jacobsen9026/AD-Accounts-Manager
-repo_url: https://github.com/jacobsen9026/AD-Accounts-Manager
+#repo_name: jacobsen9026/AD-Accounts-Manager
+#repo_url: https://github.com/jacobsen9026/AD-Accounts-Manager
 
 extra:
   social:

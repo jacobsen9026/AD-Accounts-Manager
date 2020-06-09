@@ -18,6 +18,7 @@ This app will help you enable your users.
 A sleek user-friendly permission-based account/group manager built for the web. Use on any device
 with an internet connection and a browser.
 
+Try it out on this [live demo](http://demo.adam-app.gq)
 
 ## Features
 

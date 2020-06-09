@@ -15,3 +15,5 @@
 - A valid SSL certificate for website
 - A Microsoft Windows web host
 
+## Active Directory
+Well it is in the name. You need to have a working Active Directory environment to be able to utilize this app. Basic LDAP is not supported.
