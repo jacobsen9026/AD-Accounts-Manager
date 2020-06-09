@@ -37,7 +37,8 @@ use System\Core;
 $updater = new AppUpdater();
 $availableVersion = 'Running the latest version!';
 $latestVersion = '';
-if ($updater->getLatestUpdateFromURL()) {
+$latestUpdate = $updater->getLatestUpdateFromURL();
+if ($latestUpdate->version > App::$version) {
     $latestVersion = $updater->getLatestVersion();
     $availableVersion = 'Verison: ' . $latestVersion . ' is available.';
 }
@@ -83,7 +84,7 @@ $closeModalFunction = Javascript::on($updateButton->getId(), $closeModalFunction
 
 $updateButton->setScript($closeModalFunction);
 
-$modalBody = 'Current Version: ' . Core::getVersion() . '<br><br>' . $updateForm->print();
+$modalBody = 'Current Version: ' . App::$version . '<br><br>' . $updateForm->print();
 $updateModal->setBody($modalBody);
 
 $updateModalButton = new FormButton('Update App');
