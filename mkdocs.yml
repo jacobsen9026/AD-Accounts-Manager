@@ -3,9 +3,19 @@ site_dir: 'docs'
 site_name: ADAM
 nav:
   - Intro:
-      - 'requirements.md'
-      - Installation: 'install.md'
       - 'help.md'
+  - Installation:
+      - 'install/requirements.md'
+      - 'install/install.md'
+      - Windows:
+          - 'install/win/wamp.md'
+          - 'install/win/xampp.md'
+          - 'install/win/iis.md'
+      - CentOS:
+          - 'install/centos/apache.md'
+      - Ubuntu:
+          - 'install/ubuntu/lamp.md'
+
   - App:
       - 'app/firstRun.md'
       - Setup:
