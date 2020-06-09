@@ -47,7 +47,3 @@
 
 ### Ubuntu
 
-## Installing Classify
-
-## Updating Classify
-

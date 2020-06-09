@@ -7,8 +7,18 @@ nav:
       - Installation: 'install.md'
       - 'help.md'
   - App:
+      - 'app/firstRun.md'
       - Setup:
-          - 'app/permissions.md'
+          - 'app/setup/index.md'
+          - 'app/setup/permissions.md'
+      - Settings:
+          - 'app/settings/application.md'
+          - 'app/settings/authentication.md'
+      - Users:
+          - 'app/users/search.md'
+      - Groups:
+          - 'app/groups/search.md'
+
 theme:
   name: material
   favicon: images/small-logo.png

@@ -1,17 +1,12 @@
-# Permissions
-## Privilge Levels
-Privilege Levels are essentially Active Directory groups that are allowed to log into the application.
+# First Run
+## Credentials
+The default admin credentials are:
+`admin`
+`password`
 
-By being in one of the groups assigned a Privilege Level, a user can sign into the application.
-
-Setting a group as super user is only advisable for IT staff.
-
-!!! question "Changing Groups"
-    If a group name changes, or you want to move a set of permissions to another group, you can simply rename the Privilege
-    Level group name.
-!!! danger "Deleting Privilege Levels"
-    At the current state deleting a Privilege Level removes all mapped permissions and permanently deletes the Privilege Level.
-    In a future update this will be improved to allow recovery. 
+!!! warning "Security Warning"
+    Keeping the default password is a huge security risk, but of course you
+    knew that with a password of `password` right?
 ## Permission Levels
 Each permission defined has options for User and Group permission levels. These levels define the access type the user should have at that respective OU branch.
 There are currently five levels each with the follow effects.
