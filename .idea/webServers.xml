@@ -8,6 +8,13 @@
       <webServer id="27aefc41-91e4-434b-aa65-271f7405f3fc" name="SamDev-WAMP" url="http://samdev-wamp">
         <fileTransfer mountedRoot="V:\" accessType="MOUNT" port="0" />
       </webServer>
+      <webServer id="d10bd6b7-1b33-488d-ad33-dd5df837b6be" name="CentOS AWS" url="http://ec2-3-19-215-193.us-east-2.compute.amazonaws.com/">
+        <fileTransfer rootFolder="/var/www/html" accessType="SFTP" host="ec2-3-19-215-193.us-east-2.compute.amazonaws.com" port="22" sshConfigId="02136da1-c8a9-40f6-8fcf-b75ad46d9f40" sshConfig="centos@ec2-3-19-215-193.us-east-2.compute.amazonaws.com:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
       <webServer id="35148624-4109-4e10-a313-287cc94fb641" name="AWS Demo WAMP" url="http://demo.adam-app.gq/">
         <fileTransfer rootFolder="/C:/wamp64/www" accessType="SFTP" host="demo.adam-app.gq" port="22" sshConfigId="06d4a267-83f4-4d00-bbaa-44554ed36123" sshConfig="demo\website@demo.adam-app.gq:22 password">
           <advancedOptions>
@@ -22,6 +29,7 @@
         <servers>
           <name value="Samdev-XAMPP" />
           <name value="SamDev-WAMP" />
+          <name value="CentOS AWS" />
         </servers>
       </group>
     </groups>
