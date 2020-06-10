@@ -28,6 +28,7 @@ namespace System;
 
 
 use FilesystemIterator;
+use PHPMailer\PHPMailer\Exception;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -104,10 +105,43 @@ abstract class File
 
     public static function appendToFile($filepath, $contents)
     {
+        $fileDir = substr($filepath, 0, strrpos($filepath, DIRECTORY_SEPARATOR));
+
+        if (!file_exists($filepath)) {
+            var_dump($fileDir);
+            self::createDirectory($fileDir);
+
+            touch($filepath);
+        }
         file_put_contents($filepath, $contents, FILE_APPEND);
+
     }
 
-    public static function deleteFile($filepath)
+    public
+    static function createDirectory(string $dir)
+    {
+        $parentDir = substr($dir, 0, strrpos($dir, DIRECTORY_SEPARATOR));
+        var_dump($parentDir);
+        if (!file_exists($parentDir)) {
+            self::createDirectory($parentDir);
+        }
+        var_dump("Parent exists");
+        if (!file_exists($dir)) {
+            var_dump("Making $dir");
+            if (!mkdir($dir)) {
+                if (!is_dir($dir)) {
+                    return false;
+
+                }
+            }
+        }
+
+        return true;
+
+    }
+
+    public
+    static function deleteFile($filepath)
     {
         if (file_exists($filepath)) {
             return unlink($filepath);
@@ -187,17 +221,6 @@ abstract class File
 
         return $count;
 
-    }
-
-    public
-    static function createDirectory(string $dir)
-    {
-        if (!file_exists($dir)) {
-            if (!mkdir($dir) && !is_dir($dir)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public
