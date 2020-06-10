@@ -34,6 +34,7 @@ namespace System\Common;
  * @author cjacobsen
  */
 
+use System\Core;
 use System\File;
 use System\Log\CommonLogger;
 use System\Log\CommonLogLevel;
@@ -148,11 +149,13 @@ class CommonLogEntry
 
     private function writeToLogFile()
     {
-        $logEntry = $this->loggerName . " " . $this->getTimestamp() . ' '
-            . $this->getBacktrace()[0]['file'] . ':' . $this->getBacktrace()[0]['line']
-            . ' ' . $this->getMessage() . "\n";
+        if (Core::inDebugMode()) {
+            $logEntry = $this->loggerName . " " . $this->getTimestamp() . ' '
+                . $this->getBacktrace()[0]['file'] . ':' . $this->getBacktrace()[0]['line']
+                . ' ' . $this->getMessage() . "\n";
 
-        File::appendToFile($this->logFile, $logEntry . "\n");
+            File::appendToFile($this->logFile, $logEntry . "\n");
+        }
     }
 
     public function getBacktrace()
