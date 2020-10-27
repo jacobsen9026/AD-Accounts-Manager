@@ -6,7 +6,7 @@
         <fileTransfer mountedRoot="U:\" accessType="MOUNT" port="0" />
       </webServer>
       <webServer id="27aefc41-91e4-434b-aa65-271f7405f3fc" name="SamDev-WAMP" url="http://samdev-wamp">
-        <fileTransfer mountedRoot="V:\" accessType="MOUNT" port="0" />
+        <fileTransfer mountedRoot="X:\" accessType="MOUNT" port="0" />
       </webServer>
       <webServer id="d10bd6b7-1b33-488d-ad33-dd5df837b6be" name="CentOS AWS" url="http://ec2-3-19-215-193.us-east-2.compute.amazonaws.com/">
         <fileTransfer rootFolder="/var/www/html" accessType="SFTP" host="ec2-3-19-215-193.us-east-2.compute.amazonaws.com" port="22" sshConfigId="02136da1-c8a9-40f6-8fcf-b75ad46d9f40" sshConfig="centos@ec2-3-19-215-193.us-east-2.compute.amazonaws.com:22 key" keyPair="true">
