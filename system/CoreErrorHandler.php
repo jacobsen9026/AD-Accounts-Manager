@@ -132,11 +132,11 @@ class CoreErrorHandler
         $surroundingCode .= $lineNumber + 3 . file($file)[$lineNumber + 2];
         $surroundingCode = str_replace("'", '"', $surroundingCode);
 
-
+        $logMessage = $file . ':' . $lineNumber . ' ' . $message;
         if (Core::get()->inDebugMode()) {
             //Send a 500 internal server error to the browser.
             header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-            $logMessage = $file . ':' . $lineNumber . ' ' . $message;
+
             $errorMessage = '<div class="m-5 p-5 alert alert-danger"><h4>Fatal Error</h4>' . $message . '<br/><br/>' . $file
                 . ':' . $lineNumber . '<br/><pre>'
                 . $surroundingCode . '</pre>'
