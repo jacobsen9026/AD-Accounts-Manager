@@ -17,18 +17,32 @@ class ADUsers extends ADApi
     public static function listUsers(string $searchTerm)
     {
         //$andFilter = ["objectClass" => "user"];
-        $users = ADConnection::getConnectionProvider()->search()
-            ->users()
-            ->select('samaccountname', 'dn')
-            ->orWhereContains("sn", $searchTerm)
-            ->orWhereContains("givenname", $searchTerm)
-            ->orWhereContains("samaccountname", $searchTerm)
-            //->where($andFilter)
-            ->get();
+        if(str_contains($searchTerm," ")){
+            $users = ADConnection::getConnectionProvider()->search()
+                ->users()
+                ->select('samaccountname', 'dn')
+                ->whereContains("sn", explode(" ",$searchTerm)[1])
+                ->whereContains("givenname", explode(" ",$searchTerm)[0])
+                ->get();
+
+        }else {
+            $users = ADConnection::getConnectionProvider()->search()
+                ->users()
+                ->select('samaccountname', 'dn')
+                ->orWhereContains("sn", $searchTerm)
+                ->orWhereContains("givenname", $searchTerm)
+                ->orWhereContains("samaccountname", $searchTerm)
+                ->orWhereContains("givenname", $searchTerm)
+
+
+
+                //->where($andFilter)
+                ->get();
+        }
         //$usernames = [0 => 'No users found.'];
         /* @var $user \Adldap\Models\User */
         foreach ($users as $user) {
-            if (PermissionHandler::hasPermission(self::getOUFromDN($user->getDistinguishedName()), PermissionLevel::USERS, PermissionLevel::USER_READ)) {
+            if (PermissionHandler::hasPermission($user->getDistinguishedName(), PermissionLevel::USERS, PermissionLevel::USER_READ)) {
                 $usernames[] = $user->getAccountName();
             }
         }
