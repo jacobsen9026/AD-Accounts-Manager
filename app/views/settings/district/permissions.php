@@ -61,7 +61,7 @@ $cleanOu = PermissionMapPrinter::cleanOU($district->getAdBaseDN());
         </div>
 
 
-        <div id="ouLevelPermissionsContainer" class='shadow p-5 mt-5 mb-5 bg-white '>
+        <div style="display:none;" id="ouLevelPermissionsContainer" class='shadow p-5 mt-5 mb-5 bg-white '>
             <?php
             $showOuLevelPermissionsCommand = Javascript::buildAJAXRequest('/api/settings/district/permissions', "ouLevelPermissionsContainer", ['action' => 'getOULevelPermissions'], true);
             echo "<script>" . Javascript::onPageLoad($showOuLevelPermissionsCommand) . "</script>";
