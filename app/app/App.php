@@ -34,8 +34,7 @@ namespace App\App;
  * This is the main Application class. It manages all steps of app execution. The application flow is as follows.
  * AppLogger->ConfigDatabase->Routing->Controlling->Layout->Output back to core
  *
- * No application specific data/functions should be present in this class. That should be utilized in classes within
- * the App namespace.
+ *
  */
 
 use App\Controllers\Controller;
@@ -67,18 +66,18 @@ class App extends CommonApp implements AppInterface
     use RequestRedirection;
     use Parser;
 
-    public static $version = '0.1.3';
+    public static $version = '0.1.4';
 
     /** @var App */
-    public static $instance;
+    public static App $instance;
     /** @var AppLogger|null The system logger */
-    public $logger;
+    public ?AppLogger $logger;
 
     /** @var Controller */
-    public $controller;
+    public Controller $controller;
 
     /** @var User|null The web user object */
-    public $user;
+    public ?User $user;
     /** @var SystemLogger|null The system logger */
     private $coreLogger;
 
@@ -105,7 +104,9 @@ class App extends CommonApp implements AppInterface
         $this->logger = new AppLogger;
         $this->coreLogger->info("The app logger has been created");
 
-
+        /**
+         * Load the Config Database
+         */
         $configDSN = "sqlite:" . APPCONFIGDBPATH;
         new ConfigDatabase($configDSN);
 
@@ -124,14 +125,13 @@ class App extends CommonApp implements AppInterface
         define('GAMPATH', CONFIGPATH . DIRECTORY_SEPARATOR . "google");
 
         /**
-         * Set the php errror mode repective of the setting
-         * in the webConfig.
+         * Set the php error mode
          */
         $this->setErrorMode();
     }
 
     /**
-     * Set the php errror mode repective of the setting
+     * Set the php error mode respective of the setting
      * in the webConfig.
      */
 
@@ -197,15 +197,6 @@ class App extends CommonApp implements AppInterface
         try {
             $this->route();
             /**
-             * Is the current user allowed to access this uri?
-             * If not, this function changes the route to 403 error page
-             *
-             * @deprecated
-             *
-             *
-             * $this->checkPermission();
-             */
-            /**
              * This is where the magic happens. The control function calls the class and method
              * determined by the routing.
              */
@@ -223,19 +214,7 @@ class App extends CommonApp implements AppInterface
          * current user and the current page.
          */
         $this->layout();
-        /**
-         * Lets destroy the app logger if the app isn't in debug mode.
-         * We don't want to risk sending any private information.
-         */
-        if ($this->inDebugMode()) {
-            /**
-             * We need to inject the logs into the appOutput so the core can handle it.
-             */
-//            $this->appOutput->addLogger($this->logger)
-//                ->addLogger(LDAPLogger::get())
-//                ->addLogger(WindowsLogger::get())
-//                ->addLogger(UserLogger::get());
-        }
+
 
         return $this->appOutput;
     }
@@ -277,28 +256,26 @@ class App extends CommonApp implements AppInterface
      * Checks if request should be redirected to HTTPS based on app settings
      *
      *
-     * @todo Should use Request Object
      */
     private function handleHttpsRedirect(): void
     {
         $this->logger->info("Protocol: " . $this->request->getProtocol());
-        $this->logger->info("Hostname: " . ($_SERVER["SERVER_NAME"]));
+        $this->logger->info("Hostname: " . ($this->request->getServerName()));
         if ($this->request->getProtocol() === "http" && AppDatabase::getForceHTTPS()) {
-            $this->redirect("https://" . $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"]);
+            $this->redirect("https://" . $this->request->getServerName() . $this->request->getUri());
         }
     }
 
     /**
      * Checks if request should be redirected to a different FQDN based on app settings
      *
-     * @todo Should use Request Object
      */
     private function handleHostnameRedirect(): void
     {
-        $this->logger->info("Hostname: " . ($_SERVER["SERVER_NAME"]));
-        if (strtolower($_SERVER["SERVER_NAME"]) !== strtolower(AppDatabase::getWebsiteFQDN())) {
+        $this->logger->info("Hostname: " . ($this->request->getServerName()));
+        if (strtolower($this->request->getServerName()) !== strtolower(AppDatabase::getWebsiteFQDN())) {
             if (AppDatabase::getWebsiteFQDN() != "") {
-                $this->redirect($this->request->getProtocol() . "://" . strtolower(AppDatabase::getWebsiteFQDN()) . $_SERVER["REQUEST_URI"]);
+                $this->redirect($this->request->getProtocol() . "://" . strtolower(AppDatabase::getWebsiteFQDN()) . $this->request->getUri());
             }
         }
     }
