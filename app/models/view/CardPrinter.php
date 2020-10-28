@@ -611,7 +611,7 @@ abstract class CardPrinter extends ViewModel
                 ->autoCompleteGroupName();
 
             $userToAdd = new FormText('Add user', 'Can also serarch by first or last name.', 'usernameToAdd', $user->getUsername());
-            $userToAdd->autoCompleteDomainUsername()
+            $userToAdd->autoCompleteUsername()
                 ->hidden();
 
             $modal->setTitle("Find Group");
@@ -620,7 +620,7 @@ abstract class CardPrinter extends ViewModel
             $groupName->hidden();
 
             $userToAdd = new FormText('Add user', 'Can also serarch by first or last name.', 'usernameToAdd');
-            $userToAdd->autoCompleteDomainUsername();
+            $userToAdd->autoCompleteUsername();
 
             $modal->setTitle("Find User");
         } else {
