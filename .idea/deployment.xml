@@ -19,8 +19,8 @@
       <paths name="SamDev-WAMP">
         <serverdata>
           <mappings>
-            <mapping deploy="\" local="$PROJECT_DIR$" web="/" />
             <mapping deploy="public" local="$PROJECT_DIR$/public" web="/" />
+            <mapping deploy="\" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
