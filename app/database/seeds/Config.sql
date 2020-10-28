@@ -144,7 +144,7 @@ CREATE TABLE "Email"
 
     "Reply_To_Name"         STRING,
 
-    "Use_SMTP_SSL"          BOOLEAN,
+    "Use_SMTP_Encryption"          INTEGER,
 
     "SMTP_Server"           STRING,
 
@@ -182,7 +182,7 @@ CREATE TABLE "PermissionMap"
 
             on update cascade on delete cascade,
 
-    DN           STRING,
+    OU           STRING,
 
     User_Perm    INTEGER default 0,
 
