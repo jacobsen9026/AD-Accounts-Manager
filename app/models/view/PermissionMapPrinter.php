@@ -174,7 +174,8 @@ abstract class PermissionMapPrinter extends ViewModel
         //var_dump($permissions);
         // echo"<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>";
         //var_dump($permissions);
-        $output = '<h6 class="mx-auto border py-2 rounded-lg bg-white text-muted">' . $ou . '</h6>';
+      
+        $output = '<h4 class="mb-3">District Level Permissions</h4><h6 class="mx-auto border py-2 rounded-lg bg-white text-muted">' . $ou . '</h6>';
         if ($permissions != false) {
             foreach ($permissions as $permission) {
                 $perm = new Permission();
