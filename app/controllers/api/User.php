@@ -43,7 +43,7 @@ class User extends APIController
         //return hash("sha256", random_bytes(256));
         $this->user->generateAPIToken();
         $this->user->save();
-        return ['val' => $this->user->getApiToken()];
+        return $this->returnValue($this->user->getApiToken());
     }
 
 }

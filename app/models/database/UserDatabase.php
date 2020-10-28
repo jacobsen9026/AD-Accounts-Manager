@@ -98,11 +98,9 @@ abstract class UserDatabase extends DatabaseModel
         if (self::getID($username) == false) {
             $query = new Query(self::TABLE_NAME, Query::INSERT);
             $query->insert(self::USERNAME, $username);
-            $query->insert(self::PRIVILEGE, $privilege);
         } else {
             $query = new Query(self::TABLE_NAME, Query::UPDATE);
             $query->set(self::USERNAME, $username);
-            $query->set(self::PRIVILEGE, $privilege);
             $query->where(self::USERNAME, $username);
         }
         return $query->run();

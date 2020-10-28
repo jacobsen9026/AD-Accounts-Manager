@@ -254,6 +254,7 @@ class User extends CoreUser
      */
     public function save(): ?bool
     {
+
         try {
             if (($this->getApiToken() === null) || ($this->getApiToken() === '')) {
                 $this->generateAPIToken();
@@ -266,10 +267,11 @@ class User extends CoreUser
             UserDatabase::setUserTheme($this->username, $this->theme);
             /**
              * Dont save privilege if we're the local admin
-             */
+
             if ($this->username !== CoreUser::ADMINISTRATOR) {
                 UserDatabase::setUserPrivilege($this->username, $this->privilege);
             }
+             */
             return true;
         } catch (Exception $ex) {
             return false;
