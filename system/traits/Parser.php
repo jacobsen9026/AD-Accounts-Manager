@@ -61,9 +61,11 @@ trait Parser
                 if (include($path)) {
                     return ob_get_clean();
                 } else {
+                    ob_clean();
                     $logger->warning("Could not include view file: " . $path);
                 }
             } catch (Exception $ex) {
+                ob_clean();
                 $logger->warning($ex);
             }
 
