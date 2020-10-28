@@ -144,7 +144,6 @@ class CommonLogEntry
         }
         var_dump($object);
         return ob_get_clean();
-        //return htmlspecialchars(print_r($object, true));
     }
 
     private function writeToLogFile()
