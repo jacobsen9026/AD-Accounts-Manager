@@ -29,10 +29,9 @@ use App\Models\District\District;
 /* @var $district District */
 $district = $this->district;
 ?>
-    <h4 class="mb-3">
-        District Level Permissions
-    </h4>
+
 
 <?php
+//;
 echo PermissionMapPrinter::printOUPermissions($district->getAdBaseDN());
 //echo PermissionMapPrinter::printDistrictPermissions($district->getId());
