@@ -33,6 +33,7 @@ namespace App\Controllers;
  */
 
 
+use App\Api\Ad\ADUsers;
 use App\Models\Audit\Action\User\ResetUserPasswordAuditAction;
 use App\Models\Audit\Action\User\SearchUserAuditAction;
 use App\Models\District\DistrictUser;
@@ -40,6 +41,7 @@ use App\Models\User\PermissionHandler;
 use App\Models\User\PermissionLevel;
 use App\Models\View\Modal;
 use App\Models\View\Toast;
+use System\App\AppException;
 use System\App\AppLogger;
 use System\Post;
 use System\App\Picture;
@@ -134,14 +136,29 @@ class Users extends Controller
     private function showAccountStatus($username)
     {
 
-        $this->districtUser = $this->getUser($username);
+        try{
+            $this->districtUser = $this->getUser($username);
+        }catch (AppException $ex){
+            $possibleUsers = ADUsers::listUsers($username);
+            AppLogger::get()->debug($possibleUsers);
+            if($possibleUsers==null || empty($possibleUsers)){
+                throw $ex;
+            }
+            if(is_array($possibleUsers) && count($possibleUsers)==1){
+                $this->districtUser = $this->getUser($possibleUsers[0]);
+            }else {
+                return $this->view('users/list', $possibleUsers);
+            }
+        }
         return $this->view('users/show');
     }
 
-    public function getUser($username)
+    private function getUser($username)
     {
 
         $user = new DistrictUser($username);
+
+
         //$user->activeDirectory;
         //var_dump($user);
         //var_dump($user->activeDirectory->getAttributes());
@@ -154,8 +171,8 @@ class Users extends Controller
     {
         $user = new DistrictUser($username);
         $user->activeDirectory->setClearLockoutTime()->save();
-        $this->logger->debug($adUser);
-        return $adUser;
+        $this->logger->debug($user);
+        return $user;
     }
 
     public function accountStatusChangePost()
