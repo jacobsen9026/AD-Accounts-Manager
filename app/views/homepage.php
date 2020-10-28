@@ -23,7 +23,6 @@ if ($this->user->superAdmin && $updater->isUpdateAvailable()) {
     $toast = new Toast('New version available!', $toastBody, 10000);
     $toast->closable();
     echo $toast->printToast();
-    echo "this will go away";
 }
 
 ?>
