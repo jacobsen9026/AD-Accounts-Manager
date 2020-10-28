@@ -3,6 +3,7 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/adldap2/adldap2" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/desarrolla2/cache" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/directorytree/ldaprecord" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-php80" />
