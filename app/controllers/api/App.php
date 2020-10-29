@@ -31,7 +31,6 @@ namespace App\Controllers\Api;
  *
  *
  * @author cjacobsen
- * @deprecated
  */
 class App extends APIController
 {
@@ -42,6 +41,7 @@ class App extends APIController
     public const GET_NOTIF_SETTINGS = "getNotificationSettings";
     public const GET_UPDATE_SETTINGS = "getUpdateSettings";
     public const GET_CONFIG = "getConfiguration";
+    public const GET_AUDIT = "getAudit";
 
     protected function getApplicationSettings()
     {
@@ -66,6 +66,11 @@ class App extends APIController
     protected function getUpdateSettings()
     {
         return $this->returnHTML($this->view('settings/update'));
+    }
+
+    protected function getAudit()
+    {
+        return $this->returnHTML($this->view('settings/audit'));
     }
 
     private function printConfig()
