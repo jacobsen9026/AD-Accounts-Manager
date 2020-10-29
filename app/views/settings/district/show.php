@@ -84,15 +84,16 @@ if (!$adTestResult) {
     $adTestResultDisplay = '<h1><i class="' . $classes . '"></i></h1>' . $valueDisplay;
     //var_dump($adTestResult);
 
-    $adConnectionCheck->setLabel("ad Connection Test")
+    $adConnectionCheck->setLabel("AD Connection Test")
         ->setHtml($adTestResultDisplay)
         ->setTooltip($adTestResult);
 
 
     $adPermissionTestButton = new FormButton("Perform Check");
-    $adPermissionTestButton->setLabel("ad Permission Test")
+    $adPermissionTestButton->setLabel("AD Permission Test")
         ->setSubLabel($district->getAdBaseDN())
         ->setType("button")
+        ->small()
         ->setId("AD_Permission_Test")
         ->addAJAXRequest('/api/settings/district/testADPermissions', "AD_Permission_Test_Button_container", ["csrfToken" => Form::getCsrfToken()]);
 
@@ -100,7 +101,7 @@ if (!$adTestResult) {
     $action->hidden();
     $permissionsButton = new FormButton("Permissions");
     $permissionsButton->addClientRequest("/settings/district/permissions")
-        ->small();
+        ->medium();
 
     $form->addElementToNewRow($name)
         ->addElementToNewRow($abbr)
