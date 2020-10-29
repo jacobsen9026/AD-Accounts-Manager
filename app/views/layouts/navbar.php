@@ -108,6 +108,8 @@ use App\Models\Database\AppDatabase;
 
                                 <a class="dropdown-item" href="/settings/application">Settings</a>
                                 <a class="dropdown-item" href="/settings/district/edit">Setup</a>
+                                <a class="dropdown-item" href="/settings/audit">Audit</a>
+
 
 
                             </div>
