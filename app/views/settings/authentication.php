@@ -55,14 +55,14 @@ if (!$ldapConnected) {
 }
 
 
-$button = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
-$button->setId('floatingSaveButton')
+$saveButton = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
+$saveButton->setId('floatingSaveButton')
     ->addAJAXRequest('/api/settings/authentication', 'settingsOutput', $form);
 
 
 $form->addElementToNewRow($sessionTimeout)
-    ->addElementToNewRow($adminPassword)
+    ->addElementToCurrentRow($adminPassword)
     ->addElementToNewRow($ldapEnabled)
-    ->addElementToNewRow($button);
+    ->addElementToNewRow($saveButton);
 echo $form->print();
 ?>
