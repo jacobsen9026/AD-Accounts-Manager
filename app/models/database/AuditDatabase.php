@@ -27,6 +27,8 @@ namespace App\Models\Database;
 
 use App\Models\Audit\AuditEntry;
 use App\Models\Database\Query;
+use DateInterval;
+use DateTime;
 
 abstract class AuditDatabase extends DatabaseModel
 {
@@ -47,5 +49,21 @@ abstract class AuditDatabase extends DatabaseModel
         $query->run();
     }
 
+    public static function getLast24Hrs(){
+        $now = new DateTime();
+        $yesterday = new DateTime();
+        $yesterday->sub(new DateInterval('P1D'));
+        return self::getBetween($yesterday->getTimestamp(),$now->getTimestamp());
+        $query = new Query(static::TABLE_NAME);
+        $query->where('Timestamp',$yesterday->getTimestamp(),'>=');
+        return $query->run();
+}
+
+public static function getBetween($from,$to){
+        $query = new Query(static::TABLE_NAME);
+        $query->where('Timestamp',$from,'>=')
+        ->where('Timestamp',$to,'<=');
+        return $query->run();
+}
 
 }
