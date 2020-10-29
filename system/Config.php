@@ -41,7 +41,6 @@ define('DEFAULT_LANG', 'en');
 /*
  * The Class name with namespace to launch
  */
-//define('APPCLASS', "App\Lib\TestApp");
 define('APPCLASS', "App\App\App");
 /*
  * Toggle for core debug mode. Has no effect on app debug, but does allow App output directly.
