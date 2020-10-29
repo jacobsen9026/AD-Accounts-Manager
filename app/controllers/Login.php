@@ -32,6 +32,11 @@ namespace App\Controllers;
  * @author cjacobsen
  */
 
+use App\Models\Audit\Action\AuditAction;
+use App\Models\Audit\Action\System\UserLogonSuccessAuditAction;
+use App\Models\Audit\Action\System\UserLogonAttemptAuditAction;
+use App\Models\Audit\AuditEntry;
+use App\Models\Database\AuditDatabase;
 use System\App\Auth\Local;
 use App\App\App;
 use App\Models\User\User;
@@ -71,6 +76,8 @@ class Login extends Controller
                 $user = Local::authenticate($username, $password);
             } catch (AuthException $ex) {
                 if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
+
+                    $this->audit(new UserLogonAttemptAuditAction($username));
                     return $this->badCredentials();
                 }
                 if (AuthDatabase::getLDAPEnabled()) {
@@ -84,8 +91,12 @@ class Login extends Controller
 
                     } catch (AuthException $ex) {
                         if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
+
+                            $this->audit(new UserLogonAttemptAuditAction($username));
                             return $this->badCredentials();
                         }
+
+                        $this->audit(new UserLogonAttemptAuditAction($username));
                         return $this->badCredentials();
                     }
                 }
@@ -105,10 +116,11 @@ class Login extends Controller
 
             Session::setUser($user);
             Session::updateTimeout();
-
+            $this->audit(new UserLogonSuccessAuditAction($user),$user);
             $logger->debug('Referer: ' . $this->app->request->referer);
             $this->redirect($this->app->request->referer);
         } else {
+
             return $this->view('login/loginPrompt');
         }
     }
@@ -122,6 +134,12 @@ class Login extends Controller
         $data = ['toast' => $toast->printToast()];
 
         return $this->view('login/loginPrompt', $data);
+    }
+
+    protected function audit(AuditAction $action,User $user=null)
+    {
+        $auditEntry = new AuditEntry($this->app->request, $user, $action);
+        AuditDatabase::addAudit($auditEntry);
     }
 
 }

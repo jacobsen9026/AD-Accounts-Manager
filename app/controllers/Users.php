@@ -34,8 +34,12 @@ namespace App\Controllers;
 
 
 use App\Api\Ad\ADUsers;
+use App\Models\Audit\Action\User\DisableUserAuditAction;
+use App\Models\Audit\Action\User\EnableUserAuditAction;
 use App\Models\Audit\Action\User\ResetUserPasswordAuditAction;
 use App\Models\Audit\Action\User\SearchUserAuditAction;
+use App\Models\Audit\Action\User\UnlockUserAuditAction;
+use App\Models\Audit\Action\User\UploadUserPhotoAudtitAction;
 use App\Models\District\DistrictUser;
 use App\Models\User\PermissionHandler;
 use App\Models\User\PermissionLevel;
@@ -110,6 +114,8 @@ class Users extends Controller
                     $user = new DistrictUser($username);
                     $this->logger->debug($rawPicture);
                     $user->activeDirectory->setThumbnail($rawPicture, false)->save();
+
+                    $this->audit(new UploadUserPhotoAudtitAction($username));
                     //imagecreatefromstring($uploadedPicture->getTempFileContents());
                     //$resiezedPhoto = imagescale($picture, '96', '96');
                     //imagejpeg($picture);
@@ -155,26 +161,19 @@ class Users extends Controller
 
     private function getUser($username)
     {
-
         $user = new DistrictUser($username);
-
-
-        //$user->activeDirectory;
-        //var_dump($user);
-        //var_dump($user->activeDirectory->getAttributes());
         return $user;
-
-        //return new DistrictUser($username);
     }
-
+/*
     private function unlockUser($username)
     {
         $user = new DistrictUser($username);
         $user->activeDirectory->setClearLockoutTime()->save();
         $this->logger->debug($user);
+        $this->audit(new UnlockUserAuditAction($username));
         return $user;
     }
-
+/*
     public function accountStatusChangePost()
     {
         if ($action = Post::get("action")) {
@@ -186,6 +185,7 @@ class Users extends Controller
                     return $this->view('staff/show/student');
                     break;
                 case "lock":
+                    //There will be no locking of user accounts
                     break;
 
                 default:
@@ -193,15 +193,18 @@ class Users extends Controller
             }
         }
     }
+*/
 
+    /**
+     * Edit Post
+     * This is the control for editing user account via the user search
+     * @throws \System\CoreException
+     */
     public function editPost()
     {
-//if (Post::csrfValid()) {
         $username = Post::get("username");
         $districtUser = $this->getUser($username);
-        // var_dump($districtUser);
         $action = Post::get("action");
-        //var_dump($action);
 
         if ($action != false) {
             switch ($action) {
@@ -209,6 +212,7 @@ class Users extends Controller
                     if (PermissionHandler::hasPermission($districtUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_UNLOCK)) {
 
                         $districtUser->unlock();
+                        $this->audit(new UnlockUserAuditAction($username));
                         $this->redirect('/users/search/' . $username);
 
                     }
@@ -219,6 +223,8 @@ class Users extends Controller
                     if (PermissionHandler::hasPermission($districtUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_DISABLE)) {
 
                         $districtUser->enable();
+
+                        $this->audit(new EnableUserAuditAction($username));
                         $this->redirect('/users/search/' . $username);
 
                     }
@@ -228,6 +234,8 @@ class Users extends Controller
                     if (PermissionHandler::hasPermission($districtUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_DISABLE)) {
 
                         $districtUser->disable();
+
+                        $this->audit(new DisableUserAuditAction($username));
                         $this->redirect('/users/search/' . $username);
                     }
                     return;

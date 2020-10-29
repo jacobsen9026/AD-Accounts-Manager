@@ -33,6 +33,7 @@ namespace App\Controllers;
  */
 
 use App\Models\Audit\Action\Group\AddMemberAuditAction;
+use App\Models\Audit\Action\Group\DeleteGroupAuditAction;
 use App\Models\Audit\Action\Group\RemoveMemberAuditAction;
 use App\Models\Audit\Action\Group\SearchGroupAuditAction;
 use App\Models\Audit\AuditEntry;
@@ -112,11 +113,10 @@ class Groups extends Controller
     public function search(string $groupName)
     {
         $this->group = new DistrictGroup($groupName);
-        AuditDatabase::addAudit(new AuditEntry($this->app->request, $this->user, new SearchGroupAuditAction($groupName)));
+        $this->audit(new SearchGroupAuditAction($groupName));
         //var_dump($this->group);
-        $return = $this->view('/groups/show');
-        //$return .= $this->view('/groups/create');
-        return $return;
+        return $this->view('/groups/show');
+
     }
 
     /**
@@ -141,10 +141,8 @@ class Groups extends Controller
                 if ($user !== false) {
                     if ($group->activeDirectory->removeMember($user->activeDirectory)) {
 
-                        AuditDatabase::addAudit(new AuditEntry($this->app->request, $this->user, new RemoveMemberAuditAction($groupName, $username)));
-
+                        $this->audit(new RemoveMemberAuditAction($groupName,$username));
                         $this->logger->debug("user was successfully removed");
-                        //return $this->search($group->activeDirectory->getName());
                     } else {
                         throw new AppException('Could not remove member from group');
                     }
@@ -158,10 +156,8 @@ class Groups extends Controller
                 $this->logger->info("adding member " . $username);
                 $user = new DistrictUser($username);
                 if ($group->addUserMember($user->activeDirectory->getDistinguishedName())) {
-                    AuditDatabase::addAudit(new AuditEntry($this->app->request, $this->user, new AddMemberAuditAction($groupName, $username)));
-
+                    $this->audit(new AddMemberAuditAction($groupName,$username));
                     $this->logger->debug("user was successfully removed");
-                    //return $this->search($group->activeDirectory->getName());
                 }
 
                 break;
@@ -184,6 +180,8 @@ class Groups extends Controller
         $groupDN = Post::get("groupDN");
         $ad = AD::get();
         $ad->deleteGroup($groupDN);
+
+        $this->audit(new DeleteGroupAuditAction($groupName));
     }
 
 }
