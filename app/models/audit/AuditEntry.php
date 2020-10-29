@@ -27,7 +27,9 @@ class AuditEntry
      */
     public function __construct(Request $request = null, User $user = null, AuditAction $action = null)
     {
-        $this->username = $user->getUsername();
+        if($user!=null){
+            $this->username = $user->getUsername();
+        }
         $this->ip = $request->getIp();
         $this->setTimestamp();
         $this->setAction($action);
