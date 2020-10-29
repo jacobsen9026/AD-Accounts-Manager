@@ -31,7 +31,18 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
-class FormDate extends FormElement
+class FormDate extends FormElement implements FormElementInterface
 {
-    //put your code here
+
+
+    public function getElementHTML()
+    {
+        $html = '<div class="col px-0 "><div class="ui-widget">'
+            . '<div class="pr-0 w-100 row mx-0">'
+            . '<div class="d-inline-block col mx-auto px-0">'
+            . '<input type="datetime-local" class="' . $this->getinputClasses() . '" name="' . $this->getName() . '" id="' . $this->getId() . '" value="' . $this->getValue(). '">'
+            . '</div></div>';
+        $html .= '</div></div>';
+        return $html;
+    }
 }
