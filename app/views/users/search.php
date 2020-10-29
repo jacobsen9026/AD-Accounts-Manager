@@ -11,8 +11,9 @@ use System\App\Forms\FormText;
 $form = new Form("/users/search", "UserSearch");
 $button = new FormButton("Search");
 $button->small();
-$textBox = new FormText("Username", "Can also enter first or last name to search for username.", "usernameInput");
-$textBox->autoCompleteUsername()
+$userSearchBox = new FormText("Username", "Can also enter first or last name to search for username.", "usernameInput");
+$userSearchBox->autoCompleteUsername()
+    ->autofocus()
     ->setId("usernameInput")
     ->medium();
 
@@ -22,12 +23,12 @@ $appendImg->setHtml('<i class="fas fa-search"></i>')
 
 $inputGroup = new \System\App\Forms\FormElementGroup("Username", "Can also enter first or last name to search for username.");
 $inputGroup->addElementToGroup($appendImg)
-    ->addElementToGroup($textBox)
+    ->addElementToGroup($userSearchBox)
     ->medium();
 
 $form->addElementToNewRow($inputGroup)
     ->addElementToNewRow($button)
-    ->setActionVariable($textBox);
+    ->setActionVariable($userSearchBox);
 echo $form->print();
 
 

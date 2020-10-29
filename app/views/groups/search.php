@@ -17,7 +17,6 @@ $createModal->setBody($this->view('/groups/create'))
     ->setId('createGroup')
     ->setTitle("Create New Group");
 $createButton->addModal($createModal);
-//echo $createButton->getElementHTML();
 ?>
 
     <div class="col mb-2">
@@ -35,8 +34,9 @@ $createButton->addModal($createModal);
 $form = new Form("/groups/search", "GroupSearch");
 $button = new FormButton("Search");
 $button->small();
-$textBox = new FormText("Group", "Can search by name, email, or description", "group");
-$textBox->autoCompleteGroupName()
+$groupSearchBox = new FormText("Group", "Can search by name, email, or description", "group");
+$groupSearchBox->autoCompleteGroupName()
+    ->autofocus()
     ->setId("group")
 // ->appendIcon('<i class="fas fa-search"></i>')
     ->medium();
@@ -46,12 +46,12 @@ $appendImg->setHtml('<i class="fas fa-search"></i>')
 
 $inputGroup = new \System\App\Forms\FormElementGroup("Group", "Can search by name, email, or description");
 $inputGroup->addElementToGroup($appendImg)
-    ->addElementToGroup($textBox)
+    ->addElementToGroup($groupSearchBox)
     ->medium();
 $form
     ->addElementToNewRow($inputGroup)
     ->addElementToNewRow($button)
-    ->setActionVariable($textBox);
+    ->setActionVariable($groupSearchBox);
 echo $form->print();
 
 
