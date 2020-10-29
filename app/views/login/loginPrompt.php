@@ -18,6 +18,7 @@ if (\System\Request::get()->serverName == 'demo.adam-app.gq') {
 }
 $form = new Form();
 $username = new FormText(Lang::get("Username"), '', 'username');
+$username->autofocus();
 $password = new FormText(Lang::get("Password"), '', 'password');
 $password->isPassword();
 $loginButton = new FormButton(Lang::get("Login"));
