@@ -36,11 +36,18 @@ class FormText extends FormElement implements FormElementInterface
 
     //put your code here
     private $autocomplete = false;
-    private $appendIcon;
     private $type = "text";
     private $placeholder = '';
     private $value;
     private $disabled = false;
+    /**
+     * @var bool|mixed
+     */
+    private $autofocus = false;
+
+    public function getAutoFocus(){
+        return $this->autofocus;
+    }
 
     /**
      * Autocomplete for users who fall into either
@@ -67,6 +74,11 @@ class FormText extends FormElement implements FormElementInterface
         $this->autocomplete = true;
         $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteOU/', $this->getId());
         $this->setScript($script);
+        return $this;
+    }
+
+    public function autofocus($value = true){
+        $this->autofocus = $value;
         return $this;
     }
 
@@ -122,11 +134,16 @@ class FormText extends FormElement implements FormElementInterface
         if ($this->disabled) {
             $disable = 'disabled';
         }
+        $autofocus="";
+
+        if($this->autofocus){
+            $autofocus="autofocus";
+        }
 
         $html .= '<div class="col px-0 "><div class="ui-widget">'
             . '<div class="pr-0 w-100 row mx-0">'
             . '<div class="d-inline-block col mx-auto px-0">'
-            . '<input type="' . $this->type . '" class="' . $this->getinputClasses() . '" name="' . $this->getName() . '" id="' . $this->getId() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" ' . $disable . '>'
+            . '<input type="' . $this->type . '" class="' . $this->getinputClasses() . '" name="' . $this->getName() . '" id="' . $this->getId() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" ' . $disable . ' ' .$autofocus.'>'
             . '</div></div>';
         $html .= '</div></div>';
         return $html;
