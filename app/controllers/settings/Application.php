@@ -57,7 +57,7 @@ class Application extends Controller
 
     public function indexGet()
     {
-        $this->index();
+        return $this->index();
     }
 
     public function indexPost()
