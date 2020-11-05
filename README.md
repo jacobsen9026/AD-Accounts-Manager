@@ -12,7 +12,7 @@ Do you manage an Active Directory environment?
 
 Do you want easier delegation of basic account functions?
 
-Do you want to easily reset a users password from your phone?
+Do you want to easily reset a user's password from your phone?
 
 Setting up ACL's in active directory is
 complicated, and at the end of the day, you're still stuck with a desktop interface.
@@ -34,7 +34,7 @@ with an internet connection and a browser.
 * Create/Delete Groups
 * Mobile Friendly
 * Email Notifications (Coming Soon)
-* Usage Auditing (Coming Soon)
+* Usage Auditing
 * Easy-To-Use Robust Permission System
 * Self-Update
 
