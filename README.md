@@ -43,6 +43,13 @@ with an internet connection and a browser.
 <img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/master/.github/images/3.png?raw=true" width=800/>
 <img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/master/.github/images/4.png?raw=true" width=800/>
 <img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/master/.github/images/5.png?raw=true" width=800/>
+<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/master/.github/images/6.png?raw=true" width=800/>
+<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/master/.github/images/7.png?raw=true" width=800/>
+<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/master/.github/images/8.png?raw=true" width=800/>
+<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/master/.github/images/9.png?raw=true" width=800/>
+<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/master/.github/images/10.png?raw=true" width=800/>
+<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/master/.github/images/11.png?raw=true" width=800/>
+<img src="https://github.com/jacobsen9026/School-Accounts-Manager/blob/master/.github/images/12.png?raw=true" width=800/>
 
 
 
