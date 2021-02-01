@@ -34,7 +34,6 @@ namespace App\Auth;
 
 use App\Api\Ad\ADConnection;
 use App\Api\Ad\ADUsers;
-use App\Models\Database\AuthDatabase;
 use App\Models\Database\DistrictDatabase;
 use App\Models\User\PrivilegeLevel;
 use App\Models\User\User;
@@ -74,82 +73,18 @@ class ADAuth
     }
 
 
+    /**
+     * Authenticates the user against AD and
+     * returns a complete privileged user.
+     *
+     * @param $username
+     * @param $password
+     * @return User|false
+     * @throws \System\App\AppException
+     */
     public function authenticate($username, $password)
     {
-
-        $passed = false;
         $username = strtolower($username);
-        $logger = AppLogger::get();
-        $server = DistrictDatabase::getAD_FQDN();
-        $domain = DistrictDatabase::getAD_FQDN();
-
-// Prepare connection username by appending domain name if not already provided
-        if (!is_null($domain) and !strpos($username, $domain)) {
-            $ldapUser = $username . "@" . $domain;
-        }
-// Connect to LDAP server
-        $this->connection = AD::connect($server, $ldapUser, $password);
-
-
-        if (is_resource($this->connection)) {
-            $superAdmin = false;
-            $userLevels = [];
-            $adAPI = AD::get();
-            $allPrivilegeLevels = PrivilegeLevelDatabase::get();
-            foreach ($allPrivilegeLevels as $privilegeLevel) {
-                $logger->info($privilegeLevel->getAdGroup());
-                if ($adAPI->isUserInGroup($username, $privilegeLevel->getAdGroup())) {
-                    if ($privilegeLevel->getSuperAdmin()) {
-                        $superAdmin = true;
-                    }
-                    $userLevels[] = $privilegeLevel;
-                    $passed = true;
-                }
-            }
-            $logger->info($userLevels);
-            $logger->info($adAPI->isUserInGroup($username, 'SAM Tech'));
-//return false;
-
-
-// If bind was successful, user was found in LDAP continue processing
-
-            $logger->info("LDAP bind successful to " . $server . " using credentials: " . $ldapUser);
-
-
-            if ($passed) {
-
-                //var_dump("here");
-                $adUser = $adAPI->getDomainUser($username);
-                // var_dump($adUser);
-                $logger->info($username . " successfully logged in");
-
-                if (!$fullName = $adUser['displayname'][0]) {
-                    $fullName = $username;
-                }
-                $user = new User();
-                $user->authenticated()
-                    ->setFullName($fullName)
-                    ->setUsername($username)
-                    ->setPrivilegeLevels($userLevels)
-                    ->setSuperUser($superAdmin);
-                $logger->info($user);
-                return $user;
-
-            } else {
-                throw new AuthException(AuthException::NOT_AUTHORIZED);
-            }
-
-        } else {
-            throw new AuthException(AuthException::NOT_AUTHORIZED);
-        }
-    }
-
-
-    public function authenticate2($username, $password)
-    {
-        $passed = false;
-        $username = strtolower($username);
-        $logger = AppLogger::get();
         $domain = DistrictDatabase::getAD_FQDN();
 
 // Prepare connection username by appending domain name if not already provided
@@ -177,13 +112,13 @@ class ADAuth
 
     /**
      *
-     * @param type $connection
-     * @param type $baseDN
-     * @param type $groupName
+     * @param resource $connection
+     * @param string $baseDN
+     * @param string $groupName
      *
      * @return string
      */
-    public static function getGroupDN($connection, $baseDN, $groupName)
+    public static function getGroupDN($connection, string $baseDN, string $groupName)
     {
         $filter = "(&(objectClass=group)(cn=" . $groupName . "))";
         $result = ldap_search($connection, $baseDN, $filter);
@@ -209,9 +144,9 @@ class ADAuth
      * @return User
      * @throws \System\App\AppException
      */
-    private function loadWebUser(User $webUser)
+    private function loadWebUser(User $webUser): User
     {
-        $adUser = ADUsers::getApplicationScopeUser($webUser->getUsername());
+        //$adUser = ADUsers::getApplicationScopeUser($webUser->getUsername());
         $allPrivilegeLevels = PrivilegeLevelDatabase::get();
         /* @var $privilegeLevel PrivilegeLevel */
         foreach ($allPrivilegeLevels as $privilegeLevel) {
@@ -220,6 +155,7 @@ class ADAuth
                 $webUser->addPrivilegeLevel($privilegeLevel);
                 if ($privilegeLevel->getSuperAdmin()) {
                     $webUser->setSuperUser(true);
+                    return $webUser;
                 }
             }
         }
