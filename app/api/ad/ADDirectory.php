@@ -4,7 +4,7 @@
 namespace App\Api\Ad;
 
 
-use App\Models\Database\DistrictDatabase;
+use App\Models\Database\DomainDatabase;
 
 class ADDirectory extends ADApi
 {
@@ -21,9 +21,23 @@ class ADDirectory extends ADApi
         return false;
     }
 
+    public function ouExists($dn)
+    {
+        //$this->logger->debug("Testing if " . $dn . " exists");
+//$test = $this->query('(distinguishedName="' . $dn . '")');
+        $test = $this->read('(&(objectClass=organizationalUnit))', $dn);
+//var_dump($test);
+        if ($test == "false" or $test["count"] == 0) {
+            $this->logger->warning($dn . " is an invalid OU");
+            return false;
+        }
+        $this->logger->debug($dn . " is a valid OU");
+        return true;
+    }
+
     public function getAllSubOUs($dn, $array = null)
     {
-        if ($this->ouExists($dn) or $dn == DistrictDatabase::getAD_BaseDN(1)) {
+        if ($this->ouExists($dn) or $dn == DomainDatabase::getAD_BaseDN(1)) {
             $filter = '(objectClass=organizationalUnit)';
             $result = $this->list($filter, $dn);
             foreach ($result as $resultEntry) {
@@ -51,21 +65,6 @@ class ADDirectory extends ADApi
             }
         }
         return false;
-    }
-
-
-    public function ouExists($dn)
-    {
-        //$this->logger->debug("Testing if " . $dn . " exists");
-//$test = $this->query('(distinguishedName="' . $dn . '")');
-        $test = $this->read('(&(objectClass=organizationalUnit))', $dn);
-//var_dump($test);
-        if ($test == "false" or $test["count"] == 0) {
-            $this->logger->warning($dn . " is an invalid OU");
-            return false;
-        }
-        $this->logger->debug($dn . " is a valid OU");
-        return true;
     }
 
 }
