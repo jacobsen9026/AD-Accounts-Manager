@@ -33,31 +33,28 @@ namespace App\Controllers\Settings;
  */
 
 use App\Controllers\Controller;
+use System\App\AppException;
 use System\App\AppLogger;
 use App\Models\Database\AppDatabase;
 use App\Models\Database\AuthDatabase;
 use App\Models\Database\EmailDatabase;
 
-class Application extends Controller
+class Application extends SettingsController
 {
 
 
-    function __construct($app)
+    //put your code here
+
+    public function indexGet()
     {
-        parent::__construct($app);
+        return $this->index();
     }
 
-    //put your code here
     public function index()
     {
 
 
         return $this->view('settings/index');
-    }
-
-    public function indexGet()
-    {
-        return $this->index();
     }
 
     public function indexPost()
