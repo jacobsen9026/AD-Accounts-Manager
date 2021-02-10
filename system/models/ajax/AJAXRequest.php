@@ -32,8 +32,8 @@ namespace System\Models\Ajax;
  * @author cjacobsen
  */
 
-use System\App\Forms\FormElement;
 use System\App\Forms\Form;
+use System\App\Forms\FormElement;
 use App\Models\View\Javascript;
 
 class AJAXRequest
@@ -68,62 +68,6 @@ class AJAXRequest
             ->setData($data);
     }
 
-    public function getTargetURL()
-    {
-        return $this->targetURL;
-    }
-
-    public function getOutputID()
-    {
-        return $this->outputID;
-    }
-
-    public function getOutputField()
-    {
-        return $this->outputElement;
-    }
-
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    public function getLoadingHTML()
-    {
-        return $this->loadingHTML;
-    }
-
-    public function setTargetURL($targetURL)
-    {
-        $this->targetURL = $targetURL;
-        return $this;
-    }
-
-    public function setOutputID($outputID)
-    {
-        $this->outputID = $this->preprocessOutputID($outputID);
-        return $this;
-    }
-
-    public function setOutputElement($outputElement)
-    {
-        $this->outputElement = $outputElement;
-        return $this;
-    }
-
-    public function setData($data)
-    {
-        //var_dump($data);
-        $this->data = $this->preprocessData($data);
-        return $this;
-    }
-
-    public function setLoadingHTML(string $loadingHTML)
-    {
-        $this->loadingHTML = $loadingHTML;
-        return $this;
-    }
-
     private function preprocessData($data)
     {
         if (!is_string($data)) {
@@ -138,6 +82,28 @@ class AJAXRequest
         return $data;
     }
 
+    public function getTargetURL()
+    {
+        return $this->targetURL;
+    }
+
+    public function setTargetURL($targetURL)
+    {
+        $this->targetURL = $targetURL;
+        return $this;
+    }
+
+    public function getOutputID()
+    {
+        return $this->outputID;
+    }
+
+    public function setOutputID($outputID)
+    {
+        $this->outputID = $this->preprocessOutputID($outputID);
+        return $this;
+    }
+
     private function preprocessOutputID($outputID)
     {
         if ($outputID instanceof FormElement) {
@@ -145,6 +111,29 @@ class AJAXRequest
         }
 
         return $outputID;
+    }
+
+    public function getOutputField()
+    {
+        return $this->outputElement;
+    }
+
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    public function setData($data)
+    {
+        //var_dump($data);
+        $this->data = $this->preprocessData($data);
+        return $this;
+    }
+
+    public function setOutputElement($outputElement)
+    {
+        $this->outputElement = $outputElement;
+        return $this;
     }
 
     /**
@@ -156,6 +145,17 @@ class AJAXRequest
     {
         $ajax = Javascript::buildAJAXRequest($this->targetURL, $this->outputID, $this->data, $this->getLoadingHTML(), $this->outputElement);
         return $ajax;
+    }
+
+    public function getLoadingHTML()
+    {
+        return $this->loadingHTML;
+    }
+
+    public function setLoadingHTML(string $loadingHTML)
+    {
+        $this->loadingHTML = $loadingHTML;
+        return $this;
     }
 
 }
