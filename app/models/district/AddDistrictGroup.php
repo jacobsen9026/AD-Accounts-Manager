@@ -5,7 +5,7 @@ namespace App\Models\District;
 
 
 use App\Api\Ad\ADGroups;
-use App\Models\District\DistrictGroup;
+use App\Models\District\DirectoryGroup;
 
 class AddDistrictGroup
 {
