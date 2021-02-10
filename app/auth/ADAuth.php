@@ -34,7 +34,7 @@ namespace App\Auth;
 
 use App\Api\Ad\ADConnection;
 use App\Api\Ad\ADUsers;
-use App\Models\Database\DistrictDatabase;
+use App\Models\Database\DomainDatabase;
 use App\Models\User\PrivilegeLevel;
 use App\Models\User\User;
 use System\App\Auth\AuthException;
@@ -72,44 +72,6 @@ class ADAuth
         $this->logger = LDAPLogger::get();
     }
 
-
-    /**
-     * Authenticates the user against AD and
-     * returns a complete privileged user.
-     *
-     * @param $username
-     * @param $password
-     * @return User|false
-     * @throws \System\App\AppException
-     */
-    public function authenticate($username, $password)
-    {
-        $username = strtolower($username);
-        $domain = DistrictDatabase::getAD_FQDN();
-
-// Prepare connection username by appending domain name if not already provided
-        $ldapUser = $username;
-        if (!is_null($domain) and !strpos($username, $domain)) {
-            $ldapUser = $username . "@" . $domain;
-        }
-// Connect to LDAP server
-        $this->connection = ADConnection::get();
-        if ($this->connection->verifyCredentials($ldapUser, $password)) {
-            $user = new User($username);
-            $webUser = $this->loadWebUser($user);
-
-            if ($webUser->getPrivilegeLevels() !== null or $webUser->superAdmin) {
-                $this->logger->info("User authentication passed");
-
-                return $webUser;
-            }
-        }
-        $this->logger->info("User authentication failed");
-
-        return false;
-
-    }
-
     /**
      *
      * @param resource $connection
@@ -133,6 +95,43 @@ class ADAuth
                 }
             }
         }
+    }
+
+    /**
+     * Authenticates the user against AD and
+     * returns a complete privileged user.
+     *
+     * @param $username
+     * @param $password
+     * @return User|false
+     * @throws \System\App\AppException
+     */
+    public function authenticate($username, $password)
+    {
+        $username = strtolower($username);
+        $domain = DomainDatabase::getAD_FQDN();
+
+// Prepare connection username by appending domain name if not already provided
+        $ldapUser = $username;
+        if (!is_null($domain) and !strpos($username, $domain)) {
+            $ldapUser = $username . "@" . $domain;
+        }
+// Connect to LDAP server
+        $this->connection = ADConnection::get();
+        if ($this->connection->verifyCredentials($ldapUser, $password)) {
+            $user = new User($username);
+            $webUser = $this->loadWebUser($user);
+
+            if ($webUser->getPrivilegeLevels() !== null or $webUser->superAdmin) {
+                $this->logger->info("User authentication passed");
+
+                return $webUser;
+            }
+        }
+        $this->logger->info("User authentication failed");
+
+        return false;
+
     }
 
     /**
