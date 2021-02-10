@@ -55,6 +55,7 @@ namespace App\Controllers\Api\settings;
  */
 
 use App\Controllers\Api\APIController;
+use System\App\AppException;
 
 class Application extends APIController
 {
@@ -63,6 +64,9 @@ class Application extends APIController
 
     public function indexPost()
     {
+        if (!$this->user->superAdmin) {
+            throw new AppException('You\'ve entered a forbidden area.', AppException::UNAUTHORIZED_ACCESS);
+        }
         $application = new \App\Controllers\Settings\Application($this->app);
         $application->indexPost();
         return $this->returnHTML($this->view('settings/application') . $this->settingsSavedToast());

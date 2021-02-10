@@ -34,6 +34,7 @@ namespace App\Controllers\Api\settings;
 
 use App\Controllers\Api\APIController;
 use App\Models\View\Toast;
+use System\App\AppException;
 
 class Authentication extends APIController
 {
@@ -42,6 +43,9 @@ class Authentication extends APIController
 
     public function indexPost()
     {
+        if (!$this->user->superAdmin) {
+            throw new AppException('You\'ve entered a forbidden area.', AppException::UNAUTHORIZED_ACCESS);
+        }
         $authentication = new \App\Controllers\Settings\Authentication($this->app);
         $authentication->indexPost();
 
