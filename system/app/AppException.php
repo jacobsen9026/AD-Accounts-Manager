@@ -49,7 +49,10 @@ class AppException extends \Exception
     const FAIL_GROUP_DELETE_PERM = '414';
     const USER_NOT_FOUND = '701';
     const GROUP_NOT_FOUND = '702';
-    const GROUP_ADD_EXISTS = '703';
+    const OBJECT_NOT_FOUND = '703';
+    const GROUP_ADD_EXISTS = '704';
+    const CONTROLLER_NOT_FOUND = '301';
+    const UNAUTHORIZED_ACCESS = '304';
 
 }
 
