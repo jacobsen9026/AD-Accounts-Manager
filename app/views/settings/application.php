@@ -28,7 +28,7 @@ use App\Models\Database\AppDatabase;
 use System\App\Forms\Form;
 use System\App\Forms\FormFloatingButton;
 use System\App\Forms\FormSlider;
-use System\App\Forms\FormText;
+use App\Forms\FormText;
 
 $form = new Form('/settings/application', 'application');
 
