@@ -15,7 +15,7 @@ use Adldap\Adldap\Auth\UsernameRequiredException;
 use Adldap\AdldapException;
 use Adldap\Connections\Provider;
 use Adldap\Connections\ProviderInterface;
-use App\Models\Database\DistrictDatabase;
+use App\Models\Database\DomainDatabase;
 use Adldap\Adldap;
 use Error;
 use Exception;
@@ -51,16 +51,16 @@ class ADConnection extends Adldap
         self::setLogger($this->ldapLogger);
         parent::__construct();
         if (empty($configuration)) {
-            $fqdn = DistrictDatabase::getAD_FQDN(1);
+            $fqdn = DomainDatabase::getAD_FQDN(1);
             $configuration = [
                 'hosts' => [$fqdn],
-                'base_dn' => DistrictDatabase::getAD_BaseDN(1),
-                'username' => DistrictDatabase::getADUsername(1),
-                'password' => DistrictDatabase::getADPassword(1),
+                'base_dn' => DomainDatabase::getAD_BaseDN(1),
+                'username' => DomainDatabase::getADUsername(1),
+                'password' => DomainDatabase::getADPassword(1),
                 'port' => 389
             ];
             self::$logger->debug($configuration);
-            if (DistrictDatabase::getAD_UseTLS()) {
+            if (DomainDatabase::getAD_UseTLS()) {
                 $this->ldapLogger->info('Connecting to ' . $fqdn . ' with TLS enabled');
                 $configuration['use_tls'] = true;
             }
