@@ -66,6 +66,7 @@ class Layout extends CommonLayout
                 $title .= ' - ' . ucfirst($app->route->getMethod());
             }
         }
+        return $title;
     }
 
     public function apply()
