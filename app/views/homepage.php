@@ -2,6 +2,7 @@
 
 use App\App\AppUpdater;
 use App\Models\View\Toast;
+use System\Lang;
 use System\Updater;
 
 ?>
@@ -20,7 +21,7 @@ if ($this->user->superAdmin && $updater->isUpdateAvailable()) {
     $toastBody = 'Version: ' . $updater->getLatestUpdateFromURL()->version . '<div><a href="/settings/update">Update
  here</a></div>';
 
-    $toast = new Toast('New version available!', $toastBody, 10000);
+    $toast = new Toast(Lang::get('New Version Available!'), $toastBody, 10000);
     $toast->closable();
     echo $toast->printToast();
 }
