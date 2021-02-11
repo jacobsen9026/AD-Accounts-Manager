@@ -26,6 +26,8 @@
 
 namespace App\Models\View;
 
+use System\App\Forms\Form;
+
 /**
  * Description of Javascript
  * A tool for building JQuery functions
@@ -33,7 +35,6 @@ namespace App\Models\View;
  * @author cjacobsen
  */
 
-use System\App\Forms\Form;
 
 abstract class Javascript extends ViewModel
 {
