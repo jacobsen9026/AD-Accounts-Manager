@@ -1,19 +1,21 @@
 <?php
 
+use App\Forms\FormText;
 use System\App\Forms\Form;
 use System\App\Forms\FormButton;
-use System\App\Forms\FormText;
+
+use System\Lang;
 
 $form = new Form("/groups/create", "GroupCreate");
-$button = new FormButton("Create");
+$button = new FormButton(Lang::get("Create"));
 $button->small();
-$name = new FormText('Group Name', '', 'name');
+$name = new FormText(Lang::get('Group Name'), '', 'name');
 $name->medium();
-$description = new FormText('Description', '', 'description');
+$description = new FormText(Lang::get('Description'), '', 'description');
 $description->medium();
-$email = new FormText('Email Address', '', 'email');
+$email = new FormText(Lang::get('Email Address'), '', 'email');
 $email->medium();
-$ouInput = new FormText("OU", "Can search by name, email, or description", "ou");
+$ouInput = new FormText(Lang::get('OU'), "", "ou");
 $ouInput->autoCompleteOU()
     ->setId("ou")
     // ->appendIcon('<i class="fas fa-search"></i>')
