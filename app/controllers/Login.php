@@ -29,6 +29,8 @@ namespace App\Controllers;
 /**
  * Description of Login
  *
+ * Handles the login process and view of the login page
+ *
  * @author cjacobsen
  */
 
@@ -65,27 +67,51 @@ class Login extends Controller
     public function index()
     {
         $logger = AppLogger::get();
+
+        /**
+         * Check if this is a POST request and has a username and password if so carry on and attempt a login
+         * Otherwise the login prompt will be drawn
+         */
         if (isset($_POST) && isset($_POST['username']) && isset($_POST['password'])) {
             $logger->debug('logining in');
             $username = $_POST['username'];
             $password = $_POST['password'];
             try {
 
+                /**
+                 * Attempt to authenticate local users (admin)
+                 */
                 $logger->debug('trying local auth');
                 /* @var $user User */
                 $user = Local::authenticate($username, $password);
             } catch (AuthException $ex) {
+
+
+                /**
+                 * Local auth failed
+                 */
                 if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
 
+
+                    /**
+                     * Admin password was incorrect
+                     */
                     $this->audit(new UserLogonAttemptAuditAction($username));
                     return $this->badCredentials();
                 }
+
+
+                /**
+                 * Wasn't an attempt with local admin
+                 */
                 if (AuthDatabase::getLDAPEnabled()) {
                     try {
-
+                        /**
+                         * Attempt to login with LDAP
+                         */
                         $logger->debug('trying LDAP auth');
                         $adAuth = new ADAuth();
-                        $user = $adAuth->authenticate2($username, $password);
+                        $user = $adAuth->authenticate($username, $password);
                         //var_dump($user);
 
 
@@ -102,10 +128,21 @@ class Login extends Controller
                 }
 
             }
+
+
+            /**
+             * Check if the user is set otherwise something went wrong and just
+             * return bad credentials
+             */
             if (!isset($user) or $user === null or $user === false) {
 
                 return $this->badCredentials();
             }
+
+
+            /**
+             * Wrap up login
+             */
 
             $logger->debug('Completed login');
             /** @var App|null The system logger */
@@ -125,6 +162,10 @@ class Login extends Controller
         }
     }
 
+    /**
+     * Show a toast to the user indicating the credentials are bad
+     * @return bool
+     */
     private function badCredentials()
     {
         $toast = new Toast('Bad Credentials', 'The username or password that you entered did not match', 3500);
@@ -136,6 +177,11 @@ class Login extends Controller
         return $this->view('login/loginPrompt', $data);
     }
 
+    /**
+     * Overridden audit to provide a possible null user for login purposes
+     * @param AuditAction $action
+     * @param User|null $user
+     */
     protected function audit(AuditAction $action,User $user=null)
     {
         $auditEntry = new AuditEntry($this->app->request, $user, $action);
