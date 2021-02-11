@@ -34,7 +34,7 @@ namespace App\Models\View;
 
 use App\Api\AD;
 use App\Models\Database\DomainDatabase;
-use App\Models\District\DirectoryGroup;
+use App\Models\District\DomainGroup;
 use App\Models\District\DomainUser;
 use App\Models\User\User;
 use App\App\App;
@@ -65,7 +65,7 @@ abstract class CardPrinter extends ViewModel
 
     /**
      *
-     * @param DomainUser|DirectoryGroup $object
+     * @param DomainUser|DomainGroup $object
      * @param User $webUser
      *
      * @return string
@@ -77,7 +77,7 @@ abstract class CardPrinter extends ViewModel
         switch ($class) {
             case DomainUser::class:
                 return self::buildUserCard($object);
-            case DirectoryGroup::class:
+            case DomainGroup::class:
                 return self::buildGroupCard($object);
 
             default:
@@ -194,7 +194,7 @@ abstract class CardPrinter extends ViewModel
             $groups .= '<div class="row">
  <a href = "/groups/search/' . $groupName . '" class="col-10"> ' . $groupName . '</a ><br >
   <div class="col-2">'
-                . self::buildRemoveFromGroupButton($user, new DirectoryGroup($group))
+                . self::buildRemoveFromGroupButton($user, new DomainGroup($group))
                 . '</div> '
                 . '</div> ';
             //var_dump($group);
@@ -634,13 +634,13 @@ abstract class CardPrinter extends ViewModel
 
     /**
      *
-     * @param DomainUser|DirectoryGroup $objectToRemove
-     * @param DirectoryGroup $group
+     * @param DomainUser|DomainGroup $objectToRemove
+     * @param DomainGroup $group
      *
      * @return string
      */
     protected
-    static function buildRemoveFromGroupButton($objectToRemove, DirectoryGroup $group)
+    static function buildRemoveFromGroupButton($objectToRemove, DomainGroup $group)
     {
 
         $form = new Form("/groups/edit", "remove_member", "post");
@@ -651,7 +651,7 @@ abstract class CardPrinter extends ViewModel
             ->setName("distinguishedName");
         if ($objectToRemove instanceof DomainUser) {
             $objectToRemoveInput->setValue($objectToRemove->getDistinguishedName());
-        } else if ($objectToRemove instanceof DirectoryGroup) {
+        } else if ($objectToRemove instanceof DomainGroup) {
             $objectToRemoveInput->setValue($objectToRemove->getDistinguishedName());
         }
         $groupInput = new FormText("group");
@@ -680,12 +680,12 @@ abstract class CardPrinter extends ViewModel
 
     /**
      *
-     * @param DirectoryGroup $group
+     * @param DomainGroup $group
      *
      * @return string
      */
     private
-    static function printAddGroupMemberModalButton(DirectoryGroup $group = null, DomainUser $user = null)
+    static function printAddGroupMemberModalButton(DomainGroup $group = null, DomainUser $user = null)
     {
         $modalForm = new Form('/groups/edit', 'addMemberToGroup');
 
@@ -737,14 +737,14 @@ abstract class CardPrinter extends ViewModel
 
     /**
      *
-     * @param DirectoryGroup $group
+     * @param DomainGroup $group
      * @param User $webUser
      *
      * @return string
      * @throws AppException
      */
     private
-    static function buildGroupCard(DirectoryGroup $group)
+    static function buildGroupCard(DomainGroup $group)
     {
 
 
@@ -779,7 +779,7 @@ abstract class CardPrinter extends ViewModel
     }
 
     private
-    static function printGroupParents(DirectoryGroup $group)
+    static function printGroupParents(DomainGroup $group)
     {
         $parents = $group->getParents();
         if (!empty($parents)) {
@@ -801,7 +801,7 @@ abstract class CardPrinter extends ViewModel
     }
 
     private
-    static function printDeleteGroupButton(DirectoryGroup $group)
+    static function printDeleteGroupButton(DomainGroup $group)
     {
         $groupName = $group->activeDirectory->getName();
         $deleteButton = new FormButton('<i class="h4 mb-0 fas fa-times"></i>');
@@ -842,12 +842,12 @@ abstract class CardPrinter extends ViewModel
     /**
      *
      * @param string $label
-     * @param DirectoryGroup $group
+     * @param DomainGroup $group
      *
      * @return string
      */
     private
-    static function printGroupMembers(string $label, DirectoryGroup $group)
+    static function printGroupMembers(string $label, DomainGroup $group)
     {
         if ($label !== null) {
             $groupMembers = $group->getMembers();
@@ -859,7 +859,7 @@ abstract class CardPrinter extends ViewModel
             if (is_array($groupChildren) && !empty($groupChildren)) {
                 $output .= '<div class="row"><div class="col h6">' . Lang::get("Groups") . '</div></div>';
                 $output .= '<div class="row"><div class="col h6">' . Lang::get("Groups") . '</div></div>';
-                /** @var DirectoryGroup $child */
+                /** @var DomainGroup $child */
                 foreach ($groupChildren as $child) {
                     $output .= '<div class="row">'
                         . '<div class="col"><a href="/groups/search/' . $child->activeDirectory->getAccountName() . '">' . $child->activeDirectory->getName() . '</a></div>'
