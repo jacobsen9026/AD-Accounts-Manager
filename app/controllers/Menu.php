@@ -38,6 +38,7 @@ use System\App\AppLogger;
 use App\Models\User\User;
 use App\App\App;
 use App\Models\User\PermissionHandler;
+use System\Lang;
 use System\Request;
 
 class Menu extends Controller
@@ -51,7 +52,7 @@ class Menu extends Controller
     public $layout;
     public $config;
 
-    /** @var User|null The view parser */
+    /** @var User|null The web user */
     public $user;
 
     /** @var AppLogger|null The app logger */
@@ -61,7 +62,6 @@ class Menu extends Controller
     {
 
         $this->user = $user;
-        //$this->config = MasterConfig::get();
         $this->layout = $layout;
         $this->logger = AppLogger::get();
 
@@ -72,15 +72,12 @@ class Menu extends Controller
 
         if (PermissionHandler::hasUserPermissions()) {
             $this->items[] = $this->buildUserMenu();
-            //$this->items[] = $this->buildStudentMenu();
-            /** Combine these two buttons into a user button */
-            //$this->items[] = $this->buildStaffMenu();
         }
         if (PermissionHandler::hasGroupPermissions()) {
             $this->items[] = $this->buildGroupsMenu();
         }
         if ($this->user->superAdmin) {
-            $this->logger->debug("Building Parent and Staff Menus");
+            //$this->logger->debug("Building Parent and Staff Menus");
             //$this->items[] = $this->buildParentMenu();
         }
 
@@ -96,7 +93,7 @@ class Menu extends Controller
          * Build Student Menu
          */
 
-        $students = new TopMenuItem('Users');
+        $students = new TopMenuItem(Lang::get("Users"));
         $students->setTargetURL('/users');
         return $students;
     }
@@ -107,23 +104,10 @@ class Menu extends Controller
          * Build Student Menu
          */
 
-        $groups = new TopMenuItem('Groups');
+        $groups = new TopMenuItem(Lang::get("Groups"));
         $groups->setTargetURL('/groups');
 
         return $groups;
-    }
-
-    private function buildParentMenu()
-    {
-        /*
-         * Build Parent Menu
-         */
-        $parents = new TopMenuItem('Parents');
-        if ($parents) {
-            $parents->addSubItem(new SubMenuItem('Google Groups Check', '/' . strtolower($parents->displayText) . '/get-groups'));
-            $parents->addSubItem(new SubMenuItem('Manage Google Groups', '/' . strtolower($parents->displayText) . '/set-groups'));
-        }
-        return $parents;
     }
 
     private function buildTechMenu()
@@ -145,7 +129,7 @@ class Menu extends Controller
      *
      * @param string $layoutName
      *
-     * @return type
+     * @return string
      */
     public function getMenu(string $layoutName)
     {
@@ -154,6 +138,23 @@ class Menu extends Controller
 
         //$this->logger->debug($this->items);
         return $this->view('/layouts/navbar');
+    }
+
+    /**
+     * @return TopMenuItem
+     * @deprecated
+     */
+    private function buildParentMenu()
+    {
+        /*
+         * Build Parent Menu
+         */
+        $parents = new TopMenuItem('Parents');
+        if ($parents) {
+            $parents->addSubItem(new SubMenuItem('Google Groups Check', '/' . strtolower($parents->displayText) . '/get-groups'));
+            $parents->addSubItem(new SubMenuItem('Manage Google Groups', '/' . strtolower($parents->displayText) . '/set-groups'));
+        }
+        return $parents;
     }
 
 }
