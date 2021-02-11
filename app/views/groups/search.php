@@ -1,8 +1,14 @@
 <?php
 
+use App\Models\User\PermissionHandler;
+use App\Models\User\PermissionLevel;
+use App\Models\View\Modal;
 use System\App\Forms\Form;
 use System\App\Forms\FormButton;
-use System\App\Forms\FormText;
+use App\Forms\FormText;
+use System\App\Forms\FormElementGroup;
+use System\App\Forms\FormHTML;
+use System\Lang;
 
 $createButton = new FormButton("<i class=\"fas fa-plus\"></i>");
 $createButton->tiny()
@@ -12,8 +18,8 @@ $createButton->tiny()
 //    ->removeInputClasses(["w-100"])
     ->addInputClasses("text-success right")
     ->addElementClasses(" right pr-5 d-inline h-100 ");
-$createModal = new \App\Models\View\Modal();
-$createModal->setBody($this->view('/groups/create'))
+$createModal = new Modal();
+$createModal->setBody($this->modal('createGroup'))
     ->setId('createGroup')
     ->setTitle("Create New Group");
 $createButton->addModal($createModal);
@@ -21,30 +27,29 @@ $createButton->addModal($createModal);
 
     <div class="col mb-2">
         <h3 class=" d-inline card-title text-center">
-            Group Search
+            <?= Lang::get("Group Search"); ?>
         </h3>
 
         <?php
-        if (\App\Models\User\PermissionHandler::hasGroupPermissions(\App\Models\User\PermissionLevel::GROUP_ADD)) {
+        if (PermissionHandler::hasGroupPermissions(PermissionLevel::GROUP_ADD)) {
             echo $createButton->print();
         }
         ?>
     </div>
 <?php
 $form = new Form("/groups/search", "GroupSearch");
-$button = new FormButton("Search");
+$button = new FormButton(Lang::get("Search"));
 $button->small();
-$groupSearchBox = new FormText("Group", "Can search by name, email, or description", "group");
+$groupSearchBox = new FormText(Lang::get("Group"), Lang::getHelp("Group_Search"), "group");
 $groupSearchBox->autoCompleteGroupName()
     ->autofocus()
-    ->setId("group")
 // ->appendIcon('<i class="fas fa-search"></i>')
     ->medium();
-$appendImg = new \System\App\Forms\FormHTML();
+$appendImg = new FormHTML();
 $appendImg->setHtml('<i class="fas fa-search"></i>')
     ->addInputClasses('input-group-text text-center');
 
-$inputGroup = new \System\App\Forms\FormElementGroup("Group", "Can search by name, email, or description");
+$inputGroup = new FormElementGroup(Lang::get("Group"), Lang::getHelp("Group_Search"));
 $inputGroup->addElementToGroup($appendImg)
     ->addElementToGroup($groupSearchBox)
     ->medium();
