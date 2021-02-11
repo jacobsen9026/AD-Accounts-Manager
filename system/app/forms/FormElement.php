@@ -51,78 +51,78 @@ class FormElement
     /**
      * @var string
      */
-    private $size = "";
+    protected $size = "";
     /**
      * @var bool
      */
-    private $hidden = false;
+    protected $hidden = false;
     /**
      * @var
      */
-    private $id;
+    protected $id;
     /**
      * @var
      */
-    private $label;
+    protected $label;
     /**
      * @var string
      */
-    private $elementClasses = '';
+    protected $elementClasses = '';
     /**
      * @var string
      */
-    private $labelClasses = "font-weight-bold mb-0";
+    protected $labelClasses = "font-weight-bold mb-0";
     /**
      * @var string
      */
-    private $subLabelClasses = "form-text text-muted mt-0";
+    protected $subLabelClasses = "form-text text-muted mt-0";
     /**
      * @var string
      */
-    private $inputClasses = "";
+    protected $inputClasses = "";
     /**
      * @var
      */
-    private $subLabel;
+    protected $subLabel;
     /**
      * @var string
      */
-    private $script = '';
+    protected $script = '';
     /**
      * @var
      */
-    private $name;
+    protected $name;
     /**
      * @var bool
      */
-    private $hideLabels = false;
+    protected $hideLabels = false;
     /**
      * @var bool
      */
-    private $disabled = false;
+    protected $disabled = false;
     /**
      * @var
      */
-    private $tooltip;
+    protected $tooltip;
     /**
      * @var
      */
-    private $value;
+    protected $value;
     /**
      *
      * @var array
      */
-    private $modal = [];
+    protected $modal = [];
     /**
      *
      * @var type The bootstrap breakpoint for the elements column
      */
-    private $breakpoint;
+    protected $breakpoint;
     /**
      *
      * @var int|string This is the col size number for BootStrap CSS (1-12 or auto)
      */
-    private $colSize;
+    protected $colSize;
 
     /**
      * FormElement constructor.
@@ -489,7 +489,7 @@ class FormElement
     {
         if ($this->breakpoint === null) {
             if ($this->getColSize() < 0) {
-                $this->breakpoint = '-md';
+                $this->breakpoint = '-lg';
             } elseif ($this->getColSize() === 0 and $this->getColSize() !== null) {
                 $this->breakpoint = '-sm';
             }
@@ -585,7 +585,7 @@ class FormElement
     public function getId()
     {
         if (null === $this->id || '' === $this->id) {
-            return htmlspecialchars(str_replace([" ", '"', "'", '.'], "", $this->getName()));
+            return htmlspecialchars(str_replace(["<", ">", "=", "-", "/", " ", '"', "'", '.'], "", $this->getName()));
         }
         return $this->id;
     }
@@ -734,7 +734,7 @@ class FormElement
     protected function printAJAX()
     {
         if ($this->ajaxRequest !== null) {
-            $this->logger->debug("creating ajax for " . $this->getName());
+            AppLogger::get()->debug("creating ajax for " . $this->getName());
             $ajax = $this->ajaxRequest->print();
             $onclick = Javascript::on($this->getId(), $ajax);
             $script = "<script>" . $onclick . "</script>";
