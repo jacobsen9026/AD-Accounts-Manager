@@ -38,16 +38,24 @@ trait Language
 
     public static function get($name)
     {
-        if (isset(Self::$strings[$name]) and Self::$strings[$name] != null) {
-            return Self::$strings[$name];
+        if (isset(self::$strings[$name]) and self::$strings[$name] != null) {
+            return self::$strings[$name];
         }
         return 'No language reference found for ' . $name;
     }
 
     public static function getHelp($name)
     {
-        if (isset(Self::$help[$name]) and Self::$help[$name] != null) {
-            return Self::$help[$name];
+        if (isset(self::$help[$name]) and self::$help[$name] != null) {
+            return self::$help[$name];
+        }
+        return 'No language reference found for ' . $name;
+    }
+
+    public static function getError($name)
+    {
+        if (isset(self::$error[$name]) and self::$error[$name] != null) {
+            return self::$error[$name];
         }
         return 'No language reference found for ' . $name;
     }
