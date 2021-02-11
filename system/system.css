@@ -88,6 +88,10 @@
 
 }
 
+.top--10 {
+    top: -1.75em !important;
+}
+
 
 .systemDebugToolBar {
     position: fixed;
