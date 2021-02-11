@@ -32,16 +32,14 @@ namespace App\Controllers\Settings;
  * @author cjacobsen
  */
 
-use System\Post;
-use App\Models\User\PrivilegeLevel;
-use App\Models\Database\PrivilegeLevelDatabase;
-use App\Controllers\Controller;
-use App\Models\Database\AuthDatabase;
 
-class Authentication extends Controller
+use App\Models\Database\AuthDatabase;
+use system\Post;
+
+class Authentication extends SettingsController
 {
 
-    //put your code here
+
     public function index()
     {
 
@@ -52,7 +50,7 @@ class Authentication extends Controller
     public function indexPost()
     {
 
-        $post = \system\Post::getAll();
+        $post = Post::getAll();
         AuthDatabase::saveSettings($post);
 
         $this->redirect('/settings/authentication');
