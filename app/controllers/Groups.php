@@ -36,26 +36,16 @@ use App\Models\Audit\Action\Group\AddMemberAuditAction;
 use App\Models\Audit\Action\Group\DeleteGroupAuditAction;
 use App\Models\Audit\Action\Group\RemoveMemberAuditAction;
 use App\Models\Audit\Action\Group\SearchGroupAuditAction;
-use App\Models\Audit\AuditEntry;
-use App\Models\Database\AuditDatabase;
-use App\Models\District\DistrictGroup;
-use App\Models\District\DistrictUser;
+use App\Models\District\DomainGroup;
+use App\Models\District\DomainUser;
 use System\App\AppException;
+use System\Lang;
 use System\Post;
 use App\Api\AD;
 use System\Request;
 
 class Groups extends Controller
 {
-
-    public function index()
-    {
-        $return = $this->view('/groups/search');
-        //$return .= $this->view('/groups/create');
-
-
-        return $return;
-    }
 
     public function createPost()
     {
@@ -75,18 +65,18 @@ class Groups extends Controller
         $email = Post::get("email");
         $ou = Post::get("ou");
         if ($name != null and $ou != null) {
-            $newGroup = new AddDistrictGroup();
+            //$newGroup = new AddDistrictGroup();
             $dn = "CN=" . Post::get("name") . ',' . Post::get("ou");
-            $newGroup->setName(Post::get("name"))
-                ->setDistinguishedName($dn);
-            $newGroup->createInAD();
+            //$newGroup->setName(Post::get("name"))
+            //   ->setDistinguishedName($dn);
+            //$newGroup->createInAD();
         }
     }
 
     /**
      * Search but by post
      *
-     * @param type $groupName
+     * @param string $groupName
      *
      * @return type
      */
@@ -108,15 +98,28 @@ class Groups extends Controller
      *
      * @param string $groupName
      *
-     * @return type
+     * @return string
      */
-    public function search(string $groupName)
+    public function search(string $groupName = null)
     {
-        $this->group = new DistrictGroup($groupName);
-        $this->audit(new SearchGroupAuditAction($groupName));
-        //var_dump($this->group);
-        return $this->view('/groups/show');
+        if ($groupName == null) {
+            return $this->index();
+        } else {
+            $this->group = new DomainGroup($groupName);
+            $this->audit(new SearchGroupAuditAction($groupName));
+            //var_dump($this->group);
+            return $this->view('/groups/show');
+        }
 
+    }
+
+    public function index()
+    {
+        $return = $this->view('/groups/search');
+        //$return .= $this->view('/groups/create');
+
+
+        return $return;
     }
 
     /**
@@ -130,18 +133,19 @@ class Groups extends Controller
     {
         $action = Post::get('action');
         $groupName = Post::get("group");
+        $username = Post::get('username');
+        $distinguishedName = Post::get('distinguishedName');
         switch ($action) {
             case 'removeMember':
-                $username = Post::get('username');
-                $this->logger->info("removing member " . $username);
-                $group = new DistrictGroup($groupName);
-                $user = $group->hasMember($username);
+                $this->logger->info("removing member " . $distinguishedName);
+                $group = new DomainGroup($groupName);
+                $user = $group->hasMember($distinguishedName);
 
                 $this->logger->debug($user);
                 if ($user !== false) {
                     if ($group->activeDirectory->removeMember($user->activeDirectory)) {
 
-                        $this->audit(new RemoveMemberAuditAction($groupName,$username));
+                        $this->audit(new RemoveMemberAuditAction($groupName, $user->getUsername()));
                         $this->logger->debug("user was successfully removed");
                     } else {
                         throw new AppException('Could not remove member from group');
@@ -151,14 +155,27 @@ class Groups extends Controller
 
                 break;
             case 'addMember':
-                $username = Post::get('usernameToAdd');
-                $group = new DistrictGroup($groupName);
+                $group = new DomainGroup($groupName);
                 $this->logger->info("adding member " . $username);
-                $user = new DistrictUser($username);
-                if ($group->addUserMember($user->activeDirectory->getDistinguishedName())) {
-                    $this->audit(new AddMemberAuditAction($groupName,$username));
-                    $this->logger->debug("user was successfully removed");
+                try {
+
+                    $user = new DomainUser($username);
+                } catch (AppException $ex) {
+                    $this->logger->error($ex->getMessage());
+                    if ($ex->getCode() == AppException::USER_NOT_FOUND) {
+                        $this->logger->debug("Searching by group name");
+                        $user = new DomainGroup($username);
+                    }
                 }
+
+                if (!is_null($user) && $group->addMember($user->getDistinguishedName())) {
+                    $this->audit(new AddMemberAuditAction($groupName, $username));
+                    $this->logger->debug("user was successfully removed");
+                } else {
+                    throw new AppException(Lang::getError("Object not found"), AppException::OBJECT_NOT_FOUND);
+
+                }
+
 
                 break;
             default:
@@ -169,8 +186,9 @@ class Groups extends Controller
         if (strpos(Request::get()->getReferer(), "groups") !== false) {
             return $this->search($group->activeDirectory->getName());
         } else {
-            $users = new Users($this->app);
-            return $users->search($user->getUsername());
+            $this->redirect('/users/search/' . $user->getUsername());
+            //$users = new Users($this->app);
+            //return $users->search($user->getUsername());
         }
 
     }
@@ -181,7 +199,7 @@ class Groups extends Controller
         $ad = AD::get();
         $ad->deleteGroup($groupDN);
 
-        $this->audit(new DeleteGroupAuditAction($groupName));
+        $this->audit(new DeleteGroupAuditAction($groupDN));
     }
 
 }
