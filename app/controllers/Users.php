@@ -34,13 +34,15 @@ namespace App\Controllers;
 
 
 use App\Api\Ad\ADUsers;
+use App\Controllers\Api\Domain;
 use App\Models\Audit\Action\User\DisableUserAuditAction;
 use App\Models\Audit\Action\User\EnableUserAuditAction;
+use App\Models\Audit\Action\User\MoveUserAuditAction;
 use App\Models\Audit\Action\User\ResetUserPasswordAuditAction;
 use App\Models\Audit\Action\User\SearchUserAuditAction;
 use App\Models\Audit\Action\User\UnlockUserAuditAction;
 use App\Models\Audit\Action\User\UploadUserPhotoAudtitAction;
-use App\Models\District\DistrictUser;
+use App\Models\District\DomainUser;
 use App\Models\User\PermissionHandler;
 use App\Models\User\PermissionLevel;
 use App\Models\View\Modal;
@@ -68,6 +70,32 @@ class Users extends Controller
             $this->audit(new SearchUserAuditAction($username));
             return $this->showAccountStatus($username);
         }
+    }
+
+    private function showAccountStatus($username)
+    {
+
+        try {
+            $this->districtUser = $this->getUser($username);
+        } catch (AppException $ex) {
+            $possibleUsers = ADUsers::listUsers($username);
+            AppLogger::get()->debug($possibleUsers);
+            if ($possibleUsers == null || empty($possibleUsers)) {
+                throw $ex;
+            }
+            if (is_array($possibleUsers) && count($possibleUsers) == 1) {
+                $this->districtUser = $this->getUser($possibleUsers[0]);
+            } else {
+                return $this->view('users/list', $possibleUsers);
+            }
+        }
+        return $this->view('users/show');
+    }
+
+    private function getUser($username)
+    {
+        $user = new DomainUser($username);
+        return $user;
     }
 
     public function searchPost($username = null)
@@ -111,7 +139,7 @@ class Users extends Controller
                     $rawPicture = ob_get_clean();
 
                     //var_dump(bin2hex($rawPicture));
-                    $user = new DistrictUser($username);
+                    $user = new DomainUser($username);
                     $this->logger->debug($rawPicture);
                     $user->activeDirectory->setThumbnail($rawPicture, false)->save();
 
@@ -123,7 +151,7 @@ class Users extends Controller
                 break;
             case 'resetPassword':
                 $password = trim(Post::get("password"));
-                $user = new DistrictUser(Post::get("username"));
+                $user = new DomainUser(Post::get("username"));
                 if ($user->activeDirectory->setPassword($password)->save()) {
                     $this->logger->debug("password reset");
                     $this->audit(new ResetUserPasswordAuditAction($username));
@@ -138,62 +166,36 @@ class Users extends Controller
         $output .= $this->search($username);
         return $output;
     }
+    /*
+        private function unlockUser($username)
+        {
+            $user = new DistrictUser($username);
+            $user->activeDirectory->setClearLockoutTime()->save();
+            $this->logger->debug($user);
+            $this->audit(new UnlockUserAuditAction($username));
+            return $user;
+        }
+    /*
+        public function accountStatusChangePost()
+        {
+            if ($action = Post::get("action")) {
+                $username = Post::get("username");
+                switch ($action) {
+                    case "unlock":
+                        $this->unlockUser($username);
+                        $this->student = $this->getUser($username);
+                        return $this->view('staff/show/student');
+                        break;
+                    case "lock":
+                        //There will be no locking of user accounts
+                        break;
 
-    private function showAccountStatus($username)
-    {
-
-        try{
-            $this->districtUser = $this->getUser($username);
-        }catch (AppException $ex){
-            $possibleUsers = ADUsers::listUsers($username);
-            AppLogger::get()->debug($possibleUsers);
-            if($possibleUsers==null || empty($possibleUsers)){
-                throw $ex;
-            }
-            if(is_array($possibleUsers) && count($possibleUsers)==1){
-                $this->districtUser = $this->getUser($possibleUsers[0]);
-            }else {
-                return $this->view('users/list', $possibleUsers);
+                    default:
+                        break;
+                }
             }
         }
-        return $this->view('users/show');
-    }
-
-    private function getUser($username)
-    {
-        $user = new DistrictUser($username);
-        return $user;
-    }
-/*
-    private function unlockUser($username)
-    {
-        $user = new DistrictUser($username);
-        $user->activeDirectory->setClearLockoutTime()->save();
-        $this->logger->debug($user);
-        $this->audit(new UnlockUserAuditAction($username));
-        return $user;
-    }
-/*
-    public function accountStatusChangePost()
-    {
-        if ($action = Post::get("action")) {
-            $username = Post::get("username");
-            switch ($action) {
-                case "unlock":
-                    $this->unlockUser($username);
-                    $this->student = $this->getUser($username);
-                    return $this->view('staff/show/student');
-                    break;
-                case "lock":
-                    //There will be no locking of user accounts
-                    break;
-
-                default:
-                    break;
-            }
-        }
-    }
-*/
+    */
 
     /**
      * Edit Post
@@ -203,12 +205,13 @@ class Users extends Controller
     public function editPost()
     {
         $username = Post::get("username");
-        $districtUser = $this->getUser($username);
+
         $action = Post::get("action");
 
         if ($action != false) {
             switch ($action) {
                 case "unlock":
+                    $districtUser = $this->getUser($username);
                     if (PermissionHandler::hasPermission($districtUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_UNLOCK)) {
 
                         $districtUser->unlock();
@@ -220,6 +223,7 @@ class Users extends Controller
 
 
                 case "enable":
+                    $districtUser = $this->getUser($username);
                     if (PermissionHandler::hasPermission($districtUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_DISABLE)) {
 
                         $districtUser->enable();
@@ -231,6 +235,7 @@ class Users extends Controller
                     return;
 
                 case "disable";
+                    $districtUser = $this->getUser($username);
                     if (PermissionHandler::hasPermission($districtUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_DISABLE)) {
 
                         $districtUser->disable();
@@ -240,6 +245,22 @@ class Users extends Controller
                     }
                     return;
 
+                case "moveToOU";
+                    $dn = Post::get("dn");
+                    $ou = Post::get("ou");
+                    if (PermissionHandler::hasPermission($ou, PermissionLevel::USERS, PermissionLevel::USER_CHANGE)) {
+                        if (PermissionHandler::hasPermission($dn, PermissionLevel::USERS, PermissionLevel::USER_CHANGE)) {
+                            $user = new DomainUser(ADUsers::getUserByDN($dn));
+                            $this->logger->info($user);
+                            $user->moveTo($ou);
+
+                            $this->audit(new MoveUserAuditAction($user->getUsername(), $ou));
+                            $this->redirect('/users/search/' . $user->getUsername());
+                        }
+
+                    }
+
+                    return;
                 default:
                     break;
             }
