@@ -24,15 +24,10 @@
  * THE SOFTWARE.
  */
 
-use App\App\App;
-use App\App\AppUpdater;
-use App\Models\View\Javascript;
-use App\Models\View\Modal;
+
 use System\App\Forms\Form;
 use System\App\Forms\FormButton;
-use System\App\Forms\FormSlider;
-use System\App\Forms\FormText;
-use System\Core;
+use System\App\Forms\FormDate;
 
 /**
  *  Form Button that opens a modal with a form in it
@@ -40,84 +35,84 @@ use System\Core;
 //$audit = \App\Models\Database\AuditDatabase::getLast24Hrs();
 
 ?>
-<h5>
-    Audit Log
-</h5>
-<small>Times are in UTC</small>
+    <h5>
+        Audit Log
+    </h5>
+    <small>Times are in UTC</small>
 <?php
-$form = new Form('/settings/audit','audit');
+$form = new Form('/settings/audit', 'audit');
 
-$fromTime = new \System\App\Forms\FormDate('From Time',null,'fromTime',$this->fromTime);
-$toTime = new \System\App\Forms\FormDate('To Time',null,'toTime',$this->toTime);
+$fromTime = new FormDate('From Time', null, 'fromTime', $this->fromTime);
+$toTime = new FormDate('To Time', null, 'toTime', $this->toTime);
 
 $fromTime->auto();
 $toTime->auto();
 
 
-$submit = new FormButton('Search','small');
+$submit = new FormButton('Search', 'small');
 $submit->setType('submit');
 
 $form->addElementToNewRow($fromTime)
-->addElementToCurrentRow($toTime)
-->addElementToCurrentRow($submit);
+    ->addElementToCurrentRow($toTime)
+    ->addElementToCurrentRow($submit);
 echo $form->print();
 ?>
-<div class="w-100">
-    <div class="row">
-    <strong class="col-3">
-        Timestamp
-    </strong>
-    <strong class="col-1">
-        Username
-    </strong>
-    <strong class="col-1">
-        IP
-    </strong>
-    <strong class="col-2">
-        Action
-    </strong>
-    <strong class="col-5">
-        Description
-    </strong>
-    </div>
-    <?php
-    if(is_array($this->audit) && count($this->audit)>0){
-        foreach($this->audit as $entry){
-            $timestamp = new DateTime();
-            $timestamp->setTimestamp($entry['Timestamp']);
-            ?>
-            <div class="row">
-                <div class="col-3">
-    <?=$timestamp->format('Y-m-d H:i:s')?>
-                </div>
-                <div class="col-1">
-                    <?=$entry['Username']?>
+    <div class="w-100">
+        <div class="row">
+            <strong class="col-3">
+                Timestamp
+            </strong>
+            <strong class="col-1">
+                Username
+            </strong>
+            <strong class="col-1">
+                IP
+            </strong>
+            <strong class="col-2">
+                Action
+            </strong>
+            <strong class="col-5">
+                Description
+            </strong>
+        </div>
+        <?php
+        if (is_array($this->audit) && count($this->audit) > 0) {
+            foreach ($this->audit as $entry) {
+                $timestamp = new DateTime();
+                $timestamp->setTimestamp($entry['Timestamp']);
+                ?>
+                <div class="row">
+                    <div class="col-3">
+                        <?= $timestamp->format('Y-m-d H:i:s') ?>
+                    </div>
+                    <div class="col-1">
+                        <?= $entry['Username'] ?>
 
-                </div>
-                <div class="col-1">
-                    <?=$entry['IP']?>
+                    </div>
+                    <div class="col-1">
+                        <?= $entry['IP'] ?>
 
-                </div>
-                <div class="col-2">
-                    <?=$entry['Action']?>
+                    </div>
+                    <div class="col-2">
+                        <?= $entry['Action'] ?>
 
-                </div>
-                <div class="col-5">
-                    <?=$entry['Description']?>
+                    </div>
+                    <div class="col-5">
+                        <?= $entry['Description'] ?>
 
+                    </div>
                 </div>
-            </div>
 
 
                 <?php
+            }
+        } else {
+            echo "No results found.";
         }
-    }else{
-        echo "No results found.";
-    }
 
 
-    ?>
+        ?>
 
-</div>
+    </div>
 <?php
 
