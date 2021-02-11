@@ -28,6 +28,7 @@ namespace System\App;
 
 use System\Common\CommonApp;
 use System\Common\CommonController;
+use System\CoreException;
 
 /**
  * Description of Factory
@@ -47,7 +48,7 @@ abstract class ControllerFactory
      *
      * @return CommonController|bool The appropriate Controller object based on the given route, already instantiated.
      */
-    public static function buildController($app)
+    public static function buildController(CommonApp $app)
     {
         /**
          * Set Controller Path
@@ -58,7 +59,7 @@ abstract class ControllerFactory
         if (class_exists($classname)) {
             return new $classname($app);
         }
-        return false;
+        throw new AppException("Controller " . $app->route->getControler() . " could not be found", AppException::CONTROLLER_NOT_FOUND);
     }
 
 }
