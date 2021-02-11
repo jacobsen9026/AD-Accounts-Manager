@@ -102,7 +102,7 @@ abstract class CardPrinter extends ViewModel
         $output = '<div class="col px-0">'
             . '<div class="card-body p-0 p-sm-3">';
 
-        $output .= '<div class="position-absolute right top-10 text-secondary text-right" style="width:2em;"> '
+        $output .= '<div class="position-absolute right top--10 text-secondary text-right" style="width:2em;"> '
             . self::printOptionsButton($user)
             . '</div > ';
 
