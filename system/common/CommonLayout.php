@@ -32,34 +32,29 @@ namespace System\Common;
  * @author cjacobsen
  */
 
-use System\App\App;
-use System\Parser;
+use App\App\App;
 use App\Models\User\User;
 use App\Controllers\Menu;
 use System\App\AppLogger;
+use System\Traits\Parser;
 
 class CommonLayout
 
 {
-    use \System\Traits\Parser;
+    use Parser;
 
     const DEFAULT_LAYOUT_NAME = 'default';
-
+    /** @var string|null The view parser */
+    public $layoutName;
+    /** @var App|null The view parser */
+    public $app;
+    /** @var User|null The view parser */
+    public $user;
     /**
      *
      * @var AppLogger
      */
     protected $logger;
-
-    /** @var string|null The view parser */
-    public $layoutName;
-
-    /** @var App|null The view parser */
-    public $app;
-
-    /** @var User|null The view parser */
-    public $user;
-
     /** @var string|null The view parser */
     private $layoutOutput;
 
@@ -88,14 +83,14 @@ class CommonLayout
 
         $this->logger->info($this->app->request->type);
 
+
         $this->layoutOutput = $this->getHeader();
-        $this->layoutOutput .= $this->getNavigation();
+
 
         $this->layoutOutput .= $this->app->appOutput->getBody();
 
         $this->layoutOutput .= $this->getFooter();
-
-
+        $this->layoutOutput .= $this->getNavigation();
         // var_dump($this->layoutOutput);
 
 
@@ -113,6 +108,9 @@ class CommonLayout
         return $this->view('layouts/' . $this->layoutName . '_footer');
     }
 
+    /**
+     * @return string
+     */
     public function getNavigation()
     {
         // var_dump($this->user);
@@ -121,6 +119,7 @@ class CommonLayout
 
             return $menu->getMenu($this->layoutName);
         }
+        return '';
     }
 
 }
