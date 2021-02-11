@@ -38,14 +38,25 @@ abstract class DatabaseModel extends Model implements DatabaseModelInterface
 {
 
     /**
+     * Returns the entire table
+     *
+     * @return type
+     */
+    public static function get()
+    {
+        $query = new Query(static::TABLE_NAME);
+        return $query->run();
+    }
+
+    /**
      * The calling object MUST have a TABLE_NAME constant
      * defined with the value of the name for the table
      * in the database.
      *
-     * @param type $column
-     * @param type $value
+     * @param string $column
+     * @param string $value
      *
-     * @return type
+     * @return string
      */
     protected static function updateDatabaseValue($column, $value)
     {
@@ -69,17 +80,6 @@ abstract class DatabaseModel extends Model implements DatabaseModelInterface
     {
         $query = new Query(static::TABLE_NAME, Query::SELECT, $column);
         $query->where("ID", $id);
-        return $query->run();
-    }
-
-    /**
-     * Returns the entire table
-     *
-     * @return type
-     */
-    public static function get()
-    {
-        $query = new Query(static::TABLE_NAME);
         return $query->run();
     }
 
