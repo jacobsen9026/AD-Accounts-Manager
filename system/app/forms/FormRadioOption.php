@@ -38,13 +38,13 @@ class FormRadioOption extends FormElement implements FormElementInterface
      *
      * @var string
      */
-    private $value;
+    protected $value;
 
     /**
      *
      * @var bool
      */
-    private $selected = false;
+    protected $selected = false;
 
     public function __construct($name, $label = '', $value = '', $selected = false, $id = '')
     {
@@ -52,33 +52,6 @@ class FormRadioOption extends FormElement implements FormElementInterface
         $this->setValue($value);
         $this->setSelected($selected);
         $this->setId($id);
-    }
-
-    public function getValue(): ?string
-    {
-        return $this->value;
-    }
-
-    public function getSelected(): bool
-    {
-        return $this->selected;
-    }
-
-    public function setValue($value)
-    {
-        $this->value = $value;
-        return $this;
-    }
-
-    /**
-     * @param bool $selected
-     *
-     * @return $this
-     */
-    public function setSelected(bool $selected): FormRadioOption
-    {
-        $this->selected = $selected;
-        return $this;
     }
 
     /**
@@ -99,6 +72,33 @@ class FormRadioOption extends FormElement implements FormElementInterface
             . '<label class="custom-control-label" for="' . $this->getId() . '_' . $this->getLabel() . '">' . $this->getLabel() . '</label>'
             . '</div>';
         //$output .=
+    }
+
+    public function getSelected(): bool
+    {
+        return $this->selected;
+    }
+
+    /**
+     * @param bool $selected
+     *
+     * @return $this
+     */
+    public function setSelected(bool $selected): FormRadioOption
+    {
+        $this->selected = $selected;
+        return $this;
+    }
+
+    public function getValue(): ?string
+    {
+        return $this->value;
+    }
+
+    public function setValue($value)
+    {
+        $this->value = $value;
+        return $this;
     }
 
 }
