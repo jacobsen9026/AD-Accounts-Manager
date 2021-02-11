@@ -34,40 +34,18 @@ namespace System\App\Forms;
 class FormTextArea extends FormElement implements FormElementInterface
 {
 
-    private $resizable = true;
-    private $placeholder;
-    private $value;
-
-    public function getPlaceholder()
-    {
-        return $this->placeholder;
-    }
-
-    public function setPlaceholder($placeholder)
-    {
-        $this->placeholder = $placeholder;
-        return $this;
-    }
+    protected $resizable = true;
+    protected $placeholder;
+    protected $value;
 
     public function getResizable()
     {
         return $this->resizable;
     }
 
-    public function getValue()
-    {
-        return $this->value;
-    }
-
     public function resizable($resizable = true)
     {
         $this->resizable = $resizable;
-        return $this;
-    }
-
-    public function setValue($value)
-    {
-        $this->value = $value;
         return $this;
     }
 
@@ -91,6 +69,28 @@ class FormTextArea extends FormElement implements FormElementInterface
         </div>
         </div>';
         return $output;
+    }
+
+    public function getPlaceholder()
+    {
+        return $this->placeholder;
+    }
+
+    public function setPlaceholder($placeholder)
+    {
+        $this->placeholder = $placeholder;
+        return $this;
+    }
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function setValue($value)
+    {
+        $this->value = $value;
+        return $this;
     }
 
 }
