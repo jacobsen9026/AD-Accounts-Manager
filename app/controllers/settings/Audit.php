@@ -32,15 +32,12 @@ namespace App\Controllers\Settings;
  * @author cjacobsen
  */
 
+use App\Models\Database\AuditDatabase;
 use DateInterval;
 use DateTime;
 use System\Post;
-use App\Models\User\PrivilegeLevel;
-use App\Models\Database\PrivilegeLevelDatabase;
-use App\Controllers\Controller;
-use App\Models\Database\EmailDatabase;
 
-class Audit extends Controller
+class Audit extends SettingsController
 {
 
     public function index()
@@ -51,10 +48,10 @@ class Audit extends Controller
         $this->fromTime = new DateTime();
         $this->toTime = new DateTime();
         $this->fromTime->sub(new DateInterval('P1D'));
-        $this->fromTime=$this->fromTime->format('Y-m-d')."T".$this->fromTime->format('H:i');
-        $this->toTime=$this->toTime->format('Y-m-d')."T".$this->toTime->format('H:i');
+        $this->fromTime = $this->fromTime->format('Y-m-d') . "T" . $this->fromTime->format('H:i');
+        $this->toTime = $this->toTime->format('Y-m-d') . "T" . $this->toTime->format('H:i');
 
-        $this->audit = \App\Models\Database\AuditDatabase::getLast24Hrs();
+        $this->audit = AuditDatabase::getLast24Hrs();
 
         return $this->view('settings/audit');
     }
@@ -63,13 +60,12 @@ class Audit extends Controller
     public function indexPost()
     {
 
-        $post = \system\Post::getAll();
         $this->fromTime = Post::get("fromTime");
         $this->toTime = Post::get("toTime");
-        $fromTime = new \DateTime($this->fromTime);
-        $toTime = new \DateTime($this->toTime);
+        $fromTime = new DateTime($this->fromTime);
+        $toTime = new DateTime($this->toTime);
         $this->tab = 'audit';
-        $this->audit = \App\Models\Database\AuditDatabase::getBetween($fromTime->getTimestamp(),$toTime->getTimestamp());
+        $this->audit = AuditDatabase::getBetween($fromTime->getTimestamp(), $toTime->getTimestamp());
 
 
         return $this->view('settings/audit');
