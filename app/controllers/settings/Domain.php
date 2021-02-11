@@ -33,61 +33,56 @@ namespace App\Controllers\Settings;
  */
 
 use App\App\App;
-use App\Controllers\Controller;
 use App\Models\Audit\Action\Settings\ChangeSettingAuditAction;
-use App\Models\Database\DistrictDatabase;
-use app\database\Schema;
+use App\Models\Database\DomainDatabase;
+use App\Models\User\Permission;
+use App\Models\User\PrivilegeLevel;
 use System\Post;
 use App\Models\Database\PermissionMapDatabase;
 use App\Models\Database\PrivilegeLevelDatabase;
 use System\App\AppException;
 
-class District extends Controller
+class Domain extends SettingsController
 {
 
     function __construct(App $app)
     {
+
         parent::__construct($app);
+
         $this->layout = 'default_blank';
     }
 
 //put your code here
     public function index()
     {
+        return $this->redirect('/settings/domain/edit');
 
-        $this->districts = DistrictDatabase::get();
-        $this->district = DistrictDatabase::getDistrict(1);
-//var_dump($this->district);
+    }
 
-        if ($this->districts == false) {
-            return $this->view('settings/district/create');
-        } else {
-            foreach ($this->districts as $this->district) {
-                $this->districID = $this->district[Schema::DISTRICT_ID[Schema::COLUMN]];
-                return $this->show();
-            }
-        }
+    public function edit($districtID = 1)
+    {
 
-//return $this->view('settings/district/index');
+        return $this->show($districtID);
+
     }
 
     public function show($districtID = 1)
     {
         $this->districtID = $districtID;
-        $this->district = DistrictDatabase::getDistrict($districtID);
+        $this->domain = DomainDatabase::getDomain($districtID);
         return $this->view('settings/district/show');
     }
 
     public function permissions($districtID = 1)
     {
-        $this->district = DistrictDatabase::getDistrict($districtID);
+        $this->domain = DomainDatabase::getDomain($districtID);
         return $this->view('settings/district/permissions');
     }
 
     public function permissionsPost($districtID = 1)
     {
         $post = Post::getAll();
-        $this->preProcessDistrictID($districtID);
         switch (Post::get('action')) {
             case 'updateDistrict':
 
@@ -123,25 +118,25 @@ class District extends Controller
                 break;
         }
 
-        $this->redirect('/settings/district/permissions');
+        $this->redirect('/settings/domain/permissions');
     }
 
     private function updateDistrict($post)
     {
 //var_dump($post);
-        $this->audit(new ChangeSettingAuditAction("District Name",$this->district->getName(),$post['name']));
-        $this->audit(new ChangeSettingAuditAction("District Name",$this->district->getAbbr(),$post['abbr']));
-        $this->audit(new ChangeSettingAuditAction("District Name",$this->district->getAdNetBIOS(),$post['adNetBIOS']));
-        $this->audit(new ChangeSettingAuditAction("District Name",$this->district->getAdFQDN(),$post['adFQDN']));
-        $this->audit(new ChangeSettingAuditAction("District Name",$this->district->getAdBaseDN(),$post['adBaseDN']));
-        $this->audit(new ChangeSettingAuditAction("District Name",$this->district->getAdPassword(),$post['adPassword']));
-        $this->audit(new ChangeSettingAuditAction("District Name",$this->district->getAdUsername(),$post['adUsername']));
-        $this->audit(new ChangeSettingAuditAction("District Name",$this->district->getUseTLS(),$post['useTLS']));
+        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getName(), $post['name']));
+        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAbbr(), $post['abbr']));
+        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdNetBIOS(), $post['adNetBIOS']));
+        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdFQDN(), $post['adFQDN']));
+        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdBaseDN(), $post['adBaseDN']));
+        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdPassword(), $post['adPassword']));
+        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdUsername(), $post['adUsername']));
+        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getUseTLS(), $post['useTLS']));
 
 
         $this->logger->info("Updating district");
-        $this->district->setName($post['name']);
-        $this->district->setAbbr($post['abbr'])
+        $this->domain->setName($post['name']);
+        $this->domain->setAbbr($post['abbr'])
             ->setAdFQDN($post['adFQDN'])
             ->setAdNetBIOS($post['adNetBIOS'])
             ->setAdBaseDN($post['adBaseDN'])
@@ -150,8 +145,7 @@ class District extends Controller
             ->setUseTLS($post["useTLS"]);
 
 
-        $this->district->saveToDB();
-//DatabasePost::setPost(Schema::DISTRICT, $districtID, $post);
+        $this->domain->saveToDB();
 
         return true;
     }
@@ -161,17 +155,16 @@ class District extends Controller
         $id = Post::get('privilegeID');
         $this->logger->info('Removing Privilege ' . $id);
 
-        $this->audit(new ChangeSettingAuditAction("Delete Priviledge Level",$id,null));
+        $this->audit(new ChangeSettingAuditAction("Delete Priviledge Level", $id, null));
         return PrivilegeLevelDatabase::removePrivilegeLevel($id);
     }
 
     private function addDistrictPermission($districtID = 1)
     {
-        $district = DistrictDatabase::getDistrict($districtID);
 
-        $this->audit(new ChangeSettingAuditAction("Add Directory Permission",null,null));
-        $this->addOUPermission($district->getAdBaseDN());
 
+        $this->audit(new ChangeSettingAuditAction("Add Directory Permission", null, null));
+        $this->addOUPermission();
 
 
 //return true;
@@ -181,7 +174,7 @@ class District extends Controller
     {
         $ou = Post::get('ou');
         if ($ou != '' and $ou != null) {
-            $permission = new \App\Models\User\Permission();
+            $permission = new Permission();
 //var_dump(Post::get());
             $permission->setPrivilegeID(Post::get("privilegeID"))
                 ->setOu($ou)
@@ -200,7 +193,7 @@ class District extends Controller
         $id = Post::get('id');
 //var_dump(Post::get());
         if ($id != '' and $id != null) {
-            $permission = new \App\Models\User\Permission();
+            $permission = new Permission();
             $permission->importFromDatabase(PermissionMapDatabase::getPermissionById($id));
 //var_dump(Post::get());
             $permission->setPrivilegeID(Post::get("privilegeID"))
@@ -217,9 +210,9 @@ class District extends Controller
 
     public function updatePrivilege($privilegeID)
     {
-        $privilege = new \App\Models\User\PrivilegeLevel();
+        $privilege = new PrivilegeLevel();
         $privilege->importFromDatabase(PrivilegeLevelDatabase::get($privilegeID));
-//var_dump(Post::get('superAdmin'));
+
         $privilege->setAdGroup(Post::get('groupName'))
             ->setSuperAdmin(Post::get('superAdmin'));
         $privilege->saveToDatabase();
@@ -229,7 +222,7 @@ class District extends Controller
     {
         if (Post::get("ldapGroupName")) {
 
-            $this->audit(new ChangeSettingAuditAction("Add Privilege Level",null,null));
+            $this->audit(new ChangeSettingAuditAction("Add Privilege Level", null, null));
             return PrivilegeLevelDatabase::addPrivilegeLevel(Post::get("ldapGroupName"), $districtID);
         }
     }
@@ -240,33 +233,23 @@ class District extends Controller
         return PermissionMapDatabase::removePermissionByID($id);
     }
 
-    public function edit($districtID = 1)
-    {
-        $this->districts = DistrictDatabase::getDistricts();
-        if (!empty($this->districts)) {
-            return $this->show($districtID);
-        } else {
-            return $this->view('settings/district/create');
-        }
-    }
-
     public function createPost()
     {
         $post = Post::getAll();
-        DistrictDatabase::createDistrict($post['name']);
-        $this->redirect('/settings/district/edit');
+        DomainDatabase::createDomain($post['name']);
+        $this->redirect('/settings/domain/edit');
     }
 
     public function editPost($districtID = 1)
     {
-        $this->district = DistrictDatabase::getDistrict($districtID);
+        $this->domain = DomainDatabase::getDomain($districtID);
         $post = Post::getAll();
-        $this->preProcessDistrictID($districtID);
+        //$this->preProcessDistrictID($districtID);
         switch (Post::get('action')) {
             case 'updateDistrict':
                 $this->updateDistrict($post);
                 return "Settings Saved";
-                break;
+
             case 'remove':
                 $id = Post::get('privilegeID');
                 $this->logger->info('Removing Privilege ' . $id);
@@ -279,6 +262,7 @@ class District extends Controller
             case 'updatePrivilege':
                 $id = Post::get("privilegeID");
                 $this->updatePrivilege($id);
+                break;
             default:
                 if (Post::get("ldapGroupName")) {
                     PrivilegeLevelDatabase::addPrivilegeLevel(Post::get("ldapGroupName"), $districtID);
@@ -289,27 +273,5 @@ class District extends Controller
 //        $this->redirect('/settings/district/edit/');
     }
 
-    public function delete($districtID = null)
-    {
-        DistrictDatabase::deleteDistrict($districtID);
-        $this->redirect('/district/edit');
-    }
-
-    /**
-     *
-     * @param type $districtID
-     *
-     * @return boolean
-     * @deprecated since version number
-     */
-    public function hasSchools($districtID)
-    {
-//$schools = DistrictDatabase::getSchools($districtID);
-        return false;
-        if ($schools == false or count($schools) < 1) {
-            return false;
-        }
-        return true;
-    }
 
 }

@@ -35,11 +35,11 @@ namespace App\Controllers\Api;
 use App\Api\AD;
 use App\Api\Ad\ADGroups;
 use App\Api\Ad\ADUsers;
-use App\Models\Database\DistrictDatabase;
+use App\Models\Database\DomainDatabase;
 use System\App\LDAPLogger;
 use system\Post;
 
-class District extends APIController
+class Domain extends APIController
 {
 
     /**
@@ -61,7 +61,7 @@ class District extends APIController
 
             return '<h1><i class="fas fa-times-circle text-danger"></i></h1>' . $testResult;
         }
-
+        return '';
     }
 
     /**
@@ -83,6 +83,7 @@ class District extends APIController
             LDAPLogger::get()->debug($testResult);
             return $testResult;
         }
+        return '';
     }
 
     /**
@@ -103,6 +104,7 @@ class District extends APIController
 
             return '<h1><i class="fas fa-times-circle text-danger"></i></h1>' . $testResult;
         }
+        return '';
     }
 
     /**
@@ -112,7 +114,7 @@ class District extends APIController
      */
     public function autocompleteOU(string $searchTerm)
     {
-        $appBaseDN = DistrictDatabase::getAD_BaseDN(1);
+        $appBaseDN = DomainDatabase::getAD_BaseDN(1);
         $searchTerm = $this->parseInput($searchTerm);
         $ous = AD::get()->listOUs($searchTerm);
         foreach ($ous as $ou) {
@@ -140,60 +142,11 @@ class District extends APIController
      *
      * @param string $input
      *
-     * @return type
+     * @return string
      */
     private function parseInput(string $input)
     {
         return str_replace("%20", " ", $input);
-    }
-
-    /**
-     * Prints an array of matching groups for both student and staff groups
-     * respecting permissions
-     *
-     * @param type $searchTerm
-     */
-    public function autocompleteGroup(string $searchTerm)
-    {
-        $groups = $this->searchGroups($searchTerm);
-        //   $groups = array_merge($groups, $this->searchStaffGroups($searchTerm));
-        //wvar_dump($groups);
-        //$groups = ad::get()->listGroups($searchTerm);
-        return (["autocomplete" => $groups]);
-    }
-
-    /**
-     * Returns an array of matching staff groups
-     *
-     * @param string $searchTerm
-     *
-     * @return array
-     */
-    private function searchGroups(string $searchTerm)
-    {
-        $groups = ADGroups::listGroups($searchTerm);
-        if ($groups == false) {
-            $groups = [];
-        }
-        return ($groups);
-
-
-    }
-
-    /**
-     * Prints an array of matching users for both student and staff groups
-     * respecting permissions
-     *
-     * @param type $searchTerm
-     */
-    public function autocompleteUser(string $searchTerm)
-    {
-
-        //$users = AD::get()->listStaffUsers($searchTerm);
-        //$users = array_merge($users, AD::get()->listStudentUsers($searchTerm));
-        $users2 = ADUsers::listUsers($searchTerm);
-
-        return (["autocomplete" => $users2]);
     }
 
     /**
@@ -226,6 +179,66 @@ class District extends APIController
         }
         //return $groups;
         return (["autocomplete" => $users]);
+    }
+
+    /**
+     * Prints an array of matching users and groups
+     * respecting permissions
+     *
+     * @param string $searchTerm
+     */
+    public function autocompleteUserOrGroup(string $searchTerm)
+    {
+        return (["autocomplete" => array_merge($this->autocompleteUser($searchTerm)["autocomplete"], $this->autocompleteGroup($searchTerm)["autocomplete"])]);
+    }
+
+    /**
+     * Prints an array of matching users for both student and staff groups
+     * respecting permissions
+     *
+     * @param string $searchTerm
+     */
+    public function autocompleteUser(string $searchTerm)
+    {
+
+        //$users = AD::get()->listStaffUsers($searchTerm);
+        //$users = array_merge($users, AD::get()->listStudentUsers($searchTerm));
+        $users2 = ADUsers::listUsers($searchTerm);
+
+        return (["autocomplete" => $users2]);
+    }
+
+    /**
+     * Prints an array of matching groups for both student and staff groups
+     * respecting permissions
+     *
+     * @param string $searchTerm
+     */
+    public function autocompleteGroup(string $searchTerm)
+    {
+        $groups = $this->searchGroups($searchTerm);
+        //   $groups = array_merge($groups, $this->searchStaffGroups($searchTerm));
+        //wvar_dump($groups);
+        //$groups = ad::get()->listGroups($searchTerm);
+        return (["autocomplete" => $groups]);
+    }
+
+    /**
+     * Returns an array of matching staff groups
+     *
+     * @param string $searchTerm
+     *
+     * @return array
+     */
+    private function searchGroups(string $searchTerm)
+    {
+        $groups = ADGroups::listGroups($searchTerm);
+        if ($groups == false) {
+            $groups = [];
+        }
+        return ($groups);
+
+
     }
 
 }

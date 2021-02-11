@@ -55,14 +55,17 @@ namespace App\Controllers\Api\settings;
  */
 
 use App\Api\AD;
+use App\App\App;
 use App\Controllers\Api\APIController;
-use App\Controllers\Settings\District as DistrictController;
+use App\Controllers\Settings\Domain as DomainController;
+use App\Models\Database\DomainDatabase;
+use App\Models\User\Permission;
 use System\Post;
 use App\Models\View\PermissionMapPrinter;
 use App\Models\Database\PermissionMapDatabase;
 use System\Traits\DomainTools;
 
-class District extends APIController
+class Domain extends APIController
 {
     use DomainTools;
 
@@ -70,23 +73,25 @@ class District extends APIController
 
     /**
      *
-     * @var DistrictController;
+     * @var DomainController;
      */
     private $controller;
 
-    /**
-     * @param int $districtID
-     *
-     * @return string[]
-     *
-     */
-    public function indexPost($districtID = 1)
+    public function __construct(App $app)
+    {
+        parent::__construct($app);
+        $this->domain = DomainDatabase::getDomain();
+        $this->domainID = $this->domain->getId();
+
+        $this->controller = new DomainController($this->app);
+    }
+
+    public function indexPost($domainID = 1)
     {
 
-        $this->controller = new DistrictController($this->app);
         $this->controller->editPost(1);
-        $this->district = \App\Models\Database\DistrictDatabase::getDistrict($districtID);
-        $this->distictID = $this->district->getId();
+        // $this->domain = DomainDatabase::getDomain($domainID);
+        // $this->domainID = $this->domain->getId();
 
         return $this->returnHTML($this->view('settings/district/show') . $this->settingsSavedToast());
     }
@@ -94,15 +99,12 @@ class District extends APIController
     /**
      * Processes Posted data for permission changes via API
      *
-     * @param type $districtID
+     * @param int $districtID
      *
-     * @return type
+     * @return array
      */
     public function permissionsPost($districtID = 1)
     {
-        $this->district = \App\Models\Database\DistrictDatabase::getDistrict($districtID);
-        $this->distictID = $this->district->getId();
-        $this->controller = new DistrictController($this->app);
 //$controller->permissionsPost($districtID);
 
         $action = Post::get("action");
@@ -113,58 +115,54 @@ class District extends APIController
                 $this->controller->addDistrictPrivilegeLevel();
                 return $this->returnHTML($this->view('settings/district/permissions') . $this->settingsSavedToast());
 
-                break;
+
             case 'deletePrivilege':
                 $this->controller->deletePrivilegeLevel();
                 $output = $this->returnHTML($this->view('settings/district/permissions') . $this->settingsSavedToast());
                 //var_dump($output);
                 return $output;
 
-                break;
+
             case 'updatePrivilege':
                 $this->controller->updatePrivilege(Post::get("privilegeID"));
                 return $this->returnHTML($this->view('settings/district/permissions') . $this->settingsSavedToast());
 
-                break;
+
             case 'modifyPermission':
                 return $this->modifyPermission();
 
-                break;
+
             case 'addOUPermission':
                 return $this->addOUPermission();
-                break;
+
             case 'removePermission':
                 return $this->removePermission();
 
-                break;
+
             case 'getOULevelPermissions':
 
-                //return $this->returnHTML("berms test");
                 $response = ($this->view('settings/district/permissions/ouLevelPermissions'));
-                //$response = "test";
-                //var_export($response);
-                //var_export($this->returnHTML($response));
+
                 return ($this->returnHTML($response));
-                break;
+
             case 'showOULevelPermissions':
 
 
                 return ($this->returnHTML($this->showOUPermissions(Post::get('ou'))));
-                break;
+
             case 'getDistrictLevelPermissions':
-                $this->district = \App\Models\Database\DistrictDatabase::getDistrict($districtID);
+                $this->domain = DomainDatabase::getDomain($districtID);
                 return $this->returnHTML($this->view('settings/district/permissions/districtLevelPermissions'));
-                break;
+
             case 'addDistrictPermission':
                 // $this->district = \App\Models\Database\DistrictDatabase::getDistrict($districtID);
                 $this->controller->addOUPermission();
                 return $this->returnHTML($this->view('settings/district/permissions/districtLevelPermissions') . $this->settingsSavedToast());
-                break;
+
             case 'getManagePrivilegeLevels':
 
                 return $this->returnHTML($this->view('settings/district/permissions/privilegeLevels'));
-                break;
-//exit;
+
             default:
                 break;
         }
@@ -172,13 +170,13 @@ class District extends APIController
 
     /**
      *
-     * @return type
+     * @return array
      */
     private function modifyPermission()
     {
         $ou = Post::get('id');
         if ($ou != '' and $ou != null) {
-            $permission = new \App\Models\User\Permission();
+            $permission = new Permission();
             $permission->importFromDatabase(PermissionMapDatabase::getPermissionById($ou));
             $dn = $permission->getOu();
             $this->controller->modifyPermission();
@@ -237,7 +235,7 @@ class District extends APIController
     private function removePermission()
     {
         $id = Post::get('id');
-        $permission = new \App\Models\User\Permission();
+        $permission = new Permission();
         $permission->importFromDatabase(PermissionMapDatabase::getPermissionById($id));
         $dn = $permission->getOu();
         $this->controller->removeOUPermission();

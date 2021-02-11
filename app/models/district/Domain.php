@@ -32,14 +32,16 @@ namespace App\Models\District;
  * @author cjacobsen
  */
 
+use App\Api\AD;
 use App\Models\Model;
 use System\Encryption;
-use App\Models\Database\DistrictDatabase;
+use App\Models\Database\DomainDatabase;
+use System\Traits\DomainTools;
 
-class District extends Model
+class Domain extends Model
 {
 
-    use \System\Traits\DomainTools;
+    use DomainTools;
 
     private $id;
     private $name;
@@ -57,7 +59,7 @@ class District extends Model
 
     /**
      *
-     * @param type $LDAPReponse
+     * @param object $LDAPReponse
      *
      * @return $this
      */
@@ -90,27 +92,6 @@ class District extends Model
         return $this;
     }
 
-    public function getGradeMin()
-    {
-        return $this->gradeMin;
-    }
-
-    public function setGradeMin($gradeMin)
-    {
-        $this->gradeMin = $gradeMin;
-        return $this;
-    }
-
-    public function getGradeMax()
-    {
-        return $this->gradeMax;
-    }
-
-    public function setGradeMax($gradeMax)
-    {
-        $this->gradeMax = $gradeMax;
-        return $this;
-    }
 
     /**
      * @return mixed
@@ -123,7 +104,7 @@ class District extends Model
     /**
      * @param mixed $useTLS
      *
-     * @return District
+     * @return Domain
      */
     public function setUseTLS($useTLS)
     {
@@ -223,7 +204,7 @@ class District extends Model
 
     public function getSubOUs()
     {
-        $ad = \App\Api\AD::get();
+        $ad = AD::get();
         $rawOUs = $ad->getSubOUs($this->getId());
         foreach ($rawOUs as $ou) {
             $ous[] = $ou['distinguishedname'];
@@ -244,7 +225,7 @@ class District extends Model
 
     public function getDirectoryTree()
     {
-        $ad = \App\Api\AD::get();
+        $ad = AD::get();
         return $ad->getAllSubOUs($this->getRootOU());
     }
 
@@ -256,14 +237,14 @@ class District extends Model
     public function saveToDB()
     {
         //var_dump("saving to db");
-        DistrictDatabase::setAD_FQDN(1, $this->adFQDN);
-        DistrictDatabase::setAbbreviation(1, $this->abbr);
-        DistrictDatabase::setADPassword(1, $this->adPassword);
-        DistrictDatabase::setADUsername(1, $this->adUsername);
-        DistrictDatabase::setADBaseDN(1, $this->getAdBaseDN());
-        DistrictDatabase::setADNetBIOS(1, $this->adNetBIOS);
-        DistrictDatabase::setName(1, $this->name);
-        DistrictDatabase::setAD_UseTLS(1, $this->useTLS);
+        DomainDatabase::setAD_FQDN($this->adFQDN);
+        DomainDatabase::setAbbreviation($this->abbr);
+        DomainDatabase::setADPassword($this->adPassword);
+        DomainDatabase::setADUsername($this->adUsername);
+        DomainDatabase::setADBaseDN($this->getAdBaseDN());
+        DomainDatabase::setADNetBIOS($this->adNetBIOS);
+        DomainDatabase::setName($this->name);
+        DomainDatabase::setAD_UseTLS($this->useTLS);
     }
 
     public function getAdBaseDN()
@@ -274,6 +255,7 @@ class District extends Model
         } elseif ($this->adFQDN !== null and $this->adFQDN != '') {
             return $this->FQDNtoDN($this->adFQDN);
         }
+        return '';
     }
 
     public function setAdBaseDN($adBaseDN)

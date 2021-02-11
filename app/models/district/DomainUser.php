@@ -37,10 +37,10 @@ use App\Api\Ad\ADUsers;
 use App\Models\User\PermissionHandler;
 use App\Models\User\PermissionLevel;
 use System\App\AppException;
-use System\App\LDAPLogger;
+use System\Lang;
 use System\Traits\DomainTools;
 
-class DistrictUser extends ADModel
+class DomainUser extends ADModel
 {
     /**
      * Include the DomainTools trait
@@ -68,6 +68,10 @@ class DistrictUser extends ADModel
             $this->activeDirectory = ADUsers::getDomainScopUser($user);
         } elseif ($user instanceof User) {
             $this->activeDirectory = $user;
+        }
+        if (is_null($this->activeDirectory)) {
+            $this->logger->error($this);
+            throw new AppException(Lang::getError("Object not found"), AppException::OBJECT_NOT_FOUND);
         }
         if (!PermissionHandler::hasPermission(self::getOUFromDN($this->activeDirectory->getDistinguishedName()), PermissionLevel::USERS, PermissionLevel::USER_READ)) {
             throw new AppException('That user was not found.', AppException::FAIL_USER_READ_PERM);
@@ -200,7 +204,7 @@ class DistrictUser extends ADModel
     public function isLockedOut()
     {
         $this->logger->debug($this->activeDirectory->getLockoutTime());
-        if ($this->activeDirectory->getLockoutTime() === '0' || $this->activeDirectory->getLockoutTime() ==="" || $this->activeDirectory->getLockoutTime()===null ) {
+        if ($this->activeDirectory->getLockoutTime() === '0' || $this->activeDirectory->getLockoutTime() === "" || $this->activeDirectory->getLockoutTime() === null) {
             return false;
         }
         return true;
@@ -297,6 +301,11 @@ class DistrictUser extends ADModel
     public function getDistinguishedName()
     {
         return $this->activeDirectory->getDistinguishedName();
+    }
+
+    public function moveTo(?string $ou)
+    {
+        $this->activeDirectory->move($ou);
     }
 
 
