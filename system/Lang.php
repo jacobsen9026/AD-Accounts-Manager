@@ -26,6 +26,8 @@
 
 namespace System;
 
+use System\App\AppLogger;
+
 /**
  * Description of Lang
  *
@@ -34,24 +36,15 @@ namespace System;
 abstract class Lang
 {
 
-    //put your code here
-
-    public static function get($name)
+    public static function get($stringName)
     {
-        $requestedLang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
 
-        if (self::langExists($requestedLang)) {
-
-            $target = '\app\lang\\' . $requestedLang . '\\' . strtoupper($requestedLang) . 'Common';
-        } else {
-            $target = '\app\lang\\' . DEFAULT_LANG . '\\' . strtoupper(DEFAULT_LANG) . 'Common';
-        }
-        //echo $target;
-        app\AppLogger::get()->debug("Language translation: " . $name . ' -> ' . $target::get($name));
-        return $target::get($name);
+        $interpreter = self::getTargetLang();
+        AppLogger::get()->debug("Language translation: " . $stringName . ' -> ' . $interpreter::get($stringName));
+        return $interpreter::get($stringName);
     }
 
-    public static function getHelp($name)
+    private static function getTargetLang()
     {
         $requestedLang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
 
@@ -62,19 +55,35 @@ abstract class Lang
             $target = '\app\lang\\' . DEFAULT_LANG . '\\' . strtoupper(DEFAULT_LANG) . 'Common';
         }
         //echo $target;
-        return $target::getHelp($name);
+
+        return $target;
     }
 
     private static function langExists($lang)
     {
         $path = APPPATH . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . strtoupper($lang) . 'Common.php';
-        //app\AppLogger::get()->info("Language Path: ".$path);
+        AppLogger::get()->info("Language Path: " . $path);
         if (file_exists($path)) {
 
             return true;
         }
-        app\AppLogger::get()->warning("Language reference for " . $lang . " was not found.");
+        AppLogger::get()->warning("Language reference for " . $lang . " was not found.");
         return false;
+    }
+
+    public static function getHelp($stringName)
+    {
+        $interpreter = self::getTargetLang();
+        AppLogger::get()->debug("Language translation: " . $stringName . ' -> ' . $interpreter::getHelp($stringName));
+        return $interpreter::getHelp($stringName);
+    }
+
+    public static function getError($stringName)
+    {
+
+        $interpreter = self::getTargetLang();
+        AppLogger::get()->debug("Language translation: " . $stringName . ' -> ' . $interpreter::getError($stringName));
+        return $interpreter::getError($stringName);
     }
 
 }
