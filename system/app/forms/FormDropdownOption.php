@@ -35,6 +35,7 @@ class FormDropdownOption extends FormElement
 {
 
     //put your code here
+    protected bool $bold = false;
     private $selected = '';
 
     /**
@@ -47,10 +48,23 @@ class FormDropdownOption extends FormElement
     public function __construct($label = null, $value = null)
     {
 
-        $this->setLabel($label);
-        $this->setValue($value);
+        $this->setLabel($label)
+            ->setName($label)
+            ->setValue($value);
     }
 
+    /**
+     * @return bool
+     */
+    public function isBold(): bool
+    {
+        return $this->bold;
+    }
+
+    public function getId()
+    {
+        return parent::getId() . "Option";
+    }
 
     public function selected()
     {
@@ -60,6 +74,12 @@ class FormDropdownOption extends FormElement
     public function getSelected()
     {
         return $this->selected;
+    }
+
+    public function bold()
+    {
+        $this->bold = true;
+        return $this;
     }
 
 
