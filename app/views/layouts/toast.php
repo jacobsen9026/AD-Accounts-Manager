@@ -1,5 +1,6 @@
 <div class="<?= $params['toastClasses'] ?>" style="z-index:1030">
-    <div class="toast mx-auto" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="true">
+    <div id="<?= $params['id'] ?>" class="toast mx-auto" role="alert" aria-live="assertive" aria-atomic="true"
+         data-autohide="true">
         <div class="toast-header">
             <?= $params['image'] ?>
 
@@ -26,7 +27,7 @@
         ?>
         <script>
 
-            $(".toast").toast({'animation': true, 'autohide': true, 'delay':<?=$params['timeout']?>});
+            $(".toast").toast({'animation': true, 'autohide': true, 'delay': <?=$params['timeout']?>});
             $(".toast").toast("show");
         </script>
     </div>
