@@ -24,14 +24,14 @@
  */
 
 use App\Api\AD;
-use App\Models\Database\DistrictDatabase;
+use App\Models\Database\DomainDatabase;
 use App\Models\Database\PermissionMapDatabase;
 use App\Models\View\PermissionMapPrinter;
 use App\Models\View\Javascript;
 use System\App\Forms\Form;
 
-/* @var $district \App\Models\District\District */
-$district = $this->district;
+/* @var $domain \App\Models\District\Domain */
+$domain = $this->domain;
 
 
 ?>
@@ -46,7 +46,7 @@ $district = $this->district;
         let ou = $(this).data('target-ou');
 
         $("#ouPermissionsContainer").html('<div class="round-loader text-secondary"></div>');
-        $.post('/api/settings/district/permissions', {
+        $.post('/api/settings/domain/permissions', {
             action: "showOULevelPermissions",
             ou: ou,
             csrfToken: "<?=Form::getCSRFToken()?>"
@@ -98,7 +98,7 @@ $district = $this->district;
         <div class="permissionCountBadge">
             <p>
                 <?php
-                echo PermissionMapDatabase::getSubOUPermissionsCount($district->getAdBaseDN());
+                echo PermissionMapDatabase::getSubOUPermissionsCount($domain->getAdBaseDN());
                 ?>
             </p>
         </div>
@@ -110,7 +110,7 @@ $district = $this->district;
         <div id="ouNavigationTree">
             <?php
             $ad = AD::get();
-            $tree = $ad->getAllSubOUs(DistrictDatabase::getAD_BaseDN(1));
+            $tree = $ad->getAllSubOUs(DomainDatabase::getAD_BaseDN(1));
             echo PermissionMapPrinter::printOUNavigationTree($tree);
             ?>
         </div>
