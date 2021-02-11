@@ -154,7 +154,7 @@ class Router
         /**
          * Let's log the final route we will take
          */
-        $this->logger->info("Route taken: " . $this->route->getControler() . "->" . $this->route->getMethod() . "->" . $this->route->getData());
+        $this->logger->info("Route taken: " . $this->route->getString());
     }
 
     /**
