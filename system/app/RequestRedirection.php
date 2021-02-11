@@ -33,12 +33,13 @@ namespace System\App;
 trait RequestRedirection
 {
 
-    //put your code here
-
+    /**
+     * Redirects the http client to the $url provided
+     * @param $url
+     */
     public function redirect($url)
     {
         $app = \System\Core::getAppClass()::get();
-        //$app = App::get();
 
         if ($app->request->getType() != 'ajax') {
             if ($app->inDebugMode()) {
