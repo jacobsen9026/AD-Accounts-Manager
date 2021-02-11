@@ -33,6 +33,7 @@ namespace App\Controllers\Api\settings;
  */
 
 use App\Controllers\Api\APIController;
+use System\App\AppException;
 
 class Email extends APIController
 {
@@ -41,6 +42,9 @@ class Email extends APIController
 
     public function indexPost()
     {
+        if (!$this->user->superAdmin) {
+            throw new AppException('You\'ve entered a forbidden area.', AppException::UNAUTHORIZED_ACCESS);
+        }
         $email = new \App\Controllers\Settings\Email($this->app);
         $email->indexPost();
 
