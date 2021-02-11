@@ -57,82 +57,6 @@ class Route
 
     /**
      *
-     * @return type
-     */
-    public function getControler()
-    {
-        return $this->controler;
-    }
-
-    /**
-     *
-     * @return type
-     */
-    public function getMethod()
-    {
-        return $this->method;
-    }
-
-    /**
-     *
-     * @return type
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
-     *
-     * @param type $controler
-     *
-     * @return $this
-     */
-    public function setControler($controler)
-    {
-        $this->controler = $controler;
-        return $this;
-    }
-
-    /**
-     *
-     * @param type $method
-     *
-     * @return $this
-     */
-    public function setMethod($method)
-    {
-        $this->method = $method;
-        return $this;
-    }
-
-    /**
-     *
-     * @param type $data
-     *
-     * @return $this
-     */
-    public function setData($data)
-    {
-
-        $this->data = $this->preProcessData($data);
-        return $this;
-    }
-
-    /**
-     * Converts HTML encoded characters to string
-     *
-     * @param string $data
-     *
-     * @return string
-     */
-    private function preProcessData($data)
-    {
-        return str_replace("%20", " ", $data);
-    }
-
-    /**
-     *
      * Shift method to controller, and split data by /'s and set first segment
      * as method. Finally break trim the first segment from the data.
      *
@@ -154,6 +78,87 @@ class Route
             $this->setData(null);
         }
         return $this;
+    }
+
+    /**
+     *
+     * @return type
+     */
+    public function getMethod()
+    {
+        return $this->method;
+    }
+
+    /**
+     *
+     * @param type $method
+     *
+     * @return $this
+     */
+    public function setMethod($method)
+    {
+        $this->method = $method;
+        return $this;
+    }
+
+    /**
+     *
+     * @return type
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     *
+     * @param type $data
+     *
+     * @return $this
+     */
+    public function setData($data)
+    {
+
+        $this->data = $this->preProcessData($data);
+        return $this;
+    }
+
+    public function getString()
+    {
+        return $this->getControler() . "->" . $this->getMethod() . "->" . $this->getData();
+    }
+
+    /**
+     *
+     * @return type
+     */
+    public function getControler()
+    {
+        return $this->controler;
+    }
+
+    /**
+     *
+     * @param type $controler
+     *
+     * @return $this
+     */
+    public function setControler($controler)
+    {
+        $this->controler = $controler;
+        return $this;
+    }
+
+    /**
+     * Converts HTML encoded characters to string
+     *
+     * @param string $data
+     *
+     * @return string
+     */
+    private function preProcessData($data)
+    {
+        return str_replace("%20", " ", $data);
     }
 
 }
