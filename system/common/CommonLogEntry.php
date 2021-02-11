@@ -36,7 +36,6 @@ namespace System\Common;
 
 use System\Core;
 use System\File;
-use System\Log\CommonLogger;
 use System\Log\CommonLogLevel;
 
 class CommonLogEntry
@@ -47,10 +46,23 @@ class CommonLogEntry
      * @var mixed Timestamp in microseconds
      */
     private $timestamp;
+    /**
+     * @var string
+     */
     private $level;
+
+    /**
+     * @var string
+     */
     private $message;
+
+    /**
+     * @var array
+     */
     private $backtrace;
+
     private $loggerName;
+
     private $logFile;
 
     public function __construct($loggerName = "")
@@ -61,6 +73,9 @@ class CommonLogEntry
         $this->loggerName = $loggerName;
     }
 
+    /**
+     * @return array
+     */
     private function traceBack()
     {
         $traceCursor = 4;
@@ -79,20 +94,25 @@ class CommonLogEntry
         return $backTrace;
     }
 
+    /**
+     * @return string
+     */
     public function getId()
     {
         return 'LogEntry_' . substr(hash("sha1", $this->getMessage() . $this->getTimestamp()), 0, 10);
     }
 
+    /**
+     * @return string
+     */
     public function getMessage()
     {
         return $this->message;
-        return htmlspecialchars($this->message);
     }
 
     /**
      *
-     * @param type $message
+     * @param string $message
      *
      * @return $this
      */
@@ -104,6 +124,9 @@ class CommonLogEntry
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getTimestamp()
     {
         return htmlspecialchars($this->timestamp);
@@ -131,9 +154,9 @@ class CommonLogEntry
 
     /**
      *
-     * @param type $object
+     * @param object $object
      *
-     * @return type
+     * @return string
      */
     private function debugObject($object)
     {
@@ -146,6 +169,9 @@ class CommonLogEntry
         return ob_get_clean();
     }
 
+    /**
+     *
+     */
     private function writeToLogFile()
     {
         if (Core::inDebugMode()) {
@@ -157,6 +183,9 @@ class CommonLogEntry
         }
     }
 
+    /**
+     * @return mixed
+     */
     public function getBacktrace()
     {
         return $this->backtrace;
@@ -178,7 +207,7 @@ class CommonLogEntry
     /**
      * Returns one of the following
      *
-     * @return type
+     * @return string
      */
     public function getLevel()
     {
@@ -187,7 +216,7 @@ class CommonLogEntry
 
     /**
      *
-     * @param type $level
+     * @param string $level
      *
      * @return $this
      */
@@ -199,7 +228,7 @@ class CommonLogEntry
 
     public function isError()
     {
-        if ($this->getLevel() == self::ERROR) {
+        if ($this->getLevel() == CommonLogLevel::ERROR) {
             return true;
         }
         return false;

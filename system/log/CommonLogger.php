@@ -33,21 +33,13 @@ namespace System\Log;
  */
 
 use Psr\Log\LoggerInterface;
-use System\Parser;
 use System\Common\CommonLogEntry;
+use System\Traits\Parser;
 
 class CommonLogger implements LoggerInterface
 {
-    use \System\Traits\Parser;
+    use Parser;
 
-    /**
-     * @var float Logger starting time in microseconds
-     */
-    private $startTime;
-    /**
-     * @var string Name of the logger
-     */
-    private $name;
     /**
      * @var array <CommonLogEntry> All the log entries
      */
@@ -56,6 +48,14 @@ class CommonLogger implements LoggerInterface
      * @var bool Error flag
      */
     protected $hasErrors = false;
+    /**
+     * @var float Logger starting time in microseconds
+     */
+    private $startTime;
+    /**
+     * @var string Name of the logger
+     */
+    private $name;
 
     /**
      * CommonLogger constructor.
@@ -65,29 +65,10 @@ class CommonLogger implements LoggerInterface
         $this->startTime = microtime(true);
     }
 
-
-    /**
-     * @param string $name
-     *
-     * @return $this
-     */
-    public function setName(string $name)
-    {
-        $this->name = $name;
-        return $this;
-    }
-
     public function getStartTime()
     {
         return $this->startTime;
     }
-
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
 
     /**
      * Returns the array of CommonLogEntries for this logger
@@ -108,6 +89,18 @@ class CommonLogger implements LoggerInterface
         return $returnArray;
     }
 
+    /**
+     * Detailed debug information.
+     *
+     * @param string $message
+     * @param array $context
+     *
+     * @return void
+     */
+    public function debug($message, array $context = [])
+    {
+        $this->storeLogEntry($message, CommonLogLevel::DEBUG);
+    }
 
     /**
      * Stores a log event as a CommonLogEntry in this loggers $logEntries store
@@ -125,18 +118,20 @@ class CommonLogger implements LoggerInterface
         //var_dump(self::$logEntries);
     }
 
+    public function getName()
+    {
+        return $this->name;
+    }
 
     /**
-     * Detailed debug information.
+     * @param string $name
      *
-     * @param string $message
-     * @param array $context
-     *
-     * @return void
+     * @return $this
      */
-    public function debug($message, array $context = [])
+    public function setName(string $name)
     {
-        $this->storeLogEntry($message, CommonLogLevel::DEBUG);
+        $this->name = $name;
+        return $this;
     }
 
     /**
@@ -180,7 +175,7 @@ class CommonLogger implements LoggerInterface
      *
      * Example: User logs in, SQL logs.
      *
-     * @param string $message
+     * @param string|array $message
      * @param array $context
      *
      * @return void
