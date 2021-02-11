@@ -42,8 +42,8 @@ class FormRadio extends FormElement implements FormElementInterface
 
     /**
      *
-     * @param type $displayName
-     * @param type $value
+     * @param string $displayName
+     * @param string $value
      * @param bool $selected
      * @param bool $enabled
      *
