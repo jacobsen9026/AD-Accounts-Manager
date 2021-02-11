@@ -38,7 +38,7 @@ use App\Models\Database\PrivilegeLevelDatabase;
 use App\Controllers\Controller;
 use App\Models\Database\EmailDatabase;
 
-class Email extends Controller
+class Email extends SettingsController
 {
 
     //put your code here
