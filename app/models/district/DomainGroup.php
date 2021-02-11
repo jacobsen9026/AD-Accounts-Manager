@@ -44,7 +44,7 @@ use System\App\AppException;
 use System\Traits\DomainTools;
 
 
-class DistrictGroup extends ADModel
+class DomainGroup extends ADModel
 {
     use DomainTools;
 
@@ -79,6 +79,15 @@ class DistrictGroup extends ADModel
         return $this->getAttribute("mail");
     }
 
+    public function getParents()
+    {
+        $parents = [];
+        foreach ($this->activeDirectory->getMemberOf() as $parent) {
+            $parents[] = ADGroups::getGroupByDN($parent)->getName();
+        }
+        return $parents;
+    }
+
     public function getMembers()
     {
         $members = [];
@@ -86,7 +95,7 @@ class DistrictGroup extends ADModel
             if ($groupMember instanceof User) {
                 $this->logger->debug($groupMember);
                 try {
-                    $members[] = new DistrictUser($groupMember);
+                    $members[] = new DomainUser($groupMember);
                 } catch (AppException $exception) {
                     $this->logger->warning($exception);
                 }
@@ -95,33 +104,48 @@ class DistrictGroup extends ADModel
         return $members;
     }
 
-
-    public function addMember($member)
+    public function getChildren()
     {
-        $this->activeDirectory->addMember($member);
+        $children = [];
+        foreach (ADGroups::getChildren($this->activeDirectory->getDn()) as $subGroup) {
+
+
+            if ($subGroup instanceof Group) {
+                $this->logger->debug($subGroup);
+                try {
+                    $children[] = new DomainGroup($subGroup->getName());
+                } catch (AppException $exception) {
+                    $this->logger->warning($exception);
+                }
+            }
+        }
+        return $children;
     }
 
-    public function addUserMember($userOrDN)
+
+    public function addMember($distinguishedName)
     {
-        if (is_string($userOrDN)) {
-            $userOrDN = new DistrictUser(ADUsers::getUserByDN($userOrDN));
-        }
-        if (!$this->hasMember($userOrDN->getUsername())) {
-            return $this->activeDirectory->addMember($userOrDN->getDistinguishedName());
+
+        if (!$this->hasMember($distinguishedName)) {
+            return $this->activeDirectory->addMember($distinguishedName);
         } else {
             throw new AppException('User already in group');
         }
     }
 
-    public function hasMember($username)
+    public function hasMember($distinguishedName)
     {
         /* @var $member User */
         $this->logger->debug($this->activeDirectory->getMembers());
         foreach ($this->activeDirectory->getMembers() as $member) {
-            $this->logger->debug("Group Member: " . $username . ' -> ' . $member->getAccountName());
-            if ($member->getAccountName() == $username) {
-                $this->logger->debug($member);
-                return new DistrictUser($member);
+            $this->logger->debug("Checking for matching Group Member: " . $distinguishedName . ' -> ' . $member->getDn());
+            if ($member->getDn() == $distinguishedName) {
+                $this->logger->debug("Found Match: " . $member);
+                if ($member instanceof User) {
+                    return new DomainUser($member);
+                } elseif ($member instanceof Group) {
+                    return new DomainGroup($member->getAccountName());
+                }
             }
         }
         return false;
@@ -132,5 +156,12 @@ class DistrictGroup extends ADModel
         return self::getOUFromDN($this->activeDirectory->getDistinguishedName());
     }
 
+    public function getDistinguishedName()
+    {
+        if (is_null($this->activeDirectory)) {
+            return null;
+        }
+        return $this->activeDirectory->getDn();
+    }
 
 }
