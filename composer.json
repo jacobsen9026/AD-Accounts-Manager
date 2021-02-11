@@ -7,6 +7,7 @@
         "ext-zip": "*",
         "ext-json": "*",
         "ext-pdo": "*",
-        "directorytree/ldaprecord": "^1.7"
+        "directorytree/ldaprecord": "^1.7",
+      "ext-ldap": "*"
     }
 }
