@@ -2,10 +2,10 @@
 
 
 use App\Models\View\Javascript;
-use System\App\Forms\Form;
+use App\Forms\FormText;
 use System\App\Forms\FormButton;
 use System\App\Forms\FormElementGroup;
-use System\App\Forms\FormText;
+use System\App\Forms\Form;
 
 $action = new FormText('', '', 'action', 'resetPassword');
 $action->small();
