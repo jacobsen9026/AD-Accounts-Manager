@@ -35,12 +35,13 @@ class FormDropdown extends FormElement
 {
     //put your code here
 
+
     /**
      *
      * @var FormDropdownOption
      */
-    private $options;
-    private $name;
+    protected $options;
+    protected $name;
 
     public function createOption($label, $value)
     {
@@ -54,11 +55,6 @@ class FormDropdown extends FormElement
         return $this;
     }
 
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
     function getElementHTML()
     {
         $disable = '';
@@ -67,10 +63,29 @@ class FormDropdown extends FormElement
         $output = '<select class="form-control mx-auto custom-select text-center" name="' . $this->getName() . '" ' . $disable . '>';
 
         foreach ($this->getOptions() as $option) {
-            $output .= '<option value="' . $option->getValue() . '" ' . $option->getSelected() . '>' . $option->getLabel() . '</option>';
+            $output .= '<option id="' . $option->getId() . '" value="' . $option->getValue() . '" ' . $option->getSelected() . '>';
+            if ($option->isBold()) {
+                $output .= "<strong>";
+            }
+            $output .= $option->getLabel();
+            if ($option->isBold()) {
+                $output .= "</strong>";
+            }
+            $output .= '</option>';
+            $output .= '<script>' . $option->getScript() . '</script>';
+
         }
         $output .= '</select>';
         return $output;
     }
+
+    /**
+     * @return FormDropdownOption
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
 
 }
