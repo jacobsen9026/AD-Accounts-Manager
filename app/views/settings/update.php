@@ -26,12 +26,13 @@
 
 use App\App\App;
 use App\App\AppUpdater;
+use App\Models\Database\SchemaDatabase;
 use App\Models\View\Javascript;
 use App\Models\View\Modal;
+use App\Forms\FormText;
 use System\App\Forms\Form;
 use System\App\Forms\FormButton;
 use System\App\Forms\FormSlider;
-use System\App\Forms\FormText;
 use System\Core;
 
 $updater = new AppUpdater();
@@ -99,6 +100,10 @@ $updateModalButton->addModal($updateModal)
 <?php
 if ($availableVersion !== 'Running the latest version!') {
     echo $updateModalButton->print();
+
 }
+echo "</br>Current Schema Version: " . SchemaDatabase::getSchemaVersion();
+echo "</br>Available Schema Version: " . SchemaDatabase::getNextSchemaVersion();
+
 ?>
 

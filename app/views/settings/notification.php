@@ -25,7 +25,6 @@
  */
 
 use app\database\Schema;
-use App\Models\Database\AppDatabase;
 use App\Models\Database\EmailDatabase;
 use System\App\Forms\Form;
 use System\App\Forms\FormFloatingButton;
