@@ -33,30 +33,16 @@ namespace App\Models\Database;
  */
 
 use App\Api\Ad\ADGroups;
-use App\Models\District\DistrictGroup;
+use App\Models\District\DomainGroup;
 use App\Models\User\PrivilegeLevel;
 use System\App\AppException;
+use System\App\AppLogger;
 
 abstract class PrivilegeLevelDatabase extends DatabaseModel
 {
 
     const TABLE_NAME = 'PrivilegeLevel';
 
-    /**
-     *
-     * @param string $groupName
-     *
-     * @return PrivilegeLevel
-     */
-    public static function getPrivilegeLevel(string $groupName)
-    {
-        $query = new Query(self::TABLE_NAME, Query::SELECT);
-        $query->where('AD_Group_Name', $groupName);
-        $result = $query->run()[0];
-        $level = new PrivilegeLevel();
-        $level->importFromDatabase($result);
-        return $level;
-    }
 
     /**
      *
@@ -85,7 +71,6 @@ abstract class PrivilegeLevelDatabase extends DatabaseModel
     /**
      *
      * @param int $id
-     * @param int $districtID
      * @param string $adGroupName
      * @param bool $superAdmin
      */
@@ -106,19 +91,22 @@ abstract class PrivilegeLevelDatabase extends DatabaseModel
     {
         if ($id == null) {
             $dbTable = parent::get();
+            $logger = AppLogger::get();
+            ksort($dbTable);
+            $logger->debug($dbTable);
             if ($dbTable != false) {
                 foreach ($dbTable as $row) {
                     $level = new PrivilegeLevel();
                     try {
                         $level->setId($row['ID'])
-                            //->setAdGroup(ADGroups::getGroupById($row['AD_Group_Name'])->getAccountName())
                             ->setAdGroup($row['AD_Group_Name'])
                             ->setSuperAdmin($row['Super_Admin']);
                         $levels[] = $level;
                     } catch (AppException $e) {
-
+                        $logger->error($e);
                     }
                 }
+
                 return $levels;
             }
             return false;
