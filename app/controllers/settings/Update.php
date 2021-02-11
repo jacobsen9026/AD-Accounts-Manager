@@ -40,7 +40,7 @@ use App\Models\Database\AuthDatabase;
 use App\Models\Database\EmailDatabase;
 use System\Post;
 
-class Update extends Controller
+class Update extends SettingsController
 {
 
 
