@@ -27,7 +27,7 @@
 use App\Models\Database\AuthDatabase;
 use System\App\Forms\Form;
 use System\App\Forms\FormFloatingButton;
-use System\App\Forms\FormText;
+use App\Forms\FormText;
 use App\Api\Ad\ADConnection;
 
 $auth = new AuthDatabase();
