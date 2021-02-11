@@ -15,6 +15,10 @@ and open the template in the editor.
     box-shadow: 0.1em 0.2em 0.75em #000;
 }
 
+.modal-content {
+    border: none !important;
+}
+
 
 .mt-8 {
     margin-top: 6rem !important;
