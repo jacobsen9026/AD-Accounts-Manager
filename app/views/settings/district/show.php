@@ -1,23 +1,21 @@
 <?php
-/* @var $district District */
+/* @var $domain Domain */
 
 use App\Api\Ad\ADConnection;
-use App\Models\Database\DistrictDatabase;
+use App\Models\Database\DomainDatabase;
+use App\Forms\FormText;
 use System\App\Forms\Form;
-use App\Api\GAM;
 use System\App\Forms\FormFloatingButton;
 use System\Encryption;
-use App\Models\District\District;
+use App\Models\District\Domain;
 use System\App\Forms\FormButton;
-use System\App\Forms\FormText;
 use System\App\Forms\FormHTML;
 
 
-/* @var $district District */
-/** @var District $district */
-$district = $this->district;
+/* @var $district Domain */
+/** @var Domain $district */
+$domain = $this->domain;
 
-//$adTestResult = $ad->getConnectionResult();
 $adTestResult = ADConnection::isConnected();
 if (!$adTestResult) {
     $adTestResult = ADConnection::getError();
@@ -31,7 +29,7 @@ if (!$adTestResult) {
 
     <div class="mb-3">
         <strong>Editing
-            <?= $district->getName() ?>
+            <?= $domain->getName() ?>
         </strong>
 
 
@@ -39,36 +37,36 @@ if (!$adTestResult) {
 
 
     <?php
-    $form = new Form('/settings/district/edit/' . $district->getId(), 'editDistrict');
+    $form = new Form('/settings/domain/edit/' . $domain->getId(), 'editDistrict');
 
     /**
      * @deprecated
      */
     $updateButtton = new FormButton("Update District");
     $updateButtton->medium()
-        ->addAJAXRequest('/api/settings/district', 'districtOutput', $form);
+        ->addAJAXRequest('/api/settings/domain', 'districtOutput', $form);
 
 
     $updateButttonFloating = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
     $updateButttonFloating->setId('floatingSaveButton')
-        ->addAJAXRequest('/api/settings/district', 'districtOutput', $form);
+        ->addAJAXRequest('/api/settings/domain', 'districtOutput', $form);
 
-    $name = new FormText("Name", "", "name", $district->getName());
+    $name = new FormText("Name", "", "name", $domain->getName());
     $name->full();
     $action = new FormText('', '', 'aciton', 'updateDistrict');
     $action->hidden();
-    $abbr = new FormText("Abbreviation", "", "abbr", $district->getAbbr());
-    $netBIOS = new FormText("Active Directory Domain NetBIOS", "", "adNetBIOS", $district->getAdNetBIOS());
-    $adFQDN = new FormText("Active Directory FQDN", "", "adFQDN", $district->getAdFQDN());
-    $adBaseDN = new FormText("Active Directory Base DN", "The point from which the application searches from.", "adBaseDN", $district->getAdBaseDN());
-    $adUsername = new FormText("Active Directory Username", "Enter an account with admin privileges to the district OU's", "adUsername", $district->getAdUsername());
-    $adPassword = new FormText("Active Directory Password", "Enter password for admin user", "adPassword", Encryption::encrypt($district->getAdPassword()));
+    $abbr = new FormText("Abbreviation", "", "abbr", $domain->getAbbr());
+    $netBIOS = new FormText("Active Directory Domain NetBIOS", "", "adNetBIOS", $domain->getAdNetBIOS());
+    $adFQDN = new FormText("Active Directory FQDN", "", "adFQDN", $domain->getAdFQDN());
+    $adBaseDN = new FormText("Active Directory Base DN", "The point from which the application searches from.", "adBaseDN", $domain->getAdBaseDN());
+    $adUsername = new FormText("Active Directory Username", "Enter an account with admin privileges to the district OU's", "adUsername", $domain->getAdUsername());
+    $adPassword = new FormText("Active Directory Password", "Enter password for admin user", "adPassword", Encryption::encrypt($domain->getAdPassword()));
     $adPassword->isPassword();
     //$adStudentGroup = new FormText("Active Directory Student Group", "This group should contain all active and inactive students as well as all student groups", "adStudentGroup", $district->getAdStudentGroupName());
     //$adStaffGroup = new FormText("Active Directory Staff Group", "This group should contain all active staff as well as all staff groups", "adStaffGroup", $district->getAdStaffGroupName());
 
     $adConnectionCheck = new FormHTML();
-    $useTLS = DistrictDatabase::getAD_UseTLS();
+    $useTLS = DomainDatabase::getAD_UseTLS();
     $adUseTLS = new \System\App\Forms\FormSlider('Use TLS', 'Requires web server configuration', 'useTLS', $useTLS);
 
     $adUseTLS->addOption('No', 0, !$useTLS)
@@ -91,16 +89,16 @@ if (!$adTestResult) {
 
     $adPermissionTestButton = new FormButton("Perform Check");
     $adPermissionTestButton->setLabel("AD Permission Test")
-        ->setSubLabel($district->getAdBaseDN())
+        ->setSubLabel($domain->getAdBaseDN())
         ->setType("button")
         ->small()
         ->setId("AD_Permission_Test")
-        ->addAJAXRequest('/api/settings/district/testADPermissions', "AD_Permission_Test_Button_container", ["csrfToken" => Form::getCsrfToken()]);
+        ->addAJAXRequest('/api/settings/domain/testADPermissions', "AD_Permission_Test_Button_container", ["csrfToken" => Form::getCsrfToken()]);
 
     $action = new FormText('', '', 'action', 'updateDistrict');
     $action->hidden();
     $permissionsButton = new FormButton("Permissions");
-    $permissionsButton->addClientRequest("/settings/district/permissions")
+    $permissionsButton->addClientRequest("/settings/domain/permissions")
         ->medium();
 
     $form->addElementToNewRow($name)

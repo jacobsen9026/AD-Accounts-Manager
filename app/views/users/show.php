@@ -2,4 +2,4 @@
 
 use App\Models\View\CardPrinter;
 
-echo CardPrinter::printCard($this->districtUser, $this->user);
+echo CardPrinter::printCard($this->districtUser);
