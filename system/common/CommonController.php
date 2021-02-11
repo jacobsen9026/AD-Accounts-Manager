@@ -32,24 +32,18 @@ namespace System\Common;
  * @author cjacobsen
  */
 
-use System\Parser;
-use System\App\App;
-use app\config\MasterConfig;
+use System\Traits\Parser;
 
 class CommonController
 {
-    use \System\Traits\Parser;
+    use Parser;
 
-    /** @var App|null The view parser */
+    /** @var CommonApp|null The view parser */
     public $app;
-
-    /** @var MasterConfig|null The view parser */
-    public $config;
 
     /** @var string|null The view parser */
     public $layout;
 
-    //put your code here
     function __construct($app)
     {
         $this->app = $app;
