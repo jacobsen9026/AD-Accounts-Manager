@@ -32,21 +32,18 @@ namespace App\Models\View;
  * @author cjacobsen
  */
 
-use App\Api\AD;
-use App\Models\Database\DistrictDatabase;
 use App\Models\Database\PrivilegeLevelDatabase;
 use App\Models\Database\PermissionMapDatabase;
 use App\Models\User\PermissionLevel;
 use System\App\AppLogger;
+use App\Forms\FormText;
 use System\App\Forms\Form;
-use System\App\Forms\FormText;
 use System\App\Forms\FormDropdown;
 use System\App\Forms\FormButton;
 use System\App\Forms\FormDropdownOption;
 use App\Models\User\Permission;
 use System\App\Forms\FormSlider;
-use App\Models\District\District;
-use System\Database;
+use System\Lang;
 use System\Traits\DomainTools;
 
 abstract class PermissionMapPrinter extends ViewModel
@@ -82,7 +79,7 @@ abstract class PermissionMapPrinter extends ViewModel
         $output = '';
         if ($levels !== false) {
             foreach ($levels as $level) {
-                $form = new Form('/settings/district/permissions/' . $districtID, 'modifyPrivilegeLevel_' . $level->getId());
+                $form = new Form('/settings/domain/permissions/' . $districtID, 'modifyPrivilegeLevel_' . $level->getId());
 
                 $action = new FormText('', '', 'action', 'updatePrivilege');
                 $action->hidden();
@@ -103,14 +100,14 @@ abstract class PermissionMapPrinter extends ViewModel
 
                 $updateButton = new FormButton('Update');
                 $updateButton->setId('Update_Privilege_Level_' . $level->getId())
-                    ->addAJAXRequest('/api/settings/district/permissions', 'permissionSettingsContainer', $form)
+                    ->addAJAXRequest('/api/settings/domain/permissions', 'permissionSettingsContainer', $form)
                     ->small();
 
                 $updateButton->setTheme('success');
                 $deleteButtonID = 'Delete_' . $level->getId();
                 $modalID = $deleteButtonID . '_Modal';
-                $modalForm = new Form('/settings/district/permissions/' . $districtID, 'Delete_Privile_Level_' . $level->getId());
-                $deleteAction = new FormText('/settings/district/permissions/' . $districtID, '', 'action', 'deletePrivilege');
+                $modalForm = new Form('/settings/domain/permissions/' . $districtID, 'Delete_Privile_Level_' . $level->getId());
+                $deleteAction = new FormText('/settings/domain/permissions/' . $districtID, '', 'action', 'deletePrivilege');
                 $deleteAction->hidden();
                 $reallyDeleteButton = new FormButton("Confirm");
 
@@ -120,7 +117,7 @@ abstract class PermissionMapPrinter extends ViewModel
                 $onClick = Javascript::on($reallyDeleteButton->getId(), $function);
                 $reallyDeleteButton->setScript($onClick)
                     // ->setType('button');
-                    ->addAjaxRequest('/api/settings/district/permissions/' . $districtID, 'permissionSettingsContainer', $modalForm);
+                    ->addAjaxRequest('/api/settings/domain/permissions/' . $districtID, 'permissionSettingsContainer', $modalForm);
 
                 $modalForm->addElementToNewRow($deleteAction)
                     ->addElementToNewRow($reallyDeleteButton)
@@ -174,7 +171,7 @@ abstract class PermissionMapPrinter extends ViewModel
         //var_dump($permissions);
         // echo"<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>";
         //var_dump($permissions);
-      
+
         $output = '<h4 class="mb-3">District Level Permissions</h4><h6 class="mx-auto border py-2 rounded-lg bg-white text-muted">' . $ou . '</h6>';
         if ($permissions != false) {
             foreach ($permissions as $permission) {
@@ -229,7 +226,7 @@ abstract class PermissionMapPrinter extends ViewModel
         $reallyDeleteButton = new FormButton("Confirm");
         $reallyDeleteButton->setTheme('danger')
             ->setId("Really_Delete_Permission_" . $permission->getId() . "_" . $ou)
-            ->addAJAXRequest('/api/settings/district/permissions', 'ouPermissionsContainer', $modalForm, true);
+            ->addAJAXRequest('/api/settings/domain/permissions', 'ouPermissionsContainer', $modalForm, true);
         $reallyDeleteButton->setScript(Javascript::on($reallyDeleteButton->getId(), 'console.log("hide modal"); $("#' . $removeButton->getId() . 'Modal").modal("toggle")'));
 
 
@@ -243,7 +240,7 @@ abstract class PermissionMapPrinter extends ViewModel
 
         $saveButton = new FormButton('Save', 'small');
         $saveButton->setId("Save_Button_" . $permission->getId() . '_' . $ou);
-        $saveButton->addAJAXRequest('/api/settings/district/permissions', $ou, $form, true);
+        $saveButton->addAJAXRequest('/api/settings/domain/permissions', $ou, $form, true);
 
         $form//->addElementToNewRow($privilegeLevel->disable())
         ->addElementToCurrentRow($action)
@@ -324,9 +321,9 @@ abstract class PermissionMapPrinter extends ViewModel
      * Takes an array of PermissionTypes and returns a FormDropdown of it
      *
      * @param array $types
-     * @param string $label    FormDropdown label
+     * @param string $label FormDropdown label
      * @param string $subLabel FormDropdown sub label
-     * @param string $name     FormDropdown name for post
+     * @param string $name FormDropdown name for post
      *
      * @param int $selectedType
      *
@@ -356,7 +353,7 @@ abstract class PermissionMapPrinter extends ViewModel
     private
     static function buildGroupPermissionDropdown($selectedType = 0): FormDropdown
     {
-        return self::generatePermissionTypeDropdown(PermissionLevel::getGroupTypes(), '', 'Groups', "groupPermissionType", $selectedType);
+        return self::generatePermissionTypeDropdown(PermissionLevel::getGroupTypes(), '', Lang::get("Groups"), "groupPermissionType", $selectedType);
     }
 
     /**
@@ -384,7 +381,7 @@ abstract class PermissionMapPrinter extends ViewModel
             $addButton = new FormButton('Add', 'small');
             $addButton->setTheme('secondary')
                 ->setID("Add_" . $ouID)
-                ->addAJAXRequest('/api/settings/district/permissions', 'ouPermissionsContainer', $form, true);
+                ->addAJAXRequest('/api/settings/domain/permissions', 'ouPermissionsContainer', $form, true);
             $form->addElementToNewRow($privilegeID)
                 ->addElementToCurrentRow($action)
                 ->addElementToCurrentRow($ouText)
@@ -406,13 +403,13 @@ abstract class PermissionMapPrinter extends ViewModel
      */
     public static function printAddPrivilegeLevelForm($districtID): string
     {
-        $form = new Form('/settings/district/permissions/' . $districtID, 'addPrivilegeLevel');
+        $form = new Form('/settings/domain/permissions/' . $districtID, 'addPrivilegeLevel');
         $newGroupName = new FormText('', 'LDAP group name', 'ldapGroupName');
         $newGroupName->autoCompleteDomainGroupName();
         $action = new FormText('', '', 'action', 'addPrivilege');
         $action->hidden();
         $addButton = new FormButton('Add');
-        $addButton->addAJAXRequest('/api/settings/district/permissions/' . $districtID, 'permissionSettingsContainer', $form, true);
+        $addButton->addAJAXRequest('/api/settings/domain/permissions/' . $districtID, 'permissionSettingsContainer', $form, true);
         $form->addElementToNewRow($newGroupName)
             ->addElementToCurrentRow($addButton)
             ->addElementToCurrentRow($action);
