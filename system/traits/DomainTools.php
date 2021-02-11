@@ -39,7 +39,7 @@ trait DomainTools
      *
      * EG: contoso.com -> dc=contoso,dc=com
      *
-     * @param type $fqdn
+     * @param string $fqdn
      *
      * @return string
      */
@@ -72,11 +72,38 @@ trait DomainTools
     }
 
     /**
+     *
+     * @param string $ou
+     *
+     * @return string
+     */
+    public static function cleanOU($ou): string
+    {
+        $search = [' ', 'OU=', ',', 'DC='];
+        return str_replace($search, '', $ou);
+    }
+
+    /**
+     * Removes spaces, commas, and ='s from the OU
+     * to make safe for use as an HTML id
+     *
+     * @param string $ou
+     *
+     * @return string
+     */
+    public static function getHTML_ID_FromOU($ou): string
+    {
+        $remove = [" ", ",", "="];
+        return str_replace($remove, "_", $ou);
+        //var_dump($ou);
+    }
+
+    /**
      * Returns the first OU element of a Distinguished Name
      *
-     * @param type $dn
+     * @param string $dn
      *
-     * @return type
+     * @return string
      */
     public static function leftOU($dn)
     {
@@ -102,6 +129,18 @@ trait DomainTools
             }
         }
         return $tree;
+    }
+
+
+    public static function prettifyOU(string $ou)
+    {
+        $ouPath = explode("OU=", str_replace(",", "", substr($ou, 0, strpos($ou, "DC"))));
+        $ouPath = array_reverse($ouPath);
+        $pathString = "";
+        foreach ($ouPath as $ou) {
+            $pathString .= "/" . $ou;
+        }
+        return $pathString;
     }
 
 }
