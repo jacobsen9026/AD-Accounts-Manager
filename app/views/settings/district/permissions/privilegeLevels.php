@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  */
 
-$district = $this->district;
+$domain = $this->domain;
 
 use App\Models\View\PermissionMapPrinter;
 
@@ -31,7 +31,8 @@ use App\Models\View\PermissionMapPrinter;
 <h4 class="mb-3">
     Manage Privilege Levels
 
-        <div class="text-secondary clickable far fa-question-circle fa-xs" data-toggle="collapse" data-target="#privilegeLevelCollapse"></div>
+    <div class="text-secondary clickable far fa-question-circle fa-xs" data-toggle="collapse"
+         data-target="#privilegeLevelCollapse"></div>
 
 </h4>
 
@@ -44,7 +45,8 @@ use App\Models\View\PermissionMapPrinter;
 
         </div>
         <div class="col">
-            Permissions are different for users or groups, but they both are successive levels of access that inherit the
+            Permissions are different for users or groups, but they both are successive levels of access that inherit
+            the
             previous level.
             A group with Change permission can also Read, but can not Add or Delete (for groups).
         </div>
@@ -52,20 +54,21 @@ use App\Models\View\PermissionMapPrinter;
 
     <div class="row p-2 m-3">
         <div class="col">
-            Privilege Levels with Super Admin enabled have permission to the whole directory as well as settings and setup
+            Privilege Levels with Super Admin enabled have permission to the whole directory as well as settings and
+            setup
             pages.
         </div>
     </div>
 </div>
 <div class="row">
     <div class="col">
-        <?php echo PermissionMapPrinter::printPrivilegeLevels($district->getId()); ?>
+        <?php echo PermissionMapPrinter::printPrivilegeLevels($domain->getId()); ?>
     </div>
 </div>
 <div class="row">
     <div class="col" id="managePrivilegeLevelsContainer">
         <?php
-        echo PermissionMapPrinter::printAddPrivilegeLevelForm($district->getId());
+        echo PermissionMapPrinter::printAddPrivilegeLevelForm($domain->getId());
         ?>
     </div>
 
