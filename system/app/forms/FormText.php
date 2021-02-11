@@ -26,6 +26,8 @@
 
 namespace System\App\Forms;
 
+use App\Models\View\Javascript;
+
 /**
  * Description of FormInput
  *
@@ -35,93 +37,25 @@ class FormText extends FormElement implements FormElementInterface
 {
 
     //put your code here
-    private $autocomplete = false;
-    private $type = "text";
-    private $placeholder = '';
-    private $value;
-    private $disabled = false;
+    protected $type = "text";
+    protected $placeholder = '';
+    protected $value;
+    protected $disabled = false;
     /**
      * @var bool|mixed
      */
-    private $autofocus = false;
+    protected $autofocus = false;
 
-    public function getAutoFocus(){
+    public function getAutoFocus()
+    {
         return $this->autofocus;
     }
 
-    /**
-     * Autocomplete for users who fall into either
-     * of the defined user groups (Student/Staff) on the district setup
-     *
-     * @return $this
-     */
-    public function autoCompleteUsername()
+    public function autofocus($value = true)
     {
-        $this->autocomplete = true;
-        $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteUser/', $this->getName());
-        $this->setScript($script);
-        return $this;
-    }
-
-    /**
-     * Autocomplete for users who fall into either
-     * of the defined user groups (Student/Staff) on the district setup
-     *
-     * @return $this
-     */
-    public function autoCompleteOU()
-    {
-        $this->autocomplete = true;
-        $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteOU/', $this->getId());
-        $this->setScript($script);
-        return $this;
-    }
-
-    public function autofocus($value = true){
         $this->autofocus = $value;
         return $this;
     }
-
-    /**
-     * Autocomplete for groups who fall into either
-     * of the defined user groups (Student/Staff) on the district setup
-     *
-     * @return $this
-     */
-    public function autoCompleteGroupName()
-    {
-        $this->autocomplete = true;
-        $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteGroup/', $this->getId());
-        $this->setScript($script);
-        return $this;
-    }
-
-    /**
-     * Autocomplete for all users in domain (permissions apply)
-     *
-     * @return $this
-     */
-    public function autoCompleteDomainUsername()
-    {
-        $this->autocomplete = true;
-        $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteDomainUser/', $this->getName());
-        $this->setScript($script);
-        return $this;
-    }
-
-    /**
-     * Autocomplete for all groups in domain (permissions apply)
-     *
-     * @return $this
-     */
-    public function autoCompleteDomainGroupName()
-    {
-        $this->autocomplete = true;
-        $script = \App\Models\View\Javascript::buildAutocomplete('/api/district/autocompleteDomainGroup/', $this->getName());
-        $this->setScript($script);
-        return $this;
-    }
-
 
     /**
      * @return string
@@ -134,19 +68,28 @@ class FormText extends FormElement implements FormElementInterface
         if ($this->disabled) {
             $disable = 'disabled';
         }
-        $autofocus="";
+        $autofocus = "";
 
-        if($this->autofocus){
-            $autofocus="autofocus";
+        if ($this->autofocus) {
+            $autofocus = "autofocus";
         }
 
         $html .= '<div class="col px-0 "><div class="ui-widget">'
             . '<div class="pr-0 w-100 row mx-0">'
             . '<div class="d-inline-block col mx-auto px-0">'
-            . '<input type="' . $this->type . '" class="' . $this->getinputClasses() . '" name="' . $this->getName() . '" id="' . $this->getId() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" ' . $disable . ' ' .$autofocus.'>'
+            . '<input type="' . $this->type . '" class="' . $this->getinputClasses() . '" name="' . $this->getName() . '" id="' . $this->getId() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" ' . $disable . ' ' . $autofocus . '>'
             . '</div></div>';
         $html .= '</div></div>';
         return $html;
+    }
+
+    public function getId()
+    {
+        if ($this->id === null || $this->id == '') {
+            return $this->getName() . "Input";
+        } else {
+            return $this->id;
+        }
     }
 
     public function setValue($value)
@@ -181,5 +124,6 @@ class FormText extends FormElement implements FormElementInterface
         $this->placeholder = $placeholder;
         return $this;
     }
+
 
 }
