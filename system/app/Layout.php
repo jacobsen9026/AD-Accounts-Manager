@@ -32,22 +32,40 @@ namespace System\App;
  * @author cjacobsen
  */
 
+use App\App\App;
 use System\Common\CommonLayout;
 use App\Models\Database\AppDatabase;
 
 class Layout extends CommonLayout
 {
 
-    /** @var MasterConfig|null The master config */
-    public $config;
 
     //put your code here
-    function __construct($app)
+    function __construct(App $app)
     {
         parent::__construct($app);
-        //$this->config = MasterConfig::get();
-        $this->title = AppDatabase::getAppName();
+        $this->title = $this->getPageTitle($app);
         AppLogger::get()->debug("Active Layout: " . $this->layoutName);
+    }
+
+    private function getPageTitle($app)
+    {
+        $title = AppDatabase::getAppAbbreviation();
+
+        if ($app->route->getData() != '') {
+            $title .= ' - ' . $app->route->getData();
+        } else {
+            if ($app->route->getControler() != '') {
+                $controllerPath = explode("\\", $app->route->getControler());
+                foreach ($controllerPath as $part) {
+                    $title .= ' - ' . ucfirst($part);
+
+                }
+            }
+            if ($app->route->getMethod() != 'index' && $app->route->getMethod() != 'indexGet' && $app->route->getMethod() != 'indexPost') {
+                $title .= ' - ' . ucfirst($app->route->getMethod());
+            }
+        }
     }
 
     public function apply()
