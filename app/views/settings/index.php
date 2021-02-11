@@ -23,9 +23,9 @@
  * THE SOFTWARE.
  */
 
-use System\App\Forms\Form;
 use App\Controllers\Api\App;
 use App\Models\View\Javascript;
+use System\Lang;
 
 //$form = new Form();
 $showApplicationSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_APP_SETTINGS]);
@@ -76,15 +76,15 @@ switch ($this->tab) {
 <nav>
     <div class="nav nav-tabs nav-fill nav-justified" id="nav-tab" role="tablist">
         <a class="nav-item nav-link active" id="nav-app-tab" data-toggle="tab" href="#nav-app" role="tab"
-           aria-controls="nav-app" aria-selected="true" onclick='<?= $showApplicationSettingsCommand ?>'>Application</a>
+           aria-controls="nav-app" aria-selected="true" onclick='<?= $showApplicationSettingsCommand ?>'><?=Lang::get("Application")?></a>
         <a class="nav-item nav-link" id="nav-auth-tab" data-toggle="tab" href="#nav-auth" role="tab"
-           aria-controls="nav-auth" aria-selected="false" onclick='<?= $showAuthenticationSettingsCommand ?>'>Authentication</a>
+           aria-controls="nav-auth" aria-selected="false" onclick='<?= $showAuthenticationSettingsCommand ?>'><?=Lang::get("Authentication")?></a>
         <a class="nav-item nav-link" id="nav-email-tab" data-toggle="tab" href="#nav-email" role="tab"
-           aria-controls="nav-email" aria-selected="false" onclick='<?= $showEmailSettingsCommand ?>'>Email</a>
+           aria-controls="nav-email" aria-selected="false" onclick='<?= $showEmailSettingsCommand ?>'><?=Lang::get("Email")?></a>
         <a class="nav-item nav-link" id="nav-notification-tab" data-toggle="tab" href="#nav-notification" role="tab"
-           aria-controls="nav-notification" aria-selected="false" onclick='<?= $showNotificationSettingsCommand ?>'>Notification</a>
+           aria-controls="nav-notification" aria-selected="false" onclick='<?= $showNotificationSettingsCommand ?>'><?=Lang::get("Notification")?></a>
         <a class="nav-item nav-link" id="nav-update-tab" data-toggle="tab" href="#nav-update" role="tab"
-           aria-controls="nav-update" aria-selected="false" onclick='<?= $showUpdateSettingsCommand ?>'>Update</a>
+           aria-controls="nav-update" aria-selected="false" onclick='<?= $showUpdateSettingsCommand ?>'><?=Lang::get("Update")?></a>
     </div>
 </nav>
 <div class="row"></div>
