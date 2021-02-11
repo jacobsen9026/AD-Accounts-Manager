@@ -43,7 +43,7 @@ define('DEFAULT_LANG', 'en');
  */
 define('APPCLASS', "App\App\App");
 /*
- * Toggle for core debug mode. Has no effect on app debug, but does allow App output directly.
+ * Toggle for core debug mode.
  */
 define('DEBUG_MODE', false);
 
