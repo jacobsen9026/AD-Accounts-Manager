@@ -47,10 +47,40 @@ abstract class ENCommon
         'Remember Username' => 'Remember Username',
         'Remember Me' => 'Remember Me',
         'Username' => 'Username',
-        'Password' => 'Password'
+        'Password' => 'Password',
+        'Group' => 'Group',
+        'Groups' => 'Groups',
+        'Users' => 'Users',
+        'Search'=> 'Search',
+        'User Search' =>'User Search',
+        'Group Search' => 'Group Search',
+        'Application' => 'Application',
+        'Authentication' => 'Authentication',
+        'Email' => 'Email',
+        'First Name' => 'First Name',
+        'Last Name' => 'Last Name',
+        'Initials' => 'Initials',
+        'Full Name' => 'Full Name',
+        'Logon Name' => 'Logon Name',
+        'Notification' => 'Notification',
+        'Update' => 'Update',
+        'Create' => 'Create',
+        'Group Name' => 'Group Name',
+        'Description' => 'Description',
+        'Email Address' => 'Email Address',
+        'OU' => 'OU',
+        'New Version Available!' => 'New Version Available!',
     ];
     public static $help = [
-        'user Search' => 'Can also enter first or last name to search for username.'
+        'User_Search' => 'Can also enter first or last name to search for username.',
+       'Group_Search' => "Can search by name, email, or description",
+        "Add user or group to group" => "Add user or group to group",
+        'Can also search by first or last name.' =>'Can also search by first or last name.',
+    ];
+
+    public static $error = [
+        "No user or group was supplied to the add group members modal"=>"No user or group was supplied to the add group members modal",
+        'Object not found'=>'Object not found',
     ];
 
 }
