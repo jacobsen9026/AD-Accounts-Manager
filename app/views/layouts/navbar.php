@@ -5,7 +5,7 @@ use App\Models\Database\AppDatabase;
 
 ?>
 
-<nav class="shadow navbar fixed-top navbar-expand-md bg-primary navbar-dark">
+<nav class="shadow navbar fixed-top navbar-expand-md bg-primary navbar-dark text-center" style="z-index:100;">
     <div>
 
 
@@ -107,9 +107,8 @@ use App\Models\Database\AppDatabase;
 
 
                                 <a class="dropdown-item" href="/settings/application">Settings</a>
-                                <a class="dropdown-item" href="/settings/district/edit">Setup</a>
+                                <a class="dropdown-item" href="/settings/domain/edit">Setup</a>
                                 <a class="dropdown-item" href="/settings/audit">Audit</a>
-
 
 
                             </div>
