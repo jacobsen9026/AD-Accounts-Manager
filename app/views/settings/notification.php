@@ -34,12 +34,15 @@ $this->email = EmailDatabase::get();
 //var_dump($this->email);
 
 $form = new Form('', 'notification');
-$adminEmails = new FormTextArea('Admin Email Addresses', 'Recieves important system notifications', 'adminEmails');
+$adminEmails = new FormTextArea('Admin Email Addresses', 'Recieves important system notifications', 'adminEmails', EmailDatabase::getAdminEmailAddresses());
+$welcomeEmail = new FormTextArea('Welcome Email', 'HTML welcome email for new users', 'welcomeEmail', EmailDatabase::getWelcomeEmail());
+
 //$staffBlind = new FormTextArea('', $subLabel, $name)
 $save = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
 $save->setId('floatingSaveButton')
     ->addAJAXRequest('/api/settings/notification', 'settingsOutput', $form);
 $form->addElementToCurrentRow($adminEmails)
+    ->addElementToNewRow($welcomeEmail)
     ->addElementToNewRow($save);
 echo $form->print();
 ?>
