@@ -21,12 +21,22 @@
 	RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 	RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
 
+    #Checks to see if there is a valid index.html under the desired
+    # directory. If one exists redirect to it.
+    RewriteCond %{REQUEST_FILENAME}/index.html -f
+    RewriteRule . %{REQUEST_URI}/index.html [R=302,L]
+
+
+
 	# Checks to see if the user is attempting to access a valid file,
     # such as an image or css document, if this isn't true it sends the
     # request to the front controller, index.php
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteRule ^(.*)$ index.php/$1 [L]
+
+
+
 
 	# Ensure Authorization header is passed along
     RewriteCond %{HTTP:Authorization} .
