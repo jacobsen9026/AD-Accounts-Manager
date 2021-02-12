@@ -32,8 +32,12 @@ namespace App\Models\Database;
  * @author cjacobsen
  */
 
-use app\database\Schema;
+
+use PDOException;
+use System\App\AppException;
 use System\App\AppLogger;
+use system\Database;
+use System\DatabaseLogger;
 
 class Query
 {
@@ -47,22 +51,24 @@ class Query
     const DESC = "DESC";
     const ASC = "ASC";
     const COUNT = "SELECT COUNT";
+    const SHOW = 'SHOW';
 
-    private $query;
-    private $queryType;
-    private $targetTable;
-    private $targetColumns;
-    private $targetWhere;
-    private $targetJoin = '';
-    private $targetInserts;
-    private $targetSets;
-    private $sort;
+    protected $query;
+    protected $queryType;
+    protected $targetTable;
+    protected $targetColumns;
+    protected $targetWhere;
+    protected $targetJoin = '';
+    protected $targetInserts;
+    protected $targetSets;
+    protected $sort;
+    protected string $error;
 
     /**
      *
-     * @param const $table    Target Table
-     * @param const $type     If not supplied will be a SELECT
-     * @param stirng $columns If not supplied will be '*'
+     * @param string $table Target Table
+     * @param string $type If not supplied will be a SELECT
+     * @param string $columns If not supplied will be '*'
      */
     function __construct($table, $type = self::SELECT, $columns = '*')
     {
@@ -178,7 +184,7 @@ class Query
                 $this->prepareDelete();
                 break;
             default:
-                break;
+                throw new AppException('Malformed query', AppException::MALFORMED_QUERY);
         }
 
         if (!empty($this->targetJoin)) {
@@ -197,7 +203,6 @@ class Query
             }
         }
         if (!empty($this->sort)) {
-            //var_dump($this->sort);
             $this->query .= ' ORDER BY ';
             foreach ($this->sort as $sort) {
                 foreach ($sort as $direction => $column) {
@@ -207,9 +212,20 @@ class Query
 
             AppLogger::get()->warning($this->query);
         }
-        //var_dump($this->query);
-//echo '<br/><br/><br/><br/><br/><br/>';
-        return \system\Database::get()->query($this->query . ';');
+        $return = null;
+        try {
+
+            $return = Database::get()->query($this->query . ';');
+        } catch (PDOException $ex) {
+            if (strpos($ex->getMessage(), QueryError::NO_SUCH_COLUMN) > 0) {
+                $this->error = QueryError::NO_SUCH_COLUMN;
+                DatabaseLogger::get()->warning($ex->getMessage());
+            }
+
+
+        }
+        return $return;
+
     }
 
     private function prepareSelect()
