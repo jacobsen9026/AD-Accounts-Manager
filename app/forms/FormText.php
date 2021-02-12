@@ -19,7 +19,7 @@ class FormText extends \System\App\Forms\FormText
     public function autoCompleteUsername()
     {
         $this->autocomplete = true;
-        $script = Javascript::buildAutocomplete(self::DOMAIN_API_URL . '/autocompleteUser/', $this->getName());
+        $script = Javascript::buildAutocomplete(self::DOMAIN_API_URL . '/autocompleteUser/', $this->getId());
         $this->setScript($script);
         return $this;
     }
@@ -58,7 +58,7 @@ class FormText extends \System\App\Forms\FormText
     public function autoCompleteDomainUsername()
     {
         $this->autocomplete = true;
-        $script = Javascript::buildAutocomplete(self::DOMAIN_API_URL . '/autocompleteDomainUser/', $this->getName());
+        $script = Javascript::buildAutocomplete(self::DOMAIN_API_URL . '/autocompleteDomainUser/', $this->getId());
         $this->setScript($script);
         return $this;
     }
@@ -71,7 +71,7 @@ class FormText extends \System\App\Forms\FormText
     public function autoCompleteDomainGroupName()
     {
         $this->autocomplete = true;
-        $script = Javascript::buildAutocomplete(self::DOMAIN_API_URL . '/autocompleteDomainGroup/', $this->getName());
+        $script = Javascript::buildAutocomplete(self::DOMAIN_API_URL . '/autocompleteDomainGroup/', $this->getId());
         $this->setScript($script);
         return $this;
     }
@@ -80,7 +80,7 @@ class FormText extends \System\App\Forms\FormText
     public function autoCompleteUsernameOrGroupName()
     {
         $this->autocomplete = true;
-        $script = Javascript::buildAutocomplete(self::DOMAIN_API_URL . '/autocompleteUserOrGroup/', $this->getName());
+        $script = Javascript::buildAutocomplete(self::DOMAIN_API_URL . '/autocompleteUserOrGroup/', $this->getId());
         $this->setScript($script);
         return $this;
     }
