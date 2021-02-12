@@ -156,7 +156,9 @@ class Groups extends Controller
                 break;
             case 'addMember':
                 $group = new DomainGroup($groupName);
+                $username = Post::get('usernameToAdd');
                 $this->logger->info("adding member " . $username);
+                $user = null;
                 try {
 
                     $user = new DomainUser($username);
@@ -183,10 +185,11 @@ class Groups extends Controller
 
 
         }
+        $this->redirect(Request::get()->getReferer());
         if (strpos(Request::get()->getReferer(), "groups") !== false) {
-            return $this->search($group->activeDirectory->getName());
+            //return $this->search($group->activeDirectory->getName());
         } else {
-            $this->redirect('/users/search/' . $user->getUsername());
+            //$this->redirect('/users/search/' . $user->getUsername());
             //$users = new Users($this->app);
             //return $users->search($user->getUsername());
         }
