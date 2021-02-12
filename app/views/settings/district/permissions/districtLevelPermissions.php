@@ -24,14 +24,14 @@
  */
 
 use App\Models\View\PermissionMapPrinter;
-use App\Models\District\District;
+use App\Models\District\Domain;
 
-/* @var $district District */
-$district = $this->district;
+/* @var $domain Domain */
+$domain = $this->domain;
 ?>
 
 
 <?php
 //;
-echo PermissionMapPrinter::printOUPermissions($district->getAdBaseDN());
+echo PermissionMapPrinter::printOUPermissions($domain->getAdBaseDN());
 //echo PermissionMapPrinter::printDistrictPermissions($district->getId());
