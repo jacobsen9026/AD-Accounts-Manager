@@ -84,6 +84,7 @@ class Users extends Controller
                 throw $ex;
             }
             if (is_array($possibleUsers) && count($possibleUsers) == 1) {
+                return $this->redirect('/users/search/' . $possibleUsers[0]);
                 $this->districtUser = $this->getUser($possibleUsers[0]);
             } else {
                 return $this->view('users/list', $possibleUsers);
@@ -138,20 +139,17 @@ class Users extends Controller
                     imagejpeg($picture);
                     $rawPicture = ob_get_clean();
 
-                    //var_dump(bin2hex($rawPicture));
-                    $user = new DomainUser($username);
+                    $user = $this->getUser($username);
                     $this->logger->debug($rawPicture);
                     $user->activeDirectory->setThumbnail($rawPicture, false)->save();
 
                     $this->audit(new UploadUserPhotoAudtitAction($username));
-                    //imagecreatefromstring($uploadedPicture->getTempFileContents());
-                    //$resiezedPhoto = imagescale($picture, '96', '96');
-                    //imagejpeg($picture);
+
                 }
                 break;
             case 'resetPassword':
                 $password = trim(Post::get("password"));
-                $user = new DomainUser(Post::get("username"));
+                $user = $this->getUser(Post::get("username"));
                 if ($user->activeDirectory->setPassword($password)->save()) {
                     $this->logger->debug("password reset");
                     $this->audit(new ResetUserPasswordAuditAction($username));
@@ -166,36 +164,7 @@ class Users extends Controller
         $output .= $this->search($username);
         return $output;
     }
-    /*
-        private function unlockUser($username)
-        {
-            $user = new DistrictUser($username);
-            $user->activeDirectory->setClearLockoutTime()->save();
-            $this->logger->debug($user);
-            $this->audit(new UnlockUserAuditAction($username));
-            return $user;
-        }
-    /*
-        public function accountStatusChangePost()
-        {
-            if ($action = Post::get("action")) {
-                $username = Post::get("username");
-                switch ($action) {
-                    case "unlock":
-                        $this->unlockUser($username);
-                        $this->student = $this->getUser($username);
-                        return $this->view('staff/show/student');
-                        break;
-                    case "lock":
-                        //There will be no locking of user accounts
-                        break;
 
-                    default:
-                        break;
-                }
-            }
-        }
-    */
 
     /**
      * Edit Post
@@ -211,10 +180,10 @@ class Users extends Controller
         if ($action != false) {
             switch ($action) {
                 case "unlock":
-                    $districtUser = $this->getUser($username);
-                    if (PermissionHandler::hasPermission($districtUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_UNLOCK)) {
+                    $domainUser = $this->getUser($username);
+                    if (PermissionHandler::hasPermission($domainUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_UNLOCK)) {
 
-                        $districtUser->unlock();
+                        $domainUser->unlock();
                         $this->audit(new UnlockUserAuditAction($username));
                         $this->redirect('/users/search/' . $username);
 
@@ -223,10 +192,10 @@ class Users extends Controller
 
 
                 case "enable":
-                    $districtUser = $this->getUser($username);
-                    if (PermissionHandler::hasPermission($districtUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_DISABLE)) {
+                    $domainUser = $this->getUser($username);
+                    if (PermissionHandler::hasPermission($domainUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_DISABLE)) {
 
-                        $districtUser->enable();
+                        $domainUser->enable();
 
                         $this->audit(new EnableUserAuditAction($username));
                         $this->redirect('/users/search/' . $username);
@@ -235,10 +204,10 @@ class Users extends Controller
                     return;
 
                 case "disable";
-                    $districtUser = $this->getUser($username);
-                    if (PermissionHandler::hasPermission($districtUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_DISABLE)) {
+                    $domainUser = $this->getUser($username);
+                    if (PermissionHandler::hasPermission($domainUser->getOU(), PermissionLevel::USERS, PermissionLevel::USER_DISABLE)) {
 
-                        $districtUser->disable();
+                        $domainUser->disable();
 
                         $this->audit(new DisableUserAuditAction($username));
                         $this->redirect('/users/search/' . $username);
@@ -250,12 +219,12 @@ class Users extends Controller
                     $ou = Post::get("ou");
                     if (PermissionHandler::hasPermission($ou, PermissionLevel::USERS, PermissionLevel::USER_CHANGE)) {
                         if (PermissionHandler::hasPermission($dn, PermissionLevel::USERS, PermissionLevel::USER_CHANGE)) {
-                            $user = new DomainUser(ADUsers::getUserByDN($dn));
-                            $this->logger->info($user);
-                            $user->moveTo($ou);
+                            $domainUser = new DomainUser(ADUsers::getUserByDN($dn));
+                            $this->logger->info($domainUser);
+                            $domainUser->moveTo($ou);
 
-                            $this->audit(new MoveUserAuditAction($user->getUsername(), $ou));
-                            $this->redirect('/users/search/' . $user->getUsername());
+                            $this->audit(new MoveUserAuditAction($domainUser->getUsername(), $ou));
+                            $this->redirect('/users/search/' . $domainUser->getUsername());
                         }
 
                     }
