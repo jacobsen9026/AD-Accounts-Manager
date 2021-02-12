@@ -246,6 +246,16 @@ class EmailDatabase extends DatabaseModel
         return self::updateDatabaseValue("Reply_To_Name", $value);
     }
 
+    public static function getWelcomeEmail()
+    {
+        return self::getDatabaseValue('Welcome_Email');
+    }
+
+    public static function getAdminEmailAddresses()
+    {
+        return self::getDatabaseValue('Admin_Email_Addresses');
+    }
+
     public function getUseSMTPEncryption()
     {
         return self::getDatabaseValue('Use_SMTP_Encryption');
