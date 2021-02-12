@@ -171,47 +171,41 @@ class Database
 
         $this->logger->debug("Query: " . $query);
         //var_dump($query);
-        try {
-            $result = $this->db->query($query);
-            /*
-             *
-             * Check that the SQL statement completed successfully, log any errors
-             */
-            if ($this->db->errorCode()[0] != '00000') {
-                $this->logger->error($this->db->errorInfo());
-                return false;
-            }
-            /*
-             * Convert PDO response into a regular array
-             */
-            //var_dump($result);
-            $return = false;
-            if (isset($result) and $result != false) {
-                foreach ($result as $row) {
-                    //Add row response to return array
-                    //var_dump($query);
-                    //var_dump($row);
-                    $return[] = $row;
-                }
-            }
-            /*
-             * Check if response conatined a signle field and extract that value
-             */
-            if (is_countable($return) and is_countable($return[0]) and sizeof($return) == 1 and sizeof($return[0]) == 1) {
-                $return = array_values($return)[0];
-                $key = array_key_first($return);
-                $return = $return[$key];
-            }
 
-            //Return Array
-            $this->logger->debug("Response: " . var_export($return, true));
-
-            //var_dump($return);
-            return $return;
-        } catch (Exception $ex) {
-            $this->logger->error($ex);
+        $result = $this->db->query($query);
+        /*
+         *
+         * Check that the SQL statement completed successfully, log any errors
+         */
+        if ($this->db->errorCode()[0] != '00000') {
+            $this->logger->error($this->db->errorInfo());
             return false;
         }
+        /*
+         * Convert PDO response into a regular array
+         */
+        $return = false;
+        if (isset($result) and $result != false) {
+            foreach ($result as $row) {
+                //Add row response to return array
+                $return[] = $row;
+            }
+        }
+        /*
+         * Check if response contained a single field and extract that value
+         */
+        if (is_countable($return) and is_countable($return[0]) and sizeof($return) == 1 and sizeof($return[0]) == 1) {
+            $return = array_values($return)[0];
+            $key = array_key_first($return);
+            $return = $return[$key];
+        }
+
+        //Return Array
+        $this->logger->debug("Response: " . var_export($return, true));
+
+        return $return;
+
+
     }
 
     /**
