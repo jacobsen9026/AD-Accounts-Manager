@@ -1,6 +1,6 @@
 docs_dir: 'docsource'
-site_dir: 'docs'
-site_name: ADAM
+site_dir: 'public/docs'
+site_name: ADAM Documentation
 nav:
   - Intro:
       - 'help.md'
@@ -30,6 +30,7 @@ nav:
           - 'app/groups/search.md'
 
 theme:
+  use_directory_urls: false
   name: material
   favicon: images/small-logo.png
   logo: images/small-logo.png
@@ -39,13 +40,14 @@ theme:
     primary: blue grey
     accent: indigo
 
-#repo_name: jacobsen9026/AD-Accounts-Manager
-#repo_url: https://github.com/jacobsen9026/AD-Accounts-Manager
+  repo_name: jacobsen9026/AD-Accounts-Manager
+  repo_url: https://github.com/jacobsen9026/AD-Accounts-Manager
 
 extra:
   social:
     - icon: fontawesome/brands/github-alt
       link: https://github.com/jacobsen9026
+
 
 markdown_extensions:
   - admonition
