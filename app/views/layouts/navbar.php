@@ -131,7 +131,7 @@ use App\Models\Database\AppDatabase;
                             <a class="dropdown-item" href="/settings/profile">Profile</a>
                             <a class="dropdown-item" href="#" data-toggle="modal"
                                data-target="#aboutAppModal">About</a>
-                            <a class="dropdown-item" href="https://jacobsen9026.github.io/AD-Accounts-Manager/">Help</a>
+                            <a class="dropdown-item" href="/docs/index.html">Help</a>
                             <a class="dropdown-item" href="/logout">Logout</a>
                         </div>
                     </li>
