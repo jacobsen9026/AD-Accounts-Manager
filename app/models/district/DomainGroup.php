@@ -64,7 +64,13 @@ class DomainGroup extends ADModel
         parent::__construct();
 
         $this->logger->debug("Searching for group named: " . $group);
-        $this->activeDirectory = ADGroups::getGroup($group);
+        if (strpos($group, ",DC=") > 0) {
+
+            $this->activeDirectory = ADGroups::getGroupByDN($group);
+        } else {
+
+            $this->activeDirectory = ADGroups::getGroup($group);
+        }
         $this->logger->debug($this);
         //$this->logger->debug(bin2hex($this->activeDirectory->getObjectSid()));
         $this->id = (bin2hex($this->activeDirectory->getObjectGuid()));
