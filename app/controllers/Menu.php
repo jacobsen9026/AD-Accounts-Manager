@@ -119,7 +119,7 @@ class Menu extends Controller
         if ($tech) {
             $tech->addSubItem(new SubMenuItem('Google', '/' . strtolower($tech->displayText) . '/google-accounts'));
             $tech->addSubItem(new SubMenuItem('Google Drive', '/' . strtolower($tech->displayText) . '/google-drive'));
-            $tech->addSubItem(new SubMenuItem('Computers', '/' . strtolower($tech->displayText) . '/workstation-manage'));
+            $tech->addSubItem(new SubMenuItem('Computers', '/' . strtolower($tech->displayText) . '/comp-mgmt'));
         }
         return $tech;
     }
