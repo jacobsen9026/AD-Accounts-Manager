@@ -730,6 +730,7 @@ abstract class CardPrinter extends ViewModel
 
         $modalButton = new FormButton('<i class="fas fa-plus"></i>', 'tiny');
         $modalButton->addModal($modal)
+            ->addElementClasses('grow')
             ->setTheme('success')
             ->setTooltip(Lang::getHelp("Add user or group to group"));
         return $modalButton->print();
@@ -786,11 +787,11 @@ abstract class CardPrinter extends ViewModel
 
 
             $output = '<div class="position-fixed w-100"><div class="row"><div class="clickable" data-toggle="collapse" data-target="#parentGroupsCollapse" data-text-alt="<i class=\'fas fa-caret-down\'></i>"><i class="fas fa-caret-right"></i></div>'
-                . '<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 h6 ">Parent Groups</div></div>';
-            $output .= '<div class="collapse" id="parentGroupsCollapse">';
+                . '<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 h6 text-left">Parent Groups</div></div>';
+            $output .= '<div class="collapse text-left w-50" id="parentGroupsCollapse">';
             foreach ($parents as $parent) {
 
-                $output .= '<div class="row"><div class="col-xl-2 col-lg-3 col-md-4 col-sm-6"><a href="/groups/search/' . $parent . '">' . $parent . '</a></div></div>';
+                $output .= '<div class="row bg-white" style="z-index:50"><div class="col-xl-2 col-lg-3 col-md-4 col-sm-6"><a href="/groups/search/' . $parent . '">' . $parent . '</a></div></div>';
 
 
             }
@@ -857,7 +858,6 @@ abstract class CardPrinter extends ViewModel
             $output = self::printRow($label, null);
             $output .= "<br><br>";
             if (is_array($groupChildren) && !empty($groupChildren)) {
-                $output .= '<div class="row"><div class="col h6">' . Lang::get("Groups") . '</div></div>';
                 $output .= '<div class="row"><div class="col h6">' . Lang::get("Groups") . '</div></div>';
                 /** @var DomainGroup $child */
                 foreach ($groupChildren as $child) {
