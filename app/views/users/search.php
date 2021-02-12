@@ -13,6 +13,7 @@ use System\Lang;
 
 $createButton = new FormButton("<i class=\"fas fa-plus\"></i>");
 $createButton->tiny()
+    ->addElementClasses('grow')
     ->setTheme("white")
     ->setTooltip('Create a new user')
     ->setId('create_new_user_button')
@@ -26,16 +27,16 @@ $createModal->setBody($this->modal('createUser'))
 $createButton->addModal($createModal);
 
 ?>
-<div class="col mb-2">
-    <h3 class="d-inline card-title text-center">
-        <?= Lang::get("User Search"); ?>
-    </h3>
-    <?php
-    if (PermissionHandler::hasGroupPermissions(PermissionLevel::GROUP_ADD)) {
-        echo $createButton->print();
-    }
-    ?>
-</div>
+    <div class="col mb-2">
+        <h3 class="d-inline card-title text-center">
+            <?= Lang::get("User Search"); ?>
+        </h3>
+        <?php
+        if (PermissionHandler::hasGroupPermissions(PermissionLevel::GROUP_ADD)) {
+            echo $createButton->print();
+        }
+        ?>
+    </div>
 <?php
 
 
@@ -43,10 +44,10 @@ $form = new Form("/users/search", "UserSearch");
 $button = new FormButton(Lang::get("Search"));
 $button->small();
 $userSearchBox = new FormText(Lang::get("Username"), Lang::getHelp("User_Search"), "usernameInput");
-$userSearchBox->autoCompleteUsername()
-    ->autofocus()
+$userSearchBox->autofocus()
     ->setId("usernameInput")
-    ->medium();
+    ->medium()
+    ->autoCompleteUsername();
 
 $appendImg = new FormHTML();
 $appendImg->setHtml('<i class="fas fa-search"></i>')

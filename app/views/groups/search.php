@@ -13,6 +13,7 @@ use System\Lang;
 $createButton = new FormButton("<i class=\"fas fa-plus\"></i>");
 $createButton->tiny()
     ->setTheme("white")
+    ->addElementClasses('grow')
     ->setTooltip('Create a new group')
     ->setId('create_new_group_button')
 //    ->removeInputClasses(["w-100"])
