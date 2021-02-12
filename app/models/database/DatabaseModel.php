@@ -33,9 +33,11 @@ namespace App\Models\Database;
  */
 
 use App\Models\Model;
+use System\DatabaseLogger;
 
 abstract class DatabaseModel extends Model implements DatabaseModelInterface
 {
+
 
     /**
      * Returns the entire table
@@ -80,6 +82,13 @@ abstract class DatabaseModel extends Model implements DatabaseModelInterface
     {
         $query = new Query(static::TABLE_NAME, Query::SELECT, $column);
         $query->where("ID", $id);
+        return $query->run();
+    }
+
+    private static function columnExists($tableName, string $column)
+    {
+        $query = new Query($tableName, Query::SHOW, $column);
+        DatabaseLogger::get()->info($query->run());
         return $query->run();
     }
 
