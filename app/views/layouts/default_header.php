@@ -5,10 +5,15 @@ use App\Models\View\Modal;
 
 echo $this->view("/layouts/head");
 ?>
+<script>
+    function init() {
+        return setTimeout(sessionExpiring, <?= (AuthDatabase::getSessionTimeout() - 60) * 1000 ?>)
+    }
+</script>
 
 <body class="bg-light"
-      onload="return setTimeout(sessionExpiring,<?= (AuthDatabase::getSessionTimeout() - 60) * 1000 ?>)">
-<div class="w-100 h-100 p-0 m-0" onclick="$('#collapsibleNavbar').collapse('hide')">
+      onload="init()">
+<div class="position-absolute w-100 h-100 p-0 m-0" onclick="$('#collapsibleNavbar').collapse('hide')">
     <div class="container container-fluid centered px-3 px-md-5">
 
         <?php
