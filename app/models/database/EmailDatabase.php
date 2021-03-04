@@ -26,6 +26,8 @@
 
 namespace App\Models\Database;
 
+use App\App\App;
+use PHPMailer\PHPMailer\PHPMailer;
 use System\App\AppLogger;
 
 /**
@@ -37,55 +39,6 @@ class EmailDatabase extends DatabaseModel
 {
 
     const TABLE_NAME = 'Email';
-
-    /**
-     *
-     * @return string
-     */
-    public static function getSMTPServer()
-    {
-        return self::getDatabaseValue("SMTP_Server");
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public static function getSMTPUsername()
-    {
-        return self::getDatabaseValue("SMTP_Username");
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public static function getSMTPPassword()
-    {
-        return self::getDatabaseValue("SMTP_Password");
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public static function getSMTPPort()
-    {
-        $value = self::getDatabaseValue("SMTP_Port");
-        if (!$value) {
-            $value = 25;
-        }
-        return $value;
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public static function getFromAddress()
-    {
-        return self::getDatabaseValue("From_Address");
-    }
 
     /**
      *
@@ -112,26 +65,6 @@ class EmailDatabase extends DatabaseModel
     public static function getReplyToName()
     {
         return self::getDatabaseValue("Reply_To_Name");
-    }
-
-    /**
-     *
-     * @return bool
-     */
-    public static function getUseSMTPSSL()
-    {
-
-        return self::getDatabaseValue("Use_SMTP_SSL");
-    }
-
-    /**
-     *
-     * @return bool
-     *
-     */
-    public static function getUseSMTPAuth()
-    {
-        return self::getDatabaseValue("Use_SMTP_Auth");
     }
 
     /**
@@ -256,9 +189,118 @@ class EmailDatabase extends DatabaseModel
         return self::getDatabaseValue('Admin_Email_Addresses');
     }
 
+    /**
+     *
+     * @return PHPMailer
+     */
+    public static function createMailer()
+    {
+        $mail = new PHPMailer(true);
+        if (App::inDebugMode()) {
+            $mail->SMTPDebug = true;                      // Enable verbose debug output
+
+        }
+        $mail->isSMTP();                                            // Send using SMTP
+        $mail->Host = self::getSMTPServer();                    // Set the SMTP server to send through
+        $mail->SMTPAuth = self::getUseSMTPAuth();                                   // Enable SMTP authentication
+        $mail->Username = self::getSMTPUsername();                     // SMTP username
+        $mail->Password = self::getSMTPPassword();                               // SMTP password
+        $mail->isHTML(true);
+        //$mail->Sender = EmailConfig::getSMTPUsername();
+        //$mail->AuthType = 'LOGIN';
+
+        if (self::getUseSMTPSSL()) {
+            $mail->SMTPAutoTLS = true;
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+        }
+        $mail->Port = self::getSMTPPort();                                  // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+        $mail->setFrom(self::getFromAddress());
+
+        return $mail;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public static function getSMTPServer()
+    {
+        return self::getDatabaseValue("SMTP_Server");
+    }
+
+    /**
+     *
+     * @return bool
+     *
+     */
+    public static function getUseSMTPAuth()
+    {
+        return self::getDatabaseValue("Use_SMTP_Auth");
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public static function getSMTPUsername()
+    {
+        return self::getDatabaseValue("SMTP_Username");
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public static function getSMTPPassword()
+    {
+        return self::getDatabaseValue("SMTP_Password");
+    }
+
+    /**
+     *
+     * @return bool
+     */
+    public static function getUseSMTPSSL()
+    {
+
+        return self::getDatabaseValue("Use_SMTP_SSL");
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public static function getSMTPPort()
+    {
+        $value = self::getDatabaseValue("SMTP_Port");
+        if (!$value) {
+            $value = 25;
+        }
+        return $value;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public static function getFromAddress()
+    {
+        return self::getDatabaseValue("From_Address");
+    }
+
     public function getUseSMTPEncryption()
     {
         return self::getDatabaseValue('Use_SMTP_Encryption');
+    }
+
+    public function send($to, $cc, $bcc, $subject, $body, $replyTo)
+    {
+
+    }
+
+    public function testConnection()
+    {
+        return false;
     }
 
 }
