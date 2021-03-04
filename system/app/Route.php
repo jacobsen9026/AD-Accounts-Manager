@@ -97,7 +97,7 @@ class Route
      */
     public function setMethod($method)
     {
-        $this->method = $method;
+        $this->method = $this->preProcessMethod($method);
         return $this;
     }
 
@@ -145,7 +145,7 @@ class Route
      */
     public function setControler($controler)
     {
-        $this->controler = $controler;
+        $this->controler = $this->preProcessController($controler);
         return $this;
     }
 
@@ -159,6 +159,17 @@ class Route
     private function preProcessData($data)
     {
         return str_replace("%20", " ", $data);
+
+    }
+
+    private function preProcessController($controller)
+    {
+        return str_replace(".", "_", $controller);
+    }
+
+    private function preProcessMethod($method)
+    {
+        return str_replace(".", "_", $method);
     }
 
 }
