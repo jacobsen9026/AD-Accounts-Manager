@@ -180,17 +180,9 @@ class Form
         //var_dump($element);
         $elementName = $element->getName();
         $attribute = 'name="' . $elementName . '"';
-        $jsFunction = 'function customOnSubmit(e){
+        $jsFunction = '
         //console.log(e);
-        try{
-            e.preventDefault();
-          
-        }
-        catch{
-               
-
-        }
-        try{
+        
           var inputVal = $("#' . $element->getId() . '").val();
     
         console.log(inputVal);
@@ -201,12 +193,9 @@ class Form
     
         window.location.href = urlLink;
         return false;
-        }catch{
-                return false;
-
-        }
         
-        }';
+        
+        ';
         $this->setOnSubmit($jsFunction);
     }
 
@@ -220,10 +209,23 @@ class Form
     {
 
         $this->logger->info("Printing form ");
-        $html = "<!-- Form Start $this->id -->";
-        $html .= "<script>$this->onSubmit</script><form action='$this->action' method='$this->method' name='$this->name' id='$this->id' style='$this->style' class='" . $this->getClasses() . "' onsubmit=";
+        $html = "<!-- Form Start $this->name $this->id -->";
+        $html .= "<script>function customOnSubmit" . $this->name . "(e){
+    try{
+            e.preventDefault();
+        }
+        catch{
+        }
+        try{" . $this->onSubmit . "}catch{
+        console.log('customOnSubmit failed');
+                return false;
+
+        }
+        return false;
+}
+        </script><form action='$this->action' method='$this->method' name='$this->name' id='$this->id' style='$this->style' class='" . $this->getClasses() . "' onsubmit=";
         if ($this->onSubmit != '') {
-            $html .= "'return customOnSubmit(this)'";
+            $html .= "'return customOnSubmit" . $this->name . "(this)'";
         }
         $html .= " enctype='multipart/form-data'>";
 
@@ -299,6 +301,11 @@ class Form
     {
         $this->onSubmit = $onSubmit;
         return $this;
+    }
+
+    public function setName(string $name)
+    {
+        $this->name = $name;
     }
 
 }
