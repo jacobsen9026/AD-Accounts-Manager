@@ -51,24 +51,41 @@ class FormTextArea extends FormElement implements FormElementInterface
 
     public function getElementHTML()
     {
-        $output = '<div class="row">
-        <div class = "col-md-4">
+        $output = '<div class="row ' . $this->getElementClasses() . '">';
+        if ($this->getLabel() != '') {
+            $output .= '<div class = "col-md-4">
         <label class = "' . $this->getLabelClasses() . '" for = "' . $this->getName() . '">
         ' . $this->getLabel() . '
         <small id = "' . $this->getName() . 'HelpBlock" class = "' . $this->getSubLabelClasses() . '">
         ' . $this->getSubLabel() . '
         </small>
         </label>
-        </div>
-        <div class = "col-md-8">
-        <div class = "row p-3 h-100 ui-widget">
-        <textarea type = "text" class = "h-100 form-control" name = "' . $this->getName() . '" placeholder = "' . $this->getPlaceholder() . '">
+        </div>';
+
+            $output .= '<div class = "col-md-8">';
+        } else {
+
+            $output .= '<div class = "col-md">';
+        }
+        $output .= '<div class = "row p-3 h-100 ui-widget">
+        <textarea type = "text" class = "form-control ' . $this->getInputClasses() . '" name = "' . $this->getName() . '" id="' . $this->getId() . '" placeholder = "' . $this->getPlaceholder() . '">
 ' . $this->getValue() . '
 </textarea>
         </div>
         </div>
         </div>';
         return $output;
+    }
+
+    public function getId()
+    {
+
+        if ($this->id == null) {
+            return htmlspecialchars(str_replace(["<", ">", "=", "-", "/", " ", '"', "'", '.'], "", $this->getName() . 'InputArea'));
+
+        } else {
+            return $this->id;
+        }
     }
 
     public function getPlaceholder()
