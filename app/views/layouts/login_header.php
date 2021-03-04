@@ -21,8 +21,10 @@ use App\Models\Database\AppDatabase;
                 <div class="pl-2" id="navbarBrandText">
                     <!-- Brand -->
                     <a class="navbar-brand" href="/">
-                        <i class="text-light fas fa-graduation-cap mr-1"></i>
-                        <?php echo AppDatabase::getAppName(); ?>
+                        <img style="max-height:50px"
+                             src="/img/logo/512x512.png"/>
+
+                        <?php echo AppDatabase::getAppAbbreviation(); ?>
                     </a>
                 </div>
 
