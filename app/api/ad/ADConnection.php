@@ -59,7 +59,7 @@ class ADConnection extends Adldap
                 'password' => DomainDatabase::getADPassword(1),
                 'port' => 389
             ];
-            self::$logger->debug($configuration);
+            $this->ldapLogger->debug($configuration);
             if (DomainDatabase::getAD_UseTLS()) {
                 $this->ldapLogger->info('Connecting to ' . $fqdn . ' with TLS enabled');
                 $configuration['use_tls'] = true;
@@ -120,20 +120,20 @@ class ADConnection extends Adldap
          * Now check if connection is legit
          */
         if (self::$instance->connection instanceof Provider === false) {
-            self::$logger->info("AD not connected");
+            LDAPLogger::get()->info("AD not connected");
             return false;
         }
         /**
          * Now check if the connection is connected
          */
-        self::$logger->debug(self::$instance->connection->getConnection()->getLastError());
+        LDAPLogger::get()->debug(self::$instance->connection->getConnection()->getLastError());
         if (!self::$instance->connection->getConnection()->getLastError()) {
-            self::$logger->info("AD not connected");
+            LDAPLogger::get()->info("AD not connected");
 
             return false;
         }
 
-        self::$logger->info("AD connected");
+        LDAPLogger::get()->info("AD connected");
 
         return true;
     }
@@ -218,8 +218,8 @@ class ADConnection extends Adldap
 
     public function handleError($code, $description, $file = null, $line = null, $context = null)
     {
-        self::$logger->error($code);
-        self::$logger->error($description);
+        LDAPLogger::get()->error($code);
+        LDAPLogger::get()->error($description);
         $description = str_replace("ldap_bind(): ", '', $description);
         self::$lastError = $description;
         throw new AppException($description);
