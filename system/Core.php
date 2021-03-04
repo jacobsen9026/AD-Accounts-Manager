@@ -60,25 +60,19 @@ class Core
      */
     public static $postLogger;
     public static $version = '0.1.0';
-
-    /** @var Request|null The Request object */
-    public $request;
-
-    /** @var Renderer|null The application output renderer */
-    public $renderer;
-
-    /** @var AppOutput The application output */
-    public $appOutput;
-
-    /** @var CommonLogger|null The application logger */
-    public $appLogger;
-
-    /** @var CommonApp|null The App Instance */
-    public $app;
-
     /** @var Core|null This core instance */
     public static
         $instance;
+    /** @var Request|null The Request object */
+    public $request;
+    /** @var Renderer|null The application output renderer */
+    public $renderer;
+    /** @var AppOutput The application output */
+    public $appOutput;
+    /** @var CommonLogger|null The application logger */
+    public $appLogger;
+    /** @var CommonApp|null The App Instance */
+    public $app;
 
     function __construct()
     {
@@ -122,6 +116,11 @@ class Core
         return self::$version;
     }
 
+    public static function getAppClass()
+    {
+        return APPCLASS;
+    }
+
     /**
      * Start the system core running. This should be called from the public php index file
      */
@@ -162,25 +161,6 @@ class Core
          * back to the public index.php file immediately following the run().
          * EXIT
          */
-    }
-
-    /**
-     * In the event of a CoreException, immediately stops app execution and pulls the current AppLogger state.
-     * Should not be used by other classes.
-     *
-     * @param type $message
-     */
-    public function abort($message = null)
-    {
-
-        self::$systemLogger->error("Aborting App Execution!");
-        self::$systemLogger->error($message);
-        $this->appLogger = ($this->app->logger);
-        try {
-            $this->render();
-        } catch (CoreException $ex) {
-            self::$systemLogger->error($ex);
-        }
     }
 
     /**
@@ -242,9 +222,44 @@ class Core
          */
         $this->appOutput = new AppOutput($this->request);
 
+
+        date_default_timezone_set(DEFAULT_TIMEZONE);
         /*
          * Initialization complete return to run()
          */
+    }
+
+    /**
+     * Sets the error mode according to the core debug setting
+     *
+     * Debug On: Print all errors
+     * Debug Off: Suppress Errors
+     */
+    private function setErrorMode()
+    {
+        if ($this->inDebugMode()) {
+            self::$systemLogger->info("Enabling PHP Errors");
+            enablePHPErrors();
+        } else {
+
+            self::$systemLogger->info("Disabling PHP Errors");
+            disablePHPErrors();
+        }
+    }
+
+    /**
+     * Returns true if the core is in debug mode,
+     * false if it is not.
+     *
+     * @return boolean
+     */
+    public static function inDebugMode()
+    {
+        if (defined('DEBUG_MODE') and DEBUG_MODE) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -301,14 +316,11 @@ class Core
 
             } else {
                 throw new CoreException("The " . APPCLASS . " does not have a run() method", CoreException::APP_MISSING_RUN);
-                echo("The " . APPCLASS . " does not have a run() method");
 
-                //exit;
             }
         } else {
             throw new CoreException("The " . APPCLASS . " class was not found", CoreException::APP_MISSING);
-            echo("The " . APPCLASS . " class was not found");
-            //exit;
+
         }
 
         /*
@@ -335,41 +347,22 @@ class Core
     }
 
     /**
-     * Sets the error mode according to the core debug setting
+     * In the event of a CoreException, immediately stops app execution and pulls the current AppLogger state.
+     * Should not be used by other classes.
      *
-     * Debug On: Print all errors
-     * Debug Off: Suppress Errors
+     * @param string $message
      */
-    private function setErrorMode()
+    public function abort($message = null)
     {
-        if ($this->inDebugMode()) {
-            self::$systemLogger->info("Enabling PHP Errors");
-            enablePHPErrors();
-        } else {
 
-            self::$systemLogger->info("Disabling PHP Errors");
-            disablePHPErrors();
+        self::$systemLogger->error("Aborting App Execution!");
+        self::$systemLogger->error($message);
+        $this->appLogger = ($this->app->logger);
+        try {
+            $this->render();
+        } catch (CoreException $ex) {
+            self::$systemLogger->error($ex);
         }
-    }
-
-    /**
-     * Returns true if the core is in debug mode,
-     * false if it is not.
-     *
-     * @return boolean
-     */
-    public static function inDebugMode()
-    {
-        if (defined('DEBUG_MODE') and DEBUG_MODE) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public static function getAppClass()
-    {
-        return APPCLASS;
     }
 
 }
