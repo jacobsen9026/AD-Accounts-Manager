@@ -32,16 +32,18 @@ namespace App\Controllers;
  * @author cjacobsen
  */
 
+use App\Api\Ad\ADConnection;
 use App\Models\Audit\Action\Group\AddMemberAuditAction;
+use App\Models\Audit\Action\Group\CreateGroupAuditAction;
 use App\Models\Audit\Action\Group\DeleteGroupAuditAction;
 use App\Models\Audit\Action\Group\RemoveMemberAuditAction;
 use App\Models\Audit\Action\Group\SearchGroupAuditAction;
 use App\Models\District\DomainGroup;
 use App\Models\District\DomainUser;
 use System\App\AppException;
+use System\App\LDAPLogger;
 use System\Lang;
 use System\Post;
-use App\Api\AD;
 use System\Request;
 
 class Groups extends Controller
@@ -49,27 +51,28 @@ class Groups extends Controller
 
     public function createPost()
     {
-        /**
-         * $validator = new \System\App\Forms\Validators\GroupValidator();
-         * $validator->setMethod(\System\App\Forms\Validators\GroupValidator::ADD_GROUP);
-         * $validator->setName(Post::get("name"))
-         * ->setDescription(Post::get("description"))
-         * ->setEmail(Post::get("email"))
-         * ->setOu(Post::get("ou"));
-         * $filteredInput = $validator->validateInput();
-         * return;
-         *
-         */
-        $name = Post::get("name");
-        $desc = Post::get("description");
-        $email = Post::get("email");
-        $ou = Post::get("ou");
-        if ($name != null and $ou != null) {
-            //$newGroup = new AddDistrictGroup();
-            $dn = "CN=" . Post::get("name") . ',' . Post::get("ou");
-            //$newGroup->setName(Post::get("name"))
-            //   ->setDistinguishedName($dn);
-            //$newGroup->createInAD();
+        if ($this->user->superAdmin) {
+
+            $name = Post::get("name");
+            $desc = Post::get("description");
+            $email = Post::get("email");
+            $ou = Post::get("ou");
+            if ($name != null and $ou != null) {
+
+                $newGroup = ADConnection::get()->getDefaultProvider()->make()->group()
+                    ->setName($name)
+                    ->setAccountName($name)
+                    ->setAttribute('description', $desc)
+                    ->setAttribute('mail', $email)
+                    ->setDistinguishedName('CN=' . $name . ',' . $ou);
+                LDAPLogger::get()->info("New group ready");
+                LDAPLogger::get()->info($newGroup);
+                $newGroup->save();
+                $group = new DomainGroup($newGroup->getAccountName());
+                $this->audit(new CreateGroupAuditAction($group));
+                $this->redirect('/groups/search/' . $name);
+
+            }
         }
     }
 
@@ -156,7 +159,8 @@ class Groups extends Controller
                 break;
             case 'addMember':
                 $group = new DomainGroup($groupName);
-                $username = Post::get('usernameToAdd');
+                $username = Post::get('username');
+
                 $this->logger->info("adding member " . $username);
                 $user = null;
                 try {
@@ -199,10 +203,11 @@ class Groups extends Controller
     public function deletePost()
     {
         $groupDN = Post::get("groupDN");
-        $ad = AD::get();
-        $ad->deleteGroup($groupDN);
+        $group = new DomainGroup ($groupDN);
+        $group->delete();
 
         $this->audit(new DeleteGroupAuditAction($groupDN));
+        $this->redirect('/groups');
     }
 
 }
