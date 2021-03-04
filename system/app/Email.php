@@ -32,74 +32,14 @@ namespace System\App;
  * @author cjacobsen
  */
 
+use App\Models\Database\AppDatabase;
 use App\Models\Database\DatabaseModel;
 use App\Models\Database\EmailDatabase as EmailConfig;
+use PHPMailer\PHPMailer\PHPMailer;
+use System\Core;
 
 class Email extends DatabaseModel
 {
 
-    /**
-     *
-     * @return \PHPMailer\PHPMailer\PHPMailer
-     */
-    private static function createMailer()
-    {
-        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-//var_dump(EmailConfig::getSMTPServer());
-//Server settings
-        $mail->SMTPDebug = true;                      // Enable verbose debug output
-        $mail->isSMTP();                                            // Send using SMTP
-        $mail->Host = EmailConfig::getSMTPServer();                    // Set the SMTP server to send through
-        $mail->SMTPAuth = EmailConfig::getUseSMTPAuth();                                   // Enable SMTP authentication
-        $mail->Username = EmailConfig::getSMTPUsername();                     // SMTP username
-        $mail->Password = EmailConfig::getSMTPPassword();                               // SMTP password
-        $mail->isHTML(true);
-        //$mail->Sender = EmailConfig::getSMTPUsername();
-        //$mail->AuthType = 'LOGIN';
 
-        if (EmailConfig::getUseSMTPSSL()) {
-            $mail->SMTPAutoTLS = true;
-            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
-        }
-        $mail->Port = EmailConfig::getSMTPPort();                                  // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
-        $mail->setFrom(EmailConfig::getFromAddress());
-
-        return $mail;
-    }
-
-    public static function sendTest($to = null)
-    {
-// Instantiation and passing `true` enables exceptions
-        $mail = self::createMailer();
-//Recipients
-        try {
-
-            $mail->addAddress($to);
-            $mail->isHTML(true);                                  // Set email format to HTML
-            $mail->Subject = 'SAM Email Test';
-            $mail->Body = 'Your email settings are correct!';
-
-            AppLogger::get()->debug(EmailConfig::getSMTPServer());
-
-            $mail->send();
-            return 'Message has been sent successfully';
-        } catch (Exception $e) {
-            return "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-        }
-    }
-
-    public function send($to, $cc, $bcc, $subject, $body, $replyTo)
-    {
-
-    }
-
-    public function testConnection()
-    {
-        return false;
-    }
-
-    public static function saveSettings(array $postData)
-    {
-        // TODO: Implement saveSettings() method.
-    }
 }
