@@ -33,6 +33,7 @@ namespace System\App\Auth;
  */
 
 use System\App\UserLogger;
+use system\Encryption;
 
 class CoreUser
 {
@@ -56,15 +57,6 @@ class CoreUser
     }
 
     /**
-     *
-     * @return type
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    /**
      * @param bool $status
      *
      * @return $this
@@ -76,6 +68,23 @@ class CoreUser
         return $this;
     }
 
+    /**
+     *
+     */
+    public function generateAPIToken()
+    {
+        $user = gzcompress($this->getUsername());
+        $this->apiToken = Encryption::encrypt(serialize($user));
+    }
+
+    /**
+     *
+     * @return type
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
 
     /**
      *
@@ -89,16 +98,6 @@ class CoreUser
         UserLogger::get()->info('Setting Username to: ' . $username);
         $this->username = $username;
         return $this;
-    }
-
-
-    /**
-     *
-     */
-    public function generateAPIToken()
-    {
-        $user = gzcompress($this);
-        $this->apiToken = \system\Encryption::encrypt(serialize($user));
     }
 
     public function getApiToken()
