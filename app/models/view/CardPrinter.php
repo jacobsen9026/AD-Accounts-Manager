@@ -600,7 +600,7 @@ abstract class CardPrinter extends ViewModel
         $output = '<div class="col-sm mb-2 mb-0-sm ">';
         //var_dump($user->activeDirectory);
         if (!is_null($user->activeDirectory->getThumbnail())) {
-            $output .= '<img class="userPortrait card-img-top mb-3  col-md-7 px-0 dark-shadow" src="data:image/jpeg;base64, ' . base64_encode($user->activeDirectory->getThumbnail()) . '"/>';
+            $output .= '<img class="userPortrait card-img-top mb-3  col-md-7 px-0 dark-shadow" src="/img/user/' . $user->getUsername() . '"/>';
         }
         $output .= '</div>';
         return $output;
@@ -651,7 +651,7 @@ abstract class CardPrinter extends ViewModel
             ->setName("distinguishedName");
         if ($objectToRemove instanceof DomainUser) {
             $objectToRemoveInput->setValue($objectToRemove->getDistinguishedName());
-        } else if ($objectToRemove instanceof DomainGroup) {
+        } elseif ($objectToRemove instanceof DomainGroup) {
             $objectToRemoveInput->setValue($objectToRemove->getDistinguishedName());
         }
         $groupInput = new FormText("group");
@@ -708,7 +708,7 @@ abstract class CardPrinter extends ViewModel
             $groupName = new FormText('', '', 'group', $group->activeDirectory->getDistinguishedName());
             $groupName->hidden();
 
-            $userToAdd = new FormText('Add user or group', Lang::getHelp('Can also search by first or last name.'), 'usernameToAdd');
+            $userToAdd = new FormText('Add user or group', Lang::getHelp('Can also search by first or last name.'), 'username');
             $userToAdd->autoCompleteUsernameOrGroupName();
 
             $modal->setTitle("Find User or Group");
@@ -820,7 +820,7 @@ abstract class CardPrinter extends ViewModel
         $button->medium()
             ->setTheme('danger');
         $text = new FormHTML();
-        $text->setHtml('<h5>Are you absolutely sure you want to delete this group? There is no undo to this action.<br><br> Be sure you are deleting the right group.</h5>');
+        $text->setHtml('Are you absolutely sure you want to delete this group? There is no undo to this action.<br><br> Be sure you are deleting the right group.');
         $text->full();
         $name = new FormText('', '', 'groupDN', $group->activeDirectory->getDistinguishedName());
         $name->medium()
