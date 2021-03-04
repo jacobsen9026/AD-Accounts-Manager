@@ -43,9 +43,7 @@ use PDO;
 
 class Database
 {
-    /*
-     * Database Scheme as Contansts
-     */
+
 
     /** @var Database|null */
     public static $instance;
@@ -201,11 +199,16 @@ class Database
         }
 
         //Return Array
-        $this->logger->debug("Response: " . var_export($return, true));
+        //$this->logger->debug("Response: " . var_export($return, true));
 
         return $return;
 
 
+    }
+
+    public function prepare($query)
+    {
+        $this->db->prepare($query);
     }
 
     /**
