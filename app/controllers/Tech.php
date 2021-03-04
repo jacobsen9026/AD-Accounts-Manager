@@ -26,14 +26,14 @@
 
 namespace App\Controllers;
 
+use App\Api\Windows\WindowsRM;
+use System\Post;
+
 /**
  * Description of Tech
  *
  * @author cjacobsen
  */
-
-use App\Api\WindowsRM;
-
 class Tech extends Controller
 {
 
@@ -51,6 +51,19 @@ class Tech extends Controller
          */
 
         return $return;
+    }
+
+    public function compmgmtPost($computer = "BBPC")
+    {
+        $action = Post::get('action');
+        switch ($action) {
+            case 'rebootPC':
+                WindowsRM::reboot(Post::get('destination'));
+                break;
+            default:
+                break;
+
+        }
     }
 
 }
