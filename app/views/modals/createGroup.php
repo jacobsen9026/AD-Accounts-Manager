@@ -17,7 +17,6 @@ $email = new FormText(Lang::get('Email Address'), '', 'email');
 $email->medium();
 $ouInput = new FormText(Lang::get('OU'), "", "ou");
 $ouInput->autoCompleteOU()
-    ->setId("ou")
     // ->appendIcon('<i class="fas fa-search"></i>')
     ->large();
 $form->addElementToNewRow($name)
