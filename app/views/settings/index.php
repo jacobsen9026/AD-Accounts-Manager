@@ -28,11 +28,12 @@ use App\Models\View\Javascript;
 use System\Lang;
 
 //$form = new Form();
-$showApplicationSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_APP_SETTINGS]);
-$showAuthenticationSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_AUTH_SETTINGS]);
-$showEmailSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_EMAIL_SETTINGS]);
-$showNotificationSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_NOTIF_SETTINGS]);
-$showUpdateSettingsCommand = Javascript::buildAJAXRequest('/api/app', "settingsOutput", ['action' => App::GET_UPDATE_SETTINGS]);
+$showApplicationSettingsCommand = Javascript::buildAJAXRequest('/api/app/appSettings', "settingsOutput");
+$showAuthenticationSettingsCommand = Javascript::buildAJAXRequest('/api/app/authSettings', "settingsOutput");
+$showEmailSettingsCommand = Javascript::buildAJAXRequest('/api/app/emailSettings', "settingsOutput");
+$showNotificationSettingsCommand = Javascript::buildAJAXRequest('/api/app/notifSettings', "settingsOutput");
+$showUpdateSettingsCommand = Javascript::buildAJAXRequest('/api/app/update', "settingsOutput");
+$showBackupSettingsCommand = Javascript::buildAJAXRequest('/api/app/backup', "settingsOutput");
 if (!isset($this->tab) or $this->tab == null) {
     $this->tab = "application";
 }
@@ -76,15 +77,23 @@ switch ($this->tab) {
 <nav>
     <div class="nav nav-tabs nav-fill nav-justified" id="nav-tab" role="tablist">
         <a class="nav-item nav-link active" id="nav-app-tab" data-toggle="tab" href="#nav-app" role="tab"
-           aria-controls="nav-app" aria-selected="true" onclick='<?= $showApplicationSettingsCommand ?>'><?=Lang::get("Application")?></a>
+           aria-controls="nav-app" aria-selected="true"
+           onclick='<?= $showApplicationSettingsCommand ?>'><?= Lang::get("Application") ?></a>
         <a class="nav-item nav-link" id="nav-auth-tab" data-toggle="tab" href="#nav-auth" role="tab"
-           aria-controls="nav-auth" aria-selected="false" onclick='<?= $showAuthenticationSettingsCommand ?>'><?=Lang::get("Authentication")?></a>
+           aria-controls="nav-auth" aria-selected="false"
+           onclick='<?= $showAuthenticationSettingsCommand ?>'><?= Lang::get("Authentication") ?></a>
         <a class="nav-item nav-link" id="nav-email-tab" data-toggle="tab" href="#nav-email" role="tab"
-           aria-controls="nav-email" aria-selected="false" onclick='<?= $showEmailSettingsCommand ?>'><?=Lang::get("Email")?></a>
+           aria-controls="nav-email" aria-selected="false"
+           onclick='<?= $showEmailSettingsCommand ?>'><?= Lang::get("Email") ?></a>
         <a class="nav-item nav-link" id="nav-notification-tab" data-toggle="tab" href="#nav-notification" role="tab"
-           aria-controls="nav-notification" aria-selected="false" onclick='<?= $showNotificationSettingsCommand ?>'><?=Lang::get("Notification")?></a>
+           aria-controls="nav-notification" aria-selected="false"
+           onclick='<?= $showNotificationSettingsCommand ?>'><?= Lang::get("Notification") ?></a>
         <a class="nav-item nav-link" id="nav-update-tab" data-toggle="tab" href="#nav-update" role="tab"
-           aria-controls="nav-update" aria-selected="false" onclick='<?= $showUpdateSettingsCommand ?>'><?=Lang::get("Update")?></a>
+           aria-controls="nav-update" aria-selected="false"
+           onclick='<?= $showUpdateSettingsCommand ?>'><?= Lang::get("Update") ?></a>
+        <a class="nav-item nav-link" id="nav-backup-tab" data-toggle="tab" href="#nav-backup" role="tab"
+           aria-controls="nav-backup" aria-selected="false"
+           onclick='<?= $showBackupSettingsCommand ?>'><?= Lang::get("Backup") ?></a>
     </div>
 </nav>
 <div class="row"></div>
