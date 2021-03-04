@@ -26,6 +26,7 @@
 
 namespace App\Models\View;
 
+use App\App\App;
 use System\App\Forms\Form;
 
 /**
@@ -34,8 +35,6 @@ use System\App\Forms\Form;
  *
  * @author cjacobsen
  */
-
-
 abstract class Javascript extends ViewModel
 {
 
@@ -44,7 +43,7 @@ abstract class Javascript extends ViewModel
 
 
     public static $logInjectionScript = '  $.each(data.output.ajax.logs, function(key, value){
-                                     console.log(key+"_AJAX_Log_Panel");
+                                     //console.log(key+"_AJAX_Log_Panel");
                                     $("#"+key+"_AJAX_Log_Panel").append(value);
                                     });
                                     if(data.output.ajax.logs !=null && data.output.ajax.logs.hasErrors){
@@ -204,6 +203,13 @@ abstract class Javascript extends ViewModel
 
     });';
         return $script;
+    }
+
+    public static function debug(string $string)
+    {
+        if (App::inDebugMode()) {
+            return 'console.log("' . $string . '");';
+        }
     }
 
 }
