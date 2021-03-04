@@ -140,9 +140,9 @@ class FormButton extends FormElement implements FormElementInterface
     /**
      *  Converts the button to a background AJAX call
      *
-     * @param string $url      The target URL of the AJAX request
+     * @param string $url The target URL of the AJAX request
      * @param string $outputID The ID of the HTML element to place the response
-     * @param mixed $data      Can be a prepared array, a Form object, or a JQuery string
+     * @param mixed $data Can be a prepared array, a Form object, or a JQuery string
      */
     public function addAJAXRequest($url, $outputID = null, $data = null, $showLoading = false, $outputElement = 'html')
     {
@@ -175,7 +175,6 @@ class FormButton extends FormElement implements FormElementInterface
         $this->setType('button');
         $function = Javascript::buildClientRequest($url, $data);
         $script = Javascript::on($this->getId(), $function);
-        //var_dump($script);
         $this->setScript($script);
         return $this;
     }
