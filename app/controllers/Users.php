@@ -33,8 +33,9 @@ namespace App\Controllers;
  */
 
 
+use App\Api\Ad\ADConnection;
 use App\Api\Ad\ADUsers;
-use App\Controllers\Api\Domain;
+use App\Models\Audit\Action\User\CreateUserAuditAction;
 use App\Models\Audit\Action\User\DisableUserAuditAction;
 use App\Models\Audit\Action\User\EnableUserAuditAction;
 use App\Models\Audit\Action\User\MoveUserAuditAction;
@@ -45,12 +46,11 @@ use App\Models\Audit\Action\User\UploadUserPhotoAudtitAction;
 use App\Models\District\DomainUser;
 use App\Models\User\PermissionHandler;
 use App\Models\User\PermissionLevel;
-use App\Models\View\Modal;
 use App\Models\View\Toast;
 use System\App\AppException;
 use System\App\AppLogger;
+use System\App\LDAPLogger;
 use System\Post;
-use System\App\Picture;
 use System\Models\Post\UploadedFile;
 
 class Users extends Controller
@@ -113,35 +113,12 @@ class Users extends Controller
                 if ($uploadedPicture->exists()) {
                     $fileType = $uploadedPicture->getType();
                     $this->logger->debug('File type: ' . $fileType);
+                    $uploadedPicture->resize(225);
 
-                    switch ($uploadedPicture->getType()) {
-
-
-                        case 'image/png':
-                            $picture = imagecreatefrompng($uploadedPicture->getTempFileName());
-                            break;
-                        case 'image/jpeg':
-                        case 'image/jpgx':
-                        case 'image/jpg':
-                            $picture = imagecreatefromjpeg($uploadedPicture->getTempFileName());
-                            break;
-
-                        case 'image/gif':
-                            $picture = imagecreatefromgif($uploadedPicture->getTempFileName());
-                            break;
-                        case 'image/bmp':
-                            $picture = imagecreatefrombmp($uploadedPicture->getTempFileName());
-                            break;
-
-                    }
-                    $picture = Picture::cropSquare($picture, 225);
-                    ob_start();
-                    imagejpeg($picture);
-                    $rawPicture = ob_get_clean();
 
                     $user = $this->getUser($username);
-                    $this->logger->debug($rawPicture);
-                    $user->activeDirectory->setThumbnail($rawPicture, false)->save();
+
+                    $user->activeDirectory->setThumbnail($uploadedPicture->getTempFileContents(), false)->save();
 
                     $this->audit(new UploadUserPhotoAudtitAction($username));
 
@@ -165,10 +142,45 @@ class Users extends Controller
         return $output;
     }
 
+    public function createPost()
+    {
+        if ($this->user->superAdmin) {
+            $username = Post::get('logonname');
+            $newUser = ADConnection::get()->getDefaultProvider()->make()->user()
+                ->setAccountName($username);
+            $newUser->setCommonName(Post::get('fullname'))
+                ->setAttribute('givenName', Post::get('fname'))
+                ->setAttribute('initials', Post::get('mname'))
+                ->setAttribute('sn', Post::get('lname'))
+                ->setDn('CN=' . Post::get('fullname') . ',' . Post::get('ou'))
+                ->setAttribute('mail', Post::get('email'))
+                ->setAttribute('description', Post::get('description'));
+            $newUser->setPassword(Post::get('password'));
+            // Get a new account control object for the user.
+            $ac = $newUser->getUserAccountControlObject();
+
+// Mark the account as enabled (normal).
+
+            $ac->accountIsNormal();
+
+
+// Set the account control on the user and save it.
+// Set the account control on the user and save it.
+            $newUser->setUserAccountControl($ac);
+            LDAPLogger::get()->debug($newUser);
+            $newUser->save();
+            $user = new DomainUser($newUser->getAccountName());
+            $this->audit(new CreateUserAuditAction($user));
+            $this->redirect('/users/search/' . $user->getUsername());
+
+
+        }
+    }
 
     /**
      * Edit Post
      * This is the control for editing user account via the user search
+     *
      * @throws \System\CoreException
      */
     public function editPost()
