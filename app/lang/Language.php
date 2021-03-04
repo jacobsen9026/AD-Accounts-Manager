@@ -49,7 +49,7 @@ trait Language
         if (isset(self::$help[$name]) and self::$help[$name] != null) {
             return self::$help[$name];
         }
-        return 'No language reference found for ' . $name;
+        return 'No help language reference found for ' . $name;
     }
 
     public static function getError($name)
@@ -57,7 +57,7 @@ trait Language
         if (isset(self::$error[$name]) and self::$error[$name] != null) {
             return self::$error[$name];
         }
-        return 'No language reference found for ' . $name;
+        return 'No error language reference found for ' . $name;
     }
 
 }
