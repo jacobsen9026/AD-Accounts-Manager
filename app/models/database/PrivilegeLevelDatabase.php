@@ -90,26 +90,7 @@ abstract class PrivilegeLevelDatabase extends DatabaseModel
     public static function get($id = null)
     {
         if ($id == null) {
-            $dbTable = parent::get();
-            $logger = AppLogger::get();
-            ksort($dbTable);
-            $logger->debug($dbTable);
-            if ($dbTable != false) {
-                foreach ($dbTable as $row) {
-                    $level = new PrivilegeLevel();
-                    try {
-                        $level->setId($row['ID'])
-                            ->setAdGroup($row['AD_Group_Name'])
-                            ->setSuperAdmin($row['Super_Admin']);
-                        $levels[] = $level;
-                    } catch (AppException $e) {
-                        $logger->error($e);
-                    }
-                }
-
-                return $levels;
-            }
-            return false;
+            return parent::get();
         } else {
             $query = new Query(self::TABLE_NAME, Query::SELECT);
             $query->where('ID', $id);
@@ -117,4 +98,24 @@ abstract class PrivilegeLevelDatabase extends DatabaseModel
         }
     }
 
+    public static function getAllPrivilegeLevels()
+    {
+        $dbTable = parent::get();
+        $logger = AppLogger::get();
+
+        $logger->debug($dbTable);
+        if ($dbTable != false) {
+            ksort($dbTable);
+            foreach ($dbTable as $row) {
+                $level = new PrivilegeLevel();
+                $level->setId($row['ID'])
+                    ->setAdGroup($row['AD_Group_Name'])
+                    ->setSuperAdmin($row['Super_Admin']);
+                $levels[] = $level;
+            }
+
+            return $levels;
+        }
+        return false;
+    }
 }
