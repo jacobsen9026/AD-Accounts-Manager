@@ -6,10 +6,12 @@ use App\Models\Database\DomainDatabase;
 use App\Forms\FormText;
 use System\App\Forms\Form;
 use System\App\Forms\FormFloatingButton;
+use System\App\Forms\FormSlider;
 use System\Encryption;
 use App\Models\District\Domain;
 use System\App\Forms\FormButton;
 use System\App\Forms\FormHTML;
+use System\Lang;
 
 
 /* @var $district Domain */
@@ -26,15 +28,12 @@ if (!$adTestResult) {
 ?>
 
 <div id="districtOutput" class="container-fluid bg-white shadow p-3 mt-0 pb-5 mb-5">
-
     <div class="mb-3">
-        <strong>Editing
-            <?= $domain->getName() ?>
+        <strong><?= Lang::get('Domain Setup') ?>
         </strong>
 
 
     </div>
-
 
     <?php
     $form = new Form('/settings/domain/edit/' . $domain->getId(), 'editDistrict');
@@ -51,26 +50,55 @@ if (!$adTestResult) {
     $updateButttonFloating->setId('floatingSaveButton')
         ->addAJAXRequest('/api/settings/domain', 'districtOutput', $form);
 
-    $name = new FormText("Name", "", "name", $domain->getName());
+    $name = new FormText("Name",
+        "",
+        "name",
+        $domain->getName());
     $name->full();
-    $action = new FormText('', '', 'aciton', 'updateDistrict');
+    $action = new FormText('',
+        '',
+        'aciton',
+        'updateDistrict');
     $action->hidden();
-    $abbr = new FormText("Abbreviation", "", "abbr", $domain->getAbbr());
-    $netBIOS = new FormText("Active Directory Domain NetBIOS", "", "adNetBIOS", $domain->getAdNetBIOS());
-    $adFQDN = new FormText("Active Directory FQDN", "", "adFQDN", $domain->getAdFQDN());
-    $adBaseDN = new FormText("Active Directory Base DN", "The point from which the application searches from.", "adBaseDN", $domain->getAdBaseDN());
-    $adUsername = new FormText("Active Directory Username", "Enter an account with admin privileges to the district OU's", "adUsername", $domain->getAdUsername());
-    $adPassword = new FormText("Active Directory Password", "Enter password for admin user", "adPassword", Encryption::encrypt($domain->getAdPassword()));
+    $abbr = new FormText("Abbreviation",
+        "",
+        "abbr",
+        $domain->getAbbr());
+    $netBIOS = new FormText("Active Directory Domain NetBIOS",
+        "",
+        "adNetBIOS",
+        $domain->getAdNetBIOS());
+    $adFQDN = new FormText("Active Directory FQDN",
+        "",
+        "adFQDN",
+        $domain->getAdFQDN());
+    $adBaseDN = new FormText("Active Directory Base DN",
+        "The point from which the application searches from.",
+        "adBaseDN",
+        $domain->getAdBaseDN());
+    $adBaseDN->full();
+    $adUsername = new FormText("Active Directory Username",
+        "Enter an account with admin privileges to the domain OU's",
+        "adUsername",
+        $domain->getAdUsername());
+    $adPassword = new FormText("Active Directory Password",
+        "Enter password for admin user",
+        "adPassword",
+        Encryption::encrypt($domain->getAdPassword()));
     $adPassword->isPassword();
-    //$adStudentGroup = new FormText("Active Directory Student Group", "This group should contain all active and inactive students as well as all student groups", "adStudentGroup", $district->getAdStudentGroupName());
-    //$adStaffGroup = new FormText("Active Directory Staff Group", "This group should contain all active staff as well as all staff groups", "adStaffGroup", $district->getAdStaffGroupName());
+    //$adStudentGroup = new FormText("Active Directory Student Group", "This group should contain all active and inactive students as well as all student groups", "adStudentGroup", $domain->getAdStudentGroupName());
+    //$adStaffGroup = new FormText("Active Directory Staff Group", "This group should contain all active staff as well as all staff groups", "adStaffGroup", $domain->getAdStaffGroupName());
 
     $adConnectionCheck = new FormHTML();
     $useTLS = DomainDatabase::getAD_UseTLS();
-    $adUseTLS = new \System\App\Forms\FormSlider('Use TLS', 'Requires web server configuration', 'useTLS', $useTLS);
+    $adUseTLS = new FormSlider('Use TLS',
+        'Requires web server configuration',
+        'useTLS',
+        $useTLS);
 
     $adUseTLS->addOption('No', 0, !$useTLS)
-        ->addOption('Yes', 1, $useTLS);
+        ->addOption('Yes', 1, $useTLS)
+        ->tiny();
 
 
     $valueDisplay = '';
@@ -79,11 +107,13 @@ if (!$adTestResult) {
 
         $classes = 'fas fa-check-circle text-success';
     }
+
     $adTestResultDisplay = '<h1><i class="' . $classes . '"></i></h1>' . $valueDisplay;
-    //var_dump($adTestResult);
+
 
     $adConnectionCheck->setLabel("AD Connection Test")
         ->setHtml($adTestResultDisplay)
+        ->tiny()
         ->setTooltip($adTestResult);
 
 
@@ -101,19 +131,19 @@ if (!$adTestResult) {
     $permissionsButton->addClientRequest("/settings/domain/permissions")
         ->medium();
 
-    $form->addElementToNewRow($name)
-        ->addElementToNewRow($abbr)
-        ->addElementToCurrentRow($action)
+    $form
+        //->addElementToNewRow($name)
+        //->addElementToNewRow($abbr)
+
         ->addElementToCurrentRow($netBIOS)
-        ->addElementToCurrentRow($action)
-        ->addElementToNewRow($adFQDN)
-        ->addElementToCurrentRow($adBaseDN)
+        ->addElementToCurrentRow($adFQDN)
+        ->addElementToNewRow($adBaseDN)
         ->addElementToNewRow($adUsername)
         ->addElementToCurrentRow($adPassword)
-        //->addElementToNewRow($adStudentGroup)
-        ->addElementToNewRow($adConnectionCheck)
-        ->addElementToCurrentRow($adUseTLS)
-        ->addElementToCurrentRow($adPermissionTestButton);
+        ->addElementToNewRow($adUseTLS)
+        ->addElementToCurrentRow($adConnectionCheck)
+        ->addElementToCurrentRow($adPermissionTestButton)
+        ->addElementToCurrentRow($action);
     //->addElementToNewRow($updateButtton)
 
     if ($adTestResult === true) {
