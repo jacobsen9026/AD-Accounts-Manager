@@ -32,6 +32,9 @@ namespace App\Controllers\Api;
  * @author cjacobsen
  */
 
+use App\Models\Database\AppDatabase;
+use App\Models\Database\EmailDatabase;
+use System\App\AppLogger;
 use System\Post;
 
 class Email extends APIController
@@ -48,7 +51,39 @@ class Email extends APIController
             $to = Post::get('to');
         }
         if ($this->user->superAdmin) {
-            return \System\App\Email::sendTest($to);
+            return $this->sendTest($to);
+        }
+    }
+
+
+    public function sendTest($to = null)
+    {
+// Instantiation and passing `true` enables exceptions
+        $mail = EmailDatabase::createMailer();
+//Recipients
+        try {
+
+            $mail->addAddress($to);
+            $mail->isHTML(true);                                  // Set email format to HTML
+            $mail->Subject = AppDatabase::getAppAbbreviation() . ' Email Test';
+            $mail->Body = 'Your email settings are correct!';
+
+            AppLogger::get()->debug(EmailDatabase::getSMTPServer());
+
+            if (\App\App\App::inDebugMode()) {
+                $debugLog = [];
+                $mail->Debugoutput = function ($string, $level) {
+                    $debugLog[] = $level . ': ' . $string;
+                };
+                $mail->SMTPDebug = 1;
+            }
+            $mail->send();
+            if (\App\App\App::inDebugMode()) {
+                AppLogger::get()->debug($debugLog);
+            }
+            return $this->returnHTML('Message has been sent successfully');
+        } catch (Exception $e) {
+            return $this->returnHTML("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
         }
     }
 
