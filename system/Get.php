@@ -37,20 +37,6 @@ abstract class Get
 {
 
     /**
-     * Check if the GET was used in the request
-     *
-     * @return boolean
-     */
-    public static function isSet()
-    {
-        if (isset($_GET) and $_GET != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Returns the contents of the GET array, or false if GET was not used.
      *
      * @return null|array
@@ -64,9 +50,31 @@ abstract class Get
         }
     }
 
+    /**
+     * Check if the GET was used in the request
+     *
+     * @return boolean
+     */
+    public static function isSet($key = null)
+    {
+        if ($key == null) {
+            if (isset($_GET) and $_GET != null) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (isset($_GET[$key]) and $_GET[$key] != null) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
     public static function get($key)
     {
-        if (self::isSet($_GET[$key])) {
+        if (self::isSet($key)) {
             app\AppLogger::get()->info("Getting Get variable " . $key . ' ' . $_GET[$key]);
             return $_GET[$key];
         } else {
