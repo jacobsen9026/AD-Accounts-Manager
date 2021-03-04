@@ -43,34 +43,15 @@ class App extends APIController
     public const GET_CONFIG = "getConfiguration";
     public const GET_AUDIT = "getAudit";
 
-    protected function getApplicationSettings()
+    public function appSettings()
     {
         return $this->returnHTML($this->view('settings/application'));
     }
 
-    protected function getAuthenticationSettings()
-    {
-        return $this->returnHTML($this->view('settings/authentication'));
-    }
 
-    protected function getEmailSettings()
+    public function getConfiguration()
     {
-        return $this->returnHTML($this->view('settings/email'));
-    }
-
-    protected function getNotificationSettings()
-    {
-        return $this->returnHTML($this->view('settings/notification'));
-    }
-
-    protected function getUpdateSettings()
-    {
-        return $this->returnHTML($this->view('settings/update'));
-    }
-
-    protected function getAudit()
-    {
-        return $this->returnHTML($this->view('settings/audit'));
+        return $this->printConfig();
     }
 
     private function printConfig()
@@ -88,11 +69,6 @@ class App extends APIController
         return $this->returnHTML($output);
     }
 
-    public function getConfiguration()
-    {
-        return $this->printConfig();
-    }
-
     private function html_table($data = [])
     {
         $rows = [];
@@ -106,6 +82,36 @@ class App extends APIController
             $rows[] = "<tr>" . implode('', $cells) . "</tr>";
         }
         return "<table class='table hci-table'>" . implode('', $rows) . "</table>";
+    }
+
+    public function authSettings()
+    {
+        return $this->returnHTML($this->view('settings/authentication'));
+    }
+
+    public function emailSettings()
+    {
+        return $this->returnHTML($this->view('settings/email'));
+    }
+
+    public function notifSettings()
+    {
+        return $this->returnHTML($this->view('settings/notification'));
+    }
+
+    public function update()
+    {
+        return $this->returnHTML($this->view('settings/update'));
+    }
+
+    public function getAudit()
+    {
+        return $this->returnHTML($this->view('settings/audit'));
+    }
+
+    public function backup()
+    {
+        return $this->returnHTML($this->view('settings/backup'));
     }
 
 }
