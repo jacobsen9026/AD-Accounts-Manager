@@ -5,15 +5,18 @@ use App\Models\Database\AppDatabase;
 
 ?>
 
-<nav class="shadow navbar fixed-top navbar-expand-md bg-primary navbar-dark text-center" style="z-index:100;">
+<nav class="shadow navbar fixed-top navbar-expand-md bg-primary navbar-dark text-center py-1 w-100"
+     style="z-index:100;left:0;min-height:68px">
     <div>
 
 
         <div class="collapse navbar-collapse" id="navbarBrandText">
             <!-- Brand -->
-            <a class="navbar-brand" href="/">
-                <i class="text-light fas fa-graduation-cap mr-1"></i>
-                <?php echo AppDatabase::getAppName(); ?>
+            <a class="navbar-brand p-0" href="/">
+
+                <img style="max-height:50px"
+                     src="/img/logo/512x512.png"/>
+                <?= AppDatabase::getAppName(); ?>
             </a>
         </div>
 
@@ -24,7 +27,8 @@ use App\Models\Database\AppDatabase;
 
             <!-- Brand -->
             <a class="navbar-brand d-md-none" href="/">
-                <i class="text-light fas fa-graduation-cap mr-1"></i>
+                <img style="max-height:50px"
+                     src="/img/logo/512x512.png"/>
                 <?php echo AppDatabase::getAppAbbreviation(); ?>
             </a>
         </div>
@@ -49,12 +53,12 @@ use App\Models\Database\AppDatabase;
                     if ($topItem->targetURL == null) {
                         ?>
 
-                        <li class="nav-item dropdown">
+                        <li class="nav-item text-left dropdown">
                             <a class="nav-link dropdown-toggle" href="<?php echo $topItem->targetURL; ?>"
                                id="navbardrop" data-toggle="dropdown">
                                 <?php echo $topItem->displayText; ?>
                             </a>
-                            <div class="shadow dropdown-menu">
+                            <div class="shadow text-center dropdown-menu">
 
 
                                 <?php
@@ -75,7 +79,7 @@ use App\Models\Database\AppDatabase;
                     } else {
                         ?>
 
-                        <li class="nav-item ">
+                        <li class="nav-item text-left">
                             <a class="nav-link" href="<?php echo $topItem->targetURL; ?>">
                                 <?php echo $topItem->displayText; ?>
                             </a>
@@ -98,12 +102,12 @@ use App\Models\Database\AppDatabase;
                     ?>
                     <ul class="order-md-1 navbar-nav">
                         <!-- Settings Dropdown -->
-                        <li class="nav-item dropdown">
+                        <li class="nav-item text-left dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
                                 <i class="fas fa-tools d-none d-md-inline"></i>
                                 <p class="d-inline d-md-none">Settings</p>
                             </a>
-                            <div class="shadow dropdown-menu dropdown-menu-right">
+                            <div class="shadow dropdown-menu text-center dropdown-menu-right">
 
 
                                 <a class="dropdown-item" href="/settings/application">Settings</a>
@@ -119,13 +123,13 @@ use App\Models\Database\AppDatabase;
                 ?>
                 <ul class="order-md-0 navbar-nav">
                     <!-- User Dropdown -->
-                    <li class="nav-item dropdown">
+                    <li class="nav-item  text-left dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
                             <i class="fas fa-user-circle d-none d-md-inline"></i>
                             <p class="d-inline d-md-none">User</p>
 
                         </a>
-                        <div class="shadow dropdown-menu dropdown-menu-right pt-0">
+                        <div class="shadow dropdown-menu text-center dropdown-menu-right pt-0">
                             <div class="dropdown-header"><strong> <?php echo $this->user->username; ?></strong></div>
 
                             <a class="dropdown-item" href="/settings/profile">Profile</a>
@@ -144,7 +148,7 @@ use App\Models\Database\AppDatabase;
     </div>
 </nav>
 <?php
-$debugMode = App::get()->inDebugMode();
+$debugMode = App::inDebugMode();
 if ($this->user->superAdmin && $debugMode) {
     echo $this->view('modals/debugConfigModal');
 
