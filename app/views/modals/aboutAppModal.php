@@ -4,7 +4,7 @@
         <!-- Modal content-->
         <div class="modal-content text-center">
             <div class="modal-header bg-primary text-light">
-                <h4 class="modal-title "></h4>
+                <h4 class="modal-title ">About</h4>
                 <button type="button" class="close text-light" data-dismiss="modal">&times;</button>
 
             </div>
@@ -15,7 +15,7 @@
                 </h1>
                 Version: <?php echo \App\App\App::$version; ?><br>
                 Author: Chris Jacobsen<br>
-                Source Code: <a href="https://github.com/jacobsen9026/AD-Accounts-Manager">GitHub</a>
+                Source Code: <a href="https://github.com/jacobsen9026/AD-Accounts-Manager"><i class="fab fa-github"></i></a>
             </div>
 
         </div>
