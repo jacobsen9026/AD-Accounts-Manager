@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace App\Api;
+namespace App\Api\Windows;
 
 /**
  * Description of WindowsRM
@@ -40,15 +40,14 @@ class WindowsRM
 
     /**
      *
-     * @var AppLogger
-     */
-    private $logger;
-
-    /**
-     *
      * @var WindowsRM
      */
     public static $instance;
+    /**
+     *
+     * @var AppLogger
+     */
+    private $logger;
 
     function __construct()
     {
@@ -73,6 +72,13 @@ class WindowsRM
         return self::$instance;
     }
 
+    public static function reboot(string $destination)
+    {
+        $cmd = new WindowsCommand();
+        $cmd->setCmd('shutdown -r -m ' . $destination . ' -t 60');
+        AppLogger::get()->info('Rebooting ' . $destination);
+    }
+
     public function testConnection($computer)
     {
         $this->logger->info("Testing connection to $computer");
@@ -92,14 +98,6 @@ class WindowsRM
         }
 
         //return $this->portReachable($computer, 5985);
-    }
-
-    public function rebootWorkstation($hostname)
-    {
-
-        $cmd = new WindowsCommand();
-        $cmd->setCmd("shutdown /r /t 30")
-            ->setHostname($hostname);
     }
 
     public function DNSLookup($hostname)
@@ -125,6 +123,14 @@ class WindowsRM
         }
         return false;
         //echo PHP_EOL;
+    }
+
+    public function rebootWorkstation($hostname)
+    {
+
+        $cmd = new WindowsCommand();
+        $cmd->setCmd("shutdown /r /t 30")
+            ->setHostname($hostname);
     }
 
 }

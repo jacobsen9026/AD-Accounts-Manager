@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace App\Api;
+namespace App\Api\Windows;
 
 /**
  * Description of WindowsCommand
@@ -32,6 +32,7 @@ namespace App\Api;
  * @author cjacobsen
  */
 
+use System\App\WindowsLogger;
 use System\Core;
 
 class WindowsCommand
@@ -53,30 +54,15 @@ class WindowsCommand
         return $this->hostname;
     }
 
-    public function getCmd()
-    {
-        return $this->cmd;
-    }
-
-    public function getResponse()
-    {
-        return $this->response;
-    }
-
-    public function getReturnCode()
-    {
-        return $this->returnCode;
-    }
-
-    public function getLogger()
-    {
-        return $this->logger;
-    }
-
     public function setHostname($hostname)
     {
         $this->hostname = $hostname;
         return $this;
+    }
+
+    public function getCmd()
+    {
+        return $this->cmd;
     }
 
     public function setCmd($cmd)
@@ -85,16 +71,31 @@ class WindowsCommand
         return $this;
     }
 
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
     public function setResponse($response)
     {
         $this->response = $response;
         return $this;
     }
 
+    public function getReturnCode()
+    {
+        return $this->returnCode;
+    }
+
     public function setReturnCode($returnCode)
     {
         $this->returnCode = $returnCode;
         return $this;
+    }
+
+    public function getLogger()
+    {
+        return $this->logger;
     }
 
     public function setLogger($logger)
