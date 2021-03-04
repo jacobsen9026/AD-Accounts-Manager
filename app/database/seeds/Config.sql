@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS "App"
     "Debug_Mode"               BOOLEAN NOT NULL DEFAULT 0,
     "Websitie_FQDN"            STRING,
     "User_Helpdesk_URL"        STRING,
-    "Update_Check_URL"         STRING           DEFAULT 'https://raw.githubusercontent.com/jacobsen9026/AD-Accounts-Manager/master/update',
+    "Update_Check_URL"         STRING           DEFAULT 'https://raw.githubusercontent.com/jacobsen9026/AD-Accounts-Manager/master/update/update.json',
     "Setup_Completed"          BOOLEAN          DEFAULT 0,
     "Last_Update_Check"        int              DEFAULT 0,
     "Latest_Available_Version" STRING,
