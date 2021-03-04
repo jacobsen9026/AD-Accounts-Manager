@@ -49,7 +49,6 @@ abstract class Picture
             $newWidth = $targetDimension + 1;
         }
 
-
         $imageResource = imagescale($imageResource, $newWidth);
 
 
@@ -64,8 +63,30 @@ abstract class Picture
         // var_dump($rect);
         $imageResource = imagecrop($imageResource, $rect);
 
+        ob_start();
+        imagejpeg($imageResource);
+        $rawPicture = ob_get_clean();
+        return $rawPicture;
+    }
 
-        return $imageResource;
+    public static function resize($image, string $newWidth, string $newHeight)
+    {
+        if (is_string($image)) {
+            $image = imagecreatefromstring($image);
+        }
+        $newImg = imagecreatetruecolor($newWidth, $newHeight);
+        imagealphablending($newImg, false);
+        imagesavealpha($newImg, true);
+        $transparent = imagecolorallocatealpha($newImg, 255, 255, 255, 127);
+        imagefilledrectangle($newImg, 0, 0, $newWidth, $newHeight, $transparent);
+        $src_w = imagesx($image);
+        $src_h = imagesy($image);
+        imagecopyresampled($newImg, $image, 0, 0, 0, 0, $newWidth, $newHeight, $src_w, $src_h);
+        ob_start();
+        imagepng($newImg);
+        $rawPicture = ob_get_clean();
+        return $rawPicture;
+
     }
 
 }
