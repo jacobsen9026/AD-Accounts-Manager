@@ -48,6 +48,7 @@ use System\App\Error\AppErrorHandler;
 use System\App\UserLogger;
 use System\App\ControllerFactory;
 use System\Core;
+use system\Header;
 use System\Request;
 use System\App\Router;
 use App\Models\User\User;
@@ -87,7 +88,7 @@ class App extends CommonApp implements AppInterface
     public function __construct()
     {
 
-
+        Header::allowServiceWorker('/');
         self::$instance = $this;
         /**
          * Trigger the appErrorHandler to begin until we load the config
@@ -137,7 +138,7 @@ class App extends CommonApp implements AppInterface
 
     private function setErrorMode(): void
     {
-        if ($this->inDebugMode()) {
+        if (self::inDebugMode()) {
             enablePHPErrors();
         } else {
             disablePHPErrors();
@@ -149,12 +150,13 @@ class App extends CommonApp implements AppInterface
      *
      * @return boolean
      */
-    public function inDebugMode(): bool
+    public static function inDebugMode(): bool
     {
 
         return Core::inDebugMode();
 
     }
+
 
     /**
      * Get the current App instance
@@ -291,12 +293,14 @@ class App extends CommonApp implements AppInterface
         /*
          * Check that the user is logged on and if not, set the route to the login screen
          */
-        if (!isset($this->user) or $this->user === null or $this->user->authenticated === false) {
-            $this->logger->warning('user not logged in');
-            // Change route to login if not logged in.
-            $this->controller = new Login($this);
-            $this->appOutput->appendBody($this->controller->index());
-            return;
+        if ($this->route->getControler() != 'Logout' && $this->route->getControler() != 'Img' && $this->route->getControler() != 'Mobile' && $this->route->getControler() != 'Js') {
+            if (!isset($this->user) or $this->user === null or $this->user->authenticated === false) {
+                $this->logger->warning('user not logged in');
+                // Change route to login if not logged in.
+                $this->controller = new Login($this);
+                $this->appOutput->appendBody($this->controller->index());
+                return;
+            }
         }
 
         /**
