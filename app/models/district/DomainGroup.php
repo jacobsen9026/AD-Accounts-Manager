@@ -170,4 +170,10 @@ class DomainGroup extends ADModel
         return $this->activeDirectory->getDn();
     }
 
+    public function delete()
+    {
+        $this->activeDirectory->delete();
+    }
+
+
 }
