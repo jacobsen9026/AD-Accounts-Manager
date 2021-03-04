@@ -12,6 +12,7 @@ class Session extends CoreSession
 {
     /** @var User|null */
     const TIMEOUT = 'timeout';
+    const TIMED_OUT = 'timed_out';
     const USER = 'user';
 
     public static function getUser()
@@ -35,6 +36,16 @@ class Session extends CoreSession
         return false;
     }
 
+    public static function getTimeoutStatus()
+    {
+        if (time() > $_SESSION[self::TIMEOUT]) {
+            $_SESSION[self::TIMED_OUT] = true;
+            return true;
+        }
+        $_SESSION[self::TIMED_OUT] = false;
+        return false;
+    }
+
     /**
      * Update the user timeout with the value set in the application settings
      */
@@ -43,14 +54,6 @@ class Session extends CoreSession
 
         $nextTimeout = AuthDatabase::getSessionTimeout() + time();
         $_SESSION[self::TIMEOUT] = $nextTimeout;
-    }
-
-    public static function getTimeoutStatus()
-    {
-        if (time() > $_SESSION[self::TIMEOUT]) {
-            return true;
-        }
-        return false;
     }
 
 
