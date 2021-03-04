@@ -103,4 +103,7 @@ $form->addElementToNewRow($testResult)
     ->addElementToNewRow($testEmail);
 echo $form->print();
 ?>
+<script>
+    history.pushState(null, 'Email', '/settings/email');
+</script>
 
