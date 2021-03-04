@@ -36,6 +36,7 @@ use App\Models\User\PrivilegeLevel;
 use App\Models\User\Permission;
 use System\App\AppException;
 use System\App\AppLogger;
+use System\App\LDAPLogger;
 use System\App\UserLogger;
 use System\Traits\DomainTools;
 
@@ -81,7 +82,7 @@ abstract class PermissionMapDatabase extends DatabaseModel
      *
      * @param string $groupName
      *
-     * @return PrivilegeLevel
+     * @return Permission
      */
     public static function getPermissionByID(int $id)
     {
@@ -89,7 +90,8 @@ abstract class PermissionMapDatabase extends DatabaseModel
         $query->where(self::TABLE_NAME . '.' . 'ID', $id)
             ->leftJoin(PrivilegeLevelDatabase::TABLE_NAME, 'Privilege_ID', 'ID');
         $result = $query->run();
-        //var_dump($result);
+        //var_dump($result[0]);
+        LDAPLogger::get()->debug($result);
         return $result[0];
     }
 
@@ -179,6 +181,12 @@ abstract class PermissionMapDatabase extends DatabaseModel
 
     public static function get()
     {
+        return parent::get();
+
+    }
+
+    public static function getAllPermissionMappings()
+    {
         $dbTable = parent::get();
         foreach ($dbTable as $row) {
             $level = new PrivilegeLevel();
@@ -215,7 +223,7 @@ abstract class PermissionMapDatabase extends DatabaseModel
                 foreach ($rawPermissions as $rawPermission) {
                     //  var_dump($rawPermission);
                     $permission = new Permission();
-                    $permission->importFromDatabase($rawPermission);
+                    $permission->loadFromDatabaseResponse($rawPermission);
                     $permissions[] = $permission;
                     //var_dump("imported");
                 }
