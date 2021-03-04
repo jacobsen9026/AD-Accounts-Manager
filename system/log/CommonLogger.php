@@ -34,6 +34,7 @@ namespace System\Log;
 
 use Psr\Log\LoggerInterface;
 use System\Common\CommonLogEntry;
+use System\Core;
 use System\Traits\Parser;
 
 class CommonLogger implements LoggerInterface
@@ -110,12 +111,13 @@ class CommonLogger implements LoggerInterface
      */
     protected function storeLogEntry($message, string $level)
     {
-        $logEntry = new CommonLogEntry($this->getName());
+        if (Core::inDebugMode()) {
+            $logEntry = new CommonLogEntry($this->getName());
 
-        $logEntry->setMessage($message)
-            ->setLevel($level);
-        self::$logEntries[] = $logEntry;
-        //var_dump(self::$logEntries);
+            $logEntry->setMessage($message)
+                ->setLevel($level);
+            self::$logEntries[] = $logEntry;
+        }
     }
 
     public function getName()
