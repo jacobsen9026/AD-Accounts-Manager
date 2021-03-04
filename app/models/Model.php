@@ -32,13 +32,17 @@ namespace App\Models;
  * @author cjacobsen
  */
 
+use App\App\App;
+use App\Models\Audit\Action\AuditAction;
+use App\Models\Audit\AuditEntry;
+use App\Models\Database\AuditDatabase;
 use System\App\AppLogger;
 use System\Log\CommonLogger;
-use System\Parser;
+use System\Traits\Parser;
 
 class Model
 {
-    use \System\Traits\Parser;
+    use Parser;
 
     /**
      *
@@ -51,5 +55,10 @@ class Model
         $this->logger = AppLogger::get();
     }
 
+    protected function audit(AuditAction $action)
+    {
+        $auditEntry = new AuditEntry(App::get()->request, App::get()->user, $action);
+        AuditDatabase::addAudit($auditEntry);
+    }
 
 }
