@@ -32,6 +32,7 @@ namespace App\Models\User;
  * @author cjacobsen
  */
 
+use App\Models\Database\PermissionMapDatabase;
 use App\Models\Database\PrivilegeLevelDatabase;
 
 class PrivilegeLevel
@@ -40,39 +41,6 @@ class PrivilegeLevel
     private $id;
     private $adGroup;
     private $superAdmin;
-
-    public function setId(int $id)
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    public function setAdGroup($adGroup)
-    {
-        $this->adGroup = $adGroup;
-        return $this;
-    }
-
-    public function setSuperAdmin($superAdmin)
-    {
-        $this->superAdmin = $superAdmin;
-        return $this;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function getAdGroup()
-    {
-        return $this->adGroup;
-    }
-
-    public function getSuperAdmin()
-    {
-        return $this->superAdmin;
-    }
 
     public function importFromDatabase($data)
     {
@@ -86,5 +54,39 @@ class PrivilegeLevel
     {
         PrivilegeLevelDatabase::updatePrivilegeLevel($this->getId(), $this->getAdGroup(), $this->getSuperAdmin());
     }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function getAdGroup()
+    {
+        return $this->adGroup;
+    }
+
+    public function setAdGroup($adGroup)
+    {
+        $this->adGroup = $adGroup;
+        return $this;
+    }
+
+    public function getSuperAdmin()
+    {
+        return $this->superAdmin;
+    }
+
+    public function setSuperAdmin($superAdmin)
+    {
+        $this->superAdmin = $superAdmin;
+        return $this;
+    }
+
 
 }
