@@ -49,34 +49,6 @@ class Modal extends ViewModel
         $this->theme = 'primary';
     }
 
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    public function getBody()
-    {
-        return $this->body;
-    }
-
-    public function getTheme()
-    {
-        return $this->theme;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSize()
-    {
-        return $this->size;
-    }
-
     public function small()
     {
         $this->size = "modal-sm";
@@ -98,32 +70,6 @@ class Modal extends ViewModel
 
     }
 
-    public function setTheme($theme)
-    {
-        $this->theme = $theme;
-        return $this;
-    }
-
-    public function setId($id)
-    {
-        //$strip = ['_'];
-        //$this->id = str_replace($strip, '', $id);
-        $this->id = $id;
-        return $this;
-    }
-
-    public function setTitle($title)
-    {
-        $this->title = $title;
-        return $this;
-    }
-
-    public function setBody($body)
-    {
-        $this->body = $body;
-        return $this;
-    }
-
     public function print()
     {
         \System\App\AppLogger::get()->debug($this);
@@ -141,15 +87,67 @@ class Modal extends ViewModel
                 <button type="button" class="close text-light" data-dismiss="modal">&times;</button>
 
             </div>
-            <div class="modal-body">
-               ' . $this->getBody() . '
-            </div>
+            <div class="modal-body text-center">' . $this->getBody() . '</div>
 
         </div>
 
     </div>
 </div>';
         return $modal;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setId($id)
+    {
+        //$strip = ['_'];
+        //$this->id = str_replace($strip, '', $id);
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSize()
+    {
+        return $this->size;
+    }
+
+    public function getTheme()
+    {
+        return $this->theme;
+    }
+
+    public function setTheme($theme)
+    {
+        $this->theme = $theme;
+        return $this;
+    }
+
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    public function setTitle($title)
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    public function getBody()
+    {
+        return $this->body;
+    }
+
+    public function setBody($body)
+    {
+        $this->body = $body;
+        return $this;
     }
 
 }
