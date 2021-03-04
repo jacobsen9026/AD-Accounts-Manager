@@ -101,7 +101,7 @@ class Updater
      * Returns true on successful simulation/update
      * Returns false on failure
      *
-     * @param bool $simulation     If true, will not overwrite files. Defaults to true.
+     * @param bool $simulation If true, will not overwrite files. Defaults to true.
      * @param bool $deleteDownload If true, will remove downloaded update file after update. Defaults to true.
      *
      * @return bool|string
@@ -333,6 +333,9 @@ class Updater
                  */
                 //$this->logger->debug("Will create $liveFile");
                 if (!$simulation) {
+                    if (!is_dir($file->getPath())) {
+                        mkdir($file->getPath());
+                    }
                     copy($file->getPathname(), $liveFile);
                     $this->logger->debug("Created file: $pathname");
                 }
