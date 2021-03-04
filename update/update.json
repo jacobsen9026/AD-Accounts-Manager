@@ -28,5 +28,11 @@
     "downloadURL": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.5/v0.1.5.zip",
     "postInstallScriptPath": "",
     "fileCount": 1236
+  },
+  "0.1.6": {
+    "version": "0.1.6",
+    "downloadURL": "https://github.com/jacobsen9026/AD-Accounts-Manager/releases/download/v0.1.6/v0.1.6.zip",
+    "postInstallScriptPath": "",
+    "fileCount": 1236
   }
 }
