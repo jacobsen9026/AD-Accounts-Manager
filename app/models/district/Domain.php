@@ -191,26 +191,6 @@ class Domain extends Model
         return $this;
     }
 
-    public function getParentEmailGroup()
-    {
-        return $this->parentEmailGroup;
-    }
-
-    public function setParentEmailGroup($parentEmailGroup)
-    {
-        $this->parentEmailGroup = $parentEmailGroup;
-        return $this;
-    }
-
-    public function getSubOUs()
-    {
-        $ad = AD::get();
-        $rawOUs = $ad->getSubOUs($this->getId());
-        foreach ($rawOUs as $ou) {
-            $ous[] = $ou['distinguishedname'];
-        }
-        return $ous;
-    }
 
     public function getId()
     {
@@ -223,11 +203,6 @@ class Domain extends Model
         return $this;
     }
 
-    public function getDirectoryTree()
-    {
-        $ad = AD::get();
-        return $ad->getAllSubOUs($this->getRootOU());
-    }
 
     public function getRootOU()
     {
@@ -236,14 +211,15 @@ class Domain extends Model
 
     public function saveToDB()
     {
+        DomainDatabase::init();
         //var_dump("saving to db");
         DomainDatabase::setAD_FQDN($this->adFQDN);
-        DomainDatabase::setAbbreviation($this->abbr);
+        //DomainDatabase::setAbbreviation($this->abbr);
         DomainDatabase::setADPassword($this->adPassword);
         DomainDatabase::setADUsername($this->adUsername);
         DomainDatabase::setADBaseDN($this->getAdBaseDN());
         DomainDatabase::setADNetBIOS($this->adNetBIOS);
-        DomainDatabase::setName($this->name);
+        //DomainDatabase::setName($this->name);
         DomainDatabase::setAD_UseTLS($this->useTLS);
     }
 
