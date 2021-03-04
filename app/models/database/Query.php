@@ -52,6 +52,7 @@ class Query
     const ASC = "ASC";
     const COUNT = "SELECT COUNT";
     const SHOW = 'SHOW';
+    const ALTER = 'ALTER';
 
     protected $query;
     protected $queryType;
@@ -62,7 +63,7 @@ class Query
     protected $targetInserts;
     protected $targetSets;
     protected $sort;
-    protected string $error;
+    protected string $error = '';
 
     /**
      *
@@ -79,33 +80,20 @@ class Query
 
     /**
      *
-     * @param type $columns
+     * @param array|string $columns
      *
      * @return string|array
      */
     private function preProcessColumns($table, $columns)
     {
-        if (is_array($columns)) {
-            if (key_exists(Schema::COLUMN, $columns)) {
-                return $columns[Schema::COLUMN];
-            }
-            foreach ($columns as $column) {
-                if (is_array($column) and key_exists(Schema::COLUMN, $column)) {
-                    $return[] = $column[Schema::COLUMN];
-                }
-            }
-            if (isset($return)) {
-                return $return;
-            }
-        }
         return $table . '.' . $columns;
     }
 
     /**
-     *
-     * @param type $whereArray
-     *
-     * @return Query
+     * @param $column
+     * @param $value
+     * @param string $operator
+     * @return $this
      */
     public function where($column, $value, $operator = '=')
     {
@@ -124,9 +112,9 @@ class Query
 
     /**
      *
-     * @param type $joinTable
-     * @param type $srcMatchColumn
-     * @param type $dstMatchColumn
+     * @param string $joinTable
+     * @param string $srcMatchColumn
+     * @param string $dstMatchColumn
      *
      * @return Query
      */
@@ -139,29 +127,37 @@ class Query
         return $this;
     }
 
-    public function insert($Schema, $value)
+    /**
+     * @param $column
+     * @param $value
+     * @return $this
+     */
+    public function insert($column, $value)
     {
-        if (is_array($Schema)) {
-            $column = "'" . $Schema[Schema::COLUMN] . "'";
-        } else {
-            $column = "'" . $Schema . "'";
-        }
-//var_dump($column);
+        $columnName = "'" . $column . "'";
         $columnValue = "'" . $value . "'";
-//var_dump($columnValue);
-        $this->targetInserts[] = [$column, $columnValue];
+        $this->targetInserts[] = [$columnName, $columnValue];
         return $this;
     }
 
+    /**
+     * @param $Schema
+     * @param $value
+     * @return $this
+     */
     public function set($Schema, $value)
     {
         $column = "'" . $Schema . "'";
-//var_dump($column);
-//var_dump($value);
         $this->targetSets[] = [$column, "'" . $value . "'"];
         return $this;
     }
 
+    /**
+     * Runs the current query as configured
+     *
+     * @return array|bool|null
+     * @throws \System\CoreException
+     */
     public function run()
     {
 
@@ -182,6 +178,12 @@ class Query
                 break;
             case self::DELETE:
                 $this->prepareDelete();
+                break;
+            case self::ALTER:
+                $this->prepareAlter();
+                break;
+            case self::CREATE:
+                $this->prepareCreate();
                 break;
             default:
                 throw new AppException('Malformed query', AppException::MALFORMED_QUERY);
@@ -210,24 +212,47 @@ class Query
                 }
             }
 
-            AppLogger::get()->warning($this->query);
+            AppLogger::get()->debug($this->query);
         }
         $return = null;
         try {
 
+            Database::get()->prepare($this->query . ';');
+        } catch (PDOException $ex) {
+            if (strpos($ex->getMessage(), QueryError::UNRECOGNIZED_TOKEN) > 0) {
+                $this->error = QueryError::UNRECOGNIZED_TOKEN;
+                DatabaseLogger::get()->warning($ex->getMessage());
+            }
+        }
+        try {
             $return = Database::get()->query($this->query . ';');
         } catch (PDOException $ex) {
             if (strpos($ex->getMessage(), QueryError::NO_SUCH_COLUMN) > 0) {
                 $this->error = QueryError::NO_SUCH_COLUMN;
                 DatabaseLogger::get()->warning($ex->getMessage());
+            } elseif (strpos($ex->getMessage(), QueryError::NO_SUCH_COLUMN) > 0) {
+                $this->error = QueryError::NO_SUCH_TABLE;
+                DatabaseLogger::get()->warning($ex->getMessage());
+            } elseif (strpos($ex->getMessage(), QueryError::UNRECOGNIZED_TOKEN) > 0) {
+                $this->error = QueryError::UNRECOGNIZED_TOKEN;
+                DatabaseLogger::get()->warning($ex->getMessage());
+            } elseif (strpos($ex->getMessage(), QueryError::SYNTAX_ERROR) > 0) {
+                $this->error = QueryError::SYNTAX_ERROR;
+                DatabaseLogger::get()->warning($ex->getMessage());
+            } else {
+                DatabaseLogger::get()->error($ex->getMessage());
             }
 
 
         }
+
         return $return;
 
     }
 
+    /**
+     *
+     */
     private function prepareSelect()
     {
         if (is_array($this->targetColumns)) {
@@ -252,36 +277,45 @@ class Query
             $this->targetTable;
     }
 
+    /**
+     *
+     */
     private function prepareInsert()
     {
         $firstAction = true;
 
 //var_dump($this->targetInserts);
 
-        $this->query = $this->queryType . ' INTO ' . $this->targetTable . ' (';
-        foreach ($this->targetInserts as $insert) {
-            if (!$firstAction) {
-                $this->query .= ', ';
+        $this->query = $this->queryType . ' INTO ' . $this->targetTable;
+        if ($this->targetInserts !== null) {
+            $this->query .= ' (';
+            foreach ($this->targetInserts as $insert) {
+                if (!$firstAction) {
+                    $this->query .= ', ';
+                }
+                $this->query .= $insert[0];
+                $firstAction = false;
             }
-            $this->query .= $insert[0];
-            $firstAction = false;
-        }
-        $firstAction = true;
-        $this->query .= ') VALUES (';
-        foreach ($this->targetInserts as $insert) {
-            if (!$firstAction) {
-                $this->query .= ', ';
+            $firstAction = true;
+            $this->query .= ') VALUES (';
+            foreach ($this->targetInserts as $insert) {
+                if (!$firstAction) {
+                    $this->query .= ', ';
+                }
+                $this->query .= $insert[1];
+
+                $firstAction = false;
             }
-            $this->query .= $insert[1];
-
-            $firstAction = false;
+            $this->query .= ')';
+        } else {
+            $this->query .= ' DEFAULT VALUES';
         }
-        $this->query .= ')';
 
-//var_dump($this->targetInserts);
-//exit;
     }
 
+    /**
+     *
+     */
     private function prepareUpdate()
     {
         $firstAction = true;
@@ -296,6 +330,9 @@ class Query
         }
     }
 
+    /**
+     *
+     */
     private function prepareCount()
     {
         if (is_array($this->targetColumns)) {
@@ -305,6 +342,9 @@ class Query
 
     }
 
+    /**
+     *
+     */
     private function prepareDelete()
     {
         $firstAction = true;
@@ -314,6 +354,42 @@ class Query
         $firstAction = true;
     }
 
+    private function prepareAlter()
+    {
+        $this->query = 'ALTER TABLE ' . $this->targetTable . ' ADD COLUMN ' . explode('.', $this->targetColumns)[1] . ' STRING';
+    }
+
+    private function prepareCreate()
+    {
+        $this->query = "CREATE TABLE  IF NOT EXISTS " . $this->targetTable . " (";
+        /** @var SchemaEntry $schemaColumn */
+        $first = true;
+        foreach ($this->targetColumns as $schemaColumn) {
+            if (!$first) {
+                $this->query .= ",";
+            }
+            $this->query .= "'" . $schemaColumn->getColumnName() . "' " . $schemaColumn->getDataType() . " ";
+            if (!is_null($schemaColumn->getDefaultValue())) {
+                $this->query .= "DEFAULT " . $schemaColumn->getDefaultValue() . " ";
+            }
+            if ($schemaColumn->isNotNull()) {
+                $this->query .= " NOT NULL ";
+            }
+            if ($schemaColumn->isPrimaryKey()) {
+                $this->query .= " PRIMARY KEY AUTOINCREMENT";
+            }
+            $first = false;
+
+        }
+
+        $this->query .= ")";
+    }
+
+    /**
+     * @param string $column
+     * @param array|string $value
+     * @return $this
+     */
     public function orWhere($column, $value)
     {
         if (!is_int($value) and is_string($value)) {
@@ -340,9 +416,36 @@ class Query
         return $this;
     }
 
+    /**
+     * @param string $direction
+     * @param string $column
+     */
     public function sort(string $direction, string $column)
     {
         $this->sort[] = [$direction => $column];
+    }
+
+    public function hadError()
+    {
+        if ($this->error == '') {
+            return false;
+        }
+        return true;
+
+    }
+
+    public function getError()
+    {
+        return $this->error;
+    }
+
+    public function addColumn(string $columnName, string $dataType = 'STRING', $defaultValue = null, bool $notNull = false, bool $primaryKey = false)
+    {
+        if (is_string($this->targetColumns)) {
+            $this->targetColumns = [];
+        }
+        $this->targetColumns[] = new SchemaEntry($columnName, $dataType, $defaultValue, $notNull, $primaryKey);
+        return $this;
     }
 
 }
