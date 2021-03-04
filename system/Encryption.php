@@ -26,6 +26,8 @@
 
 namespace System;
 
+use PHPMailer\PHPMailer\Exception;
+
 /**
  * Description of Encryption
  *
@@ -37,6 +39,7 @@ abstract class Encryption
     //Varible for the cipher for changing as PHP updates openssl cipher lists
     const CIPHER = "aes-256-cbc";
     const KEY_PATH = CONFIGPATH . DIRECTORY_SEPARATOR . "private.key";
+    static protected $key = '';
 
     /**
      * @param $plaintext
@@ -60,15 +63,18 @@ abstract class Encryption
         }
     }
 
-    public static function decrypt($ciphertext)
+    private static function getKey()
     {
-        if ($ciphertext == '') {
-            return $ciphertext;
+        if (is_string(self::$key) && self::$key != '') {
+            return self::$key;
+        } else {
+            $key = File::getContents(self::KEY_PATH);
+            if ($key == "") {
+                $key = self::genereatePrivateKeyFile();
+            }
+            self::$key = $key;
+            return $key;
         }
-        $ciphertext = hex2bin($ciphertext);
-        $args = explode("_", $ciphertext);
-        $plaintext = openssl_decrypt($args[0], self::CIPHER, self::getKey(), $options = 0, hex2bin($args[1]));
-        return $plaintext;
     }
 
     /**
@@ -83,13 +89,20 @@ abstract class Encryption
         return $key;
     }
 
-    private static function getKey()
+    public static function decrypt($ciphertext)
     {
-        $key = File::getContents(self::KEY_PATH);
-        if ($key == "") {
-            $key = self::genereatePrivateKeyFile();
+        if ($ciphertext == '') {
+            return $ciphertext;
         }
-        return $key;
+        if (!is_hex($ciphertext)) {
+            return false;
+        }
+        $ciphertext = hex2bin($ciphertext);
+        $args = explode("_", $ciphertext);
+        $plaintext = openssl_decrypt($args[0], self::CIPHER, self::getKey(), $options = 0, hex2bin($args[1]));
+        return $plaintext;
+
+
     }
 
 }
