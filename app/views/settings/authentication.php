@@ -32,9 +32,7 @@ use App\Api\Ad\ADConnection;
 
 $auth = new AuthDatabase();
 
-if ($auth->getLDAPEnabled()) {
-    $ldapConnected = ADConnection::isConnected();
-}
+$ldapConnected = ADConnection::isConnected();
 
 
 $form = new Form('/settings/authentication', "authentication");
@@ -65,4 +63,9 @@ $form->addElementToNewRow($sessionTimeout)
     ->addElementToNewRow($ldapEnabled)
     ->addElementToNewRow($saveButton);
 echo $form->print();
+
 ?>
+
+<script>
+    history.pushState(null, 'Authentication', '/settings/authentication');
+</script>
