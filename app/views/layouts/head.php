@@ -27,6 +27,9 @@
 <head>
     <title>
         <?php
+
+        use App\Models\View\Javascript;
+
         echo $this->title;
         ?>
     </title>
@@ -40,7 +43,8 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/mobile/manifest.json">
+    <link rel="manifest" href="/mobile/manifest.json">
     <link rel="mask-icon" href="/img/favicon/safari-pinned-tab.svg" color="#5bbad5">
 
 
@@ -57,21 +61,25 @@
             echo ' <link rel="stylesheet" href="/css/' . $theme . '.css">';
         }
     }
-    /**
-     * if ($this->app->user->theme == \app\config\Theme::RED_THEME) {
-     * System\App\AppLogger::get()->debug("theme is red");
-     * echo ' <link rel="stylesheet" href="/css/redTheme.css">';
-     * }
-     * if ($this->app->user->theme == \app\config\Theme::GREEN_THEME) {
-     * System\App\AppLogger::get()->debug("theme is green");
-     * echo ' <link rel="stylesheet" href="/css/greenTheme.css">';
-     * }
-     *
-     */
+
     ?>
 
 
     <script>
+
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/js/sw.js', {scope: './'}).then(function (registration) {
+
+                    <?=Javascript::debug('ServiceWorker registration successful')?>;
+                }, function (err) {
+                    <?=Javascript::debug('ServiceWorker registration failed')?>;
+                });
+            });
+        }
+
+
         /**
          * Highlight changed items on all forms
          * and show save button if available.
@@ -80,18 +88,20 @@
 
 
         function preparePageHooks() {
-            console.log('Preparing page hooks');
+            <?=Javascript::debug('Preparing page hooks')?>
 
             let handler = function () {
-                console.log('key pressed in text box 2'
-                    + this
-                )
-                $(this).addClass('text-danger border-danger');
-                /**
-                 * Show the save form button
-                 */
-                $(".floating-form-button").removeClass("show");
-                $(".floating-form-button").addClass("show");
+                <?=Javascript::debug('key pressed')?>
+                if (!$('form[name="loginForm"]').length) {
+
+                    $(this).addClass('text-danger border-danger');
+                    /**
+                     * Show the save form button
+                     */
+                    $(".floating-form-button").removeClass("show");
+                    $(".floating-form-button").addClass("show");
+                }
+
             };
             $(document).find('input').change(handler);
             $(document).find('input').keyup(handler);
@@ -102,7 +112,6 @@
              */
             $(function () {
                 $('[data-toggle="tooltip"]').tooltip({boundary: 'window'});
-                // $('[data-trigger="tooltip"]').tooltip({boundary: 'window'});
                 $('[data-toggle="show"]').on('click', function () {
                     let target = $(this).data('target');
                     console.log(target);
@@ -120,14 +129,18 @@
 
         //Custom JQuery to enable data-text-alt tag on btn class objects
         jQuery(function ($) {
-            $('.btn[data-toggle="collapse"]').on('click', function () {
-                console.log($(this).data('text-alt'));
-                $(this).data('text-original', $(this).text());
-                $(this).text($(this).data('text-alt'));
-                $(this).data('text-alt', $(this).data('text-original'));
+            $('[data-toggle="collapse"]').on('click', function () {
+                if ($(this).data('text-alt') != undefined && $(this).data('text-alt') != '') {
+                    <?=Javascript::debug('collapse')?>
+                    console.log($(this).data('text-alt'));
+                    $(this).data('text-original', $(this).text());
+                    $(this).text($(this).data('text-alt'));
+                    $(this).data('text-alt', $(this).data('text-original'));
+                }
             });
 
-            $(document).on('click', '.clickable[data-text-alt]', function () {
+            $(document).on('click', '[data-text-alt]', function () {
+                <?=Javascript::debug('collapse2')?>
                 console.log($(this).data('text-alt'));
                 $(this).data('text-original', $(this).html());
                 $(this).html($(this).data('text-alt'));
@@ -135,18 +148,7 @@
             });
 
         });
-        //Custom JQuery for district settings navigation
-        jQuery(function ($) {
 
-
-            // remove active class from all
-            var location = window.location.pathname.split('/')[1];
-// remove active class from all
-            $(".nav .nav-item").removeClass('active');
-            console.log('.nav-item a[href=' + location + '*]');
-// add active class to div that matches active url
-            $(".nav-item a[href='/" + location + "']").addClass('active');
-        });
 
         $(document).ready(function () {
             $(".resizable-y").resizable({
