@@ -50,7 +50,6 @@ class DebugViewer
     {
 
 
-
         $toggleDebugToolsOutputFunction = "$('.debugToolboxContainer').toggle();";
         $buttonColorClass = 'primary';
         if (self::errors_exist($loggers)) {
@@ -72,7 +71,6 @@ class DebugViewer
                 );
                 });'
             . '</script>';
-
 
 
         $logToolsOutput .= self::printLogTools($loggers);
@@ -175,7 +173,7 @@ class DebugViewer
         /* @var $logger CommonLogger */
         $logger = $runtimeLoggers[0];
         $loggerPanelID = $logger->getName() . '_Runtime_Log_Panel';
-         $loggerOutputs[] = self::prepareRuntimeLoggerOutput($logger, $loggerPanelID);
+        $loggerOutputs[] = self::prepareRuntimeLoggerOutput($logger, $loggerPanelID);
 
         $runtimeLogs .= '</div></ul>';
 
@@ -192,7 +190,6 @@ class DebugViewer
     }
 
 
-
     /**
      * @param $logger
      * @param $loggerPaneID
@@ -201,7 +198,7 @@ class DebugViewer
      */
     public static function prepareRuntimeLoggerOutput($logger, $loggerPaneID): string
     {
-       $loggerOutput = LogPrinter::printLog($logger);
+        $loggerOutput = LogPrinter::printLog($logger);
         return $loggerOutput;
     }
 
@@ -212,25 +209,23 @@ class DebugViewer
      */
     public static function printAJAXLogs($runtimeLoggers): string
     {
-        $ajaxLog = '<div id="loggerAJAXLogs" class = "tab-pane container-fluid  p-0">
+        $ajaxLog = '<div id="loggerAJAXLogs" class = "tab-pane container-fluid loggerOutputContainer p-0" sytle="max-height:100%;overflow:auto">
 
-                         <ul id="AJAXSystemLoggingMenuList" class = "tab-list nav nav-pills bg-dark row mx-0" role="tablist">
-                         <div class="container-fluid row">';
+                        ';
         $loggerPanelID = $runtimeLoggers[0]->getName() . '_AJAX_Log_Panel';
         $ajaxLog .= '<div class = "tab-pane container-fluid  p-0" id = "' . $loggerPanelID . '" role="tabpanel">';
-        $ajaxLog .= '</div>';
-        $ajaxLog .= '</div></ul>';
-        $ajaxLog .= '<div class = "pt-0  loggerOutputContainer">';
 
         $ajaxLog .= '</div>';
-        $ajaxLog .= '</div>'
-            . '</div>'
-            . '</div>';
+        //$ajaxLog .= '<div class = "pt-0  loggerOutputContainer">';
+
+        //$ajaxLog .= '</div>';
+        $ajaxLog .= '</div>';
+        // . '</div>'
+        // . '</div>';
 
 
         return $ajaxLog;
     }
-
 
 
 }
