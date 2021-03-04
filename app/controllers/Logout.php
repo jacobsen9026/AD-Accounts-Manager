@@ -26,6 +26,8 @@
 
 namespace App\Controllers;
 
+use System\App\Session;
+
 /**
  * Description of Logout
  *
@@ -36,10 +38,10 @@ class Logout extends Controller
 
     public function index()
     {
-        \System\App\Session::end();
-        //session_destroy();
-        header("Location: /");
+
+
+        Session::end();
+        return $this->redirect('/');
     }
 
-    //put your code here
 }
