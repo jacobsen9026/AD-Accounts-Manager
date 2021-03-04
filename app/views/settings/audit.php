@@ -28,6 +28,7 @@
 use System\App\Forms\Form;
 use System\App\Forms\FormButton;
 use System\App\Forms\FormDate;
+use System\Lang;
 
 /**
  *  Form Button that opens a modal with a form in it
@@ -36,43 +37,49 @@ use System\App\Forms\FormDate;
 
 ?>
     <h5>
-        Audit Log
+
+        <?= Lang::get('Audit Log') ?>
     </h5>
-    <small>Times are in UTC</small>
+    <small>
+        <?= Lang::getHelp('Times are in UTC') ?></small>
 <?php
 $form = new Form('/settings/audit', 'audit');
 
-$fromTime = new FormDate('From Time', null, 'fromTime', $this->fromTime);
-$toTime = new FormDate('To Time', null, 'toTime', $this->toTime);
+$exportButton = new \System\App\Forms\FormButton('Export Audit to CSV');
+$exportButton->addClientRequest('/api/settings/export/audit/csv?from=' . $this->fromTime . '&to=' . $this->toTime);
 
-$fromTime->auto();
-$toTime->auto();
+$fromTime = new FormDate(Lang::get('From'), null, 'fromTime', $this->fromTime);
+$toTime = new FormDate(Lang::get('To'), null, 'toTime', $this->toTime);
+
+//$fromTime->auto();
+//$toTime->auto();
 
 
-$submit = new FormButton('Search', 'small');
+$submit = new FormButton(Lang::get('Search'), 'small');
 $submit->setType('submit');
 
 $form->addElementToNewRow($fromTime)
     ->addElementToCurrentRow($toTime)
-    ->addElementToCurrentRow($submit);
+    ->addElementToCurrentRow($submit)
+    ->addElementToCurrentRow($exportButton);
 echo $form->print();
 ?>
-    <div class="w-100">
-        <div class="row">
-            <strong class="col-3">
-                Timestamp
+    <div class="auditLog w-100 bg-light border border-dark" style="min-width:800px;">
+        <div class="row ">
+            <strong class="col-3 text-center">
+                <?= Lang::get('Timestamp') ?>
             </strong>
-            <strong class="col-1">
-                Username
+            <strong class="col-1 text-center">
+                <?= Lang::get('Username') ?>
             </strong>
-            <strong class="col-1">
-                IP
+            <strong class="col-1 text-center">
+                <?= Lang::get('IP') ?>
             </strong>
-            <strong class="col-2">
-                Action
+            <strong class="col-2 text-center">
+                <?= Lang::get('Action') ?>
             </strong>
-            <strong class="col-5">
-                Description
+            <strong class="col-5 text-center">
+                <?= Lang::get('Description') ?>
             </strong>
         </div>
         <?php
@@ -81,23 +88,24 @@ echo $form->print();
                 $timestamp = new DateTime();
                 $timestamp->setTimestamp($entry['Timestamp']);
                 ?>
+
                 <div class="row">
                     <div class="col-3">
-                        <?= $timestamp->format('Y-m-d H:i:s') ?>
+                        <?= $timestamp->format('Y-m-d h:i:s A') ?>
                     </div>
                     <div class="col-1">
                         <?= $entry['Username'] ?>
 
                     </div>
-                    <div class="col-1">
+                    <div class="col-1 px-2">
                         <?= $entry['IP'] ?>
 
                     </div>
-                    <div class="col-2">
+                    <div class="col-2 px-2">
                         <?= $entry['Action'] ?>
 
                     </div>
-                    <div class="col-5">
+                    <div class="col-5" style="overflow-wrap: break-word;">
                         <?= $entry['Description'] ?>
 
                     </div>
@@ -105,6 +113,7 @@ echo $form->print();
 
 
                 <?php
+
             }
         } else {
             echo "No results found.";
