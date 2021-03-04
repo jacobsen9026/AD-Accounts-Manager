@@ -44,14 +44,7 @@ class DomainDatabase extends DatabaseModel
 
     use DomainTools;
 
-    const TABLE_NAME = "District";
-
-    public static function createDomain($name)
-    {
-        AppLogger::get()->debug("Creating new district named: " . $name);
-        return Database::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (Name) VALUES ("' . $name . '")');
-    }
-
+    const TABLE_NAME = "Domain";
 
     /**
      *
@@ -61,12 +54,16 @@ class DomainDatabase extends DatabaseModel
      */
     public static function getDomain($domainID = 1)
     {
-        $result = self::getDatabaseValue('*', $domainID)[0];
-
+        $result = self::getDatabaseValue('*', $domainID);
         $domain = new Domain();
-        return $domain->importFromDatabase($result);
-    }
+        if ($result != false) {
+            $result = $result[0];
 
+            $domain->importFromDatabase($result);
+        }
+        return $domain;
+
+    }
 
     public static function getAD_BaseDN($domainID = 1)
     {
@@ -92,7 +89,6 @@ class DomainDatabase extends DatabaseModel
     {
         return (string)Encryption::decrypt(self::getDatabaseValue('AD_Password', $domainID));
     }
-
 
     public static function setAD_FQDN($fqdn)
     {
@@ -132,16 +128,28 @@ class DomainDatabase extends DatabaseModel
         return $result;
     }
 
-
     public static function setName($name)
     {
         return self::updateDatabaseValue('Name', $name);
     }
 
-
     public static function getAD_UseTLS()
     {
         return self::getDatabaseValue('AD_Use_TLS', 1);
+    }
+
+    public static function init()
+    {
+        if (self::get() === false) {
+            self::createDomain('');
+        }
+
+    }
+
+    public static function createDomain($name)
+    {
+        AppLogger::get()->debug("Creating new domain named: " . $name);
+        return Database::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (ID) VALUES (1)');
     }
 
     public static function setAD_UseTLS($useTLS)
