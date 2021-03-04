@@ -26,6 +26,10 @@
 
 namespace App\Models\Database;
 
+use System\App\AppLogger;
+use System\Models\Post\UploadedFile;
+use System\Post;
+
 /**
  * Description of AppConfig
  *
@@ -129,8 +133,8 @@ abstract class AppDatabase extends DatabaseModel
     {
         foreach ($postedData as $key => $data) {
             $data = trim($data);
-            \System\App\AppLogger::get()->debug($key);
-            \System\App\AppLogger::get()->debug($data);
+            AppLogger::get()->debug($key);
+            AppLogger::get()->debug($data);
             switch ($key) {
                 case "webAppName":
                     self::setAppName($data);
@@ -155,6 +159,13 @@ abstract class AppDatabase extends DatabaseModel
                 default:
                     break;
             }
+        }
+        $uploadedPicture = new UploadedFile(Post::getFile("app_icon"));
+
+        if ($uploadedPicture->exists()) {
+            AppLogger::get()->info('App Icon upload photo found');
+            //$uploadedPicture->resize(100);
+            self::setAppIcon($uploadedPicture->getTempFileContents());
         }
     }
 
@@ -208,6 +219,12 @@ abstract class AppDatabase extends DatabaseModel
         return self::updateDatabaseValue('User_Helpdesk_URL', $value);
     }
 
+    public static function setAppIcon($binaryData)
+    {
+
+        return self::updateDatabaseValue('App_Icon', bin2hex($binaryData));
+    }
+
     public static function setLastUpdateCheck($value)
     {
         return self::updateDatabaseValue('Last_Update_Check', $value);
@@ -216,6 +233,11 @@ abstract class AppDatabase extends DatabaseModel
     public static function setLatestAvailableVersion($value)
     {
         return self::updateDatabaseValue('Latest_Available_Version', $value);
+    }
+
+    public static function getAppIcon()
+    {
+        return hex2bin(self::getDatabaseValue('App_Icon'));
     }
 
 }
