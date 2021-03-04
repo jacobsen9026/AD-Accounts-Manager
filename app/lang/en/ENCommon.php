@@ -51,8 +51,8 @@ abstract class ENCommon
         'Group' => 'Group',
         'Groups' => 'Groups',
         'Users' => 'Users',
-        'Search'=> 'Search',
-        'User Search' =>'User Search',
+        'Search' => 'Search',
+        'User Search' => 'User Search',
         'Group Search' => 'Group Search',
         'Application' => 'Application',
         'Authentication' => 'Authentication',
@@ -70,17 +70,26 @@ abstract class ENCommon
         'Email Address' => 'Email Address',
         'OU' => 'OU',
         'New Version Available!' => 'New Version Available!',
+        'Domain Setup' => 'Domain Setup',
+        'Audit Log' => 'Audit Log',
+        'From' => 'From',
+        'To' => 'To',
+        'Timestamp' => 'Timestamp',
+        'IP' => 'IP',
+        'Action' => 'Action',
+        'Backup' => 'Backup'
     ];
     public static $help = [
         'User_Search' => 'Can also enter first or last name to search for username.',
-       'Group_Search' => "Can search by name, email, or description",
+        'Group_Search' => "Can search by name, email, or description",
         "Add user or group to group" => "Add user or group to group",
-        'Can also search by first or last name.' =>'Can also search by first or last name.',
+        'Can also search by first or last name.' => 'Can also search by first or last name.',
+        'Times are in UTC' => 'Times are in UTC'
     ];
 
     public static $error = [
-        "No user or group was supplied to the add group members modal"=>"No user or group was supplied to the add group members modal",
-        'Object not found'=>'Object not found',
+        "No user or group was supplied to the add group members modal" => "No user or group was supplied to the add group members modal",
+        'Object not found' => 'Object not found',
     ];
 
 }
