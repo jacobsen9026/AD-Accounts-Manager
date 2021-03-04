@@ -36,7 +36,9 @@ abstract class Picture
 
     public static function cropSquare($imageResource, $targetDimension)
     {
-
+        if (is_string($imageResource)) {
+            $imageResource = imagecreatefromstring($imageResource);
+        }
 
         $imageWidth = imagesx($imageResource);
         $imageHeight = imagesy($imageResource);
