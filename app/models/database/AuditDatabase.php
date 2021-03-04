@@ -49,21 +49,22 @@ abstract class AuditDatabase extends DatabaseModel
         $query->run();
     }
 
-    public static function getLast24Hrs(){
+    public static function getLast24Hrs()
+    {
         $now = new DateTime();
         $yesterday = new DateTime();
         $yesterday->sub(new DateInterval('P1D'));
-        return self::getBetween($yesterday->getTimestamp(),$now->getTimestamp());
-        $query = new Query(static::TABLE_NAME);
-        $query->where('Timestamp',$yesterday->getTimestamp(),'>=');
-        return $query->run();
-}
+        return self::getBetween($yesterday->getTimestamp(), $now->getTimestamp());
 
-public static function getBetween($from,$to){
+    }
+
+    public static function getBetween($from, $to)
+    {
         $query = new Query(static::TABLE_NAME);
-        $query->where('Timestamp',$from,'>=')
-        ->where('Timestamp',$to,'<=');
+        $query->where('Timestamp', $from, '>=')
+            ->where('Timestamp', $to, '<=')
+            ->sort('desc', 'Timestamp');
         return $query->run();
-}
+    }
 
 }
