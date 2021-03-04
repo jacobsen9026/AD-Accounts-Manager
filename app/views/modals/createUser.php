@@ -25,15 +25,15 @@ $logon = new FormText(Lang::get('Logon Name'), '', 'logonname');
 $logon->medium();
 $password = new FormText(Lang::get('Password'), '', 'password');
 $password->medium()
-->isPassword();
+    ->isPassword();
 
 $showPassword = new FormButton('showPass');
 $showPassword->setType('button')
     ->setInputClasses('h-100')
     ->setName('<i class="fas fa-eye-slash"></i>');
-$showPasswordJS = Javascript::on($showPassword->getId(),'
+$showPasswordJS = Javascript::on($showPassword->getId(), '
 console.log("clicked");
-var input = $("#'.$password->getId().'");
+var input = $("#' . $password->getId() . '");
 console.log(this.innerHTML);
 if(input.attr("type") === "password"){
     input.attr("type","text");
@@ -44,7 +44,7 @@ if(input.attr("type") === "password"){
 }
 ');
 $showPassword->setScript($showPasswordJS);
-$passwordInput = new FormElementGroup('Password','','passwordInput');
+$passwordInput = new FormElementGroup('Password', '', 'passwordInput');
 $passwordInput->addElementToGroup($password)
     ->addElementToGroup($showPassword);
 
@@ -52,7 +52,6 @@ $email = new FormText(Lang::get('Email Address'), '', 'email');
 $email->medium();
 $ouInput = new FormText(Lang::get('OU'), "", "ou");
 $ouInput->autoCompleteOU()
-    ->setId("ou")
     // ->appendIcon('<i class="fas fa-search"></i>')
     ->large();
 $form->addElementToNewRow($fname)
