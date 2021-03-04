@@ -93,7 +93,7 @@ class Domain extends APIController
         // $this->domain = DomainDatabase::getDomain($domainID);
         // $this->domainID = $this->domain->getId();
 
-        return $this->returnHTML($this->view('settings/district/show') . $this->settingsSavedToast());
+        return $this->returnHTML($this->view('settings/domain/show') . $this->settingsSavedToast());
     }
 
     /**
@@ -113,19 +113,19 @@ class Domain extends APIController
 
             case 'addPrivilege':
                 $this->controller->addDistrictPrivilegeLevel();
-                return $this->returnHTML($this->view('settings/district/permissions') . $this->settingsSavedToast());
+                return $this->returnHTML($this->view('settings/domain/permissions') . $this->settingsSavedToast());
 
 
             case 'deletePrivilege':
                 $this->controller->deletePrivilegeLevel();
-                $output = $this->returnHTML($this->view('settings/district/permissions') . $this->settingsSavedToast());
+                $output = $this->returnHTML($this->view('settings/domain/permissions') . $this->settingsSavedToast());
                 //var_dump($output);
                 return $output;
 
 
             case 'updatePrivilege':
                 $this->controller->updatePrivilege(Post::get("privilegeID"));
-                return $this->returnHTML($this->view('settings/district/permissions') . $this->settingsSavedToast());
+                return $this->returnHTML($this->view('settings/domain/permissions') . $this->settingsSavedToast());
 
 
             case 'modifyPermission':
@@ -141,7 +141,7 @@ class Domain extends APIController
 
             case 'getOULevelPermissions':
 
-                $response = ($this->view('settings/district/permissions/ouLevelPermissions'));
+                $response = ($this->view('settings/domain/permissions/ouLevelPermissions'));
 
                 return ($this->returnHTML($response));
 
@@ -150,18 +150,18 @@ class Domain extends APIController
 
                 return ($this->returnHTML($this->showOUPermissions(Post::get('ou'))));
 
-            case 'getDistrictLevelPermissions':
+            case 'getApplicationLevelPermissions':
                 $this->domain = DomainDatabase::getDomain($districtID);
-                return $this->returnHTML($this->view('settings/district/permissions/districtLevelPermissions'));
+                return $this->returnHTML($this->view('settings/domain/permissions/applicationLevelPermissions'));
 
             case 'addDistrictPermission':
-                // $this->district = \App\Models\Database\DistrictDatabase::getDistrict($districtID);
+                // $this->domain = \App\Models\Database\DistrictDatabase::getDistrict($districtID);
                 $this->controller->addOUPermission();
-                return $this->returnHTML($this->view('settings/district/permissions/districtLevelPermissions') . $this->settingsSavedToast());
+                return $this->returnHTML($this->view('settings/domain/permissions/applicationLevelPermissions') . $this->settingsSavedToast());
 
             case 'getManagePrivilegeLevels':
 
-                return $this->returnHTML($this->view('settings/district/permissions/privilegeLevels'));
+                return $this->returnHTML($this->view('settings/domain/permissions/privilegeLevels'));
 
             default:
                 break;
@@ -177,11 +177,11 @@ class Domain extends APIController
         $ou = Post::get('id');
         if ($ou != '' and $ou != null) {
             $permission = new Permission();
-            $permission->importFromDatabase(PermissionMapDatabase::getPermissionById($ou));
+            $permission->loadFromDatabaseResponse(PermissionMapDatabase::getPermissionById($ou));
             $dn = $permission->getOu();
             $this->controller->modifyPermission();
             $response = PermissionMapPrinter::printOUPermissions($dn);
-            $response .= PermissionMapPrinter::printAddOUPermission($dn);
+            //$response .= PermissionMapPrinter::printAddOUPermission($dn);
 
             $data = $this->returnHTML($response . $this->settingsSavedToast());
             $data["ouPermNav"] = $this->getOuNavigation($ou);
@@ -236,11 +236,11 @@ class Domain extends APIController
     {
         $id = Post::get('id');
         $permission = new Permission();
-        $permission->importFromDatabase(PermissionMapDatabase::getPermissionById($id));
+        $permission->loadFromDatabaseResponse(PermissionMapDatabase::getPermissionById($id));
         $dn = $permission->getOu();
         $this->controller->removeOUPermission();
         $response = PermissionMapPrinter::printOUPermissions($dn);
-        $response .= PermissionMapPrinter::printAddOUPermission($dn);
+        //$response .= PermissionMapPrinter::printAddOUPermission($dn);
 
         return $this->returnHTML($response);
     }
