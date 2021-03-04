@@ -27,6 +27,12 @@ and open the template in the editor.
 .mt-md-8 {
 }
 
+.row {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+
+}
+
 @media all and (min-width: 768px) {
     .mt-md-8 {
         margin-top: 6rem !important;
@@ -211,6 +217,31 @@ and open the template in the editor.
     max-width: 360px;
     margin-right: auto;
     margin-left: auto;
+}
+
+.auditLog .row {
+    transition: background-color .25s;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.auditLog .row:hover {
+
+    background-color: #ddd;
+}
+
+.logoPlaceholder {
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    #background-image: url('/img/logo/512x512.png');
+}
+
+.appName {
+    line-height: 50px;
+    height: 50px;
 }
 
 
