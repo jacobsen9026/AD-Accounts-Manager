@@ -44,7 +44,7 @@ class AppUpdater extends Updater
      */
     public function isUpdateAvailable(): ?bool
     {
-        if (App::get()->inDebugMode()) {
+        if (App::inDebugMode()) {
             $this->latestUpdate = $this->getLatestUpdateFromURL();
 
             return true;
