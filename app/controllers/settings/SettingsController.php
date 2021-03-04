@@ -17,7 +17,6 @@ class SettingsController extends Controller
         if (!$this->user->superAdmin) {
 
             return $this->unauthorized();
-            //throw new AppException('You\'ve entered a forbidden area.', AppException::UNAUTHORIZED_ACCESS);
         }
     }
 
