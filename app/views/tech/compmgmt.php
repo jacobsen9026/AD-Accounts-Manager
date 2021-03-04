@@ -1,14 +1,18 @@
 <?php
 
-use App\Api\WindowsRM;
 
-$computer = $this->computer;
-$win = new WindowsRM();
-$workstationReachable = $win->testConnection($computer);
+use App\Api\Windows\WindowsRM;
+use App\Forms\FormText;
+use System\App\Forms\Form;
+use System\App\Forms\FormButton;
 
-if ($workstationReachable) {
-    echo "$computer is reachable";
-    echo "<br>" . $win->DNSLookup($computer);
-} else {
-    echo "$computer is not reachable";
-}
+
+$rebootPCForm = new Form('/tech/comp-mgmt', 'rebootPC');
+$pcName = new FormText('Reboot a computer', 'Computer DNS Name or IP', 'destination');
+$action = new FormText('', '', 'action', 'rebootPC');
+$action->hidden();
+$submit = new FormButton('Reboot');
+$rebootPCForm->addElementToNewRow($pcName)
+    ->addElementToNewRow($action)
+    ->addElementToNewRow($submit);
+echo $rebootPCForm->print();
