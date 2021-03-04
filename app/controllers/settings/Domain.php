@@ -71,13 +71,13 @@ class Domain extends SettingsController
     {
         $this->districtID = $districtID;
         $this->domain = DomainDatabase::getDomain($districtID);
-        return $this->view('settings/district/show');
+        return $this->view('settings/domain/show');
     }
 
     public function permissions($districtID = 1)
     {
         $this->domain = DomainDatabase::getDomain($districtID);
-        return $this->view('settings/district/permissions');
+        return $this->view('settings/domain/permissions');
     }
 
     public function permissionsPost($districtID = 1)
@@ -121,28 +121,36 @@ class Domain extends SettingsController
         $this->redirect('/settings/domain/permissions');
     }
 
-    private function updateDistrict($post)
+    private function updateDistrict($post = null)
     {
 //var_dump($post);
-        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getName(), $post['name']));
-        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAbbr(), $post['abbr']));
-        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdNetBIOS(), $post['adNetBIOS']));
-        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdFQDN(), $post['adFQDN']));
-        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdBaseDN(), $post['adBaseDN']));
-        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdPassword(), $post['adPassword']));
-        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdUsername(), $post['adUsername']));
-        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getUseTLS(), $post['useTLS']));
+        $name = Post::get('name');
+        $abbr = Post::get('abbr');
+        $netBios = Post::get('adNetBIOS');
+        $fqdn = Post::get('adFQDN');
+        $baseDN = Post::get('adBaseDN');
+        $adPassword = Post::get('adPassword');
+        $adUsername = Post::get('adUsername');
+        $useTLS = Post::get('useTLS');
+        //$this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getName(), $name));
+        //$this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAbbr(), $abbr));
+        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdNetBIOS(), $netBios));
+        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdFQDN(), $fqdn));
+        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdBaseDN(), $baseDN));
+        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdPassword(), $adPassword));
+        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdUsername(), $adUsername));
+        $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getUseTLS(), $useTLS));
 
 
-        $this->logger->info("Updating district");
-        $this->domain->setName($post['name']);
-        $this->domain->setAbbr($post['abbr'])
-            ->setAdFQDN($post['adFQDN'])
-            ->setAdNetBIOS($post['adNetBIOS'])
-            ->setAdBaseDN($post['adBaseDN'])
-            ->setAdPassword($post['adPassword'])
-            ->setAdUsername($post['adUsername'])
-            ->setUseTLS($post["useTLS"]);
+        $this->logger->info("Updating domain");
+        //$this->domain->setName($name);
+        //$this->domain->setAbbr($abbr)
+        $this->domain->setAdFQDN($fqdn)
+            ->setAdNetBIOS($netBios)
+            ->setAdBaseDN($baseDN)
+            ->setAdPassword($adPassword)
+            ->setAdUsername($adUsername)
+            ->setUseTLS($useTLS);
 
 
         $this->domain->saveToDB();
@@ -194,7 +202,7 @@ class Domain extends SettingsController
 //var_dump(Post::get());
         if ($id != '' and $id != null) {
             $permission = new Permission();
-            $permission->importFromDatabase(PermissionMapDatabase::getPermissionById($id));
+            $permission->loadFromDatabaseResponse(PermissionMapDatabase::getPermissionById($id));
 //var_dump(Post::get());
             $permission->setPrivilegeID(Post::get("privilegeID"))
                 ->setId($id)
@@ -221,8 +229,8 @@ class Domain extends SettingsController
     public function addDistrictPrivilegeLevel($districtID = 1)
     {
         if (Post::get("ldapGroupName")) {
-
-            $this->audit(new ChangeSettingAuditAction("Add Privilege Level", null, null));
+            $groupName = Post::get("ldapGroupName");
+            $this->audit(new ChangeSettingAuditAction("Add Privilege Level", null, $groupName));
             return PrivilegeLevelDatabase::addPrivilegeLevel(Post::get("ldapGroupName"), $districtID);
         }
     }
@@ -230,7 +238,14 @@ class Domain extends SettingsController
     public function removeOUPermission()
     {
         $id = Post::get('id');
-        return PermissionMapDatabase::removePermissionByID($id);
+        $permission = new Permission();
+        $permission->loadFromDBByID($id);
+        if ($permission->remove()) {
+            return true;
+        }
+        return false;
+
+
     }
 
     public function createPost()
@@ -270,7 +285,7 @@ class Domain extends SettingsController
                 break;
         }
 
-//        $this->redirect('/settings/district/edit/');
+//        $this->redirect('/settings/domain/edit/');
     }
 
 
