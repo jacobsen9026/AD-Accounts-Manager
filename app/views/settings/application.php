@@ -25,18 +25,42 @@
  */
 
 use App\Models\Database\AppDatabase;
+use App\Models\View\Javascript;
 use System\App\Forms\Form;
+use System\App\Forms\FormButton;
 use System\App\Forms\FormFloatingButton;
 use System\App\Forms\FormSlider;
 use App\Forms\FormText;
+use System\App\Forms\FormTextArea;
+use System\App\Forms\FormUpload;
+use System\Post;
+
 
 $form = new Form('/settings/application', 'application');
 
+
 $webAppName = new FormText("Web App Name", null, "webAppName", AppDatabase::getAppName());
 $webAppName->large();
+
+
 $webFQDN = new FormText("Website FQDN", "If this is set all requests are redirected to this address. Be sure it is correct and stays available.", "webAppFQDN", AppDatabase::getWebsiteFQDN());
 $webFQDN->large()
     ->setPlaceholder("Enter the public FQDN that users use to access this applicaiton.");
+
+$uploadPhoto = new FormUpload('', '', 'app_icon');
+$uploadPhoto->setBrowseButtonText('<i class="fas fa-img"></i>');
+$uploadPhoto->tiny()
+    //->addAJAXRequest('/api/settings/application', 'settingsOutput', $form)
+    ->hidden();
+$uploadPhotoButton = new FormButton('Upload App Icon');
+$uploadPhotoButton->setType('button');
+$uploadPhotoButton->setId('upload_photo_button')
+    ->tiny()
+    ->setTooltip("Max size: " . Post::getMaxUploadSize());
+$clickUpload = '$("#' . $uploadPhoto->getId() . '").click()';
+$function = Javascript::on($uploadPhotoButton->getId(), $clickUpload);
+$uploadPhotoButton->setScript($function);
+
 $webHelpDesk = new FormText("User Helpdesk URL", "The url that users should use to access your help portal.", "webHelpdeskURL", AppDatabase::getUserHelpdeskURL());
 $webHelpDesk->large()
     ->setPlaceholder("https://helpdesk.company.com");
@@ -47,7 +71,7 @@ $forceHTTPS->addOption("False", '0', !AppDatabase::getForceHTTPS());
 $forceHTTPS->addOption("True", '1', AppDatabase::getForceHTTPS());
 
 
-$homepageMessage = new System\App\Forms\FormTextArea();
+$homepageMessage = new FormTextArea();
 $homepageMessage->setLabel("Homepage Message")
     ->setSubLabel("Accepts HTML and inline style")
     ->setName("webMOTD")
@@ -59,6 +83,8 @@ $submitButton->setId('floatingSaveButton')
 
 
 $form->addElementToNewRow($webAppName)
+    ->addElementToCurrentRow($uploadPhoto)
+    ->addElementToCurrentRow($uploadPhotoButton)
     ->addElementToNewRow($homepageMessage)
     ->addElementToNewRow($webFQDN)
     ->addElementToNewRow($forceHTTPS)
@@ -66,7 +92,11 @@ $form->addElementToNewRow($webAppName)
     ->addElementToNewRow($submitButton);
 echo $form->print();
 ?>
-
+<script>
+    if (window.location.pathname != '/settings/application') {
+        history.pushState(null, 'Notification', '/settings/application');
+    }
+</script>
 
 
 
