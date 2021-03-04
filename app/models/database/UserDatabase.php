@@ -26,6 +26,8 @@
 
 namespace App\Models\Database;
 
+use App\Models\User\User;
+
 /**
  * Description of UserDatabase
  *
@@ -61,6 +63,18 @@ abstract class UserDatabase extends DatabaseModel
             $query->set(self::TOKEN, $token);
             $query->where(self::USERNAME, $username);
         }
+        return $query->run();
+    }
+
+    /**
+     * @param string $username
+     *
+     * @return bool
+     */
+    public static function getID(string $username)
+    {
+        $query = new Query(self::TABLE_NAME, Query::SELECT, self::ID);
+        $query->where(self::USERNAME, $username);
         return $query->run();
     }
 
@@ -135,15 +149,13 @@ abstract class UserDatabase extends DatabaseModel
     }
 
     /**
-     * @param string $username
-     *
-     * @return bool
+     * @param User $user
      */
-    public static function getID(string $username)
+    public static function initUser(User $user)
     {
-        $query = new Query(self::TABLE_NAME, Query::SELECT, self::ID);
-        $query->where(self::USERNAME, $username);
-        return $query->run();
+        if (self::getID($user->getUsername()) == false) {
+            $user->save();
+        }
     }
 
 }
