@@ -38,6 +38,13 @@ if (!function_exists('enablePHPErrors')) {
     }
 
 }
+
+if (!function_exists('is_hex')) {
+    function is_hex($hex_code)
+    {
+        return @preg_match("/^[a-f0-9]{2,}$/i", $hex_code) && !(strlen($hex_code) & 1);
+    }
+}
 if (!function_exists('disablePHPErrors')) {
 
     function disablePHPErrors()
@@ -86,4 +93,5 @@ if (!function_exists("array_flatten")) {
     }
 
 }
+
 ?>
