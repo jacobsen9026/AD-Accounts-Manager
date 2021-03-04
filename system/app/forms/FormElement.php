@@ -546,7 +546,7 @@ class FormElement
      *
      * @return $this
      */
-    public function setTooltip(string $contents): self
+    public function setTooltip(?string $contents): self
     {
         $this->tooltip = $contents;
         return $this;
