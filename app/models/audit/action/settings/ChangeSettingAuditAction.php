@@ -10,16 +10,16 @@ class ChangeSettingAuditAction extends AuditAction
 {
 
     /**
-     * AddMemberAuditAction constructor.
+     * ChangeSettingAuditAction constructor.
      *
      * @param string $groupName
      * @param string $usernameAdded
      */
     public function __construct(string $settingName, $oldValue, $newValue)
     {
-
-        $this->setType('Group_Member_Add');
-        $this->setDescription('User member: ' . $usernameAdded . ' to the group: ' . $groupName);
+        parent::__construct();
+        $this->setType('Setting_Change');
+        $this->setDescription('Setting: ' . $settingName . ' changed from: ' . $oldValue . ' to: ' . $newValue);
 
     }
 }
