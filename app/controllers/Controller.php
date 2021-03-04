@@ -56,7 +56,7 @@ class Controller extends CommonController
     public $user;
 
 
-    /** @var Domain The district */
+    /** @var Domain The domain */
     public $domain;
 
     /**
