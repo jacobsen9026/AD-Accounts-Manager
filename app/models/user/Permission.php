@@ -32,9 +32,10 @@ namespace App\Models\User;
  * @author cjacobsen
  */
 
+use App\Models\Audit\Action\Settings\RemovePermissionAuditAction;
+use App\Models\Database\PrivilegeLevelDatabase;
 use App\Models\Model;
 use App\Models\Database\PermissionMapDatabase;
-use System\Encryption;
 
 class Permission extends Model
 {
@@ -43,26 +44,12 @@ class Permission extends Model
     private $refID;
     private $ou;
     private $privilegeID;
-    private $scopeColumn;
-    private $scopeID;
     private $userPermissionLevel;
     private $groupPermissionLevel;
 
     public function getRefID()
     {
         return $this->privilegeID . hash("sha256", $this->getOu());
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getGroupName()
-    {
-        $privilege = new PrivilegeLevel();
-        $privilege->importFromDatabase(\App\Models\Database\PrivilegeLevelDatabase::get($this->getPrivilegeID()));
-        return $privilege->getAdGroup();
     }
 
     public function getOu()
@@ -77,20 +64,35 @@ class Permission extends Model
         return $this;
     }
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function getGroupName()
+    {
+        $privilege = new PrivilegeLevel();
+        $privilege->importFromDatabase(PrivilegeLevelDatabase::get($this->getPrivilegeID()));
+        return $privilege->getAdGroup();
+    }
+
     public function getPrivilegeID()
     {
         return $this->privilegeID;
     }
 
-    public function getScopeColumn()
+    public function setPrivilegeID($privilegeID)
     {
-        return $this->scopeColumn;
+        $this->privilegeID = $privilegeID;
+        return $this;
     }
 
-    public function getScopeID()
-    {
-        return $this->scopeID;
-    }
 
     public function getType()
     {
@@ -102,11 +104,6 @@ class Permission extends Model
         return $this->userPermissionLevel;
     }
 
-    public function getGroupPermissionLevel()
-    {
-        return $this->groupPermissionLevel;
-    }
-
     public function setUserPermissionLevel($userPermissionLevel)
     {
         $this->logger->info("Setting user permission level to " . $userPermissionLevel);
@@ -114,33 +111,14 @@ class Permission extends Model
         return $this;
     }
 
+    public function getGroupPermissionLevel()
+    {
+        return $this->groupPermissionLevel;
+    }
+
     public function setGroupPermissionLevel($groupPermissionLevel)
     {
         $this->groupPermissionLevel = $groupPermissionLevel;
-        return $this;
-    }
-
-    public function setId($id)
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    public function setPrivilegeID($privilegeID)
-    {
-        $this->privilegeID = $privilegeID;
-        return $this;
-    }
-
-    public function setScopeColumn($scopeColumn)
-    {
-        $this->scopeColumn = $scopeColumn;
-        return $this;
-    }
-
-    public function setScopeID($scopeID)
-    {
-        $this->scopeID = $scopeID;
         return $this;
     }
 
@@ -161,7 +139,12 @@ class Permission extends Model
         return $this;
     }
 
-    public function importFromDatabase($rawDBResponse)
+    public function loadFromDBByID(int $id)
+    {
+        $this->loadFromDatabaseResponse(PermissionMapDatabase::getPermissionByID($id));
+    }
+
+    public function loadFromDatabaseResponse($rawDBResponse)
     {
         //var_dump($rawDBResponse);
 
@@ -179,4 +162,10 @@ class Permission extends Model
         PermissionMapDatabase::modifyPermission($this);
     }
 
+    public function remove()
+    {
+        $this->audit(new RemovePermissionAuditAction($this));
+        return PermissionMapDatabase::removePermissionByID($this->id);
+
+    }
 }
