@@ -53,6 +53,7 @@ class AppException extends \Exception
     const GROUP_ADD_EXISTS = '704';
     const CONTROLLER_NOT_FOUND = '301';
     const UNAUTHORIZED_ACCESS = '304';
+    const MALFORMED_QUERY = '310';
 
 }
 
