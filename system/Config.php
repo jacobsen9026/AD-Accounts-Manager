@@ -46,8 +46,10 @@ define('APPCLASS', "App\App\App");
  * Toggle for core debug mode.
  */
 define('DEBUG_MODE', false);
-
-
+/*
+ * Default server timezone
+ */
+define('DEFAULT_TIMEZONE', 'America/New_York');
 /*
  * The System directory
  */
