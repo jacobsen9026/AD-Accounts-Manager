@@ -9,6 +9,7 @@
 
 
 $this->customRoutes[] = ["install", "index", "home", "index"];
+$this->customRoutes[] = ["Favicon_ico", "index", "Img", "favicon"];
 
 /*
  * Settings routes
