@@ -35,14 +35,11 @@ namespace System;
 use System\App\AppOutput;
 use System\Models\View\DebugViewer;
 use System\Models\Ajax\AJAXResponse;
-use System\DatabaseLogger;
 use System\App\UserLogger;
-use System\PostLogger;
 
 class Renderer extends Parser
 {
 
-//put your code here
     public $output;
 
     /** @var Core|null */
@@ -71,7 +68,6 @@ class Renderer extends Parser
 
         switch ($this->core->request->type) {
             case 'http':
-                //var_dump($this->appOutput);
                 $this->include('system/views/HTML_start');
                 $this->logger->info("Drawing of app started");
 
@@ -95,9 +91,7 @@ class Renderer extends Parser
                 if ($this->appOutput !== null) {
                     $ajaxResponse->importAppOutput($this->appOutput);
                 }
-                /**
-                 * @todo Only return ajax logs if in debug mode
-                 */
+
                 $ajaxResponse->addLogger($this->logger)
                     ->addLogger(DatabaseLogger::get())
                     ->addLogger(PostLogger::get())
@@ -113,6 +107,7 @@ class Renderer extends Parser
             default:
                 break;
         }
+
     }
 
     private function showNoAppOutputWarning()
