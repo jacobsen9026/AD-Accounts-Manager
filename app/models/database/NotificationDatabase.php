@@ -25,10 +25,10 @@ class NotificationDatabase extends DatabaseModel
     private static function createTable()
     {
         $query = new Query(self::TABLE_NAME, Query::CREATE);
-        $query->addSchema('ID', 'INTEGER', null, true, true)
-            ->addSchema('Name')
-            ->addSchema('Subject')
-            ->addSchema('Body');
+        $query->addColumn('ID', 'INTEGER', null, true, true)
+            ->addColumn('Name')
+            ->addColumn('Subject')
+            ->addColumn('Body');
         return $query->run();
     }
 
