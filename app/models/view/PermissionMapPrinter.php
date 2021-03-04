@@ -151,7 +151,7 @@ abstract class PermissionMapPrinter extends ViewModel
     static function getPrivilegeLevels()
     {
         if (self::$privilegeLevels == null) {
-            $levels = PrivilegeLevelDatabase::get();
+            $levels = PrivilegeLevelDatabase::getAllPrivilegeLevels();
             self::$privilegeLevels = $levels;
             return $levels;
         } else {
@@ -168,20 +168,19 @@ abstract class PermissionMapPrinter extends ViewModel
     public static function printOUPermissions($ou): string
     {
         $permissions = PermissionMapDatabase::getPermissionsByOU($ou);
-        //var_dump($permissions);
-        // echo"<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>";
-        //var_dump($permissions);
 
-        $output = '<h4 class="mb-3">District Level Permissions</h4><h6 class="mx-auto border py-2 rounded-lg bg-white text-muted">' . $ou . '</h6>';
+        $output = '<h6 class="mx-auto border py-2 rounded-lg bg-white text-muted">' . $ou . '</h6>';
+
         if ($permissions != false) {
             foreach ($permissions as $permission) {
                 $perm = new Permission();
-                $perm->importFromDatabase($permission);
+                $perm->loadFromDatabaseResponse($permission);
                 $output .= self::printModifyPermission($perm, $ou);
 
             }
         }
         $output .= self::printAddOUPermission($ou);
+
         return $output;
     }
 
@@ -286,9 +285,6 @@ abstract class PermissionMapPrinter extends ViewModel
         $dropDown = new FormDropdown('', 'Privilege Level', "privilegeID");
         $dropDown->setSize("auto");
         foreach ($levels as $level) {
-            //var_dump($privilegeIDsToOmit);
-            //var_d ump($level->getId());
-            //var_dump(in_array($level->getId(), $privilegeIDsToOmit));
             $option = new FormDropdownOption($level->getAdGroup(), $level->getId());
             if ($level->getId() !== null && $level->getId() == $selectedPrivilege) {
                 $option->selected();
@@ -333,6 +329,7 @@ abstract class PermissionMapPrinter extends ViewModel
     static function generatePermissionTypeDropdown(array $types, string $label, string $subLabel, string $name, int $selectedType): FormDropdown
     {
         $dropDown = new FormDropdown($label, $subLabel, $name);
+
         foreach ($types as $type) {
             $option = new FormDropdownOption($type->getName(), $type->getId());
             if ($option->getValue() == $selectedType) {
@@ -340,7 +337,7 @@ abstract class PermissionMapPrinter extends ViewModel
             }
             $dropDown->addOption($option);
         }
-        $dropDown->medium();
+        $dropDown->tiny();
         return $dropDown;
     }
 
@@ -387,11 +384,26 @@ abstract class PermissionMapPrinter extends ViewModel
                 ->addElementToCurrentRow($ouText)
                 ->addElementToCurrentRow(self::buildUserPermissionDropdown(false)->setSubLabelClasses($classes))
                 ->addElementToCurrentRow(self::buildGroupPermissionDropdown(false)->setSubLabelClasses($classes))
-                ->addElementToCurrentRow($addButton);
+                ->addElementToNewRow($addButton);
 
-            return "<div class='bg-light rounded-lg px-3 pt-1'>" . $form->print() . "</div>";
+            return "<div class='bg-light rounded px-3 pt-1'>
+<div class='btn text-center align-middle font-weight-bold' data-toggle='collapse' data-target='#" . self::cleanOU($ou) . "AddPermCollapse' data-text-alt='-'>Add Permission +</div>
+<div id='" . self::cleanOU($ou) . "AddPermCollapse' class='collapse'>" . $form->print() . "</div>
+</div>";
         }
         return "";
+    }
+
+    /**
+     *
+     * @param string $ou
+     *
+     * @return string
+     */
+    public static function cleanOU($ou): string
+    {
+        $search = [' ', 'OU=', ',', 'DC='];
+        return str_replace($search, '', $ou);
     }
 
     /**
@@ -484,18 +496,6 @@ abstract class PermissionMapPrinter extends ViewModel
 
         //var_dump($output);
         return $output;
-    }
-
-    /**
-     *
-     * @param string $ou
-     *
-     * @return string
-     */
-    public static function cleanOU($ou): string
-    {
-        $search = [' ', 'OU=', ',', 'DC='];
-        return str_replace($search, '', $ou);
     }
 
     /**
