@@ -32,6 +32,10 @@ use App\Models\District\Domain;
 /** @var Domain $district */
 $domain = $this->domain;
 
+$exportButton = new \System\App\Forms\FormButton('Export Permissions');
+$exportButton->addClientRequest('/api/settings/export/permissions');
+
+
 //echo $this->view('layouts/setup_navbar');
 
 $cleanOu = PermissionMapPrinter::cleanOU($domain->getAdBaseDN());
@@ -54,8 +58,8 @@ $cleanOu = PermissionMapPrinter::cleanOU($domain->getAdBaseDN());
 
         <div id="<?= $cleanOu ?>" class='shadow p-5 mt-5 bg-white'>
             <?php
-            $showDistrictLevelPermissionsCommand = Javascript::buildAJAXRequest('/api/settings/domain/permissions', $cleanOu, ['action' => 'getDistrictLevelPermissions'], true);
-            echo "<script>" . Javascript::onPageLoad($showDistrictLevelPermissionsCommand) . "</script>";
+            $showApplicationLevelPermissionsCommand = Javascript::buildAJAXRequest('/api/settings/domain/permissions', $cleanOu, ['action' => 'getApplicationLevelPermissions'], true);
+            echo "<script>" . Javascript::onPageLoad($showApplicationLevelPermissionsCommand) . "</script>";
             ?>
 
         </div>
@@ -66,6 +70,11 @@ $cleanOu = PermissionMapPrinter::cleanOU($domain->getAdBaseDN());
             $showOuLevelPermissionsCommand = Javascript::buildAJAXRequest('/api/settings/domain/permissions', "ouLevelPermissionsContainer", ['action' => 'getOULevelPermissions'], true);
             echo "<script>" . Javascript::onPageLoad($showOuLevelPermissionsCommand) . "</script>";
             ?>
+        </div>
+        <div id="exportPermissionsContainer" class='shadow p-5 mt-5 mb-5 bg-white '>
+            <?= $exportButton->getElementHTML(); ?>
+            <script><?= $exportButton->getScript(); ?></script>
+
         </div>
         <div class="my-5">
             &nbsp;
