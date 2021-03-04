@@ -56,6 +56,7 @@ namespace App\Controllers\Api\settings;
 
 use App\Controllers\Api\APIController;
 use System\App\AppException;
+use System\Post;
 
 class Update extends APIController
 {
@@ -67,8 +68,16 @@ class Update extends APIController
         if (!$this->user->superAdmin) {
             throw new AppException('You\'ve entered a forbidden area.', AppException::UNAUTHORIZED_ACCESS);
         }
-
+        if (Post::get('action') == 'updateSchema') {
+            return $this->returnHTML($this->updateSchema());
+        }
         return $this->returnHTML($this->view('settings/update') . $this->settingsSavedToast());
+    }
+
+    public function updateSchema()
+    {
+
+        return "yay";
     }
 
 }
