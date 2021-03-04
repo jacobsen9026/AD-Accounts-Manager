@@ -39,6 +39,7 @@ use App\Models\Audit\Action\System\UserLogonSuccessAuditAction;
 use App\Models\Audit\Action\System\UserLogonAttemptAuditAction;
 use App\Models\Audit\AuditEntry;
 use App\Models\Database\AuditDatabase;
+use App\Models\Database\UserDatabase;
 use System\App\Auth\Local;
 use App\App\App;
 use App\Models\User\User;
@@ -48,6 +49,8 @@ use System\App\AppLogger;
 use App\Models\View\Toast;
 use App\Auth\ADAuth;
 use App\Models\Database\AuthDatabase;
+use System\Get;
+use System\Post;
 
 class Login extends Controller
 {
@@ -72,94 +75,123 @@ class Login extends Controller
          * Check if this is a POST request and has a username and password if so carry on and attempt a login
          * Otherwise the login prompt will be drawn
          */
-        if (isset($_POST) && isset($_POST['username']) && isset($_POST['password'])) {
-            $logger->debug('logining in');
-            $username = $_POST['username'];
-            $password = $_POST['password'];
-            try {
+        if (Post::isSet('username')) {
 
-                /**
-                 * Attempt to authenticate local users (admin)
-                 */
-                $logger->debug('trying local auth');
-                /* @var $user User */
-                $user = Local::authenticate($username, $password);
-            } catch (AuthException $ex) {
+            if (Post::isSet('password')) {
+                $logger->debug('logining in');
+                $username = $_POST['username'];
+                $password = $_POST['password'];
+                try {
 
-
-                /**
-                 * Local auth failed
-                 */
-                if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
+                    /**
+                     * Attempt to authenticate local users (admin)
+                     */
+                    $logger->debug('trying local auth');
+                    /* @var $user User */
+                    $user = Local::authenticate($username, $password);
+                } catch (AuthException $ex) {
 
 
                     /**
-                     * Admin password was incorrect
+                     * Local auth failed
                      */
-                    $this->audit(new UserLogonAttemptAuditAction($username));
+                    if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
+
+
+                        /**
+                         * Admin password was incorrect
+                         */
+                        $this->audit(new UserLogonAttemptAuditAction($username));
+                        return $this->badCredentials();
+                    }
+
+
+                    /**
+                     * Wasn't an attempt with local admin
+                     */
+                    if (AuthDatabase::getLDAPEnabled()) {
+                        try {
+                            /**
+                             * Attempt to login with LDAP
+                             */
+                            $logger->debug('trying LDAP auth');
+                            $adAuth = new ADAuth();
+                            $user = $adAuth->authenticate($username, $password);
+                            //var_dump($user);
+
+
+                        } catch (AuthException $ex) {
+                            if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
+
+                                $this->audit(new UserLogonAttemptAuditAction($username));
+                                return $this->badCredentials();
+                            }
+
+                            $this->audit(new UserLogonAttemptAuditAction($username));
+                            return $this->badCredentials();
+                        }
+                    }
+
+                }
+
+
+                /**
+                 * Check if the user is set otherwise something went wrong and just
+                 * return bad credentials
+                 */
+                if (!isset($user) or $user === null or $user === false) {
+
                     return $this->badCredentials();
                 }
 
 
                 /**
-                 * Wasn't an attempt with local admin
+                 * Wrap up login
                  */
-                if (AuthDatabase::getLDAPEnabled()) {
-                    try {
-                        /**
-                         * Attempt to login with LDAP
-                         */
-                        $logger->debug('trying LDAP auth');
-                        $adAuth = new ADAuth();
-                        $user = $adAuth->authenticate($username, $password);
-                        //var_dump($user);
+
+                $logger->debug('Completed login');
+                /** @var App|null The system logger */
+                $app = App::get();
+                $user->authenticated(true);
+                $app->user = $user;
 
 
-                    } catch (AuthException $ex) {
-                        if ($ex->getMessage() == AuthException::BAD_PASSWORD) {
+                Session::setUser($user);
+                Session::updateTimeout();
+                UserDatabase::initUser($user);
+                $this->audit(new UserLogonSuccessAuditAction($user), $user);
+                if (!Get::get('redirect') == false) {
+                    $logger->debug('Redirecting: ' . Get::get('redirect'));
+                    $this->redirect(Get::get('redirect'));
 
-                            $this->audit(new UserLogonAttemptAuditAction($username));
-                            return $this->badCredentials();
-                        }
-
-                        $this->audit(new UserLogonAttemptAuditAction($username));
-                        return $this->badCredentials();
-                    }
+                } else {
+                    $logger->debug('Referer: ' . $this->app->request->referer);
+                    $this->redirect($this->app->request->referer);
                 }
-
-            }
-
-
-            /**
-             * Check if the user is set otherwise something went wrong and just
-             * return bad credentials
-             */
-            if (!isset($user) or $user === null or $user === false) {
-
+            } else {
+                /*
+                 * No password was sent
+                 */
                 return $this->badCredentials();
             }
-
-
-            /**
-             * Wrap up login
-             */
-
-            $logger->debug('Completed login');
-            /** @var App|null The system logger */
-            $app = App::get();
-            $user->authenticated(true);
-            $app->user = $user;
-
-
-            Session::setUser($user);
-            Session::updateTimeout();
-            $this->audit(new UserLogonSuccessAuditAction($user),$user);
-            $logger->debug('Referer: ' . $this->app->request->referer);
-            $this->redirect($this->app->request->referer);
         } else {
-
+            /*
+             * No username was sent
+             */
             return $this->view('login/loginPrompt');
         }
+
+    }
+
+    /**
+     * Overridden audit to provide a possible null user for login purposes
+     * @param AuditAction $action
+     * @param User|null $user
+     */
+    protected function audit(AuditAction $action, User $user = null)
+    {
+        $auditEntry = new AuditEntry($this->app->request, $user, $action);
+        AuditDatabase::addAudit($auditEntry);
     }
 
     /**
@@ -172,20 +204,9 @@ class Login extends Controller
 
         $toast->setImage('<i class="text-danger fas fa-exclamation-circle"></i>')
             ->bottom();
-        $data = ['toast' => $toast->printToast()];
+        $data = ['toast' => $toast->printToast(), 'username' => Post::get("username")];
 
         return $this->view('login/loginPrompt', $data);
-    }
-
-    /**
-     * Overridden audit to provide a possible null user for login purposes
-     * @param AuditAction $action
-     * @param User|null $user
-     */
-    protected function audit(AuditAction $action,User $user=null)
-    {
-        $auditEntry = new AuditEntry($this->app->request, $user, $action);
-        AuditDatabase::addAudit($auditEntry);
     }
 
 }
