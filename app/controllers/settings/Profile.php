@@ -41,7 +41,7 @@ class Profile extends Controller
     public function __construct(App $app)
     {
         parent::__construct($app);
-        $this->layout = "thin";
+        //$this->layout = "thin";
     }
 
     //put your code here
