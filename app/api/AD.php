@@ -46,8 +46,6 @@ class AD
 
     use DomainTools;
 
-//put your code here
-// Create a configuration array.
 
     /** @var AD|null */
     public static $instance;
@@ -153,9 +151,6 @@ class AD
                         throw new AppException($connectionStatus);
                     }
                 }
-                $logger->debug($connection);
-                $logger->debug($username);
-                $logger->debug($password);
                 if (ldap_bind($connection, $username, $password)) {
                     $connectionStatus = true;
                     $logger->info("LDAP bind successful to " . $fqdn . " using credentials: " . $username);
@@ -208,45 +203,6 @@ class AD
         return self::$instance;
     }
 
-    public function getConnectionResult()
-    {
-        if (is_resource($this->connection) and get_resource_type($this->connection) == 'ldap link') {
-            return true;
-        }
-        return $this->connectionStatus;
-    }
-
-    public function deleteGroup($dn)
-    {
-        $ou = $this->getOUFromDN($dn);
-        if ($this->hasPermission($ou, PermissionLevel::GROUPS, PermissionLevel::GROUP_DELETE)) {
-
-            $delgroup_ad["distinguishedName"] = $dn;
-            //$this->logger->info($addgroup_ad);
-            $this->logger->info($dn);
-
-
-            ldap_delete($this->connection, $dn);
-            if (!ldap_errno($this->connection)) {
-                return true;
-            }
-            $this->logger->warning(ldap_error($this->connection));
-        }
-        return false;
-    }
-
-    private static function hasPermission($target, $permissionType, $requiredLevel)
-    {
-        //var_dump($ldapResponse);
-        if (is_array($target)) {
-            $ou = substr($target['distinguishedname'][0], strpos($target['distinguishedname'][0], ',') + 1);
-        } else {
-            $ou = $target;
-        }
-        return PermissionHandler::hasPermission($ou, $permissionType, $requiredLevel);
-        //var_dump($ou);
-        //var_dump($ou);
-    }
 
     public function createTestUser()
     {
@@ -255,20 +211,16 @@ class AD
         }
         $info["cn"] = $this->testUserName;
         $info["objectclass"] = "user";
-//var_dump($this->baseDN);
         try {
             $r = ldap_add($this->connection, $this->testUserDN, $info);
-//var_dump($r);
         } catch (Exception $ex) {
             $r = false;
         }
 
         $error = ldap_error($this->connection);
-        $errno = ldap_errno($this->connection);
+        //$errno = ldap_errno($this->connection);
 
 
-//var_dump($errno);
-//var_dump($error);
         if (!$r) {
             return $error;
         } else {
@@ -336,133 +288,6 @@ class AD
         }
     }
 
-    public function getDomainUser($username)
-    {
-        return $this->getUser($username, self::FQDNtoDN(DomainDatabase::getAD_FQDN(1)));
-    }
-
-    public function getUser($username, $baseDN = null)
-    {
-        $filter = '(&(objectClass=user)(sAMAccountName=' . $username . '))';
-
-        $user = $this->queryObject($filter, $baseDN);
-        $enabledFilter = '(&(userAccountControl:1.2.840.113556.1.4.803:=2)(sAMAccountName=' . $username . '))';
-        $enabled = ['enabled' => false];
-//var_dump($enabledResult);
-        if ($this->queryObject($enabledFilter) == false) {
-            $enabled = ['enabled' => true];
-        }
-        $this->logger->debug($user);
-        $user = array_merge($user, $enabled);
-        return $user;
-    }
-
-    private function queryObject($filter, $baseDN = null)
-    {
-        $result = $this->query($filter, $baseDN);
-
-        if ($result != false) {
-            if (key_exists("count", $result) and $result["count"] == 1) {
-                $user = $result[0];
-//var_dump($user);
-                return $user;
-            }
-        }
-        return false;
-    }
-
-    public function isUserInGroup($username, $groupName)
-    {
-
-        $groupDN = $this->getGroupDN($groupName);
-        $filter = '(&(objectClass=user)(memberOf:1.2.840.113556.1.4.1941:=' . $groupDN . ')(sAMAccountName=' . $username . '))';
-
-        $result = $this->query($filter, $this->FQDNtoDN($this->fqdn));
-        //var_dump($result);
-        if (is_array($result) and key_exists('count', $result) and $result['count'] > 0) {
-            if (key_exists('samaccountname', $result[0])) {
-                if ($result[0]['samaccountname'][0] == $username) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     *
-     * @param string $groupName
-     *
-     * @return string
-     */
-    public function getGroupDN($groupName)
-    {
-        $filter = "(&(objectClass=group)(cn=" . $groupName . "))";
-        $dn = $this->getObjectDN($filter);
-        return $dn;
-    }
-
-    private function getObjectDN($filter)
-    {
-        $result = ldap_search($this->connection, $this->baseDN, $filter);
-        $info = ldap_get_entries($this->connection, $result);
-        if (is_array($info)) {
-            if (key_exists("count", $info)) {
-                if ($info["count"] == 1) {
-                    if (key_exists("distinguishedname", $info[0])) {
-                        return $info[0]["distinguishedname"][0];
-                    }
-                }
-            }
-        }
-    }
-
-    public function disableUser($username)
-    {
-        $this->setEnabledStatus($username, false);
-//exit;
-    }
-
-    private function setEnabledStatus($username, $enable = true)
-    {
-        $filter = "(&(samaccountname=$username))";
-//echo "<br><br><br>";
-        $useraccountcontrol = $this->queryObject($filter)["useraccountcontrol"][0];
-
-//var_dump($useraccountcontrol);
-        $disabled = ($useraccountcontrol | 2); // set all bits plus bit 1 (=dec2)
-        $enabled = ($useraccountcontrol & ~2); // set all bits minus bit 1 (=dec2)
-
-        if ($enable) {
-            if ($enabled != 1)
-                $new = $enabled;
-            else
-                $new = $disabled; //enable or disable?
-        } else {
-            if ($enabled == 1)
-                $new = $enabled;
-            else
-                $new = $disabled; //enable or disable?
-        }
-//var_dump($new);
-        $entry = ["userAccountControl" => $new];
-        ldap_mod_replace($this->connection, $this->getUserDN($username), $entry);
-    }
-
-    /**
-     *
-     * @param type $connection
-     * @param type $baseDN
-     * @param type $user
-     *
-     * @return string
-     */
-    public function getUserDN($user)
-    {
-        $filter = "(&(objectClass=person)(samaccountname=" . $user . "))";
-        return $this->getObjectDN($filter);
-    }
-
     /**
      * Returns an array of usernames that match
      * the search term for username, first name,
@@ -508,6 +333,19 @@ class AD
             return $groups;
         }
         return false;
+    }
+
+    private static function hasPermission($target, $permissionType, $requiredLevel)
+    {
+        //var_dump($ldapResponse);
+        if (is_array($target)) {
+            $ou = substr($target['distinguishedname'][0], strpos($target['distinguishedname'][0], ',') + 1);
+        } else {
+            $ou = $target;
+        }
+        return PermissionHandler::hasPermission($ou, $permissionType, $requiredLevel);
+        //var_dump($ou);
+        //var_dump($ou);
     }
 
     /**
@@ -567,13 +405,6 @@ class AD
         return [];
     }
 
-    public function listGroupMembers($groupDN)
-    {
-        $filter = '(&(objectClass=user)'
-            . '(memberOf:1.2.840.113556.1.4.1941:=' . $groupDN . '))';
-//var_dump($filter);
-        return $this->listUsers($filter);
-    }
 
     /**
      * user requires Group Add permissions to list OU's
@@ -589,41 +420,49 @@ class AD
         $this->logger->info($searchTerm);
         $filter = '(&(objectClass=organizationalUnit)(|(name=*' . $searchTerm . '*)(ou=*' . $searchTerm . '*)))';
 
-        //$this->logger->info($filter);
         $result = $this->query($filter);
+        if ($result != false && key_exists("count", $result)) {
 
-        //$this->logger->info($result);
-        //var_dump($result);
-        if ($result != false) {
-            if (key_exists("count", $result)) {
-                foreach ($result as $ou) {
-                    if (!is_int($ou)) {
-                        if (key_exists('distinguishedname', $ou)) {
-                            if (self::hasPermission($ou, PermissionLevel::GROUPS, PermissionLevel::GROUP_ADD)) {
-                                $ous[] = $ou["distinguishedname"][0];
-                            }
-                        }
+            foreach ($result as $ou) {
+                if (!is_int($ou) && key_exists('distinguishedname', $ou)) {
+
+                    if (self::hasPermission($ou, PermissionLevel::GROUPS, PermissionLevel::GROUP_ADD)) {
+                        $ous[] = $ou["distinguishedname"][0];
                     }
+
                 }
             }
+
         }
         if (isset($ous)) {
-
-//var_dump($usernames);
             sort($ous);
             return $ous;
         }
         return [];
     }
 
-    public function getSubOUs($dn)
+    public function getAllSubOUs($dn, $array = null)
     {
-        if ($this->ouExists($dn)) {
-
-            $filter = '(&(objectClass=organizationalUnit))';
-            $subOUs = $this->list($filter, $dn);
-//var_dump($buildingsRaw);
-            return $subOUs;
+        $ous = [];
+        if ($this->ouExists($dn) or $dn == DomainDatabase::getAD_BaseDN(1)) {
+            //var_dump('Searching sub ous of ' . $dn);
+            $filter = '(objectClass=organizationalUnit)';
+            $result = $this->list($filter, $dn);
+            //var_dump($result);
+            foreach ($result as $resultEntry) {
+                //var_dump($resultEntry);
+                if (is_array($resultEntry)) {
+                    $ou = $resultEntry["distinguishedname"][0];
+                    if ($resultEntry != null and $ou != null and $ou != '' and $ou != $dn) {
+                        if ($this->hasSubOUs($ou)) {
+                            $ous [$ou] = $this->getAllSubOUs($ou, $array);
+                        } else {
+                            $ous[] = $ou;
+                        }
+                    }
+                }
+            }
+            return $ous;
         }
         return false;
     }
@@ -638,7 +477,7 @@ class AD
             $this->logger->warning($dn . " is an invalid OU");
             return false;
         }
-        $this->logger->debug($dn . " is a valid OU");
+        //$this->logger->debug($dn . " is a valid OU");
         return true;
     }
 
@@ -674,41 +513,11 @@ class AD
         if (is_null($base_dn)) {
             $base_dn = $this->baseDN;
         }
-        // var_dump($filter);
-        // var_dump($base_dn);
-        $this->logger->info($base_dn);
-        //var_dump($filter);
         $result = ldap_list($this->connection, $base_dn, $filter, ["*"], 0, 50, 10);
         //var_dump($result);
         if ($result != false) {
             $info = ldap_get_entries($this->connection, $result);
             return $info;
-        }
-        return false;
-    }
-
-    public function getAllSubOUs($dn, $array = null)
-    {
-        $ous = [];
-        if ($this->ouExists($dn) or $dn == DomainDatabase::getAD_BaseDN(1)) {
-            //var_dump('Searching sub ous of ' . $dn);
-            $filter = '(objectClass=organizationalUnit)';
-            $result = $this->list($filter, $dn);
-            //var_dump($result);
-            foreach ($result as $resultEntry) {
-                //var_dump($resultEntry);
-                if (is_array($resultEntry)) {
-                    $ou = $resultEntry["distinguishedname"][0];
-                    if ($resultEntry != null and $ou != null and $ou != '' and $ou != $dn) {
-                        if ($this->hasSubOUs($ou)) {
-                            $ous [$ou] = $this->getAllSubOUs($ou, $array);
-                        } else {
-                            $ous[] = $ou;
-                        }
-                    }
-                }
-            }
-            return $ous;
         }
         return false;
     }
@@ -725,15 +534,5 @@ class AD
         return false;
     }
 
-    public function setUserThumbnailPhoto($userDN, $photo)
-    {
-        if ($this->hasPermission($this->getOUFromDN($userDN), PermissionLevel::USERS, PermissionLevel::USER_CHANGE)) {
-            $attr = ["thumbnailPhoto" => $photo];
-            $this->logger->info(ldap_mod_replace($this->connection, $userDN, $attr));
-            $this->logger->info(ldap_error($this->connection));
-            return;
-        }
-        return false;
-    }
 
 }
