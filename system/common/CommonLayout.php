@@ -87,10 +87,10 @@ class CommonLayout
         $this->layoutOutput = $this->getHeader();
 
 
+        $this->layoutOutput .= $this->getNavigation();
         $this->layoutOutput .= $this->app->appOutput->getBody();
 
         $this->layoutOutput .= $this->getFooter();
-        $this->layoutOutput .= $this->getNavigation();
         // var_dump($this->layoutOutput);
 
 
@@ -101,11 +101,6 @@ class CommonLayout
     {
         $this->app->logger->debug('getting header');
         return $this->view('layouts/' . $this->layoutName . '_header');
-    }
-
-    public function getFooter()
-    {
-        return $this->view('layouts/' . $this->layoutName . '_footer');
     }
 
     /**
@@ -120,6 +115,11 @@ class CommonLayout
             return $menu->getMenu($this->layoutName);
         }
         return '';
+    }
+
+    public function getFooter()
+    {
+        return $this->view('layouts/' . $this->layoutName . '_footer');
     }
 
 }
