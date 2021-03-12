@@ -39,6 +39,16 @@ abstract class Post
 {
 
     //put your code here
+    public static function getAll()
+    {
+        if (Post::isSet()) {
+            self::csrfCheck();
+            return $_POST;
+        } else {
+            return null;
+        }
+    }
+
     public static function isSet($key = null)
     {
 
@@ -50,38 +60,10 @@ abstract class Post
             }
         } else {
             if (isset($_POST[$key]) and $_POST[$key] != null) {
-                self::csrfCheck();
+
                 return true;
             } else {
                 return false;
-            }
-        }
-    }
-
-    public static function getAll()
-    {
-        if (Post::isSet()) {
-            return $_POST;
-        } else {
-            return null;
-        }
-    }
-
-    public static function get($key = null)
-    {
-        if ($key == null) {
-            if (Post::isSet()) {
-                return $_POST;
-            } else {
-                return null;
-            }
-        } else {
-            if (Post::isSet()) {
-                if (Post::isSet($key)) {
-                    return $_POST[$key];
-                }
-            } else {
-                throw new CoreException($key . ' not found in POST');
             }
         }
     }
@@ -97,6 +79,27 @@ abstract class Post
         }
         throw new AppException("CSRF Invalid");
         //return false;
+    }
+
+    public static function get($key = null)
+    {
+        if ($key == null) {
+            if (Post::isSet()) {
+                self::csrfCheck();
+                return $_POST;
+            } else {
+                return null;
+            }
+        } else {
+            if (Post::isSet()) {
+                self::csrfCheck();
+                if (Post::isSet($key)) {
+                    return $_POST[$key];
+                }
+            } else {
+                throw new CoreException($key . ' not found in POST');
+            }
+        }
     }
 
     public static function getFile($inputID)
