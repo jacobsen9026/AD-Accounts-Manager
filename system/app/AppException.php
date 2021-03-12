@@ -34,26 +34,25 @@ namespace System\App;
 
 use System\CoreException;
 
-class AppException extends \Exception
+class AppException extends CoreException
 {
 
-    const PERMISSION_MISSING_ID = '601';
-    const PERMISSION_MISSING_OU = '602';
-    const FAIL_USER_READ_PERM = '401';
-    const FAIL_USER_CHANGE_PERM = '402';
-    const FAIL_USER_UNLOCK_PERM = '403';
-    const FAIL_USER_DISABLE_PERM = '404';
-    const FAIL_GROUP_READ_PERM = '411';
-    const FAIL_GROUP_CHANGE_PERM = '412';
-    const FAIL_GROUP_ADD_PERM = '413';
-    const FAIL_GROUP_DELETE_PERM = '414';
-    const USER_NOT_FOUND = '701';
-    const GROUP_NOT_FOUND = '702';
-    const OBJECT_NOT_FOUND = '703';
-    const GROUP_ADD_EXISTS = '704';
-    const CONTROLLER_NOT_FOUND = '301';
-    const UNAUTHORIZED_ACCESS = '304';
-    const MALFORMED_QUERY = '310';
+    const PERMISSION_MISSING_ID = 601;
+    const PERMISSION_MISSING_OU = 602;
+    const FAIL_USER_READ_PERM = 401;
+    const FAIL_USER_CHANGE_PERM = 402;
+    const FAIL_USER_UNLOCK_PERM = 403;
+    const FAIL_USER_DISABLE_PERM = 404;
+    const FAIL_GROUP_READ_PERM = 411;
+    const FAIL_GROUP_CHANGE_PERM = 412;
+    const FAIL_GROUP_ADD_PERM = 413;
+    const FAIL_GROUP_DELETE_PERM = 414;
+    const USER_NOT_FOUND = 701;
+    const GROUP_NOT_FOUND = 702;
+    const OBJECT_NOT_FOUND = 703;
+    const GROUP_ADD_EXISTS = 704;
+    const CONTROLLER_NOT_FOUND = 301;
+    const UNAUTHORIZED_ACCESS = 304;
 
 }
 
