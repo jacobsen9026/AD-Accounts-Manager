@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Models\Database;
+namespace System\Models\Database;
 
 
 class SchemaEntry
@@ -66,6 +66,9 @@ class SchemaEntry
      */
     public function getDefaultValue()
     {
+        if (is_string($this->defaultValue)) {
+            return "'" . $this->defaultValue . "'";
+        }
         return $this->defaultValue;
     }
 
