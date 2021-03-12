@@ -30,7 +30,7 @@ use App\Models\View\PermissionMapPrinter;
 use App\Models\View\Javascript;
 use System\App\Forms\Form;
 
-/* @var $domain \App\Models\District\Domain */
+/* @var $domain \App\Models\Domain\Domain */
 $domain = $this->domain;
 
 
