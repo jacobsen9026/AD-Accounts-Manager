@@ -33,7 +33,12 @@ namespace App\Controllers\Api\settings;
  */
 
 use App\Controllers\Api\APIController;
+use App\Models\Audit\Action\Settings\ChangeSettingAuditAction;
+use App\Models\Database\EmailTemplateDatabase;
+use app\models\view\EmailTemplateInterpreter;
 use System\App\AppException;
+use System\App\AppLogger;
+use System\Post;
 
 class Notification extends APIController
 {
@@ -49,6 +54,32 @@ class Notification extends APIController
         //$notification->indexPost();
 
         return $this->returnHTML($this->view('settings/notification'));
+    }
+
+    public function update()
+    {
+        $id = Post::get("id");
+        if ($id != null) {
+            $name = Post::get("name");
+            $subject = Post::get("subject");
+            $body = Post::get("body");
+            $cc = Post::get("cc");
+            $bcc = Post::get("bcc");
+            $oldTemplate = EmailTemplateDatabase::get($id);
+            $body = str_replace("'", "''", $body);
+            EmailTemplateDatabase::updateTemplate($id, $name, $subject, $body, $cc, $bcc);
+            $this->audit(new ChangeSettingAuditAction('Update email template name ' . $id, $oldTemplate["Name"], $name));
+            $this->audit(new ChangeSettingAuditAction('Update email template subject' . $id, $oldTemplate["Subject"], $subject));
+            //$this->audit(new ChangeSettingAuditAction('Update email template body' . $id, $oldTemplate["Body"], $body));
+
+        }
+    }
+
+    public function interpretPost()
+    {
+        $body = Post::get("body");
+        AppLogger::get()->debug($body);
+        return $this->returnHTML(EmailTemplateInterpreter::interpret($body));
     }
 
 }

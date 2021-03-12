@@ -33,7 +33,7 @@ namespace App\Controllers\Settings;
  */
 
 use App\Models\Audit\Action\Settings\ChangeSettingAuditAction;
-use App\Models\Database\NotificationDatabase;
+use App\Models\Database\EmailTemplateDatabase;
 use System\Post;
 use App\Models\User\PrivilegeLevel;
 use App\Models\Database\PrivilegeLevelDatabase;
@@ -54,7 +54,7 @@ class Notification extends SettingsController
 
     public function create($newNotificationName)
     {
-        NotificationDatabase::create($newNotificationName);
+        EmailTemplateDatabase::create($newNotificationName);
 
         $this->redirect('/settings/notification');
     }
@@ -66,12 +66,14 @@ class Notification extends SettingsController
             $name = Post::get("name");
             $subject = Post::get("subject");
             $body = Post::get("body");
-            $oldTemplate = NotificationDatabase::get($id);
+            $cc = Post::get("cc");
+            $bcc = Post::get("bcc");
+            $oldTemplate = EmailTemplateDatabase::get($id);
             $body = str_replace("'", "''", $body);
-            NotificationDatabase::updateTemplate($id, $name, $subject, $body);
-            $this->audit(new ChangeSettingAuditAction('Update email template ' . $id, $oldTemplate["Name"], $name));
-            $this->audit(new ChangeSettingAuditAction('Update email template ' . $id, $oldTemplate["Subject"], $subject));
-            $this->audit(new ChangeSettingAuditAction('Update email template ' . $id, $oldTemplate["Body"], $body));
+            EmailTemplateDatabase::updateTemplate($id, $name, $subject, $body, $cc, $bcc);
+            $this->audit(new ChangeSettingAuditAction('Update email template name ' . $id, $oldTemplate["Name"], $name));
+            $this->audit(new ChangeSettingAuditAction('Update email template subject' . $id, $oldTemplate["Subject"], $subject));
+            //$this->audit(new ChangeSettingAuditAction('Update email template body' . $id, $oldTemplate["Body"], $body));
 
         }
         $this->redirect('/settings/notification');
@@ -82,7 +84,7 @@ class Notification extends SettingsController
 
         $id = Post::get("deleteID");
         if ($id != null) {
-            NotificationDatabase::deleteTemplate($id);
+            EmailTemplateDatabase::deleteTemplate($id);
             $this->audit(new ChangeSettingAuditAction('Email Template', $id, null));
         }
 

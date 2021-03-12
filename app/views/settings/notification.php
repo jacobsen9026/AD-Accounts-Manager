@@ -26,7 +26,9 @@
 
 use App\Forms\FormText;
 use App\Models\Database\EmailDatabase;
-use App\Models\Database\NotificationDatabase;
+use App\Models\Database\EmailTemplateDatabase;
+use App\Models\View\Modal;
+use App\Models\View\Toast;
 use System\App\Forms\Form;
 use System\App\Forms\FormButton;
 use System\App\Forms\FormDropdown;
@@ -40,23 +42,23 @@ use System\App\Forms\FormTextArea;
 $this->email = EmailDatabase::get();
 
 $form = new Form('', 'notification');
-$adminEmails = new FormTextArea('Admin Email Addresses', 'Recieves important system notifications', 'adminEmails', EmailDatabase::getAdminEmailAddresses());
 
 //$staffBlind = new FormTextArea('', $subLabel, $name)
 $save = new FormFloatingButton('<i class="h3 mb-0 fas fa-check"></i>');
 $save->setId('floatingSaveButton')
     ->addAJAXRequest('/api/settings/notification', 'settingsOutput', $form);
-$form->addElementToCurrentRow($adminEmails);
-echo $form->print();
 
 
-$currentTemplates = NotificationDatabase::get();
+$currentTemplates = EmailTemplateDatabase::get();
 //var_dump($currentTemplates);
 
 
 $newEmailTemplateForm = new Form('/settings/notification/create', 'emailTemplates', 'get');
 
 $updateEmailTemplateForm = new Form('/settings/notification/update', 'updateTemplate');
+
+$testEmailTemplateForm = new Form('/settings/notification/test', 'testTemplate');
+
 
 $deleteEmailTemplateForm = new Form('/settings/notification/delete', 'deleteTemplate');
 
@@ -70,7 +72,8 @@ $createTemplateGroup = new FormElementGroup('New Template Name', 'Create a new e
 $createTemplateGroup->addElementToGroup($newTemplateName)
     ->addElementToGroup($saveNewTemplate);
 $newEmailTemplateForm->addElementToCurrentRow($createTemplateGroup);
-
+$createTemplateButton = new FormButton('Create a new template');
+$createTemplateButton->buildModal('Create a new template', $newEmailTemplateForm->print());
 if ($currentTemplates !== false) {
     foreach ($currentTemplates as $template) {
         $jsonTemplates[$template["ID"]] = $template;
@@ -81,25 +84,67 @@ if ($currentTemplates !== false) {
 
     $emailTemplateID = new FormText('', '', 'id', $currentTemplates[0]["ID"]);
     $emailTemplateID->hidden();
+    $emailTemplateCC = new FormTextArea('', '', 'cc', $currentTemplates[0]["CC"]);
+    $emailCCGroup = new FormElementGroup('CC', 'One email per line', '');
+    $emailCCGroup->addElementToGroup($emailTemplateCC->addElementClasses('w-100'))
+        ->medium();
+
+    $emailTemplateBCC = new FormTextArea('', '', 'bcc', $currentTemplates[0]["BCC"]);
+    $emailBCCGroup = new FormElementGroup('BCC', 'One email per line', '');
+    $emailBCCGroup->addElementToGroup($emailTemplateBCC->addElementClasses('w-100'))
+        ->medium();
+
     $emailTemplateSubject = new FormText('Subject', '', 'subject', $currentTemplates[0]["Subject"]);
     $emailTemplateSubject->medium();
-    $emailTemplateBody = new FormTextArea('', '', 'body', $currentTemplates[0]["Body"]);
+    $emailTemplateBody = new FormTextArea('', '', 'body',
+        $currentTemplates[0]["Body"]);
     $emailTemplateBody->resizable()
-        ->addElementClasses('w-100');
-    $emailBodyGroup = new FormElementGroup('Body', '', '');
-    $emailBodyGroup->addElementToGroup($emailTemplateBody);
+        ->addElementClasses('w-100')
+        ->addInputClasses('text-small');
+
+    $bodyHelpText = "Variables:<br>{{FULL_NAME}}<br>{{USERNAME}}<br>{{EMAIL_ADDRESS}}<br>";
+
+    $emailBodyGroup = new FormElementGroup('Body', $bodyHelpText, '');
+    $emailBodyGroup->addElementToGroup($emailTemplateBody)
+        ->full();
+
     $updateEmailTemplate = new FormButton('Update');
-    $emailBodyPreview = new FormHTML('Preview');
+    // $updateEmailTemplate->addAJAXRequest('/api/settings/notification/update', null, $updateEmailTemplateForm);
+
+    $emailBodyPreview = new FormHTML('');
     $emailBodyPreview->full();
-    $emailBodyPreview->setHtml('<iframe class="w-100"  style="height:100vw" id="emailPreview"  src="about:blank""></iframe>');
+    $emailBodyPreview->setHtml('<div id="previewCollapse" class="collapse"><iframe class="w-100"  style="height:80vh" id="emailPreview"  src="about:blank""></iframe></div>');
+    $emailPreviewModal = new Modal();
+    $emailPreviewModal->setBody('')
+        ->setTitle('Email Preview')
+        ->setId('emailPreviewModal')
+        ->addBodyClass("p-0")
+        ->extraLarge();
+    $emailPreviewButton = new FormButton('Show template preview');
+    $emailPreviewButton->setDataToggle("collapse")
+        ->setDataTarget("#previewCollapse")
+        ->setType('button')
+        ->setDataTextAlt('Hide template preview');
+
+    $sendTemplateTo = new FormText('Send test to', '', 'template_to');
+    $sendTemplateTest = new FormButton('Send Test Email', 'small');
+    $sendTemplateTest->addAJAXRequest('/api/settings/email/sendTestTemplate', null, $updateEmailTemplateForm);
+    $testEmailTemplateForm->addElementToNewRow($sendTemplateTo)
+        ->addElementToCurrentRow($sendTemplateTest);
+
+
     $updateEmailTemplateForm->addElementToNewRow($emailTemplateDropdown)
-        ->addElementToCurrentRow($emailTemplateName)
-        ->addElementToNewRow($updateEmailTemplate)
-        ->addElementToNewRow($emailTemplateID)
-        ->addElementToNewRow($emailTemplateSubject)
-        ->addElementToCurrentRow($emailBodyGroup)
+        ->addElementToNewRow($emailTemplateName)
+        ->addElementToCurrentRow($emailCCGroup)
+        ->addElementToNewRow($emailBCCGroup)
+        ->addElementToCurrentRow($emailTemplateID)
+        ->addElementToCurrentRow($emailTemplateSubject)
+        ->addElementToNewRow($emailBodyGroup)
+        ->addElementToNewRow($emailPreviewButton)
         ->addElementToNewRow($emailBodyPreview)
-        ->addElementToNewRow($updateEmailTemplate);
+        ->addElementToNewRow($updateEmailTemplate)
+        ->addElementToNewRow($sendTemplateTo)
+        ->addElementToCurrentRow($sendTemplateTest);
 
 
     $deleteButton = new FormButton('Delete');
@@ -112,12 +157,20 @@ if ($currentTemplates !== false) {
 
 $newEmailTemplateForm->setActionVariable($newTemplateName);
 
+$unsavedChangesWarningToast = new Toast('Unsaved changes', 'You are about to lose changes you\'ve made', 3000);
+$unsavedChangesWarningToast->setId("unsavedChangesToast")
+    ->startHidden();
+$changesLostToast = new Toast('Changes were not saved', 'You\'re previous changes were not saved.', 3000);
+
+$changesLostToast->setId("changesLostToast")
+    ->startHidden();
 
 ?>
 <script>
 
     history.pushState(null, 'Notification', '/settings/notification');
-    $('#emailPreview').attr('src', 'data:text/html;charset=utf-8,' + escape($('#bodyInputArea').val()));
+
+    var timeout = null;
     var changesMade = false;
     var templates = <?=json_encode($jsonTemplates)?>;
     var stopUnload = function (e) {
@@ -135,12 +188,62 @@ $newEmailTemplateForm->setActionVariable($newTemplateName);
 
         return false;
     };
+
+    function interpretAndPrintPreview(body) {
+        if (timeout != undefined && timeout != null) {
+            clearTimeout(timeout);
+            timeout = null;
+        }
+        timeout = setTimeout(function () {
+            $.post("/api/settings/notification/interpret", {
+                    body: body,
+                    csrfToken: '<?=Form::getCsrfToken()?>'
+                }, function (data) {
+                    data = JSON.parse(data);
+                    $('#emailPreview').attr('src', 'data:text/html;charset=utf-8,' + escape(data.output.ajax.html));
+                    //$('#emailPreview').html(data.output.ajax.html);
+                }
+            );
+            timeout = null;
+        }, 1000);
+
+    }
+
+    var body = $('#bodyInputArea').val();
+    interpretAndPrintPreview(body);
+    var stopChangeTemplate = function (e) {
+        if (e.target.localName == "select") {
+            try {
+
+                console.log('unsaved');
+                // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+                // Chrome requires returnValue to be set
+                $('#unsavedChangesToast').toast('show');
+            } catch {
+
+            }
+
+            return false;
+        }
+    };
+    var templateChanged = function (e) {
+        if (e.target.localName == "select") {
+            console.log("select changed");
+            window.removeEventListener('click', stopChangeTemplate);
+            window.removeEventListener('beforeunload', stopUnload);
+
+            window.removeEventListener('change', templateChanged);
+            $('#changesLostToast').toast('show');
+
+        }
+    };
     //templates = JSON.parse(templates);
     console.log(templates);
     $('#bodyInputArea').on('keyup', function () {
         console.log("body edited");
         console.log($('#bodyInputArea').val());
-        $('#emailPreview').attr('src', 'data:text/html;charset=utf-8,' + escape($('#bodyInputArea').val()));
+        var body = $('#bodyInputArea').val();
+        interpretAndPrintPreview(body);
     });
 
     $('select').on('change', function (e) {
@@ -151,6 +254,8 @@ $newEmailTemplateForm->setActionVariable($newTemplateName);
         $('#nameInput').val(templates[selectedID].Name);
         $('#subjectInput').val(templates[selectedID].Subject);
         $('#bodyInputArea').val(templates[selectedID].Body);
+        $('#ccInputArea').val(templates[selectedID].CC);
+        $('#bccInputArea').val(templates[selectedID].BCC);
         $('#emailPreview').src = templates[selectedID].Body;
     })
     $('#nameInput, #bodyInputArea, #subjectInput').on('change', function (e) {
@@ -158,39 +263,27 @@ $newEmailTemplateForm->setActionVariable($newTemplateName);
         changesMade = true;
 
         window.addEventListener('beforeunload', stopUnload);
+        window.addEventListener('click', stopChangeTemplate);
+        window.addEventListener('change', templateChanged);
 
     });
+
     $('#Update').on("click", function () {
         window.removeEventListener('beforeunload', stopUnload);
     });
 
 </script>
-<div class="card shadow">
-    <div class="card-header">Create a new template
-        <button class="right border-0 bg-transparent text-success mr-2"
-                data-toggle="collapse"
-                data-target="#newTemplateCard"
-                data-text-alt='<i class="fa fa-minus"></i>'><i class="fa fa-plus"></i></button>
-    </div>
-    <div id="newTemplateCard" class="card-body collapse">
-        <?= $newEmailTemplateForm->print(); ?>
-    </div>
-</div>
+<?php echo $unsavedChangesWarningToast->printToast();
+echo $changesLostToast->printToast(); ?>
+
+<?= $createTemplateButton->print(); ?>
 
 
-<div class="mt-5 card shadow">
-    <div class="card-header">Edit existing templates
-        <button class="right border-0 bg-transparent text-success mr-2"
-                data-toggle="collapse"
-                data-target="#editTemplateCard"
-                data-text-alt='<i class="fa fa-minus"></i>'><i class="fa fa-plus"></i></button>
-    </div>
-    <div id="editTemplateCard" class="card-body collapse">
-        <?= $updateEmailTemplateForm->print(); ?>
 
-        <?= $deleteEmailTemplateForm->print(); ?>
-    </div>
-</div>
+<?= $updateEmailTemplateForm->print(); ?>
+
+<?= $deleteEmailTemplateForm->print(); ?>
+
 
 
 
