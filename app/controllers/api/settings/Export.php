@@ -11,7 +11,7 @@ use App\Models\Database\AuditDatabase;
 use App\Models\Database\AuthDatabase;
 use App\Models\Database\DomainDatabase;
 use App\Models\Database\EmailDatabase;
-use App\Models\Database\NotificationDatabase;
+use App\Models\Database\EmailTemplateDatabase;
 use App\Models\Database\PermissionMapDatabase;
 use App\Models\Database\PrivilegeLevelDatabase;
 use App\Models\Database\SchemaDatabase;
@@ -38,7 +38,7 @@ class Export extends APIController
 
     public function removeTempFiles()
     {
-        File::deleteFile(WRITEPATH . DIRECTORY_SEPARATOR . 'audit.csv');
+        File::delete(WRITEPATH . DIRECTORY_SEPARATOR . 'audit.csv');
     }
 
     public function index()
@@ -51,11 +51,16 @@ class Export extends APIController
         $export['PrivilegeLevelDatabase'] = PrivilegeLevelDatabase::get();
         $export['PermissionMapDatabase'] = PermissionMapDatabase::get();
 
-        Header::sendFile(json_encode($export), Header::APPLICATION_JSON, false, $this->timePrefix . '_permissions.json');
+        Header::sendFile(json_encode($export),
+            Header::APPLICATION_JSON,
+            false,
+            $this->timePrefix . '_' . AppDatabase::getAppAbbreviation() . '_permissions.json');
     }
 
     public function auditGet($type = 'json')
     {
+        $date = new DateTime();
+        $this->timePrefix = $date->format('Y-m-d');
         if ($type == 'csv') {
             $fromTime = new DateTime(Get::get('from'));
             $toTime = new DateTime(Get::get('to'));
@@ -78,7 +83,10 @@ class Export extends APIController
             }
             fclose($f);
             $csv = File::getContents(WRITEPATH . DIRECTORY_SEPARATOR . 'audit.csv');
-            Header::sendFile($csv, Header::APPLICATION_CSV, false, $this->timePrefix . '_audit.csv');
+            Header::sendFile($csv,
+                Header::APPLICATION_CSV,
+                false,
+                $this->timePrefix . '_audit.csv');
         } else {
             $export['AuditDatabase'] = AuditDatabase::get();
             Header::sendFile(json_encode($export), Header::APPLICATION_JSON, false, $this->timePrefix . '_audit.json');
@@ -93,12 +101,15 @@ class Export extends APIController
         $export['AuthDatabase'] = AuthDatabase::get();
         $export['EmailDatabase'] = EmailDatabase::get();
         $export['DomainDatabase'] = DomainDatabase::get();
-        $export['NotificationDatabase'] = NotificationDatabase::get();
+        $export['NotificationDatabase'] = EmailTemplateDatabase::get();
         $export['PermissionMapDatabase'] = PermissionMapDatabase::get();
         $export['PrivilegeLevelDatabase'] = PrivilegeLevelDatabase::get();
         $export['SchemaDatabase'] = SchemaDatabase::get();
         $export['UserDatabase'] = UserDatabase::get();
-        Header::sendFile(json_encode($export), Header::APPLICATION_JSON, false, $this->timePrefix . '_' . AppDatabase::getAppAbbreviation() . '_full_backup.json');
+        Header::sendFile(json_encode($export),
+            Header::APPLICATION_JSON,
+            false,
+            $this->timePrefix . '_' . AppDatabase::getAppAbbreviation() . '_full_backup.json');
 
     }
 
