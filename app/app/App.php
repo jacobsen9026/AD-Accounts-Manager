@@ -42,12 +42,11 @@ use App\Controllers\Login;
 use Exception;
 use System\App\AppLogger;
 use System\App\Layout;
-use System\App\LDAPLogger;
 use System\App\RequestRedirection;
 use System\App\Error\AppErrorHandler;
-use System\App\UserLogger;
 use System\App\ControllerFactory;
 use System\Core;
+use System\File;
 use system\Header;
 use System\Request;
 use System\App\Router;
@@ -56,7 +55,6 @@ use App\Models\Database\AppDatabase;
 use System\App\AppOutput;
 use System\App\Interfaces\AppInterface;
 use System\Common\CommonApp;
-use System\App\WindowsLogger;
 use System\SystemLogger;
 use System\Traits\Parser;
 
@@ -67,7 +65,7 @@ class App extends CommonApp implements AppInterface
     use RequestRedirection;
     use Parser;
 
-    public static $version = '0.1.6';
+    public static $version = '0.1.7';
 
     /** @var App */
     public static App $instance;
@@ -97,7 +95,9 @@ class App extends CommonApp implements AppInterface
         new AppErrorHandler();
         $this->coreLogger = SystemLogger::get();
 
-
+        /**
+         * Load the request into the app
+         */
         $this->request = Request::get();
         /**
          * Set up the appLogger
@@ -106,14 +106,17 @@ class App extends CommonApp implements AppInterface
         $this->coreLogger->info("The app logger has been created");
 
         /**
-         * Load the Config Database
+         * Move the Config Database
          */
-        $configDSN = "sqlite:" . APPCONFIGDBPATH;
-        new ConfigDatabase($configDSN);
+        $oldPath = APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "config.db";
+        if (File::exists($oldPath)) {
+            File::copy($oldPath, APPCONFIGDBPATH);
+            File::delete($oldPath);
+        }
 
-        /**
-         * Load the request into the app
-         */
+        //new ConfigDatabase($configDSN);
+
+
         $this->loadConfig();
     }
 
@@ -296,7 +299,9 @@ class App extends CommonApp implements AppInterface
         if ($this->route->getControler() != 'Logout' && $this->route->getControler() != 'Img' && $this->route->getControler() != 'Mobile' && $this->route->getControler() != 'Js') {
             if (!isset($this->user) or $this->user === null or $this->user->authenticated === false) {
                 $this->logger->warning('user not logged in');
-                // Change route to login if not logged in.
+                /**
+                 * Change route to login if not logged in.
+                 */
                 $this->controller = new Login($this);
                 $this->appOutput->appendBody($this->controller->index());
                 return;
