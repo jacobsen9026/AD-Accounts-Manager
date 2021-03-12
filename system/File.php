@@ -108,7 +108,7 @@ abstract class File
         $fileDir = substr($filepath, 0, strrpos($filepath, DIRECTORY_SEPARATOR));
 
         if (!file_exists($filepath)) {
-            var_dump($fileDir);
+            //var_dump($fileDir);
             self::createDirectory($fileDir);
 
             touch($filepath);
@@ -117,17 +117,16 @@ abstract class File
 
     }
 
-    public
-    static function createDirectory(string $dir)
+    public static function createDirectory(string $dir)
     {
         $parentDir = substr($dir, 0, strrpos($dir, DIRECTORY_SEPARATOR));
-        var_dump($parentDir);
+        //var_dump($parentDir);
         if (!file_exists($parentDir)) {
             self::createDirectory($parentDir);
         }
-        var_dump("Parent exists");
+        //var_dump("Parent exists");
         if (!file_exists($dir)) {
-            var_dump("Making $dir");
+            //var_dump("Making $dir");
             if (!mkdir($dir)) {
                 if (!is_dir($dir)) {
                     return false;
@@ -140,8 +139,7 @@ abstract class File
 
     }
 
-    public
-    static function deleteFile($filepath)
+    public static function delete($filepath)
     {
         if (file_exists($filepath)) {
             return unlink($filepath);
@@ -149,8 +147,7 @@ abstract class File
         return true;
     }
 
-    public
-    static function getContents($filepath)
+    public static function getContents($filepath)
     {
         SystemLogger::get()->debug($filepath);
         if (file_exists($filepath)) {
@@ -161,16 +158,14 @@ abstract class File
         }
     }
 
-    public
-    static function getMaximumUploadSize()
+    public static function getMaximumUploadSize()
     {
-        return ini_get('upload_max_filesize');
+        return Post::getMaxUploadSize();
     }
 
-    public
-    static function exists(string $liveFile)
+    public static function exists(string $path)
     {
-        return file_exists($liveFile);
+        return file_exists($path);
     }
 
     public
@@ -250,6 +245,11 @@ abstract class File
             return md5_file($sourceFile);
         }
         return null;
+    }
+
+    public static function copy(string $oldPath, string $newPath)
+    {
+        copy($oldPath, $newPath);
     }
 
 
