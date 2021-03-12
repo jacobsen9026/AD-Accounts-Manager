@@ -45,18 +45,22 @@ class UploadedFile
     private $error;
     private $fileSize;
 
-    public function __construct(array $rawFileUpload)
+    public function __construct(?array $rawFileUpload)
     {
-        $logger = SystemLogger::get();
-        $logger->debug($rawFileUpload);
-        $this->name = $rawFileUpload["name"];
-        $this->type = $rawFileUpload["type"];
-        if ($this->type === '') {
-            $this->type = explode(".", $this->name)[1];
+        if ($rawFileUpload !== null) {
+
+
+            $logger = SystemLogger::get();
+            $logger->debug($rawFileUpload);
+            $this->name = $rawFileUpload["name"];
+            $this->type = $rawFileUpload["type"];
+            if ($this->type === '') {
+                $this->type = explode(".", $this->name)[1];
+            }
+            $this->tempFileName = $rawFileUpload["tmp_name"];
+            $this->error = $rawFileUpload["error"];
+            $this->fileSize = $rawFileUpload["size"];
         }
-        $this->tempFileName = $rawFileUpload["tmp_name"];
-        $this->error = $rawFileUpload["error"];
-        $this->fileSize = $rawFileUpload["size"];
     }
 
     public function getName()
