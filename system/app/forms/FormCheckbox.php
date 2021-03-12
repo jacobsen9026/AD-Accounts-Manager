@@ -31,7 +31,30 @@ namespace System\App\Forms;
  *
  * @author cjacobsen
  */
-class FormCheckbox extends FormElement
+class FormCheckbox extends FormElement implements FormElementInterface
 {
-    //put your code here
+    /**
+     * FormCheckbox constructor.
+     * @param string $label
+     * @param string $subLabel
+     * @param string $name
+     * @param string $value
+     */
+    public function __construct($label = '', $subLabel = '', $name = '', $value = '')
+    {
+        parent::__construct($label, $subLabel, $name, $value);
+        $this->small();
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getElementHTML()
+    {
+        $html = ' <input class="form-check-input" type="checkbox" value="' . $this->getValue() . '" id="' . $this->getId() . '">';
+        return $html;
+    }
+
+
 }
