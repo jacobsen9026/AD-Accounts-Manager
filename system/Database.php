@@ -45,16 +45,14 @@ class Database
 {
 
 
-    /** @var Database|null */
-    public static $instance;
     /**
      *
      * @var DatabaseLogger
      */
     public $logger;
     /** @var PDO Description */
-    private $db;
-    private $dsn;
+    protected $db;
+    protected $dsn;
 
     /**
      * Database constructor.
@@ -63,75 +61,19 @@ class Database
      */
     public function __construct($dsn)
     {
-        self::$instance = $this;
+
         $this->logger = DatabaseLogger::get();
         $this->dsn = $dsn;
-        $this->connect($dsn);
     }
 
-    public function connect($dsn)
+    public function connect()
     {
-        /*
-         * If the db file doesn't exist we want to seed it after we connect
-         */
-        if (!file_exists(APPCONFIGDBPATH)) {
-            $seedDatabse = true;
-        }
-        $this->logger->info("connecting " . APPCONFIGDBPATH);
-        /**
-         * Connect to database, will create file if it doesn't already exist
-         */
-        $this->db = new PDO($dsn, null, null, [
+
+        $this->db = new PDO($this->dsn, null, null, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false
         ]);
-        /*
-         * Seed if first connection
-         */
-        if (!empty($seedDatabse)) {
-            $this->seedDatabase();
-        }
-        /**
-         *  activate use of foreign key constraints
-         */
-        $this->db->exec('PRAGMA foreign_keys = ON;');
-    }
-
-    private function seedDatabase()
-    {
-        $this->logger->debug("Seeding the configuration database.");
-        /*
-         * Load in DB Schema from file
-         */
-        $query = file_get_contents(APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "seeds" . DIRECTORY_SEPARATOR . "Config.sql");
-        $this->db->exec($query);
-        /*
-         * Seed the Grade Definitions Table
-         */
-        $query = file_get_contents(APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "seeds" . DIRECTORY_SEPARATOR . "GradeDefinitions.sql");
-        $this->db->exec($query);
-        /*
-         * Seed Tables
-         */
-        $query = 'INSERT INTO App DEFAULT VALUES';
-        $this->db->exec($query);
-    }
-
-    /**
-     *
-     * @return Database|null
-     * @throws CoreException
-     */
-    public static function get()
-    {
-
-        if (self::$instance !== null) {
-            return self::$instance;
-
-        }
-
-        throw new CoreException("Trying to get database before one is connected");
 
     }
 
@@ -208,7 +150,14 @@ class Database
 
     public function prepare($query)
     {
-        $this->db->prepare($query);
+        try {
+            $this->db->prepare($query);
+        } catch (\PDOException $ex) {
+            if (strpos($ex->getMessage(), "syntax error")) {
+                DatabaseLogger::get()->error("Syntax error for query: " . $query);
+
+            }
+        }
     }
 
     /**
@@ -230,6 +179,38 @@ class Database
             $tables[] = $tableName["name"];
         }
         return $tables;
+    }
+
+    public function disableForeignKeyConstraints()
+    {
+
+        $this->db->exec('PRAGMA foreign_keys = OFF;');
+    }
+
+    public function enableForeignKeyConstraints()
+    {
+
+        $this->db->exec('PRAGMA foreign_keys = ON;');
+    }
+
+    private function seedDatabase()
+    {
+        $this->logger->debug("Seeding the configuration database.");
+        /*
+         * Load in DB Schema from file
+         */
+        $query = file_get_contents(APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "seeds" . DIRECTORY_SEPARATOR . "Config.sql");
+        $this->db->exec($query);
+        /*
+         * Seed the Grade Definitions Table
+         */
+        $query = file_get_contents(APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "seeds" . DIRECTORY_SEPARATOR . "GradeDefinitions.sql");
+        $this->db->exec($query);
+        /*
+         * Seed Tables
+         */
+        $query = 'INSERT INTO App DEFAULT VALUES';
+        $this->db->exec($query);
     }
 
 }
