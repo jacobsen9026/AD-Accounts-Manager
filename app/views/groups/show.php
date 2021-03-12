@@ -2,7 +2,7 @@
 
 use App\Models\View\CardPrinter;
 
-use App\Models\District\Group;
+use App\Models\Domain\Group;
 
 /* @var $group Group */
 $group = $this->group;

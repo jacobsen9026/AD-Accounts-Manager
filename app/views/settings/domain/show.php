@@ -8,14 +8,14 @@ use System\App\Forms\Form;
 use System\App\Forms\FormFloatingButton;
 use System\App\Forms\FormSlider;
 use System\Encryption;
-use App\Models\District\Domain;
+use App\Models\Domain\Domain;
 use System\App\Forms\FormButton;
 use System\App\Forms\FormHTML;
 use System\Lang;
 
 
-/* @var $district Domain */
-/** @var Domain $district */
+/* @var $domain Domain */
+/** @var Domain $domain */
 $domain = $this->domain;
 
 $adTestResult = ADConnection::isConnected();
@@ -27,13 +27,8 @@ if (!$adTestResult) {
 //var_dump($adTestResult);
 ?>
 
-<div id="districtOutput" class="container-fluid bg-white shadow p-3 mt-0 pb-5 mb-5">
-    <div class="mb-3">
-        <strong><?= Lang::get('Domain Setup') ?>
-        </strong>
+<div id="districtOutput">
 
-
-    </div>
 
     <?php
     $form = new Form('/settings/domain/edit/' . $domain->getId(), 'editDistrict');
@@ -94,10 +89,10 @@ if (!$adTestResult) {
     $adUseTLS = new FormSlider('Use TLS',
         'Requires web server configuration',
         'useTLS',
-        $useTLS);
+        (int)$useTLS);
 
-    $adUseTLS->addOption('No', 0, !$useTLS)
-        ->addOption('Yes', 1, $useTLS)
+    $adUseTLS->addOption('No', 0)
+        ->addOption('Yes', 1)
         ->tiny();
 
 
@@ -154,6 +149,6 @@ if (!$adTestResult) {
 
     <?php
     ?>
-
-
 </div>
+
+
