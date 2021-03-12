@@ -39,6 +39,7 @@ class Modal extends ViewModel
     private $body;
     private $theme;
     private $size;
+    private string $bodyClasses = '';
 
     /**
      * Modal constructor.
@@ -87,7 +88,7 @@ class Modal extends ViewModel
                 <button type="button" class="close text-light" data-dismiss="modal">&times;</button>
 
             </div>
-            <div class="modal-body text-center">' . $this->getBody() . '</div>
+            <div class="modal-body text-center' . $this->bodyClasses . '">' . $this->getBody() . '</div>
 
         </div>
 
@@ -147,6 +148,12 @@ class Modal extends ViewModel
     public function setBody($body)
     {
         $this->body = $body;
+        return $this;
+    }
+
+    public function addBodyClass(string $string)
+    {
+        $this->bodyClasses .= ' ' . $string;
         return $this;
     }
 
