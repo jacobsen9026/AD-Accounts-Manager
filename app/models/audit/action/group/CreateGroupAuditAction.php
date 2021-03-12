@@ -5,7 +5,7 @@ namespace App\Models\Audit\Action\Group;
 
 
 use App\Models\Audit\Action\AuditAction;
-use App\Models\District\DomainGroup;
+use App\Models\Domain\DomainGroup;
 
 class CreateGroupAuditAction extends AuditAction
 {
