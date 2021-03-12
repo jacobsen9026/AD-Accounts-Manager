@@ -179,9 +179,9 @@ abstract class PermissionMapDatabase extends DatabaseModel
         }
     }
 
-    public static function get()
+    public static function get($id = null)
     {
-        return parent::get();
+        return parent::get($id);
 
     }
 
