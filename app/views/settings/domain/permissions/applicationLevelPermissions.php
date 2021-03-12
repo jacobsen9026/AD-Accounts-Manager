@@ -24,7 +24,7 @@
  */
 
 use App\Models\View\PermissionMapPrinter;
-use App\Models\District\Domain;
+use App\Models\Domain\Domain;
 
 /* @var $domain Domain */
 $domain = $this->domain;
@@ -32,6 +32,4 @@ $domain = $this->domain;
 
     <h4 class="mb-3">Application Level Permissions</h4>
 <?php
-//;
 echo PermissionMapPrinter::printOUPermissions($domain->getAdBaseDN());
-//echo PermissionMapPrinter::printDistrictPermissions($domain->getId());
