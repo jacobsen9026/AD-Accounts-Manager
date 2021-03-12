@@ -179,6 +179,8 @@ class FormElement
         if ($this instanceof FormButton) {
             $this->setType("button");
         }
+        $this->setDataTarget('#' . $modal->getId());
+        $this->setDataToggle('modal');
         $this->modal[] = $modal;
         return $this;
     }
@@ -375,8 +377,12 @@ class FormElement
         $html = $this->printHeader() . "\n";
 
         if ($this->hideLabels === false && $this instanceof FormTextArea === false) {
-            $html .= $this->printLabel() . "\n";
+            if ($this instanceof FormUpload) {
+            } else {
+                $html .= $this->printLabel() . "\n";
+            }
             $html .= $this->printSubLabel() . "\n";
+
         }
         $html .= $this->getElementHTML() . "\n";
         $html .= $this->printScript() . "\n";
