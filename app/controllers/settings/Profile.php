@@ -34,6 +34,9 @@ namespace App\Controllers\Settings;
 
 use App\App\App;
 use App\Controllers\Controller;
+use App\Models\User\NotificationOptions;
+use System\App\UserLogger;
+use System\Post;
 
 class Profile extends Controller
 {
@@ -53,9 +56,19 @@ class Profile extends Controller
     public function indexPost()
     {
 
-        $this->user->setTheme(\system\Post::get('theme'));
+        $this->user->setTheme(Post::get('theme'));
+        $this->user->setEmail(Post::get('email'));
+        $options = new NotificationOptions();
+        $options->setUserChange(Post::get('notify_user_changes'));
+        $options->setUserDisable(Post::get('notify_user_enable'));
+        $options->setUserCreate(Post::get('notify_user_create'));
+        $options->setGroupChange(Post::get('notify_group_change'));
+        $options->setGroupCreate(Post::get('notify_group_create'));
+        UserLogger::get()->debug($options);
+        $this->user->setNotificationOptions($options);
         $this->user->save();
-        return $this->view('/settings/profile');
+        $this->redirect('/settings/profile');
+        //return $this->view('/settings/profile');
     }
 
 }
