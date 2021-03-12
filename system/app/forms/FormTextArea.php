@@ -38,6 +38,13 @@ class FormTextArea extends FormElement implements FormElementInterface
     protected $placeholder;
     protected $value;
 
+
+    public function __construct($label = '', $subLabel = '', $name = '', $value = '')
+    {
+        parent::__construct($label, $subLabel, $name, $value);
+        $this->addElementClasses('form-element-textarea');
+    }
+
     public function getResizable()
     {
         return $this->resizable;
