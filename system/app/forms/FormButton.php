@@ -39,10 +39,13 @@ use App\Models\View\Modal;
 class FormButton extends FormElement implements FormElementInterface
 {
 
-    private $theme = "primary";
-    private $type = 'submit';
+    protected string $dataToggle = '';
+    protected string $dataTarget = '';
+    protected string $dataTextAlt = '';
 
 //put your code here
+    private $theme = "primary";
+    private $type = 'submit';
 
     /**
      *
@@ -74,10 +77,16 @@ class FormButton extends FormElement implements FormElementInterface
         $this->addInputClasses(['btn-' . $this->getTheme(), $textClass]);
         $html = '<div id="' . $this->getId() . '_Button_container" >
         <button id="' . $this->getId() . '" type="' . $this->getType() . '" class="' . $this->getInputClasses() . '"';
-        if ($this->getModal() != null) {
-            $html .= ' data-toggle="modal" data-target="#' . $this->getModal()->getId() . '" ';
-            //$html .= ' data-toggle="modal" data-target="#exampleModal" ';
+        if ($this->dataToggle != null) {
+            $html .= ' data-toggle="' . $this->dataToggle . '"';
         }
+        if ($this->dataTarget != null) {
+            $html .= ' data-target="' . $this->dataTarget . '" ';
+        }
+        if ($this->dataTextAlt != null) {
+            $html .= ' data-text-alt="' . $this->dataTextAlt . '" ';
+        }
+
         $html .= '>'
             . $this->getName() .
             '</button></div>';
@@ -124,7 +133,7 @@ class FormButton extends FormElement implements FormElementInterface
      *
      * @return $this
      */
-    public function buildModal($modalTitle, $modalBody, $modalTheme)
+    public function buildModal($modalTitle, $modalBody, $modalTheme = 'primary')
     {
         $modal = new Modal();
         $modal->setTitle($modalTitle)
@@ -176,6 +185,24 @@ class FormButton extends FormElement implements FormElementInterface
         $function = Javascript::buildClientRequest($url, $data);
         $script = Javascript::on($this->getId(), $function);
         $this->setScript($script);
+        return $this;
+    }
+
+    public function setDataToggle(string $string)
+    {
+        $this->dataToggle = $string;
+        return $this;
+    }
+
+    public function setDataTarget(string $string)
+    {
+        $this->dataTarget = $string;
+        return $this;
+    }
+
+    public function setDataTextAlt(string $string)
+    {
+        $this->dataTextAlt = $string;
         return $this;
     }
 
