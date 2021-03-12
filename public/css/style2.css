@@ -45,15 +45,6 @@ and open the template in the editor.
     }
 }
 
-.district-nav {
-
-    top: 3.5rem !important;
-}
-
-.district-settings-nav {
-    z-index: 1019;
-    top: 7rem !important;
-}
 
 .minw-1 {
     width: 1em;
@@ -90,17 +81,16 @@ and open the template in the editor.
 }
 
 .shadow-lg-hover:hover {
-    box-shadow: 0 0rem 10rem rgba(0, 0, 0, .375) !important;
+    box-shadow: 0 0 10rem rgba(0, 0, 0, .375) !important;
 }
 
 .floating-form-button {
     right: 0;
-    bottom: -200;
+    bottom: -200px;
     -webkit-transition: all 0.2s;
     -o-transition: all 0.2s;
     -moz-transition: all 0.2s;
     transition: all 0.2s;
-    transition-timing-function: cubic-bezier();
 }
 
 .floating-form-button.show {
@@ -126,6 +116,17 @@ and open the template in the editor.
 .form-element {
     margin-bottom: 2em;
 }
+
+.form-element-text {
+
+    display: grid;
+    vertical-align: middle;
+}
+
+.text-small {
+    font-size: 12px !important;
+}
+
 
 @media only screen and (min-width: 576px) {
     .form-element {
@@ -207,7 +208,7 @@ and open the template in the editor.
 
 .permissionCountBadge p {
     left: -0.75em;
-    top: 0px;
+    top: 0;
     position: relative;
     margin-top: -4.75px;
 }
