@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Models\District;
+namespace App\Models\Domain;
 
 
 use App\Models\Model;
@@ -27,8 +27,8 @@ class ADModel extends Model
     {
         if (array_key_exists($attributeName, $this->activeDirectory->getAttributes())) {
             $attribute = $this->activeDirectory->getAttributes()[$attributeName];
-            if(is_array($attribute)){
-                $attribute=$attribute[0];
+            if (is_array($attribute)) {
+                $attribute = $attribute[0];
             }
             return $attribute;
         }
