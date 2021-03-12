@@ -44,6 +44,7 @@ class Updater
     protected string $backupPath;
     protected int $updateFileCount;
     protected $progressFilePath;
+    protected string $completionMessage;
 
     /**
      * Update constructor.
@@ -76,7 +77,7 @@ class Updater
         } catch (CoreException $e) {
             $this->logger->warning($e);
         }
-        File::deleteFile($this->progressFilePath);
+        File::delete($this->progressFilePath);
 
     }
 
@@ -134,12 +135,14 @@ class Updater
                 $this->deleteDownloadedUpdate();
             }
             if ($simulation) {
-                $successMessage = 'Simulation completed without error!';
+                $this->completionMessage = 'Simulation completed without error!';
             } else {
-                $successMessage = "Application was successfully updated to version {$this->latestUpdate->version}<br> Please refresh your browser at this point.";
+                $this->completionMessage = "Application was successfully updated to version {$this->latestUpdate->version}<br> Please refresh your browser at this point.";
 
             }
-            return $successMessage;
+            $this->logger->info($this->completionMessage);
+            $ajax['html'] = $successMessage;
+            return $ajax;
         }
 
         $this->logger->info("There is no update available");
@@ -250,41 +253,24 @@ class Updater
         /**
          * Initialize some counters for progress tracking
          */
-        $fileIndex = 1;
+        $fileIndex = 0;
         $statusRefreshCounter = 0;
         /**
          * Set the starting progress
          */
-        $this->refreshUpdateStatus($progressTitle, $progressMessage, ($fileIndex / $this->updateFileCount) * 100);
+        //$this->refreshUpdateStatus($progressTitle, $progressMessage, ($fileIndex / $this->updateFileCount) * 100);
         /**
          * Loop recursively through the extract directory
          */
         foreach (new RecursiveIteratorIterator($dir) as $file) {
             $this->updateFile($file, $simulation);
+            $fileIndex++;
+            //$this->refreshUpdateStatus($progressTitle, $progressMessage, ($fileIndex / $this->updateFileCount) * 100);
 
         }
 
         $this->logger->debug("Total Files Processed: " . $fileIndex);
         return true;
-    }
-
-    /**
-     * Writes an update_progress.json file in
-     * the configured tempFilePath to track the
-     * progress of the update.
-     *
-     * @param string $title
-     * @param string $message
-     * @param int|null $progress
-     */
-    protected function refreshUpdateStatus(string $title, string $message, int $progress = null): void
-    {
-        $json = ["title" => $title, "message" => $message];
-        if (!is_null($progress)) {
-            $json["progress"] = $progress;
-        }
-        $this->logger->debug($json);
-        File::overwriteFile($this->progressFilePath, json_encode($json));
     }
 
     protected function updateFile(SplFileInfo $file, bool $simulation = true)
@@ -295,6 +281,7 @@ class Updater
          * from each file path
          */
         $pathname = str_replace([$this->extractPath . DIRECTORY_SEPARATOR], "", $file->getPathname());
+        $path = str_replace([$this->extractPath . DIRECTORY_SEPARATOR], "", $file->getPath());
         $filename = basename($pathname);
         /**
          * Skip those pesky dots
@@ -306,10 +293,9 @@ class Updater
              */
             $pathname = str_replace("\\", "/", $pathname);
             $liveFile = ROOTPATH . DIRECTORY_SEPARATOR . $pathname;
-
-            //var_dump($liveFile);
+            $liveFolder = ROOTPATH . DIRECTORY_SEPARATOR . $path;
             /**
-             * Lets check to see if the destionation file would exist and
+             * Lets check to see if the destination file would exist and
              * if so we should make sure that is a file we should be overwriting.
              *
              * AKA Not on exclude list or identical to update file.
@@ -321,9 +307,6 @@ class Updater
                         copy($file->getPathname(), $liveFile);
                         $this->logger->debug("file: $liveFile");
                     }
-                } else {
-                    //$this->logger->debug("$liveFile skipped");
-
                 }
 
             } else {
@@ -331,13 +314,17 @@ class Updater
                  * Otherwise the update file does not yet exist on this live install
                  * so we can just copy the update file over
                  */
-                //$this->logger->debug("Will create $liveFile");
-                if (!$simulation) {
-                    if (!is_dir($file->getPath())) {
-                        mkdir($file->getPath());
+                if (!File::exists($liveFolder)) {
+                    $this->logger->debug($liveFolder . " selected for folder creation");
+                    if (!$simulation) {
+
+                        mkdir($liveFolder);
                     }
+                }
+                $this->logger->debug("Will create $liveFile");
+                if (!$simulation) {
                     copy($file->getPathname(), $liveFile);
-                    $this->logger->debug("Created file: $pathname");
+                    $this->logger->debug($pathname . "selected for creation");
                 }
             }
 
@@ -413,7 +400,7 @@ class Updater
     protected function deleteDownloadedUpdate(): bool
     {
         $this->logger->info("Deleting downloaded update");
-        if (File::deleteFile($this->downloadedFile)) {
+        if (File::delete($this->downloadedFile)) {
 
 
             return true;
@@ -550,6 +537,37 @@ class Updater
     public function setLatestUpdate(AvailableUpdate $latestUpdate): void
     {
         $this->latestUpdate = $latestUpdate;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompletionMessage(): string
+    {
+        return $this->completionMessage;
+    }
+
+    /**
+     * Writes an update_progress.json file in
+     * the configured tempFilePath to track the
+     * progress of the update.
+     *
+     * @param string $title
+     * @param string $message
+     * @param int|null $progress
+     */
+    protected function refreshUpdateStatus(string $title, string $message, int $progress = null): void
+    {
+        if ($this->lastProgress !== $progress) {
+            $this->lastProgress = $progress;
+
+            $json = ["title" => $title, "message" => $message];
+            if (!is_null($progress)) {
+                $json["progress"] = $progress;
+            }
+            $this->logger->debug($json);
+            File::overwriteFile($this->progressFilePath, json_encode($json));
+        }
     }
 
     /**
