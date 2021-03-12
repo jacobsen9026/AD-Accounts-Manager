@@ -41,9 +41,7 @@ use System\App\RequestRedirection;
 use System\Common\CommonController;
 use App\Models\User\User;
 use System\App\AppLogger;
-use App\Models\Database\DomainDatabase;
 use App\App\App;
-use App\Models\District\Domain;
 
 class Controller extends CommonController
 {
@@ -55,9 +53,6 @@ class Controller extends CommonController
     /** @var User|null The system logger */
     public $user;
 
-
-    /** @var Domain The domain */
-    public $domain;
 
     /**
      *
@@ -76,13 +71,6 @@ class Controller extends CommonController
         $this->layout = "default";
     }
 
-    /**
-     * public function preProcessDistrictID($districtID)
-     * {
-     * $this->districtID = $districtID;
-     * $this->domain = DomainDatabase::getDomain($this->districtID);
-     * }
-     */
 
     /**
      *
