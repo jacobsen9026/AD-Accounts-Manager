@@ -34,8 +34,8 @@ namespace App\Models\View;
 
 use App\Api\AD;
 use App\Models\Database\DomainDatabase;
-use App\Models\District\DomainGroup;
-use App\Models\District\DomainUser;
+use App\Models\Domain\DomainGroup;
+use App\Models\Domain\DomainUser;
 use App\Models\User\User;
 use App\App\App;
 use System\App\Forms\Form;
@@ -756,7 +756,7 @@ abstract class CardPrinter extends ViewModel
         $output .= '<div class="row"><div class="col">';
 
         $output .= '<h5 class="position-relative d-inline card-title text-center p-5- m-5" style="left:0.5em">' . $group->activeDirectory->getName() . '</h5>';
-        $output .= self::printGroupParents($group);
+        //$output .= self::printGroupParents($group);
         if (PermissionHandler::hasPermission($group->getOU(), PermissionLevel::GROUPS, PermissionLevel::GROUP_DELETE)) {
             $output .= self::printDeleteGroupButton($group);
         }
@@ -777,28 +777,6 @@ abstract class CardPrinter extends ViewModel
 
         $output .= '</div>';
         return $output;
-    }
-
-    private
-    static function printGroupParents(DomainGroup $group)
-    {
-        $parents = $group->getParents();
-        if (!empty($parents)) {
-
-
-            $output = '<div class="position-fixed w-100"><div class="row"><div class="clickable" data-toggle="collapse" data-target="#parentGroupsCollapse" data-text-alt="<i class=\'fas fa-caret-down\'></i>"><i class="fas fa-caret-right"></i></div>'
-                . '<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 h6 text-left">Parent Groups</div></div>';
-            $output .= '<div class="collapse text-left w-50" id="parentGroupsCollapse">';
-            foreach ($parents as $parent) {
-
-                $output .= '<div class="row bg-white" style="z-index:50"><div class="col-xl-2 col-lg-3 col-md-4 col-sm-6"><a href="/groups/search/' . $parent . '">' . $parent . '</a></div></div>';
-
-
-            }
-            $output .= '</div></div>';
-            return $output;
-        }
-        return '';
     }
 
     private
@@ -881,6 +859,28 @@ abstract class CardPrinter extends ViewModel
                 }
 
             }
+            return $output;
+        }
+        return '';
+    }
+
+    private
+    static function printGroupParents(DomainGroup $group)
+    {
+        $parents = $group->getParents();
+        if (!empty($parents)) {
+
+
+            $output = '<div class="position-fixed w-100"><div class="row"><div class="clickable" data-toggle="collapse" data-target="#parentGroupsCollapse" data-text-alt="<i class=\'fas fa-caret-down\'></i>"><i class="fas fa-caret-right"></i></div>'
+                . '<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 h6 text-left">Parent Groups</div></div>';
+            $output .= '<div class="collapse text-left w-50" id="parentGroupsCollapse">';
+            foreach ($parents as $parent) {
+
+                $output .= '<div class="row bg-white" style="z-index:50"><div class="col-xl-2 col-lg-3 col-md-4 col-sm-6"><a href="/groups/search/' . $parent . '">' . $parent . '</a></div></div>';
+
+
+            }
+            $output .= '</div></div>';
             return $output;
         }
         return '';
