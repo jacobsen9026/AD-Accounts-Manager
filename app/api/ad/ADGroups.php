@@ -78,10 +78,6 @@ class ADGroups extends ADApi
         return $groupNames;
     }
 
-    public static function createGroup(\App\Models\District\AddDistrictGroup $param)
-    {
-
-    }
 
     public static function getChildren(?string $distinguishedName)
     {
@@ -122,8 +118,8 @@ class ADGroups extends ADApi
             throw new AppException('That group was not found.', AppException::GROUP_NOT_FOUND);
         }
         if (!PermissionHandler::hasPermission(self::getOUFromDN($group->getDistinguishedName()), PermissionLevel::GROUPS, PermissionLevel::GROUP_READ)) {
-            throw new AppException('That group was not found.', AppException::FAIL_GROUP_READ_PERM);
-
+            //throw new AppException('That group was not found.', AppException::FAIL_GROUP_READ_PERM);
+            return false;
         }
         return $group;
     }
