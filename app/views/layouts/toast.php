@@ -29,6 +29,12 @@
     <script>
 
         $(".toast").toast({'animation': true, 'autohide': true, 'delay': <?=$params['timeout']?>});
+        <?php
+        if($params['shown']){
+        ?>
         $(".toast").toast("show");
+        <?php
+        }
+        ?>
     </script>
 </div>
