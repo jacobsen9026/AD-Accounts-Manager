@@ -38,7 +38,7 @@ abstract class Encryption
 
     //Varible for the cipher for changing as PHP updates openssl cipher lists
     const CIPHER = "aes-256-cbc";
-    const KEY_PATH = CONFIGPATH . DIRECTORY_SEPARATOR . "private.key";
+    const KEY_PATH = WRITEPATH . "private.key";
     static protected $key = '';
 
     /**
