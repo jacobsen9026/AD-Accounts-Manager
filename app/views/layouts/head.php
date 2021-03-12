@@ -129,17 +129,19 @@
 
         //Custom JQuery to enable data-text-alt tag on btn class objects
         jQuery(function ($) {
-            $('[data-toggle="collapse"]').on('click', function () {
+            /*
+            $('[data-toggle="collapse"]').on('click', function (e) {
                 if ($(this).data('text-alt') != undefined && $(this).data('text-alt') != '') {
                     <?=Javascript::debug('collapse')?>
                     console.log($(this).data('text-alt'));
-                    $(this).data('text-original', $(this).text());
-                    $(this).text($(this).data('text-alt'));
+                    $(this).data('text-original', $(this).html());
+                    $(this).html($(this).data('text-alt'));
                     $(this).data('text-alt', $(this).data('text-original'));
                 }
             });
 
-            $(document).on('click', '[data-text-alt]', function () {
+*/
+            $(document).on('click', '[data-text-alt]', function (e) {
                 <?=Javascript::debug('collapse2')?>
                 console.log($(this).data('text-alt'));
                 $(this).data('text-original', $(this).html());
