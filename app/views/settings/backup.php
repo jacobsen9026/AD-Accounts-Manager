@@ -28,11 +28,13 @@
 use System\App\Forms\Form;
 use System\App\Forms\FormButton;
 use System\App\Forms\FormUpload;
+use system\Header;
 
 $downloadBackupButton = new FormButton('Download Full Backup');
 $downloadBackupButton->addClientRequest('/api/settings/export/full');
-$importForm = new Form('/api/settings/import/full');
+$importForm = new Form('/settings/import/full');
 $importButton = new FormUpload('', 'Import Full Backup', 'backup_upload');
+$importButton->acceptedTypes(Header::APPLICATION_JSON);
 $importForm->addElementToCurrentRow($importButton);
 echo $downloadBackupButton->getElementHTML();
 ?>
