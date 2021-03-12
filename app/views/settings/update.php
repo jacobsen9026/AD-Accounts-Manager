@@ -42,7 +42,7 @@ $updater = new AppUpdater();
 $availableVersion = 'Running the latest version!';
 $latestVersion = '';
 $latestUpdate = $updater->getLatestUpdateFromURL();
-if ($latestUpdate->version > App::$version) {
+if ($latestUpdate->version > App::$version || App::inDebugMode()) {
     $latestVersion = $updater->getLatestVersion();
     $availableVersion = 'Verison: ' . $latestVersion . ' is available.';
 }
@@ -61,10 +61,11 @@ $updateModal->setTitle('Update App')
 $simulationSlider = new FormSlider('Simulation Mode', '', 'simulationMode', 0);
 $simulationSlider->addOption('Real Update', 0, true)
     ->addOption('Simulation', 1, false);
-
+/*
 if (!App::inDebugMode()) {
     $simulationSlider->hidden();
 }
+*/
 
 $action = new FormText('', '', 'action', 'updateApp');
 $action->hidden();
@@ -73,7 +74,7 @@ $action->hidden();
 $updateButton = new FormButton('Update to v' . $latestVersion);
 $updateButton->tiny()
     ->addElementClasses('mt-5')
-    ->addAJAXRequest('/api/update', 'settingsOutput', $updateForm);
+    ->addAJAXRequest('/api/update', 'updateResultOutput', $updateForm);
 
 $updateForm->addElementToCurrentRow($simulationSlider)
     ->addElementToNewRow($action)
@@ -99,34 +100,39 @@ $updateModalButton->addModal($updateModal)
 <script>
     history.pushState(null, 'Update', '/settings/update');
 </script>
-<div class="w-auto d-inline-flex font-weight-bold p-3">
-    <?php echo $availableVersion; ?></div>
+<div id="updateResultOutput">
+    <div class="w-auto d-inline-flex font-weight-bold p-3">
+        <?php echo $availableVersion; ?></div>
 
+    <?php
+    if ($availableVersion !== 'Running the latest version!') {
+        echo $updateModalButton->print();
+
+    }
+    ?>
+</div>
 <?php
-if ($availableVersion !== 'Running the latest version!') {
-    echo $updateModalButton->print();
-
-}
-echo "</br>Current Schema Version: " . SchemaDatabase::getSchemaVersion();
-echo "</br>Available Schema Version: " . SchemaDatabase::getNextSchemaVersion();
-$updateSchemaForm = new Form('', 'updateSchema');
-$action = new FormText('', '', 'action', 'updateSchema');
-$action->hidden();
-$output = new \System\App\Forms\FormHTML('', '', 'updateSchemaOutput');
-$availableVersions = SchemaDatabase::getAvailableVersions();
-$availableDropdown = new FormDropdown('Available Versions', '', 'selectedVersion');
-$submit = new FormButton(Lang::get('Update'));
-$submit->addAJAXRequest('/api/settings/update', $output, $updateSchemaForm);
-foreach ($availableVersions as $availableVersion) {
-    $availableDropdown->addOption(new FormDropdownOption($availableVersion, $availableVersion));
-}
-
-$updateSchemaForm->addElementToNewRow($output)
-    ->addElementToNewRow($availableDropdown)
-    ->addElementToNewRow($action)
-    ->addElementToNewRow($submit);
-
-echo $updateSchemaForm->print();
-
+/**
+ * echo "</br>Current Schema Version: " . SchemaDatabase::getSchemaVersion();
+ * echo "</br>Available Schema Version: " . SchemaDatabase::getNextSchemaVersion();
+ * $updateSchemaForm = new Form('', 'updateSchema');
+ * $action = new FormText('', '', 'action', 'updateSchema');
+ * $action->hidden();
+ * $output = new \System\App\Forms\FormHTML('', '', 'updateSchemaOutput');
+ * $availableVersions = SchemaDatabase::getAvailableVersions();
+ * $availableDropdown = new FormDropdown('Available Versions', '', 'selectedVersion');
+ * $submit = new FormButton(Lang::get('Update'));
+ * $submit->addAJAXRequest('/api/settings/update', $output, $updateSchemaForm);
+ * foreach ($availableVersions as $availableVersion) {
+ * $availableDropdown->addOption(new FormDropdownOption($availableVersion, $availableVersion));
+ * }
+ *
+ * $updateSchemaForm->addElementToNewRow($output)
+ * ->addElementToNewRow($availableDropdown)
+ * ->addElementToNewRow($action)
+ * ->addElementToNewRow($submit);
+ *
+ * echo $updateSchemaForm->print();
+ */
 ?>
 
