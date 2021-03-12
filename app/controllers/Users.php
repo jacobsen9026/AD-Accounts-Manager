@@ -43,7 +43,7 @@ use App\Models\Audit\Action\User\ResetUserPasswordAuditAction;
 use App\Models\Audit\Action\User\SearchUserAuditAction;
 use App\Models\Audit\Action\User\UnlockUserAuditAction;
 use App\Models\Audit\Action\User\UploadUserPhotoAudtitAction;
-use App\Models\District\DomainUser;
+use App\Models\Domain\DomainUser;
 use App\Models\User\PermissionHandler;
 use App\Models\User\PermissionLevel;
 use App\Models\View\Toast;
@@ -76,7 +76,7 @@ class Users extends Controller
     {
 
         try {
-            $this->districtUser = $this->getUser($username);
+            $this->domainUser = $this->getUser($username);
         } catch (AppException $ex) {
             $possibleUsers = ADUsers::listUsers($username);
             AppLogger::get()->debug($possibleUsers);
@@ -85,7 +85,7 @@ class Users extends Controller
             }
             if (is_array($possibleUsers) && count($possibleUsers) == 1) {
                 return $this->redirect('/users/search/' . $possibleUsers[0]);
-                $this->districtUser = $this->getUser($possibleUsers[0]);
+                $this->domainUser = $this->getUser($possibleUsers[0]);
             } else {
                 return $this->view('users/list', $possibleUsers);
             }
