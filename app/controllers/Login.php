@@ -62,6 +62,11 @@ class Login extends Controller
         $this->layout = 'login';
     }
 
+    public function indexPost()
+    {
+        return $this->index();
+    }
+
     /**
      * Handle both display and processing of login page
      *
@@ -108,6 +113,7 @@ class Login extends Controller
 
                     /**
                      * Wasn't an attempt with local admin
+                     * Check if LDAP login is enabled
                      */
                     if (AuthDatabase::getLDAPEnabled()) {
                         try {
