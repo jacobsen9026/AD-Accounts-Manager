@@ -23,7 +23,8 @@ if (Request::get()->serverName == 'demo.adam-app.gq') {
     $demoToast->closable();
     echo $demoToast->printToast();
 }
-$action = App::get()->request->getUri();
+//$action = App::get()->request->getUri();
+$action = '/login';
 if (!Get::get('redirect') == false) {
     $action .= '?redirect=' . Get::get('redirect');
 }
