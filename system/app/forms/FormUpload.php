@@ -36,6 +36,7 @@ use App\Models\View\Javascript;
 class FormUpload extends FormElement implements FormElementInterface
 {
 
+    protected string $acceptedTypes = '*';
     /**
      * @var string
      */
@@ -64,7 +65,7 @@ $(".system-custom-file-input").on("change", function() {
 
 
         $html = ' <div class="system-custom-file' . $this->getElementClasses() . '">
-            <input type="file" class="system-custom-file-input ' . $this->getInputClasses() . '" id="' . $this->getId() . '" name="' . $this->getName() . '">
+            <input type="file" class="system-custom-file-input ' . $this->getInputClasses() . '" id="' . $this->getId() . '" name="' . $this->getName() . '" accept="' . $this->acceptedTypes . '">
             <label class="system-custom-file-label ' . $this->getLabelClasses() . '" for="' . $this->getId() . '">' . $this->getLabel() . '</label>
             ';
         $browseButton = new FormButton($this->browseButtonText, 'full');
@@ -84,6 +85,11 @@ $(".system-custom-file-input").on("change", function() {
     public function setBrowseButtonText(string $string)
     {
         $this->browseButtonText = $string;
+    }
+
+    public function acceptedTypes(string $string)
+    {
+        $this->acceptedTypes = $string;
     }
 
 }
