@@ -16,11 +16,11 @@ class Header
     {
 
         header('content-type: ' . $contentType);
-
+        if ($attachedFilename !== null) {
+            header('Content-Disposition: attachment; filename=' . $attachedFilename);
+        }
         if (!Core::inDebugMode()) {
-            if ($attachedFilename !== null) {
-                header('Content-Disposition: attachment; filename=' . $attachedFilename);
-            }
+
             if ($cache !== true) {
                 header('Pragma: no-cache');
                 header('Cache-Control: no-store, no-cache');
@@ -44,7 +44,7 @@ class Header
 
             exit();
         } else {
-            echo "Would have exited execution.";
+            //echo "Would have exited execution.";
             exit();
         }
     }
