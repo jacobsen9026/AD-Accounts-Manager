@@ -28,7 +28,7 @@ use App\Forms\FormText;
 use App\Models\View\Toast;
 use System\App\Forms\Form;
 
-/** @var \App\Models\District\DomainUser $object */
+/** @var \App\Models\Domain\DomainUser $object */
 $object = $params['object'];
 $form = new Form('/users/edit/' . $object->activeDirectory->getAccountName(), 'moveToOU');
 $action = new FormText("action");
