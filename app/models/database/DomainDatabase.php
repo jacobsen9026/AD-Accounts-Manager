@@ -33,9 +33,10 @@ namespace App\Models\Database;
  * @author cjacobsen
  */
 
+use App\App\ConfigDatabase;
 use System\App\AppLogger;
 use System\Database;
-use App\Models\District\Domain;
+use App\Models\Domain\Domain;
 use System\Encryption;
 use System\Traits\DomainTools;
 
@@ -52,7 +53,7 @@ class DomainDatabase extends DatabaseModel
      *
      * @return Domain
      */
-    public static function getDomain($domainID = 1)
+    public static function getDomain(int $domainID = 1)
     {
         $result = self::getDatabaseValue('*', $domainID);
         $domain = new Domain();
@@ -65,7 +66,11 @@ class DomainDatabase extends DatabaseModel
 
     }
 
-    public static function getAD_BaseDN($domainID = 1)
+    /**
+     * @param int $domainID
+     * @return mixed|string
+     */
+    public static function getAD_BaseDN(int $domainID = 1)
     {
         $result = self::getDatabaseValue('AD_BaseDN', $domainID);
         if ($result == "false") {
@@ -74,49 +79,85 @@ class DomainDatabase extends DatabaseModel
         return $result;
     }
 
-    public static function getAD_FQDN($domainID = 1)
+    /**
+     * @param int $domainID
+     * @return mixed|string
+     */
+    public static function getAD_FQDN(int $domainID = 1)
     {
         return self::getDatabaseValue('AD_FQDN', $domainID);
     }
 
-    public static function getADUsername($domainID = 1)
+    /**
+     * @param int $domainID
+     * @return mixed|string
+     */
+    public static function getADUsername(int $domainID = 1)
     {
 
         return self::getDatabaseValue('AD_Username', $domainID);
     }
 
-    public static function getADPassword($domainID = 1)
+    /**
+     * @param int $domainID
+     * @return string
+     */
+    public static function getADPassword(int $domainID = 1)
     {
         return (string)Encryption::decrypt(self::getDatabaseValue('AD_Password', $domainID));
     }
 
-    public static function setAD_FQDN($fqdn)
+    /**
+     * @param string $fqdn
+     * @return string
+     */
+    public static function setAD_FQDN(string $fqdn)
     {
         return self::updateDatabaseValue('AD_FQDN', $fqdn);
     }
 
-    public static function setAbbreviation($abbr)
+    /**
+     * @param string $abbr
+     * @return string
+     */
+    public static function setAbbreviation(string $abbr)
     {
         return self::updateDatabaseValue('Abbreviation', $abbr);
     }
 
-    public static function setADBaseDN($baseDN)
+    /**
+     * @param string $baseDN
+     * @return string
+     */
+    public static function setADBaseDN(string $baseDN)
     {
         return self::updateDatabaseValue('AD_BaseDN', $baseDN);
     }
 
-    public static function setADNetBIOS($netBIOS)
+    /**
+     * @param string $netBIOS
+     * @return string
+     */
+    public static function setADNetBIOS(string $netBIOS)
     {
         return self::updateDatabaseValue('AD_NetBIOS', $netBIOS);
     }
 
-    public static function setADUsername($username)
+    /**
+     * @param string $username
+     * @return string
+     */
+    public static function setADUsername(string $username)
     {
 
         return self::updateDatabaseValue('AD_Username', $username);
     }
 
-    public static function setADPassword($password)
+    /**
+     * @param string $password
+     * @return string
+     */
+    public static function setADPassword(string $password)
     {
 
 
@@ -128,16 +169,31 @@ class DomainDatabase extends DatabaseModel
         return $result;
     }
 
-    public static function setName($name)
+    /**
+     * @param string $name
+     * @return string
+     */
+    public static function setName(string $name)
     {
         return self::updateDatabaseValue('Name', $name);
     }
 
-    public static function getAD_UseTLS()
+    /**
+     * @param int $domainID
+     * @return mixed|string
+     */
+    public static function getAD_UseTLS(int $domainID = 1)
     {
-        return self::getDatabaseValue('AD_Use_TLS', 1);
+        $return = self::getDatabaseValue('AD_Use_TLS', $domainID);
+        if ($return == null) {
+            return false;
+        }
+        return $return;
     }
 
+    /**
+     * Initialize database if it doesn't exist
+     */
     public static function init()
     {
         if (self::get() === false) {
@@ -146,13 +202,21 @@ class DomainDatabase extends DatabaseModel
 
     }
 
-    public static function createDomain($name)
+    /**
+     * @param string $name
+     * @return array|bool
+     * @throws \System\App\AppException
+     */
+    public static function createDomain(string $name)
     {
         AppLogger::get()->debug("Creating new domain named: " . $name);
-        return Database::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (ID) VALUES (1)');
+        return ConfigDatabase::get()->query('INSERT INTO ' . self::TABLE_NAME . ' (ID) VALUES (1)');
     }
 
-    public static function setAD_UseTLS($useTLS)
+    /**
+     * @param bool $useTLS
+     */
+    public static function setAD_UseTLS(bool $useTLS)
     {
         self::updateDatabaseValue('AD_Use_TLS', $useTLS);
     }
