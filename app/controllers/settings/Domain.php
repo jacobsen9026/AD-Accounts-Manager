@@ -27,7 +27,7 @@
 namespace App\Controllers\Settings;
 
 /**
- * Description of District
+ * Description of Domain
  *
  * @author cjacobsen
  */
@@ -50,7 +50,7 @@ class Domain extends SettingsController
 
         parent::__construct($app);
 
-        $this->layout = 'default_blank';
+        //$this->layout = 'default_blank';
     }
 
 //put your code here
@@ -60,40 +60,49 @@ class Domain extends SettingsController
 
     }
 
-    public function edit($districtID = 1)
+    public function edit($domainID = 1)
     {
 
-        return $this->show($districtID);
+        return $this->show($domainID);
 
     }
 
-    public function show($districtID = 1)
+    public function show($domainID = 1)
     {
-        $this->districtID = $districtID;
-        $this->domain = DomainDatabase::getDomain($districtID);
+        $this->domainID = $domainID;
+        $this->domain = DomainDatabase::getDomain($domainID);
         return $this->view('settings/domain/show');
     }
 
-    public function permissions($districtID = 1)
+    public function setup($domainID = 1)
     {
-        $this->domain = DomainDatabase::getDomain($districtID);
+        $this->domainID = $domainID;
+        $this->domain = DomainDatabase::getDomain($domainID);
+        return $this->view('settings/domain/index');
+
+
+    }
+
+    public function permissions($domainID = 1)
+    {
+        $this->domain = DomainDatabase::getDomain($domainID);
         return $this->view('settings/domain/permissions');
     }
 
-    public function permissionsPost($districtID = 1)
+    public function permissionsPost($domainID = 1)
     {
         $post = Post::getAll();
         switch (Post::get('action')) {
             case 'updateDistrict':
 
-                $this->updateDistrict($post);
+                $this->updateDomain($post);
                 break;
             case 'deletePrivilege':
                 $this->deletePrivilegeLevel();
                 break;
 
             case 'addDistrictPermission':
-                $this->addDistrictPermission($districtID);
+                $this->addDomainPermission($domainID);
 
                 break;
             case 'addOUPermission':
@@ -109,7 +118,7 @@ class Domain extends SettingsController
                 $this->updatePrivilege($id);
                 break;
             case 'addPrivilege':
-                $this->addDistrictPrivilegeLevel();
+                $this->addDomainPrivilegeLevel();
                 break;
             case 'removePermission':
                 $this->removeOUPermission();
@@ -121,7 +130,7 @@ class Domain extends SettingsController
         $this->redirect('/settings/domain/permissions');
     }
 
-    private function updateDistrict($post = null)
+    private function updateDomain($post = null)
     {
 //var_dump($post);
         $name = Post::get('name');
@@ -132,8 +141,6 @@ class Domain extends SettingsController
         $adPassword = Post::get('adPassword');
         $adUsername = Post::get('adUsername');
         $useTLS = Post::get('useTLS');
-        //$this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getName(), $name));
-        //$this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAbbr(), $abbr));
         $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdNetBIOS(), $netBios));
         $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdFQDN(), $fqdn));
         $this->audit(new ChangeSettingAuditAction("District Name", $this->domain->getAdBaseDN(), $baseDN));
@@ -143,8 +150,6 @@ class Domain extends SettingsController
 
 
         $this->logger->info("Updating domain");
-        //$this->domain->setName($name);
-        //$this->domain->setAbbr($abbr)
         $this->domain->setAdFQDN($fqdn)
             ->setAdNetBIOS($netBios)
             ->setAdBaseDN($baseDN)
@@ -167,7 +172,7 @@ class Domain extends SettingsController
         return PrivilegeLevelDatabase::removePrivilegeLevel($id);
     }
 
-    private function addDistrictPermission($districtID = 1)
+    private function addDomainPermission($domainID = 1)
     {
 
 
@@ -226,12 +231,12 @@ class Domain extends SettingsController
         $privilege->saveToDatabase();
     }
 
-    public function addDistrictPrivilegeLevel($districtID = 1)
+    public function addDomainPrivilegeLevel($domainID = 1)
     {
         if (Post::get("ldapGroupName")) {
             $groupName = Post::get("ldapGroupName");
             $this->audit(new ChangeSettingAuditAction("Add Privilege Level", null, $groupName));
-            return PrivilegeLevelDatabase::addPrivilegeLevel(Post::get("ldapGroupName"), $districtID);
+            return PrivilegeLevelDatabase::addPrivilegeLevel(Post::get("ldapGroupName"), $domainID);
         }
     }
 
@@ -255,14 +260,13 @@ class Domain extends SettingsController
         $this->redirect('/settings/domain/edit');
     }
 
-    public function editPost($districtID = 1)
+    public function editPost($domainID = 1)
     {
-        $this->domain = DomainDatabase::getDomain($districtID);
+        $this->domain = DomainDatabase::getDomain($domainID);
         $post = Post::getAll();
-        //$this->preProcessDistrictID($districtID);
         switch (Post::get('action')) {
             case 'updateDistrict':
-                $this->updateDistrict($post);
+                $this->updateDomain($post);
                 return "Settings Saved";
 
             case 'remove':
@@ -271,7 +275,7 @@ class Domain extends SettingsController
                 PrivilegeLevelDatabase::removePrivilegeLevel($id);
                 break;
             case 'addPermission':
-                $this->addDistrictPermission($districtID);
+                $this->addDomainPermission($domainID);
 
                 break;
             case 'updatePrivilege':
@@ -280,12 +284,11 @@ class Domain extends SettingsController
                 break;
             default:
                 if (Post::get("ldapGroupName")) {
-                    PrivilegeLevelDatabase::addPrivilegeLevel(Post::get("ldapGroupName"), $districtID);
+                    PrivilegeLevelDatabase::addPrivilegeLevel(Post::get("ldapGroupName"), $domainID);
                 }
                 break;
         }
 
-//        $this->redirect('/settings/domain/edit/');
     }
 
 
