@@ -30,10 +30,10 @@ class AppUpdater extends Updater
     {
         if ($this->isUpdateAvailable()) {
             if (parent::update($simulation, $deleteDownload)) {
-                if ($this->updateConfigSchema($simulation)) {
-                    return true;
-                }
-                return false;
+                //if ($this->updateConfigSchema($simulation)) {
+                return true;
+                //}
+                //return false;
             }
         }
         return false;
