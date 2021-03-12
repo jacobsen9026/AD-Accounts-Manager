@@ -13,10 +13,15 @@ use App\Models\Database\AppDatabase;
         <div class="collapse navbar-collapse" id="navbarBrandText">
             <!-- Brand -->
             <a class="navbar-brand p-0" href="/">
+                <?php
+                if (AppDatabase::getAppIcon() !== '') {
+                    ?>
+                    <img style="max-height:50px"
+                         src="/img/logo/512x512.png"/>
+                    <?php
 
-                <img style="max-height:50px"
-                     src="/img/logo/512x512.png"/>
-                <?= AppDatabase::getAppName(); ?>
+                }
+                echo AppDatabase::getAppName(); ?>
             </a>
         </div>
 
@@ -27,9 +32,15 @@ use App\Models\Database\AppDatabase;
 
             <!-- Brand -->
             <a class="navbar-brand d-md-none" href="/">
-                <img style="max-height:50px"
-                     src="/img/logo/512x512.png"/>
-                <?php echo AppDatabase::getAppAbbreviation(); ?>
+                <?php
+                if (AppDatabase::getAppIcon() !== '') {
+                    ?>
+                    <img style="max-height:50px"
+                         src="/img/logo/512x512.png"/>
+                    <?php
+
+                }
+                echo AppDatabase::getAppAbbreviation(); ?>
             </a>
         </div>
     </div>
