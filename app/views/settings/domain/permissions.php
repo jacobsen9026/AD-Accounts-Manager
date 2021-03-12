@@ -26,15 +26,20 @@
 use App\Models\Database\PrivilegeLevelDatabase;
 use App\Models\View\Javascript;
 use App\Models\View\PermissionMapPrinter;
-use App\Models\District\Domain;
+use App\Models\Domain\Domain;
+use System\App\Forms\FormButton;
+use System\App\Forms\FormUpload;
 
 /* @var $domain Domain */
-/** @var Domain $district */
+/** @var Domain $domain */
 $domain = $this->domain;
 
-$exportButton = new \System\App\Forms\FormButton('Export Permissions');
+$exportButton = new FormButton('Export Permissions');
 $exportButton->addClientRequest('/api/settings/export/permissions');
-
+$importForm = new \System\App\Forms\Form('/settings/import/permissions', 'importForm');
+$importButton = new FormUpload('Import Permissions', '', 'permissions_upload');
+$importButton->acceptedTypes(\system\Header::APPLICATION_JSON);
+$importForm->addElementToCurrentRow($importButton);
 
 //echo $this->view('layouts/setup_navbar');
 
@@ -81,5 +86,10 @@ $cleanOu = PermissionMapPrinter::cleanOU($domain->getAdBaseDN());
         </div>
         <?php
     }
+
     ?>
+    <div id="importPermissionsContainer" class='shadow p-5 mt-5 mb-5 bg-white '>
+        <?= $importForm->print() ?>
+
+    </div>
 </div>
