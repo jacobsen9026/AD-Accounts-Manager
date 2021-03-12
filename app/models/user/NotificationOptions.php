@@ -1,10 +1,9 @@
 <?php
 
 
-namespace app\models\user;
+namespace App\Models\User;
 
 
-use App\Models\Database\Query;
 use App\Models\Model;
 
 class NotificationOptions extends Model
