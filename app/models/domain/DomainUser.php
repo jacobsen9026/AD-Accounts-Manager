@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace App\Models\District;
+namespace App\Models\Domain;
 
 /**
  * Description of user
@@ -33,6 +33,7 @@ namespace App\Models\District;
  */
 
 use Adldap\Models\User;
+use App\Api\Ad\ADConnection;
 use App\Api\Ad\ADUsers;
 use App\Models\User\PermissionHandler;
 use App\Models\User\PermissionLevel;
@@ -55,14 +56,20 @@ class DomainUser extends ADModel
 
 
     /**
-     * DistrictUser constructor.
+     * DomainUser constructor.
      *
      * @param User|string $user Provide either the users samaccountname or the already retrieved ADLDAP2 user object
      *
      * @throws \System\App\AppException
      */
-    public function __construct($user)
+    public function __construct($user = null)
     {
+        if ($user === null) {
+            $this->activeDirectory = ADConnection::get()->getDefaultProvider()->make()->user()
+                ->setAccountName('');
+            parent::__construct();
+            return;
+        }
         parent::__construct();
         if (is_string($user)) {
             $this->activeDirectory = ADUsers::getDomainScopUser($user);
@@ -306,6 +313,23 @@ class DomainUser extends ADModel
     public function moveTo(?string $ou)
     {
         $this->activeDirectory->move($ou);
+    }
+
+    public function setUsername($username)
+    {
+        $this->activeDirectory->setAccountName($username);
+        return $this;
+    }
+
+    public function setEmailAddress(string $emailAddress)
+    {
+        $this->activeDirectory->setEmail($emailAddress);
+        return $this;
+    }
+
+    public function getDisplayName()
+    {
+        return $this->activeDirectory->getDisplayName();
     }
 
 
