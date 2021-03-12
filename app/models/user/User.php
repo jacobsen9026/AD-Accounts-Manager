@@ -34,13 +34,12 @@ namespace App\Models\User;
 
 use App\App\App;
 use app\config\Theme;
-use System\App\AppLogger;
+use App\Models\Database\UserNotificationDatabase;
 use System\App\Auth\CoreUser;
 use App\App\Session;
 use App\Models\Database\UserDatabase;
 use System\App\UserLogger;
 use App\Models\Database\PermissionMapDatabase;
-use App\Models\Database\PrivilegeLevelDatabase;
 use system\Lang;
 
 class User extends CoreUser
@@ -55,25 +54,24 @@ class User extends CoreUser
      */
     public $privilegeLevels;
     public $superAdmin = false;
-
-
     /**
      *
      * @var string
      */
     public $theme = Theme::DEFAULT_THEME;
-
     /**
      *
      * @var string
      */
     public $fullName;
-
+    protected NotificationOptions $notificationOptions;
+    protected $id;
     /**
      *
      * @var UserLogger
      */
     protected $logger;
+    protected $email;
 
     /**
      * Creates a new web User. Use the constant ADMINISTRATOR to set
@@ -88,6 +86,7 @@ class User extends CoreUser
         parent::__construct();
         $this->username = $username;
         $this->logger = UserLogger::get();
+        $this->notificationOptions = new NotificationOptions();
         if ($username == self::ADMINISTRATOR) {
             $this->setAsAdministrator();
         }
@@ -130,6 +129,103 @@ class User extends CoreUser
     }
 
     /**
+     * Loads user data from Session and Database into the App instance
+     *
+     * @param App $app
+     */
+    public static function load(App $app)
+    {
+        $app->user = Session::getUser();
+        if ($app->user != null and $app->user->username != null) {
+            $app->user->setToken(UserDatabase::getToken($app->user->username));
+            $app->user->setTheme(UserDatabase::getTheme($app->user->username));
+            $app->user->setEmail(UserDatabase::getEmail($app->user->username));
+            $app->user->setId(UserDatabase::getID($app->user->username));
+            $rawOptions = UserNotificationDatabase::getUserOptions($app->user->getId());
+            $notificationOptions = new NotificationOptions();
+            UserLogger::get()->debug($rawOptions);
+            if ($rawOptions != null) {
+
+                $notificationOptions->setUserChange($rawOptions['Notify_User_Change']);
+                $notificationOptions->setUserDisable($rawOptions['Notify_User_Disable']);
+                $notificationOptions->setUserCreate($rawOptions['Notify_User_Create']);
+                $notificationOptions->setGroupChange($rawOptions['Notify_Group_Change']);
+                $notificationOptions->setGroupCreate($rawOptions['Notify_Group_Create']);
+
+            }
+            $app->user->setNotificationOptions($notificationOptions);
+        }
+
+        $app->logger->info($app->user);
+    }
+
+    /**
+     *
+     * @param string $token
+     *
+     * @return $this
+     */
+    public function setToken(string $token)
+    {
+        $this->apiToken = $token;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return User
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param mixed $email
+     * @return User
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNotificationOptions()
+    {
+        return $this->notificationOptions;
+    }
+
+    /**
+     * @param mixed $notificationOptions
+     * @return User
+     */
+    public function setNotificationOptions($notificationOptions)
+    {
+        $this->notificationOptions = $notificationOptions;
+        return $this;
+    }
+
+    /**
      * Get the users chosen theme
      *
      * @return string
@@ -138,31 +234,6 @@ class User extends CoreUser
     {
 
         return $this->theme;
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function getFullName()
-    {
-        return $this->fullName;
-    }
-
-    /**
-     *
-     * @return array <Permissions>
-     */
-    public function getPermissions(string $ou)
-    {
-        $levelIDs = [];
-        foreach ($this->privilegeLevels as $level) {
-            /* @var $level PrivilegeLevel */
-            $levelIDs[] = $level->getId();
-        }
-        $permissions = PermissionMapDatabase::getRelevantPermissions($levelIDs, $ou);
-
-        return $permissions;
     }
 
     /**
@@ -182,6 +253,15 @@ class User extends CoreUser
 
     /**
      *
+     * @return string
+     */
+    public function getFullName()
+    {
+        return $this->fullName;
+    }
+
+    /**
+     *
      * @param string $fullName
      *
      * @return User
@@ -192,24 +272,27 @@ class User extends CoreUser
         return $this;
     }
 
+    /**
+     *
+     * @return array <Permissions>
+     */
+    public function getPermissions(string $ou)
+    {
+        $levelIDs = [];
+        foreach ($this->privilegeLevels as $level) {
+            /* @var $level PrivilegeLevel */
+            $levelIDs[] = $level->getId();
+        }
+        $permissions = PermissionMapDatabase::getRelevantPermissions($levelIDs, $ou);
+
+        return $permissions;
+    }
+
     public function setSuperUser($superUser)
     {
         $this->superAdmin = $superUser;
         return $this;
     }
-
-    /**
-     *
-     * @param string $token
-     *
-     * @return $this
-     */
-    public function setToken(string $token)
-    {
-        $this->apiToken = $token;
-        return $this;
-    }
-
 
     public function addPrivilegeLevel(PrivilegeLevel $privilegeLevel)
     {
@@ -221,7 +304,6 @@ class User extends CoreUser
         return $this;
     }
 
-
     /**
      * @return array
      */
@@ -230,7 +312,6 @@ class User extends CoreUser
         $this->logger->debug($this->privilegeLevels);
         return $this->privilegeLevels;
     }
-
 
     /**
      *
@@ -246,7 +327,6 @@ class User extends CoreUser
         $this->privilegeLevels = $privilegeLevelArray;
         return $this;
     }
-
 
     /**
      * Save this user to the database
@@ -265,33 +345,19 @@ class User extends CoreUser
             UserDatabase::setUserToken($this->username, $this->apiToken);
             //var_dump($this->theme);
             UserDatabase::setUserTheme($this->username, $this->theme);
+            UserDatabase::setUserEmail($this->username, $this->email);
+            UserNotificationDatabase::setUserOption($this);
             /**
              * Dont save privilege if we're the local admin
-
-            if ($this->username !== CoreUser::ADMINISTRATOR) {
-                UserDatabase::setUserPrivilege($this->username, $this->privilege);
-            }
+             *
+             * if ($this->username !== CoreUser::ADMINISTRATOR) {
+             * UserDatabase::setUserPrivilege($this->username, $this->privilege);
+             * }
              */
             return true;
         } catch (Exception $ex) {
             return false;
         }
-    }
-
-    /**
-     * Loads user data from Session and Database into the App instance
-     *
-     * @param App $app
-     */
-    public static function load(App $app)
-    {
-        $app->user = Session::getUser();
-        if ($app->user != null and $app->user->username != null) {
-            $app->user->setToken(UserDatabase::getToken($app->user->username));
-            $app->user->setTheme(UserDatabase::getTheme($app->user->username));
-        }
-
-        $app->logger->info($app->user);
     }
 
 

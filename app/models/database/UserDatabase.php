@@ -43,6 +43,7 @@ abstract class UserDatabase extends DatabaseModel
     public const ID = "ID";
 
     //put your code here
+    const EMAIL = 'Email';
 
     /**
      * @param String $username
@@ -156,6 +157,30 @@ abstract class UserDatabase extends DatabaseModel
         if (self::getID($user->getUsername()) == false) {
             $user->save();
         }
+    }
+
+    public static function getEmail($username)
+    {
+        $query = new Query(self::TABLE_NAME, Query::SELECT, self::EMAIL);
+        $query->where(self::USERNAME, $username);
+        $email = $query->run();
+
+        return $email;
+    }
+
+    public static function setUserEmail(?string $username, $email)
+    {
+        if (self::getID($username) == false) {
+            $query = new Query(self::TABLE_NAME, Query::INSERT);
+            $query->insert(self::USERNAME, $username);
+            $query->insert(self::EMAIL, $email);
+        } else {
+            $query = new Query(self::TABLE_NAME, Query::UPDATE);
+            $query->set(self::USERNAME, $username);
+            $query->set(self::EMAIL, $email);
+            $query->where(self::USERNAME, $username);
+        }
+        return $query->run();
     }
 
 }
