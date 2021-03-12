@@ -40,9 +40,9 @@ $smtpServer = new FormText("SMTP Server", 'Enter the SMTP server address',
 
 $smtpPort = new FormText('SMTP Port', 'Enter the SMTP server port', 'smtpPort', $email->getSMTPPort());
 
-$useSMTPAuth = new FormSlider('Use SMTP Auth', 'Use SMTP user authentication', 'useSMTPAuth');
-$useSMTPAuth->addOption('False', 0, !$email->getUseSMTPAuth());
-$useSMTPAuth->addOption('True', 1, $email->getUseSMTPAuth());
+$useSMTPAuth = new FormSlider('Use SMTP Auth', 'Use SMTP user authentication', 'useSMTPAuth', $email->getUseSMTPAuth());
+$useSMTPAuth->addOption('False', 0);
+$useSMTPAuth->addOption('True', 1);
 
 $smtpUsername = new FormText("SMTP Username", 'SMTP Auth username',
     'smtpUsername', $email->getSMTPUsername());
@@ -51,10 +51,10 @@ $smtpPassword = new FormText("SMTP Password", 'SMTP Auth password',
     'smtpPassword', $email->getSMTPPassword());
 
 
-$useEncryption = new FormSlider('Use Encryption', 'Sends emails securly', 'useEncryption');
-$useEncryption->addOption('False', 0, !$email->getUseSMTPEncryption());
-$useEncryption->addOption('TLS', 1, $email->getUseSMTPEncryption());
-$useEncryption->addOption('SSL', 2, $email->getUseSMTPEncryption());
+$useEncryption = new FormSlider('Use Encryption', 'Sends emails securly', 'useSMTPEncryption', $email->getUseSMTPEncryption());
+$useEncryption->addOption('False', 0);
+$useEncryption->addOption('TLS', 1);
+$useEncryption->addOption('SSL', 2);
 
 $replyAddress = new FormText("Reply-To Address", 'The reply-to address for emails sent from this app',
     'replyAddress', $email->getReplyToAddress());

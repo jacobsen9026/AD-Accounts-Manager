@@ -33,6 +33,7 @@ namespace System\App\Forms;
  */
 
 use App\Models\View\Javascript;
+use System\App\AppLogger;
 
 class FormSlider extends FormRadio
 {
@@ -48,11 +49,17 @@ class FormSlider extends FormRadio
     {
         parent::__construct($label, $subLabel, $name, $value);
         $this->addElementClasses('mb-4');
+        AppLogger::get()->debug("New form slider with value: " . $value);
     }
 
 
     public function getElementHTML()
     {
+
+        if (empty($this->getOptions())) {
+            $this->addOption('Off', 0);
+            $this->addOption('On', 1);
+        }
         $disable = '';
         if ($this->isDisabled()) {
             $disable = ' disabled ';
@@ -61,11 +68,17 @@ class FormSlider extends FormRadio
 
         /* @var $option FormRadioOption */
         $selectedOption = new FormRadioOption('');
+        AppLogger::get()->debug('FormSlider Options....');
+        AppLogger::get()->debug($this->getOptions());
         foreach ($this->getOptions() as $option) {
             $cases[] = 'case "' . $option->getValue() . '":' . "\n"
                 . 'output = "' . $option->getLabel() . '";'
                 . 'break;';
-            if ($option->getSelected()) {
+
+            AppLogger::get()->debug($option->getValue());
+            AppLogger::get()->debug($this->getValue());
+            if ($option->getValue() == $this->getValue()) {
+                AppLogger::get()->info("selected option with value:" . $this->value);
                 $selectedOption = $option;
             }
         }
