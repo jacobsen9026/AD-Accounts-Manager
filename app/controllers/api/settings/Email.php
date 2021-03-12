@@ -33,7 +33,10 @@ namespace App\Controllers\Api\settings;
  */
 
 use App\Controllers\Api\APIController;
+use App\Models\Database\EmailTemplateDatabase;
+use app\models\view\EmailTemplateInterpreter;
 use System\App\AppException;
+use System\Post;
 
 class Email extends APIController
 {
@@ -47,8 +50,19 @@ class Email extends APIController
         }
         $email = new \App\Controllers\Settings\Email($this->app);
         $email->indexPost();
+        return $this->returnHTML($this->view('settings/email') . $this->settingsSavedToast());
+    }
 
-        return $this->returnHTML($this->view('settings/email'));
+    public function sendTestTemplatePost()
+    {
+        $to = Post::get("template_to");
+        $templateID = Post::get("id");
+        $body = EmailTemplateDatabase::getBody($templateID);
+        return $this->returnHTML(\App\Api\Email::sendMail($to,
+            EmailTemplateDatabase::getSubject($templateID),
+            EmailTemplateInterpreter::interpret($body) . "<code>" . htmlspecialchars($body) . "</code>",
+            EmailTemplateDatabase::getCC($templateID),
+            EmailTemplateDatabase::getBCC($templateID)));
     }
 
 }
