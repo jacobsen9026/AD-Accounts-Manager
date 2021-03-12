@@ -23,7 +23,8 @@ $createButton->tiny()
 $createModal = new Modal();
 $createModal->setBody($this->modal('createUser'))
     ->setId('createUser')
-    ->setTitle("Create New User");
+    ->setTitle("Create New User")
+    ->large();
 $createButton->addModal($createModal);
 
 ?>
