@@ -77,6 +77,8 @@ abstract class ENCommon
         'Timestamp' => 'Timestamp',
         'IP' => 'IP',
         'Action' => 'Action',
+        'Defaults' => 'Defaults',
+        'Permissions' => 'Permissions',
         'Backup' => 'Backup'
     ];
     public static $help = [
