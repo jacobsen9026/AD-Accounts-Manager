@@ -104,8 +104,8 @@ class EmailDatabase extends DatabaseModel
                     self::setSMTPPort(intval($data));
                     break;
 
-                case "useSMTPSSL":
-                    self::setUseSMTPSSL(boolval($data));
+                case "useSMTPEncryption":
+                    self::setUseSMTPEncryption($data);
                     break;
 
                 case "fromName":
@@ -158,10 +158,11 @@ class EmailDatabase extends DatabaseModel
         return self::updateDatabaseValue("SMTP_Port", $value);
     }
 
-    public static function setUseSMTPSSL(bool $value)
+    public function setUseSMTPEncryption($int)
     {
 
-        return self::updateDatabaseValue("Use_SMTP_SSL", $value);
+        return self::updateDatabaseValue('Use_SMTP_Encryption', $int);
+
     }
 
     public static function setFromName(string $value)
@@ -179,9 +180,10 @@ class EmailDatabase extends DatabaseModel
         return self::updateDatabaseValue("Reply_To_Name", $value);
     }
 
-    public static function getWelcomeEmail()
+    public static function setUseSMTPSSL(bool $value)
     {
-        return self::getDatabaseValue('Welcome_Email');
+
+        return self::updateDatabaseValue("Use_SMTP_SSL", $value);
     }
 
     public static function getAdminEmailAddresses()
@@ -209,8 +211,10 @@ class EmailDatabase extends DatabaseModel
         //$mail->Sender = EmailConfig::getSMTPUsername();
         //$mail->AuthType = 'LOGIN';
 
-        if (self::getUseSMTPSSL()) {
+        if (self::getUseSMTPEncryption() > 0) {
             $mail->SMTPAutoTLS = true;
+        }
+        if (self::getUseSMTPEncryption() > 1) {
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
         }
         $mail->Port = self::getSMTPPort();                                  // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
@@ -235,7 +239,11 @@ class EmailDatabase extends DatabaseModel
      */
     public static function getUseSMTPAuth()
     {
-        return self::getDatabaseValue("Use_SMTP_Auth");
+        $return = self::getDatabaseValue("Use_SMTP_Auth");
+        if ($return == null || $return == '') {
+            return 0;
+        }
+        return $return;
     }
 
     /**
@@ -256,14 +264,15 @@ class EmailDatabase extends DatabaseModel
         return self::getDatabaseValue("SMTP_Password");
     }
 
-    /**
-     *
-     * @return bool
-     */
-    public static function getUseSMTPSSL()
+    public function getUseSMTPEncryption()
     {
 
-        return self::getDatabaseValue("Use_SMTP_SSL");
+        $return = self::getDatabaseValue('Use_SMTP_Encryption');
+        if ($return == null || $return == '') {
+            return 0;
+        }
+        return $return;
+
     }
 
     /**
@@ -288,9 +297,14 @@ class EmailDatabase extends DatabaseModel
         return self::getDatabaseValue("From_Address");
     }
 
-    public function getUseSMTPEncryption()
+    /**
+     *
+     * @return bool
+     */
+    public static function getUseSMTPSSL()
     {
-        return self::getDatabaseValue('Use_SMTP_Encryption');
+
+        return self::getDatabaseValue("Use_SMTP_SSL");
     }
 
     public function send($to, $cc, $bcc, $subject, $body, $replyTo)
