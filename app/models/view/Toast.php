@@ -12,8 +12,9 @@ class Toast extends ViewModel
     protected bool $closable = false;
     protected string $classes;
     protected string $id = '';
+    protected $startShown = true;
 
-    public function __construct(string $header, string $body, $timeout = 0)
+    public function __construct(string $header, string $body, $timeout = 1000)
     {
         parent::__construct();
         $this->setHeader($header)
@@ -33,6 +34,11 @@ class Toast extends ViewModel
         return $this;
     }
 
+    public function startHidden()
+    {
+        $this->startShown = false;
+    }
+
     public function printToast()
     {
         $toast = ['toastClasses' => $this->getClasses(),
@@ -41,7 +47,8 @@ class Toast extends ViewModel
             'timeout' => $this->getTimeout(),
             'image' => $this->getImage(),
             'closable' => $this->closable,
-            'id' => $this->id];
+            'id' => $this->id,
+            'shown' => $this->startShown];
 
         $html = $this->view('layouts/toast', $toast);
 
@@ -158,6 +165,7 @@ class Toast extends ViewModel
     public function setId(string $string)
     {
         $this->id = $string;
+        return $this;
     }
 
 
