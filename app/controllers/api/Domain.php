@@ -53,8 +53,8 @@ class Domain extends APIController
     public function testPerms()
     {
         if ($this->user->superAdmin) {
-            $districtID = 1;
-            $testResult = $this->getPermissionCheckResult($districtID);
+            $domainID = 1;
+            $testResult = $this->getPermissionCheckResult($domainID);
             if ($testResult == 'true') {
                 return '<h1><i class="fas fa-check-circle text-success"></i></h1>';
             }
@@ -65,20 +65,20 @@ class Domain extends APIController
     }
 
     /**
-     * Creates a test user under the configured District
+     * Creates a test user under the configured Domain
      * BaseDN. If the randomly named user is successfully
      * made the user is deleted and the result is returned
      *
      *
-     * @param int $districtID The database districtID
+     * @param int $domainID The database domainID
      *
      * @return string
      */
-    private function getPermissionCheckResult(int $districtID)
+    private function getPermissionCheckResult(int $domainID)
     {
 
         if ($this->user->superAdmin) {
-            $ad = new AD($districtID);
+            $ad = new AD($domainID);
             $testResult = $ad->createTestUser();
             LDAPLogger::get()->debug($testResult);
             return $testResult;
@@ -96,8 +96,8 @@ class Domain extends APIController
     {
 
         if ($this->user->superAdmin) {
-            $districtID = Post::get("districtID");
-            $testResult = $this->getPermissionCheckResult($districtID);
+            $domainID = Post::get("districtID");
+            $testResult = $this->getPermissionCheckResult($domainID);
             if ($testResult == 'true') {
                 return '<h1><i class="fas fa-check-circle text-success"></i></h1>';
             }

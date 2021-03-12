@@ -99,20 +99,19 @@ class Domain extends APIController
     /**
      * Processes Posted data for permission changes via API
      *
-     * @param int $districtID
+     * @param int $domainID
      *
      * @return array
      */
-    public function permissionsPost($districtID = 1)
+    public function permissionsPost($domainID = 1)
     {
-//$controller->permissionsPost($districtID);
 
         $action = Post::get("action");
         switch ($action) {
 
 
             case 'addPrivilege':
-                $this->controller->addDistrictPrivilegeLevel();
+                $this->controller->addDomainPrivilegeLevel();
                 return $this->returnHTML($this->view('settings/domain/permissions') . $this->settingsSavedToast());
 
 
@@ -151,11 +150,10 @@ class Domain extends APIController
                 return ($this->returnHTML($this->showOUPermissions(Post::get('ou'))));
 
             case 'getApplicationLevelPermissions':
-                $this->domain = DomainDatabase::getDomain($districtID);
+                $this->domain = DomainDatabase::getDomain($domainID);
                 return $this->returnHTML($this->view('settings/domain/permissions/applicationLevelPermissions'));
 
             case 'addDistrictPermission':
-                // $this->domain = \App\Models\Database\DistrictDatabase::getDistrict($districtID);
                 $this->controller->addOUPermission();
                 return $this->returnHTML($this->view('settings/domain/permissions/applicationLevelPermissions') . $this->settingsSavedToast());
 
@@ -245,13 +243,13 @@ class Domain extends APIController
         return $this->returnHTML($response);
     }
 
-    public function testADPermissionsPost($districtID = 1)
+    public function testADPermissionsPost($domainID = 1)
     {
         $csrfCheck = Post::get();
         if ($this->user->superAdmin) {
             $testResult = false;
             if ($this->user->superAdmin) {
-                $ad = new AD($districtID);
+                $ad = new AD($domainID);
                 $testResult = $ad->createTestUser();
             }
             if ($testResult == 'true') {
