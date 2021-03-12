@@ -32,10 +32,7 @@ namespace App\Models\Database;
  * @author cjacobsen
  */
 
-use App\Api\Ad\ADGroups;
-use App\Models\District\DomainGroup;
 use App\Models\User\PrivilegeLevel;
-use System\App\AppException;
 use System\App\AppLogger;
 
 abstract class PrivilegeLevelDatabase extends DatabaseModel
@@ -59,11 +56,11 @@ abstract class PrivilegeLevelDatabase extends DatabaseModel
      *
      * @param PrivilegeLevel $level
      */
-    public static function addPrivilegeLevel(string $adGroupName, int $districtID)
+    public static function addPrivilegeLevel(string $adGroupName, int $domainID)
     {
         $query = new Query(self::TABLE_NAME, Query::INSERT);
         $query->insert('AD_Group_Name', $adGroupName)
-            ->set('District_ID', $districtID);
+            ->set('Domain_ID', $domainID);
 
         return $query->run();
     }
