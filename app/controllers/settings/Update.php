@@ -75,7 +75,8 @@ class Update extends SettingsController
         $this->updater = new AppUpdater();
 //        var_dump($simulate);
 //        return;
-        return $this->updater->update($simulate);
+        $this->updater->update($simulate);
+        return $this->updater->getCompletionMessage();
     }
 
 }
