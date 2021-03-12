@@ -4,9 +4,8 @@
 namespace App\Controllers;
 
 
-use App\Api\Ad\ADUsers;
 use App\Models\Database\AppDatabase;
-use App\Models\District\DomainUser;
+use App\Models\Domain\DomainUser;
 use System\App\AppException;
 use System\App\Picture;
 use system\Header;
