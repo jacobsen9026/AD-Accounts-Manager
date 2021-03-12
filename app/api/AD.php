@@ -33,7 +33,7 @@ namespace App\Api;
  */
 
 use App\Models\Database\DomainDatabase;
-use App\Models\District\Domain;
+use App\Models\Domain\Domain;
 use Exception;
 use System\App\LDAPLogger;
 use App\Models\User\PermissionLevel;
@@ -63,51 +63,51 @@ class AD
      *
      * @var Domain
      */
-    private $district;
+    private $domain;
     /** @var LDAPLogger The application logger */
     private $logger;
 
-    function __construct($districtID, $fqdn = null, $username = null, $password = null)
+    function __construct($domainID, $fqdn = null, $username = null, $password = null)
     {
 
         if (isset(self::$instance)) {
             return;
         } else {
-            $this->initialize($districtID, $fqdn, $username, $password);
+            $this->initialize($domainID, $fqdn, $username, $password);
         }
     }
 
-    private function initialize($districtID, $fqdn, $username, $password)
+    private function initialize($domainID, $fqdn, $username, $password)
     {
 
 
-        $districtID1 = $districtID;
+        $domainID1 = $domainID;
 
-        $this->district = DomainDatabase::getDomain();
+        $this->domain = DomainDatabase::getDomain();
         self::$instance = $this;
         $this->logger = LDAPLogger::get();
-        $this->fqdn = DomainDatabase::getAD_FQDN($districtID1);
+        $this->fqdn = DomainDatabase::getAD_FQDN($domainID1);
         if (!is_null($fqdn)) {
             $this->fqdn = $fqdn;
         }
         if ($this->fqdn != '') {
 
-            $baseDN = DomainDatabase::getAD_BaseDN($districtID);
+            $baseDN = DomainDatabase::getAD_BaseDN($domainID);
 
             $this->baseDN = $baseDN;
             $this->testUserDN = "CN=" . $this->testUserName . "," . $baseDN;
 
             if ((is_null($username))) {
-                $username = DomainDatabase::getADUsername($districtID1);
+                $username = DomainDatabase::getADUsername($domainID1);
                 if (strpos($username, "\\") === false and strpos($username, "@") === false) {
                     $username = $username .
-                        "@" . DomainDatabase::getAD_FQDN($districtID1);
+                        "@" . DomainDatabase::getAD_FQDN($domainID1);
                 }
             }
             $username1 = $username;
 
 
-            $password1 = DomainDatabase::getADPassword($districtID1);
+            $password1 = DomainDatabase::getADPassword($domainID1);
             if (!is_null($password)) {
                 $password1 = $password;
             }
