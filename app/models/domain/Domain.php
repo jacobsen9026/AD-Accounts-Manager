@@ -24,10 +24,10 @@
  * THE SOFTWARE.
  */
 
-namespace App\Models\District;
+namespace App\Models\Domain;
 
 /**
- * Description of District
+ * Description of Domain
  *
  * @author cjacobsen
  */
@@ -43,6 +43,7 @@ class Domain extends Model
 
     use DomainTools;
 
+    protected $domain;
     private $id;
     private $name;
     private $abbr;
