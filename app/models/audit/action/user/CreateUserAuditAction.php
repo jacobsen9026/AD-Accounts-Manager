@@ -4,7 +4,7 @@
 namespace App\Models\Audit\Action\User;
 
 use App\Models\Audit\Action\AuditAction;
-use App\Models\District\DomainUser;
+use App\Models\Domain\DomainUser;
 
 class CreateUserAuditAction extends AuditAction
 {
