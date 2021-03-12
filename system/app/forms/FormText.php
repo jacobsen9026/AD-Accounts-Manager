@@ -46,6 +46,13 @@ class FormText extends FormElement implements FormElementInterface
      */
     protected $autofocus = false;
 
+    public function __construct($label = '', $subLabel = '', $name = '', $value = '')
+    {
+        parent::__construct($label, $subLabel, $name, $value);
+        $this->addElementClasses('form-element-text');
+    }
+
+
     public function getAutoFocus()
     {
         return $this->autofocus;
