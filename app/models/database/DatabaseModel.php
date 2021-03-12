@@ -32,13 +32,14 @@ namespace App\Models\Database;
  * @author cjacobsen
  */
 
+use App\App\ConfigDatabase;
 use App\Models\Model;
 use System\DatabaseLogger;
 
 abstract class DatabaseModel extends Model implements DatabaseModelInterface
 {
-
     public static $cache = [];
+    private static $columns = [];
 
     /**
      * Returns the entire table or a specific row by id
@@ -92,6 +93,62 @@ abstract class DatabaseModel extends Model implements DatabaseModelInterface
 
     }
 
+    public static function import(array $table)
+    {
+        foreach ($table as $row) {
+            if (self::rowExists($row["ID"])) {
+                $query = new Query(static::TABLE_NAME, Query::UPDATE);
+                foreach ($row as $column => $value) {
+                    if (self::columnExists($column)) {
+                        $query->set($column, $value);
+                    }
+
+                }
+                $query->where("ID", $row["ID"]);
+            } else {
+                $query = new Query(static::TABLE_NAME, Query::INSERT);
+                foreach ($row as $column => $value) {
+                    if (self::columnExists($column)) {
+                        $query->insert($column, $value);
+                    }
+
+                }
+            }
+            //
+            ConfigDatabase::get()->disableForeignKeyConstraints();
+            $response = $query->run();
+            ConfigDatabase::get()->enableForeignKeyConstraints();
+
+            //var_dump($response);
+
+        }
+
+    }
+
+    public static function rowExists($id)
+    {
+        $query = new Query(static::TABLE_NAME, Query::SELECT, "ID");
+        $query->where("ID", $id);
+        if ($query->run() !== false) {
+            return true;
+        }
+        return false;
+    }
+
+    protected static function columnExists($column)
+    {
+        $query = "PRAGMA table_info(" . static::TABLE_NAME . ");";
+        $result = ConfigDatabase::get()->query($query);
+        if (empty(self::$columns[static::TABLE_NAME])) {
+            foreach ($result as $field => $tableName) {
+                self::$columns[static::TABLE_NAME][] = $tableName["name"];
+            }
+        }
+        if (in_array($column, self::$columns[static::TABLE_NAME])) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * The calling object MUST have a TABLE_NAME constant
@@ -122,9 +179,10 @@ abstract class DatabaseModel extends Model implements DatabaseModelInterface
         return $return;
     }
 
-    protected static function addColumn($table, string $column)
+    protected static function addColumn($table, string $column, $type = "STRING", $default = null, $notNull = false, $primaryKey = false)
     {
-        $query = new Query($table, Query::ALTER, $column);
+        $query = new Query($table, Query::ALTER);
+        $query->addColumn($column, $type, $default, $notNull, $primaryKey);
         return $query->run();
     }
 
