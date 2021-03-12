@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace App\Models\District;
+namespace App\Models\Domain;
 
 /**
  * Description of Group
@@ -35,9 +35,7 @@ namespace App\Models\District;
 
 use Adldap\Models\Group;
 use Adldap\Models\User;
-use App\Api\Ad\ADConnection;
 use App\Api\Ad\ADGroups;
-use App\Api\Ad\ADUsers;
 use App\Models\User\PermissionHandler;
 use App\Models\User\PermissionLevel;
 use System\App\AppException;
@@ -55,7 +53,7 @@ class DomainGroup extends ADModel
     public $id;
 
     /**
-     * DistrictUser constructor.
+     * DomainUser constructor.
      *
      * @param User $group
      */
@@ -89,7 +87,10 @@ class DomainGroup extends ADModel
     {
         $parents = [];
         foreach ($this->activeDirectory->getMemberOf() as $parent) {
-            $parents[] = ADGroups::getGroupByDN($parent)->getName();
+            $parent = ADGroups::getGroupByDN($parent);
+            if ($parent !== false) {
+                $parents[] = $parent->getName();
+            }
         }
         return $parents;
     }
