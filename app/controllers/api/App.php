@@ -26,6 +26,8 @@
 
 namespace App\Controllers\Api;
 
+use App\App\ConfigDatabase;
+
 /**
  * Description of App
  *
@@ -58,9 +60,9 @@ class App extends APIController
     {
         if ($this->user->superAdmin) {
             $output = "<h1>Configuration Database</h1>";
-            foreach (\system\Database::get()->getAllTables() as $table) {
+            foreach (ConfigDatabase::get()->getAllTables() as $table) {
                 $output .= "<h3>" . $table . "</h3>";
-                $output .= $this->html_table(\system\Database::get()->query("SELECT * FROM " . $table));
+                $output .= $this->html_table(ConfigDatabase::get()->query("SELECT * FROM " . $table));
                 //ob_start();
                 //var_dump(\system\Database::get()->query("SELECT * FROM " . $table));
                 //$this->output .= ob_get_clean();
