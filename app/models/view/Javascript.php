@@ -125,7 +125,7 @@ abstract class Javascript extends ViewModel
 
     public static function onChange(string $listeningID, string $function)
     {
-        $script = '$("#' . $listeningID . '").change(function () {
+        $script = '$("#' . $listeningID . '").change(function (e) {
                         '
             . $function .
             '});';
@@ -141,7 +141,7 @@ abstract class Javascript extends ViewModel
      */
     public static function on(string $inputID, string $function, string $triggers = "click")
     {
-        $script = '     $("#' . $inputID . '").on("' . $triggers . '", function () {
+        $script = '     $("#' . $inputID . '").on("' . $triggers . '", function (e) {
                         '
             . $function .
             '});';
@@ -162,7 +162,7 @@ abstract class Javascript extends ViewModel
 
     public static function onPageLoad($function)
     {
-        return "$(document).ready(function () {" . $function . "});";
+        return "$(document).ready(function (e) {" . $function . "});";
     }
 
     /**
@@ -174,7 +174,7 @@ abstract class Javascript extends ViewModel
      */
     public static function buildAutocomplete(string $requestURL, string $targetID)
     {
-        $script = ' $(function () {
+        $script = ' $(function (e) {
         var ' . $targetID . ' = function (request, response) {
             $.getJSON(
                 "' . $requestURL . '" + request.term,
