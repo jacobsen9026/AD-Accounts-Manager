@@ -14,58 +14,29 @@ class NotificationOptions extends Model
     protected $groupChange = false;
     protected $groupCreate = false;
 
-
-    /**
-     * @return bool
-     */
-    public function isUserChange(): bool
+    public function isAll()
     {
-        return $this->userChange;
-    }
-
-    /**
-     * @param bool $userChange
-     * @return NotificationOptions
-     */
-    public function setUserChange($userChange): NotificationOptions
-    {
-        $this->userChange = (bool)$userChange;
-        return $this;
+        if ($this->isGroupCreate() && $this->isGroupChange() && $this->isUserCreate() && $this->isUserDisable() && $this->isUserChange()) {
+            return true;
+        }
+        return false;
     }
 
     /**
      * @return bool
      */
-    public function isUserDisable(): bool
+    public function isGroupCreate(): bool
     {
-        return $this->userDisable;
+        return $this->groupCreate;
     }
 
     /**
-     * @param bool $userDisable
+     * @param bool $groupCreate
      * @return NotificationOptions
      */
-    public function setUserDisable($userDisable): NotificationOptions
+    public function setGroupCreate($groupCreate): NotificationOptions
     {
-        $this->userDisable = (bool)$userDisable;
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isUserCreate(): bool
-    {
-        return $this->userCreate;
-    }
-
-    /**
-     * @param bool $userCreate
-     * @return NotificationOptions
-     */
-    public function setUserCreate($userCreate): NotificationOptions
-    {
-        $this->userCreate = (bool)$userCreate;
+        $this->groupCreate = (bool)$groupCreate;
         return $this;
     }
 
@@ -90,18 +61,54 @@ class NotificationOptions extends Model
     /**
      * @return bool
      */
-    public function isGroupCreate(): bool
+    public function isUserCreate(): bool
     {
-        return $this->groupCreate;
+        return $this->userCreate;
     }
 
     /**
-     * @param bool $groupCreate
+     * @param bool $userCreate
      * @return NotificationOptions
      */
-    public function setGroupCreate($groupCreate): NotificationOptions
+    public function setUserCreate($userCreate): NotificationOptions
     {
-        $this->groupCreate = (bool)$groupCreate;
+        $this->userCreate = (bool)$userCreate;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUserDisable(): bool
+    {
+        return $this->userDisable;
+    }
+
+    /**
+     * @param bool $userDisable
+     * @return NotificationOptions
+     */
+    public function setUserDisable($userDisable): NotificationOptions
+    {
+        $this->userDisable = (bool)$userDisable;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUserChange(): bool
+    {
+        return $this->userChange;
+    }
+
+    /**
+     * @param bool $userChange
+     * @return NotificationOptions
+     */
+    public function setUserChange($userChange): NotificationOptions
+    {
+        $this->userChange = (bool)$userChange;
         return $this;
     }
 
