@@ -86,7 +86,10 @@ abstract class ENCommon
         'Group_Search' => "Can search by name, email, or description",
         "Add user or group to group" => "Add user or group to group",
         'Can also search by first or last name.' => 'Can also search by first or last name.',
-        'Times are in UTC' => 'Times are in UTC'
+        'Times are in UTC' => 'Times are in UTC',
+        'Privilege_Levels' => 'Privilege levels can be assigned at the Domain or OU level with propagation. So a group with permission for a School OU will have that same permission for all sub-OU\'s, unless explicitly set at a lower level.',
+        'Permissions' => 'Permissions are different for users or groups, but they both are successive levels of access that inherit the previous level. A group with Change permission can also Read, but can not Add or Delete (for groups).',
+        'Super_Admin' => 'Privilege Levels with Super Admin enabled have permission to the whole directory as well as settings and setup pages.'
     ];
 
     public static $error = [
