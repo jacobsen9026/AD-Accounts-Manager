@@ -239,13 +239,21 @@ $changesLostToast->setId("changesLostToast")
     };
     //templates = JSON.parse(templates);
     console.log(templates);
-    $('#bodyInputArea').on('keyup', function () {
+    $('#bodyInputArea').on('keyup', function (e) {
         console.log("body edited");
         console.log($('#bodyInputArea').val());
         var body = $('#bodyInputArea').val();
         interpretAndPrintPreview(body);
-    });
 
+    });
+    $('#bodyInputArea').on('keydown', function (e) {
+        if (e.key == "s" && e.ctrlKey) {
+            $('#<?=$updateEmailTemplate->getId()?>').click();
+            e.preventDefault();
+            return false;
+        }
+
+    });
     $('select').on('change', function (e) {
         var selectedID = ($('select').find(":selected").val());
 
