@@ -96,7 +96,7 @@ class FormSlider extends FormRadio
             . '$("#' . $outputId . '").html(output);';
         $this->setScript(Javascript::on($this->getId(), $function, 'click touch'));
         $width = 50 * (count($this->getOptions()) - 1);
-        $html = '<input  type="range" class="custom-range h-50" name="' . $this->getName() . '" style="max-width:' . $width . 'px;" min="0" max="' . (count($this->getOptions()) - 1) . '" id="' . $this->getId() . '" value="' . (int)$this->getValue() . '" ' . $disable . '>';
+        $html = '<input  type="range" class="custom-range h-50 ' . $this->getInputClasses() . '" name="' . $this->getName() . '" style="max-width:' . $width . 'px;" min="0" max="' . (count($this->getOptions()) - 1) . '" id="' . $this->getId() . '" value="' . (int)$this->getValue() . '" ' . $disable . '>';
         $html .= '<div class="text-muted small" id="' . $this->getId() . '_Status_Text">' . $selectedOption->getLabel() . '</div>';
         return $html;
     }
