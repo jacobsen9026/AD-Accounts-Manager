@@ -95,10 +95,7 @@ class App extends CommonApp implements AppInterface
         new AppErrorHandler();
         $this->coreLogger = SystemLogger::get();
 
-        /**
-         * Load the request into the app
-         */
-        $this->request = Request::get();
+
         /**
          * Set up the appLogger
          */
@@ -264,10 +261,10 @@ class App extends CommonApp implements AppInterface
      */
     private function handleHttpsRedirect(): void
     {
-        $this->logger->info("Protocol: " . $this->request->getProtocol());
-        $this->logger->info("Hostname: " . ($this->request->getServerName()));
-        if ($this->request->getProtocol() === "http" && AppDatabase::getForceHTTPS()) {
-            $this->redirect("https://" . $this->request->getServerName() . $this->request->getUri());
+        $this->logger->info("Protocol: " . Request::get()->getProtocol());
+        $this->logger->info("Hostname: " . (Request::get()->getServerName()));
+        if (Request::get()->getProtocol() === "http" && AppDatabase::getForceHTTPS()) {
+            $this->redirect("https://" . $this->request->getServerName() . Request::get()->getUri());
         }
     }
 
@@ -277,10 +274,10 @@ class App extends CommonApp implements AppInterface
      */
     private function handleHostnameRedirect(): void
     {
-        $this->logger->info("Hostname: " . ($this->request->getServerName()));
-        if (strtolower($this->request->getServerName()) !== strtolower(AppDatabase::getWebsiteFQDN())) {
+        $this->logger->info("Hostname: " . (Request::get()->getServerName()));
+        if (strtolower(Request::get()->getServerName()) !== strtolower(AppDatabase::getWebsiteFQDN())) {
             if (AppDatabase::getWebsiteFQDN() != "") {
-                $this->redirect($this->request->getProtocol() . "://" . strtolower(AppDatabase::getWebsiteFQDN()) . $this->request->getUri());
+                $this->redirect(Request::get()->getProtocol() . "://" . strtolower(AppDatabase::getWebsiteFQDN()) . Request::get()->getUri());
             }
         }
     }
@@ -353,8 +350,8 @@ class App extends CommonApp implements AppInterface
     public function layout(): void
     {
         $this->layout = new Layout($this);
-        //var_dump($this->request);
-        if ($this->request->getType() === 'http') {
+        //var_dump(Request::get());
+        if (Request::get()->getType() === 'http') {
             $this->appOutput->setBody($this->layout->apply());
         }
     }
