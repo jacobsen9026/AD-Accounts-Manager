@@ -34,6 +34,7 @@ namespace App\Controllers\Api;
 
 use App\Controllers\Controller;
 use App\Models\View\Toast;
+use System\Request;
 
 class APIController extends Controller
 {
@@ -42,7 +43,8 @@ class APIController extends Controller
     public function __construct(\App\App\App $app)
     {
         parent::__construct($app);
-        $this->app->request->setType('ajax');
+        Request::get()->setType('ajax');
+        //var_dump(Request::get());
     }
 
     public function indexPost()
