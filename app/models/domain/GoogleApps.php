@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace App\Models\District;
+namespace App\Models\Domain;
 
 /**
  * Description of GoogleApps
