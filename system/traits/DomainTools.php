@@ -57,6 +57,18 @@ trait DomainTools
         return $baseDN;
     }
 
+    public static function isDistinguishedName($string)
+    {
+        //var_dump($string);
+        if (strpos($string, "CN=") === false && strpos($string, "DC=") === false && strpos($string, "OU=") === false) {
+            //var_dump("true");
+
+            return false;
+        }
+        return true;
+
+    }
+
     public static function getOUFromDN($dn)
     {
         $ous = explode("OU=", $dn);
