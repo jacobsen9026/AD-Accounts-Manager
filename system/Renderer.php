@@ -66,7 +66,7 @@ class Renderer extends Parser
     public function draw()
     {
 
-        switch ($this->core->request->type) {
+        switch (Request::get()->getType()) {
             case 'http':
                 $this->include('system/views/HTML_start');
                 $this->logger->info("Drawing of app started");
@@ -107,6 +107,8 @@ class Renderer extends Parser
             default:
                 break;
         }
+        ob_flush();
+        flush();
 
     }
 
