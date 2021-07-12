@@ -220,8 +220,12 @@ abstract class CardPrinter extends ViewModel
 
 
         $ad = AD::get();
-        $tree = $ad->getAllSubOUs(DomainDatabase::getAD_BaseDN(1));
-        $body = self::printUserOUTree($user->getDistinguishedName(), $tree) . '<br>Current location highlighted.';
+
+
+        //$tree = $ad->getAllSubOUs(DomainDatabase::getAD_BaseDN(1));
+        //$body = self::printUserOUTree($user->getDistinguishedName(), $tree) . '<br>Current location highlighted.';
+        $body = "<div id='moveUserOUTree'><div class='mx-auto round-loader'></div><script>$(document).on('show.bs.modal',function(e){if(e.target.id=='move_user_modal'){" . Javascript::buildAJAXRequest('/api/users/getMoveOU/' . $user->getUsername(), 'moveUserOUTree') . "}});";
+        $body .= "</script></div>";
         $body .= App::get()->view('scripts/moveToNewOU', ['object' => $user]);
 
         $moveButton = new FormDropdownOption('Move');
@@ -302,6 +306,7 @@ abstract class CardPrinter extends ViewModel
 
         $optionsButton = new FormMenuButton('<i class="h5 grow mb-0 fas fa-ellipsis-v"></i>');
         $optionsButton->tiny()
+            ->setLabel("User Options")
             ->removeInputClasses("btn-primary");
         $optionsButton->addMenuOptions($uploadPhotoButton)
             ->addMenuOptions($newPasswordButton)
@@ -332,113 +337,6 @@ abstract class CardPrinter extends ViewModel
 
 
         return $output . $uploadPhotoForm->print();
-    }
-
-    private static function printUserOUTree($objectDN, $ouTree)
-    {
-        $output = '';
-        foreach ($ouTree as $name => $branch) {
-            if (is_array($branch)) {
-                $output .= self::printBranchOU($objectDN, $name, $branch);
-            } else {
-
-                $output .= self::printLeafOU($objectDN, $branch);
-            }
-        }
-        return $output;
-    }
-
-    private static function printBranchOU($objectDN, $name, array $branch)
-    {
-        $displayName = self::leftOU($name);
-        $disable = false;
-        if (!PermissionHandler::hasPermission($name, PermissionLevel::USERS, PermissionLevel::USER_CHANGE)) {
-            $disable = true;
-        }
-
-        $output = '<div class="container-fluid pr-0 text-left">'
-            . '<a  class="d-inline-block clickable grow" data-toggle="collapse" role="button" data-target="#' . self::cleanOU($name) . '" data-text-alt="<i class=\'fas fa-caret-down\'></i>"  style="width:1em!important;">'
-            . '<i class="fas fa-caret-right"></i>'
-            . '</a>'
-            . '<p class="d-inline-block clickable highlight ouLocationButton w-75 text-left pl-2 mb-0"  ';
-
-        if (!$disable) {
-
-            $output .= 'data-target-ou="' . $name . '"';
-
-        }
-        $output .= '>';
-        if ($disable) {
-            $output .= "<text class='text-danger'>";
-        }
-
-
-        $output .= $displayName;
-
-        if ($disable) {
-            $output .= "</text>";
-        }
-
-        $output .= '</p>';
-
-        AppLogger::get()->info($name);
-        AppLogger::get()->info($objectDN);
-        AppLogger::get()->info(strpos($objectDN, $name));
-        if (strpos($objectDN, $name) > 0) {
-            $output .= '<div id="' . self::cleanOU($name) . '" class="collapse show container-fluid mx-auto my-0 pr-0">';
-        } else {
-            $output .= '<div id="' . self::cleanOU($name) . '" class="collapse container-fluid mx-auto my-0 pr-0">';
-
-        }
-        $output .= self::printUserOUTree($objectDN, $branch)
-            . '</div>';
-        $output .= '</div>';
-
-
-        //var_dump($output);
-        return $output;
-    }
-
-    private static function printLeafOU($objectDN, $leaf)
-    {
-        $displayName = self::leftOU($leaf);
-        $disable = false;
-        if (!PermissionHandler::hasPermission($leaf, PermissionLevel::USERS, PermissionLevel::USER_CHANGE)) {
-            $disable = true;
-        }
-
-        $showOUButtonId = self::getHTML_ID_FromOU($leaf) . '_Show_OU_Button';
-
-        $output = '<div class="row clickable text-left ml-4 w-100">';
-        AppLogger::get()->info($leaf);
-        AppLogger::get()->info($objectDN);
-        if (strpos($objectDN, $leaf) === 0 || strpos($objectDN, $leaf) > 0) {
-            $classes = " bg-primary text-light ouLocationButton ";
-        } else {
-            $classes = " ouLocationButton ";
-        }
-
-        $output .= '<div id="' . $showOUButtonId . '" class=" col-10 highlight ' . $classes . ' pl-2 pr-0 mb-0" onclick="" ';
-
-        if (!$disable) {
-            $output .= 'data-target-ou="' . $leaf . '"';
-        }
-        $output .= '>';
-
-        if ($disable) {
-            $output .= "<text class='text-danger'>";
-        }
-
-        $output .= $displayName;
-
-        if ($disable) {
-            $output .= "</text>";
-        }
-        $output .= '</div>';
-
-
-        $output .= '</div>';
-        return $output;
     }
 
     /**
@@ -639,11 +537,11 @@ abstract class CardPrinter extends ViewModel
      *
      * @return string
      */
-    protected
+    public
     static function buildRemoveFromGroupButton($objectToRemove, DomainGroup $group)
     {
 
-        $form = new Form("/groups/edit", "remove_member", "post");
+        $form = new Form("/groups/edit", "remove_member_" . $objectToRemove->getDistinguishedName(), "post");
         $form->addClass('mb-0');
         $objectToRemoveInput = new FormText("distinguishedName");
 
@@ -771,7 +669,8 @@ abstract class CardPrinter extends ViewModel
             $output .= self::printRow("Email", $group->getEmail());
         }
 
-        $output .= self::printGroupMembers("", $group);
+        //$output .= self::printGroupMembers("", $group);
+        $output .= self::printGetGroupMembers($group);
         $output .= self::printAddGroupMemberModalButton($group);
         $output .= '</div>';
 
@@ -818,12 +717,176 @@ abstract class CardPrinter extends ViewModel
         return $deleteButton->print();
     }
 
+    private static function printGetGroupMembers(DomainGroup $group)
+    {
+
+        /**
+         * <script>
+         * $.post("/api/groups/getMemberList",{group: "' . $group->activeDirectory->getAccountName() . '"},function(e){
+         * console.log(e);
+         * $("#groupMembers").html(e);
+         * });
+         *
+         * </script>
+         */
+        $output = '
+        <script>
+        var req = new XMLHttpRequest(); 
+        function getMemberPage(page){
+             var data = new FormData();
+        data.append("page",page);
+        data.append("groupName","' . $group->activeDirectory->getAccountName() . '");
+        data.append("csrfToken","' . Form::getCsrfToken() . '");
+    $("#progressbar").progressbar();    
+    req.onprogress = function (aEvt) {
+           $("#groupMembers").html(aEvt.target.responseText);
+            //console.log(aEvt);
+        
+    };  
+    req.open("POST", "/api/groups/getMemberList", true);  
+    req.onreadystatechange = function (aEvt) {
+        if (req.readyState == 4)
+        {
+            $("#stopLoadingButton").remove();
+           //console.log(aEvt);
+        }
+    };  
+    req.send(data); 
+   $("#groupMembers").html("Loading Groups Members... <br>This may take a while for large groups.<br><i class=\'straight-loader\'></i><br><br><br>");
+        }
+       
+
+    $(window) . on("popstate", function () {
+        cancelLoadMembers();
+    });
+
+
+    getMemberPage(1);
+    
+    function cancelLoadMembers(){
+        req.abort();
+    }
+</script>
+<!--<iframe class="w-100 h-auto border-0" src="/api/groups/getMemberList/' . $group->activeDirectory->getAccountName() . '"></iframe>-->
+<button id="stopLoadingButton" class="btn btn-primary" onclick="cancelLoadMembers()">Stop Loading</button>
+<div id="groupMembers">Loading Groups Members... <br><i class="straight-loader"></i><br><br><br></div>
+';
+        return $output;
+    }
+
+    public static function printUserOUTree($objectDN, $ouTree)
+    {
+        $output = '';
+        foreach ($ouTree as $name => $branch) {
+            if (is_array($branch)) {
+                $output .= self::printBranchOU($objectDN, $name, $branch);
+            } else {
+
+                $output .= self::printLeafOU($objectDN, $branch);
+            }
+        }
+        return $output;
+    }
+
+    private static function printBranchOU($objectDN, $name, array $branch)
+    {
+        $displayName = self::leftOU($name);
+        $disable = false;
+        if (!PermissionHandler::hasPermission($name, PermissionLevel::USERS, PermissionLevel::USER_CHANGE)) {
+            $disable = true;
+        }
+
+        $output = '<div class="container-fluid pr-0 text-left">'
+            . '<a  class="d-inline-block clickable grow" data-toggle="collapse" role="button" data-target="#' . self::cleanOU($name) . '" data-text-alt="<i class=\'fas fa-caret-down\'></i>"  style="width:1em!important;">'
+            . '<i class="fas fa-caret-right"></i>'
+            . '</a>'
+            . '<p class="d-inline-block clickable highlight ouLocationButton w-75 text-left pl-2 mb-0"  ';
+
+        if (!$disable) {
+
+            $output .= 'data-target-ou="' . $name . '"';
+
+        }
+        $output .= '>';
+        if ($disable) {
+            $output .= "<text class='text-danger'>";
+        }
+
+
+        $output .= $displayName;
+
+        if ($disable) {
+            $output .= "</text>";
+        }
+
+        $output .= '</p>';
+
+        AppLogger::get()->info($name);
+        AppLogger::get()->info($objectDN);
+        AppLogger::get()->info(strpos($objectDN, $name));
+        if (strpos($objectDN, $name) > 0) {
+            $output .= '<div id="' . self::cleanOU($name) . '" class="collapse show container-fluid mx-auto my-0 pr-0">';
+        } else {
+            $output .= '<div id="' . self::cleanOU($name) . '" class="collapse container-fluid mx-auto my-0 pr-0">';
+
+        }
+        $output .= self::printUserOUTree($objectDN, $branch)
+            . '</div>';
+        $output .= '</div>';
+
+
+        //var_dump($output);
+        return $output;
+    }
+
+    private static function printLeafOU($objectDN, $leaf)
+    {
+        $displayName = self::leftOU($leaf);
+        $disable = false;
+        if (!PermissionHandler::hasPermission($leaf, PermissionLevel::USERS, PermissionLevel::USER_CHANGE)) {
+            $disable = true;
+        }
+
+        $showOUButtonId = self::getHTML_ID_FromOU($leaf) . '_Show_OU_Button';
+
+        $output = '<div class="row clickable text-left ml-4 w-100">';
+        AppLogger::get()->info($leaf);
+        AppLogger::get()->info($objectDN);
+        if (strpos($objectDN, $leaf) === 0 || strpos($objectDN, $leaf) > 0) {
+            $classes = " bg-primary text-light ouLocationButton ";
+        } else {
+            $classes = " ouLocationButton ";
+        }
+
+        $output .= '<div id="' . $showOUButtonId . '" class=" col-10 highlight ' . $classes . ' pl-2 pr-0 mb-0" onclick="" ';
+
+        if (!$disable) {
+            $output .= 'data-target-ou="' . $leaf . '"';
+        }
+        $output .= '>';
+
+        if ($disable) {
+            $output .= "<text class='text-danger'>";
+        }
+
+        $output .= $displayName;
+
+        if ($disable) {
+            $output .= "</text>";
+        }
+        $output .= '</div>';
+
+
+        $output .= '</div>';
+        return $output;
+    }
+
     /**
      *
      * @param string $label
      * @param DomainGroup $group
-     *
      * @return string
+     * @deprecated
      */
     private
     static function printGroupMembers(string $label, DomainGroup $group)
