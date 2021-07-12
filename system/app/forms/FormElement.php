@@ -123,6 +123,7 @@ class FormElement
      * @var int|string This is the col size number for BootStrap CSS (1-12 or auto)
      */
     protected $colSize;
+    protected string $formId = '';
 
     /**
      * FormElement constructor.
@@ -783,6 +784,17 @@ class FormElement
             return $this->modal;
         }
         return null;
+    }
+
+    public function attachToForm(Form $form)
+    {
+        $this->formId = $form->getId();
+        return $this;
+    }
+
+    public function getFormId()
+    {
+        return $this->formId;
     }
 
 }
