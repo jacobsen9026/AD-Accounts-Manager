@@ -220,7 +220,7 @@ class Core
         /**
          * We prep the output in case something goes wrong with the app
          */
-        $this->appOutput = new AppOutput($this->request);
+        $this->appOutput = new AppOutput();
 
 
         date_default_timezone_set(DEFAULT_TIMEZONE);
