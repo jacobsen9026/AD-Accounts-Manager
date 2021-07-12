@@ -52,11 +52,11 @@ class CommonLogger implements LoggerInterface
     /**
      * @var float Logger starting time in microseconds
      */
-    private $startTime;
+    protected $startTime;
     /**
      * @var string Name of the logger
      */
-    private $name;
+    protected $name;
 
     /**
      * CommonLogger constructor.
@@ -111,7 +111,7 @@ class CommonLogger implements LoggerInterface
      */
     protected function storeLogEntry($message, string $level)
     {
-        if (Core::inDebugMode()) {
+        if (Core::inDebugMode() && CommonLogLevel::NUMERIC_VALUE[$level] <= LOG_LEVEL) {
             $logEntry = new CommonLogEntry($this->getName());
 
             $logEntry->setMessage($message)
