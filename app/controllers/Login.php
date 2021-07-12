@@ -51,6 +51,7 @@ use App\Auth\ADAuth;
 use App\Models\Database\AuthDatabase;
 use System\Get;
 use System\Post;
+use System\Request;
 
 class Login extends Controller
 {
@@ -171,8 +172,8 @@ class Login extends Controller
                     $this->redirect(Get::get('redirect'));
 
                 } else {
-                    $logger->debug('Referer: ' . $this->app->request->referer);
-                    $this->redirect($this->app->request->referer);
+                    $logger->debug('Referer: ' . Request::get()->referer);
+                    $this->redirect(Request::get()->referer);
                 }
             } else {
                 /*
@@ -196,7 +197,7 @@ class Login extends Controller
      */
     protected function audit(AuditAction $action, User $user = null)
     {
-        $auditEntry = new AuditEntry($this->app->request, $user, $action);
+        $auditEntry = new AuditEntry(Request::get(), $user, $action);
         AuditDatabase::addAudit($auditEntry);
     }
 
