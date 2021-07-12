@@ -38,10 +38,8 @@ use App\Models\View\Modal;
 
 class FormButton extends FormElement implements FormElementInterface
 {
+    use FormDataTargets;
 
-    protected string $dataToggle = '';
-    protected string $dataTarget = '';
-    protected string $dataTextAlt = '';
 
 //put your code here
     private $theme = "primary";
@@ -76,7 +74,7 @@ class FormButton extends FormElement implements FormElementInterface
         }
         $this->addInputClasses(['btn-' . $this->getTheme(), $textClass]);
         $html = '<div id="' . $this->getId() . '_Button_container" >
-        <button id="' . $this->getId() . '" type="' . $this->getType() . '" class="' . $this->getInputClasses() . '"';
+        <button aria-label="' . $this->getTooltip() . '" id="' . $this->getId() . '" type="' . $this->getType() . '" class="' . $this->getInputClasses() . '" form="' . $this->getFormId() . '"';
         if ($this->dataToggle != null) {
             $html .= ' data-toggle="' . $this->dataToggle . '"';
         }
@@ -188,22 +186,5 @@ class FormButton extends FormElement implements FormElementInterface
         return $this;
     }
 
-    public function setDataToggle(string $string)
-    {
-        $this->dataToggle = $string;
-        return $this;
-    }
-
-    public function setDataTarget(string $string)
-    {
-        $this->dataTarget = $string;
-        return $this;
-    }
-
-    public function setDataTextAlt(string $string)
-    {
-        $this->dataTextAlt = $string;
-        return $this;
-    }
 
 }
