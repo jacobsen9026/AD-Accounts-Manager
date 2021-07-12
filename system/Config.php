@@ -47,6 +47,14 @@ define('APPCLASS', "App\App\App");
  */
 define('DEBUG_MODE', false);
 /*
+ * Toggle for core debug to file.
+ */
+define('DEBUG_FILE', false);
+/*
+ * Toggle for core debug mode.
+ */
+define('LOG_LEVEL', 7);
+/*
  * Default server timezone
  */
 define('DEFAULT_TIMEZONE', 'America/New_York');
@@ -59,6 +67,10 @@ define('SYSTEMPATH', ROOTPATH . DIRECTORY_SEPARATOR . "system");
  */
 define('APPPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app");
 /*
+ * The write directory for the core
+ */
+define('WRITEPATH', ROOTPATH . DIRECTORY_SEPARATOR . "writable");
+/*
  * The View directory under the application directory
  */
 define('VIEWPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "views");
@@ -69,11 +81,7 @@ define('CONFIGPATH', ROOTPATH . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATO
 /*
  * The Database fie path under the application directory
  */
-define('APPCONFIGDBPATH', APPPATH . DIRECTORY_SEPARATOR . "database" . DIRECTORY_SEPARATOR . "config.db");
-/*
- * The write directory for the core
- */
-define('WRITEPATH', ROOTPATH . DIRECTORY_SEPARATOR . "writable");
+define('APPCONFIGDBPATH', WRITEPATH . DIRECTORY_SEPARATOR . "config.db");
 
 
 /*
