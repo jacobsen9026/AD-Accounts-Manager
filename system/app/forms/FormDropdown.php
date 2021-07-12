@@ -61,7 +61,7 @@ class FormDropdown extends FormElement
         $disable = '';
         if ($this->isDisabled())
             $disable = ' disabled ';
-        $output = '<select class="form-control col-sm' . $this->colSize . ' mx-auto custom-select text-center" name="' . $this->getName() . '" ' . $disable . '>';
+        $output = '<select class="form-control col-sm' . $this->colSize . ' mx-auto custom-select text-center" name="' . $this->getName() . '" form="' . $this->getFormId() . '" ' . $disable . '>';
 
         foreach ($this->getOptions() as $option) {
             $output .= '<option id="' . $option->getId() . '" value="' . $option->getValue() . '" ' . $option->getSelected() . '>';
