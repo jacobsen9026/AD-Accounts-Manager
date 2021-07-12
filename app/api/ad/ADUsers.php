@@ -66,7 +66,7 @@ class ADUsers extends ADApi
     {
 
         if (is_null($baseDN) or $baseDN === '') {
-            $baseDN = self::getOUFromDN(DomainDatabase::getAD_BaseDN());
+            $baseDN = DomainDatabase::getAD_BaseDN();
         }
         LDAPLogger::get()->info("Getting " . $serchTerm . " from Active Directory in " . $baseDN);
         $adUser = ADConnection::getConnectionProvider()
@@ -75,8 +75,10 @@ class ADUsers extends ADApi
             ->in($baseDN)
             ->where($searchAgainst, '=', $serchTerm)
             ->limit(1)
-            ->get()[0];
+            ->get();
+        //var_export($adUser);
         LDAPLogger::get()->debug($adUser);
+        $adUser = $adUser[0];
         if ($adUser == null) {
             throw new AppException('That user was not found.', AppException::USER_NOT_FOUND);
         }
@@ -125,7 +127,11 @@ class ADUsers extends ADApi
 
     public static function getUserByDN($distinguishedName)
     {
-        return self::getUser($distinguishedName, null, 'distinguishedname');
+        try {
+            return self::getUser($distinguishedName, null, 'distinguishedname');
+        } catch (AppException $e) {
+            throw new AppException($e->getMessage(), $e->getCode());
+        }
 
     }
 }
