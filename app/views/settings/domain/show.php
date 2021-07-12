@@ -2,6 +2,7 @@
 /* @var $domain Domain */
 
 use App\Api\Ad\ADConnection;
+use App\Api\Windows\PowerShell;
 use App\Models\Database\DomainDatabase;
 use App\Forms\FormText;
 use System\App\Forms\Form;
@@ -81,9 +82,6 @@ if (!$adTestResult) {
         "adPassword",
         Encryption::encrypt($domain->getAdPassword()));
     $adPassword->isPassword();
-    //$adStudentGroup = new FormText("Active Directory Student Group", "This group should contain all active and inactive students as well as all student groups", "adStudentGroup", $domain->getAdStudentGroupName());
-    //$adStaffGroup = new FormText("Active Directory Staff Group", "This group should contain all active staff as well as all staff groups", "adStaffGroup", $domain->getAdStaffGroupName());
-
     $adConnectionCheck = new FormHTML();
     $useTLS = DomainDatabase::getAD_UseTLS();
     $adUseTLS = new FormSlider('Use TLS',
@@ -126,11 +124,7 @@ if (!$adTestResult) {
     $permissionsButton->addClientRequest("/settings/domain/permissions")
         ->medium();
 
-    $form
-        //->addElementToNewRow($name)
-        //->addElementToNewRow($abbr)
-
-        ->addElementToCurrentRow($netBIOS)
+    $form->addElementToCurrentRow($netBIOS)
         ->addElementToCurrentRow($adFQDN)
         ->addElementToNewRow($adBaseDN)
         ->addElementToNewRow($adUsername)
@@ -139,7 +133,6 @@ if (!$adTestResult) {
         ->addElementToCurrentRow($adConnectionCheck)
         ->addElementToCurrentRow($adPermissionTestButton)
         ->addElementToCurrentRow($action);
-    //->addElementToNewRow($updateButtton)
 
     if ($adTestResult === true) {
         $form->addElementToNewRow($permissionsButton);
