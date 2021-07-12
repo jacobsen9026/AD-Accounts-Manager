@@ -28,6 +28,7 @@
     <title>
         <?php
 
+        use App\Config\Theme;
         use App\Models\View\Javascript;
 
         echo $this->title;
@@ -53,7 +54,7 @@
      * Handle Themes
      */
     if (isset($this->app->user)) {
-        if ($this->app->user->theme != \app\config\Theme::DEFAULT_THEME and $this->app->user->theme != \app\config\Theme::BLUE_THEME) {
+        if ($this->app->user->theme != Theme::DEFAULT_THEME and $this->app->user->theme != Theme::BLUE_THEME) {
             System\App\AppLogger::get()->debug("theme is " . $this->app->user->theme);
             $theme = explode("_", $this->app->user->theme);
             $theme = $theme[0] . ucfirst($theme[1]);
@@ -61,7 +62,6 @@
             echo ' <link rel="stylesheet" href="/css/' . $theme . '.css">';
         }
     }
-
     ?>
 
 
@@ -118,6 +118,9 @@
                     $(target).toggleClass('show');
                 });
             })
+
+
+            $(".ui-helper-hidden-accessible").remove();
         }
 
         $(document).ready(function () {
