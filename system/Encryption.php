@@ -26,7 +26,6 @@
 
 namespace System;
 
-use PHPMailer\PHPMailer\Exception;
 
 /**
  * Description of Encryption
@@ -38,7 +37,7 @@ abstract class Encryption
 
     //Varible for the cipher for changing as PHP updates openssl cipher lists
     const CIPHER = "aes-256-cbc";
-    const KEY_PATH = WRITEPATH . "private.key";
+    const KEY_PATH = WRITEPATH . DIRECTORY_SEPARATOR . "private.key";
     static protected $key = '';
 
     /**
@@ -79,7 +78,7 @@ abstract class Encryption
 
     /**
      *
-     * @return byte The generated key
+     * @return string The generated key
      */
     public static function genereatePrivateKeyFile()
     {
