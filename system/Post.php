@@ -59,8 +59,7 @@ abstract class Post
                 return false;
             }
         } else {
-            if (isset($_POST[$key]) and $_POST[$key] != null) {
-
+            if (key_exists($key, $_POST)) {
                 return true;
             } else {
                 return false;
