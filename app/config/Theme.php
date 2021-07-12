@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\config;
+namespace App\Config;
 
 /**
  * Description of Theme
