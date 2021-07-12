@@ -36,6 +36,29 @@ use System\SystemLogger;
 trait Parser
 {
 
+    public function startBuffer()
+    {
+
+        ini_set('output_buffering', 0);
+        ob_end_clean();
+        header('Transfer-Encoding', 'chunked');
+        header('Content-Type', 'text/html');
+        header('Connection', 'keep-alive');
+        //header('Connection', 'close');
+        ob_flush();
+        flush();
+
+        $p = "";  //padding
+        echo "<script>";
+        for ($i = 0; $i < 4 * 1024; $i++) {
+            echo "var a;\r\n";
+        };
+        echo "</script>";
+
+        ob_flush();
+        flush();
+    }
+
     /**
      *
      * @param string $view
@@ -92,6 +115,15 @@ trait Parser
         return $path;
     }
 
+    public function sendBuffer($content)
+    {
+
+        echo $content;
+        //var_dump(ob_get_length());
+        ob_flush();
+        flush();
+    }
+
     /**
      *
      * @param stirng $modal
@@ -101,15 +133,10 @@ trait Parser
     public function modal($modal)
     {
 
-        //var_dump($modal);
         $modal = $this->sanitize($modal);
 
         $path = VIEWPATH . DIRECTORY_SEPARATOR . "modals" . DIRECTORY_SEPARATOR . $modal . ".php";
-
-        //var_dump($path);
         if (file_exists($path)) {
-            // echo "test";
-            //var_dump($path);
             ob_start();
             if (include($path)) {
                 return ob_get_clean();
@@ -137,13 +164,9 @@ trait Parser
         $file = $this->sanitize($file);
 
         $path = ROOTPATH . DIRECTORY_SEPARATOR . $file . ".php";
-        //echo $path;
         if (file_exists($path)) {
-            //ob_start();
-            //echo "loaded";
             include $path;
             return true;
-            //return ob_get_clean();
         } else {
 
             return false;
