@@ -1,7 +1,7 @@
 PRAGMA foreign_keys = off;
 BEGIN TRANSACTION;
-DROP TABLE IF EXISTS "Notification";
-CREATE TABLE IF NOT EXISTS "Notification"
+DROP TABLE IF EXISTS "EmailTemplate";
+CREATE TABLE IF NOT EXISTS "EmailTemplate"
 (
     "ID"      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "Name"    STRING,
@@ -38,21 +38,10 @@ CREATE TABLE IF NOT EXISTS "Domain"
     "AD_NetBIOS"              STRING,
     "AD_Username"             STRING,
     "AD_Password"             STRING,
-    "AD_Student_Group"        STRING,
     "GA_FQDN"                 STRING,
-    "Parent_Email_Group"      STRING,
-    "Staff_Username_Format"   STRING,
-    "Student_Username_Format" STRING,
+    "Default_Username_Format" STRING,
     "AD_Use_TLS"              BOOLEAN DEFAULT 0,
     CHECK (ID = 1)
-);
-DROP TABLE IF EXISTS "GradeDefinition";
-CREATE TABLE IF NOT EXISTS "GradeDefinition"
-(
-    "Value"        INTEGER,
-    "Display_Code" STRING,
-    "Display_Name" STRING,
-    PRIMARY KEY ("Value")
 );
 DROP TABLE IF EXISTS "User";
 CREATE TABLE IF NOT EXISTS "User"
@@ -73,11 +62,11 @@ DROP TABLE IF EXISTS "PrivilegeLevel";
 CREATE TABLE IF NOT EXISTS "PrivilegeLevel"
 (
     "ID"            INTEGER PRIMARY KEY AUTOINCREMENT,
-    "District_ID"   INTEGER,
+    "Domain_ID"     INTEGER,
     "AD_Group_Name" STRING NOT NULL UNIQUE,
     "Super_Admin"   BOOLEAN DEFAULT 0,
     "Deleted_At"    int,
-    FOREIGN KEY ("District_ID") REFERENCES "Domain" ("ID") ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY ("Domain_ID") REFERENCES "Domain" ("ID") ON DELETE CASCADE ON UPDATE CASCADE
 );
 DROP TABLE IF EXISTS "PermissionMap";
 CREATE TABLE IF NOT EXISTS "PermissionMap"
@@ -94,20 +83,17 @@ CREATE TABLE IF NOT EXISTS "PermissionMap"
 DROP TABLE IF EXISTS "Email";
 CREATE TABLE IF NOT EXISTS "Email"
 (
-    "ID"                    INTEGER DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
-    "From_Address"          STRING,
-    "From_Name"             STRING,
-    "Admin_Email_Addresses" STRING,
-    "Welcome_Email_BCC"     STRING,
-    "Welcome_Email"         STRING,
-    "Reply_To_Address"      STRING,
-    "Reply_To_Name"         STRING,
-    "Use_SMTP_Encryption"   INTEGER,
-    "SMTP_Server"           STRING,
-    "SMTP_Port"             INTEGER,
-    "Use_SMTP_Auth"         BOOLEAN,
-    "SMTP_Username"         STRING,
-    "SMTP_Password"         STRING
+    "ID"                  INTEGER DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
+    "From_Address"        STRING,
+    "From_Name"           STRING,
+    "Reply_To_Address"    STRING,
+    "Reply_To_Name"       STRING,
+    "Use_SMTP_Encryption" INTEGER,
+    "SMTP_Server"         STRING,
+    "SMTP_Port"           INTEGER,
+    "Use_SMTP_Auth"       BOOLEAN,
+    "SMTP_Username"       STRING,
+    "SMTP_Password"       STRING
 );
 DROP TABLE IF EXISTS "Auth";
 CREATE TABLE IF NOT EXISTS "Auth"
