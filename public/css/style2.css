@@ -68,6 +68,7 @@ and open the template in the editor.
     top: 2.5rem !important;
 }
 
+
 .shadow-lg-hover {
     box-shadow: 0 1rem 3rem rgba(0, 0, 0, .175) !important;
     -webkit-transition: box-shadow 1.0s;
@@ -99,9 +100,12 @@ and open the template in the editor.
 
 
 .ui-autocomplete {
-    overflow-y: auto;
-    overflow-x: hidden;
-    max-height: 50%;
+    max-height: 200px !important;
+    overflow-y: auto !important;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden !important;
+    /* add padding to account for vertical scrollbar */
+    /* padding-right: 20px !important; */
 }
 
 .hover-zoom {
