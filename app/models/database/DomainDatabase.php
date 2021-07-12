@@ -76,6 +76,7 @@ class DomainDatabase extends DatabaseModel
         if ($result == "false") {
             $result = self::FQDNtoDN(self::getAD_FQDN($domainID));
         }
+        AppLogger::get()->debug($result);
         return $result;
     }
 
