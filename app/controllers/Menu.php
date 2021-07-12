@@ -83,7 +83,7 @@ class Menu extends Controller
 
 
         if ($this->user->superAdmin && Request::get()->getServerName() != 'demo.adam-app.gq') {
-            $this->items[] = $this->buildTechMenu();
+            $this->items[] = $this->buildComputerMenu();
         }
     }
 
@@ -110,18 +110,15 @@ class Menu extends Controller
         return $groups;
     }
 
-    private function buildTechMenu()
+    private function buildComputerMenu()
     {
         /*
          * Build Tech Menu
          */
-        $tech = new TopMenuItem('Tech');
-        if ($tech) {
-            $tech->addSubItem(new SubMenuItem('Google', '/' . strtolower($tech->displayText) . '/google-accounts'));
-            $tech->addSubItem(new SubMenuItem('Google Drive', '/' . strtolower($tech->displayText) . '/google-drive'));
-            $tech->addSubItem(new SubMenuItem('Computers', '/' . strtolower($tech->displayText) . '/comp-mgmt'));
-        }
-        return $tech;
+        $computers = new TopMenuItem('Computers');
+        $computers->setTargetURL('/computers');
+
+        return $computers;
     }
 
     /**
