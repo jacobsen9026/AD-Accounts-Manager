@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace app\lang;
+namespace App\Lang;
 
 /**
  * Description of Language
