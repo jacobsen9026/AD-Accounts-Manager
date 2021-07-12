@@ -73,6 +73,10 @@ class Form
      * be printed all at once at the end of the form.
      */
     protected $elementModals;
+    /**
+     * @var false
+     */
+    private bool $printFormTag = true;
 
     /**
      * This essentially builds the form tag
@@ -134,7 +138,7 @@ class Form
      */
     public function addElementToNewRow(FormElement $element): self
     {
-
+        $element = $element->attachToForm($this);
         $this->currentRow++;
         $this->addElementToCurrentRow($element);
 
@@ -149,6 +153,7 @@ class Form
      */
     public function addElementToCurrentRow(FormElement $element)
     {
+        $element = $element->attachToForm($this);
 
         $this->rowsOfElements[$this->currentRow][] = $element;
 
@@ -215,6 +220,7 @@ class Form
             e.preventDefault();
         }
         catch{
+        console.log('form onSubmit prevent default error');
         }
         try{" . $this->onSubmit . "}catch{
         console.log('customOnSubmit failed');
@@ -223,13 +229,15 @@ class Form
         }
         return false;
 }
-        </script><form action='$this->action' method='$this->method' name='$this->name' id='$this->id' style='$this->style' class='" . $this->getClasses() . "' onsubmit=";
-        if ($this->onSubmit != '') {
-            $html .= "'return customOnSubmit" . $this->name . "(this)'";
+        </script>";
+        if ($this->printFormTag) {
+            $html .= "<form action='$this->action' method='$this->method' name='" . $this->getName() . "' id='$this->id' style='$this->style' class='" . $this->getClasses() . "' onsubmit='";
+            if ($this->onSubmit != '') {
+                $html .= "return customOnSubmit" . $this->name . "(this)";
+            }
+            $html .= "' enctype='multipart/form-data'>";
         }
-        $html .= " enctype='multipart/form-data'>";
-
-        $html .= '<input type="hidden" name="csrfToken" value="' . self::$csrfToken . '"/>';
+        $html .= '<input style="display:none" type="hidden" name="csrfToken" value="' . self::$csrfToken . '"/>';
         foreach ($this->rowsOfElements as $rowOfElements) {
 
             $html .= '<div class="row">';
@@ -242,10 +250,21 @@ class Form
 
             $html .= '</div>';
         }
-
-        $html .= "</form> <!-- Form End $this->id -->";
+        if ($this->printFormTag) {
+            $html .= "</form> <!-- Form End $this->id -->";
+        }
         $html .= $this->elementModals;
         return $html;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name)
+    {
+        $this->name = $name;
     }
 
     protected function getClasses()
@@ -303,9 +322,14 @@ class Form
         return $this;
     }
 
-    public function setName(string $name)
+    public function attachToForm(Form $form)
     {
-        $this->name = $name;
+        foreach ($this->rowsOfElements as $row) {
+            foreach ($row as $element) {
+                $element->attachToForm($form);
+            }
+        }
+        $this->printFormTag = false;
     }
 
 }
