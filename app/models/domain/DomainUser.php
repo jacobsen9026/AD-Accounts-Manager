@@ -72,7 +72,20 @@ class DomainUser extends ADModel
         }
         parent::__construct();
         if (is_string($user)) {
-            $this->activeDirectory = ADUsers::getDomainScopUser($user);
+            if (self::isDistinguishedName($user)) {
+                //$user = str_replace("\\", "", $user);
+                //var_dump($user);
+                if (!PermissionHandler::hasPermission(self::getOUFromDN($user), PermissionLevel::USERS, PermissionLevel::USER_READ)) {
+                    throw new AppException('That user was not found.', AppException::FAIL_USER_READ_PERM);
+
+                } else {
+                    $this->activeDirectory = ADUsers::getUserByDN($user);
+                    return $this;
+                }
+                //var_dump($this->getUsername());
+            } else {
+                $this->activeDirectory = ADUsers::getDomainScopUser($user);
+            }
         } elseif ($user instanceof User) {
             $this->activeDirectory = $user;
         }
@@ -84,6 +97,11 @@ class DomainUser extends ADModel
             throw new AppException('That user was not found.', AppException::FAIL_USER_READ_PERM);
 
         }
+    }
+
+    public function getUsername()
+    {
+        return $this->activeDirectory->getAccountName();
     }
 
     /**
@@ -282,11 +300,6 @@ class DomainUser extends ADModel
         return $this->activeDirectory->getCompany();
     }
 
-    public function getUsername()
-    {
-        return $this->activeDirectory->getAccountName();
-    }
-
     public function getEmail()
     {
         return $this->activeDirectory->getEmail();
@@ -330,6 +343,16 @@ class DomainUser extends ADModel
     public function getDisplayName()
     {
         return $this->activeDirectory->getDisplayName();
+    }
+
+    public function setPassword($get)
+    {
+        return $this->activeDirectory->setPassword($get);
+    }
+
+    public function save($attributes = null)
+    {
+        return $this->activeDirectory->save($attributes);
     }
 
 
