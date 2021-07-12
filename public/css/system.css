@@ -1,0 +1,193 @@
+.loggerOutputContainer {
+    overflow-y: scroll;
+    height: 86.8vh;
+}
+
+.debugToolboxContainer {
+    resize: vertical;
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    top: 0vh;
+    z-index: 1000000000;
+    border-top: groove thick;
+    left: 0px;
+}
+
+.debugToolboxContainer .form-element {
+    margin-bottom: 0em !important;
+    margin-top: 0em !important;
+    margin-left: 0em !important;
+    margin-right: 0em !important;
+    padding-left: 0em !important;
+    padding-right: 0em !important;
+}
+
+.debugToolboxContainer .form-element .btn {
+    border-bottom-left-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+    border-top-left-radius: 0px !important;
+    border-top-right-radius: 0px !important;
+}
+
+.debugToolboxContainer .tab-list .row {
+    margin-right: 0px !important;
+    margin-left: 0px !important;
+
+    padding-left: 0em !important;
+    padding-right: 0em !important;
+
+}
+
+.ui-autocomplete {
+    position: absolute;
+    cursor: default;
+    z-index: 2000 !important;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.system-custom-file-input {
+    display: none;
+}
+
+.top {
+    top: 0.25em;
+}
+
+.top-1 {
+    top: 1em;
+}
+
+.bottom {
+    bottom: 1em;
+}
+
+.collapse-no-animation {
+    display: none;
+}
+
+.collapse-no-animation.show {
+    display: block;
+}
+
+.center {
+
+    max-width: 100vh;
+    right: 0;
+    left: 0;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.right {
+    position: absolute !important;
+    right: 0 !important;
+
+}
+
+.top--10 {
+    top: -1.75em !important;
+}
+
+
+.systemDebugToolBar {
+    position: fixed;
+    width: 100%;
+
+    height: 10%;
+    bottom: -10%;
+    left: 0px;
+    transition: all 0.5s;
+    transition-property: box-shadow, bottom, position, height;
+    border: none;
+    z-index: 1000;
+}
+
+
+.systemDebugToolBar.shown {
+
+    position: absolute;
+    height: auto;
+    box-shadow: 0em -2em 30em #000;
+}
+
+.systemDebugToolBar .tab-content {
+    height: 100%;
+}
+
+
+#showDebugButton {
+    position: relative;
+    display: block;
+    bottom: 3em;
+
+}
+
+
+#showDebugButton {
+    position: fixed;
+    height: 3em;
+    bottom: 0px;
+    left: 0px;
+    min-width: 100px;
+    max-width: 20%
+
+
+}
+
+
+.systemDebugContainer {
+    margin: 1.5em;
+    padding: 1em;
+    box-shadow: 0.2em 0.4em 2em #000;
+
+}
+
+.log-tab-content {
+    padding-top: 1em;
+}
+
+
+.appDebugToolBar button {
+    box-shadow: unset;
+    border: none;
+}
+
+
+.appDebugEntry {
+    display: table;
+    width: 100%;
+}
+
+.appDebugEntry div {
+    display: table-cell;
+    padding-right: 1em;
+    text-align: left;
+}
+
+.appDebugEntry .file {
+    width: 20%;
+}
+
+.appDebugEntry .message {
+    width: 80%;
+}
+
+.appDebugToolBar .scroll {
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: auto;
+    position: relative;
+    bottom: 3em;
+}
+
+.appDebugContainer {
+    margin: 1.5em;
+    padding: 1em;
+    box-shadow: 0.2em 0.4em 2em #000;
+
+}
+
