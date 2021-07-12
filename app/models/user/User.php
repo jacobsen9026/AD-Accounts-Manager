@@ -33,14 +33,14 @@ namespace App\Models\User;
  */
 
 use App\App\App;
-use app\config\Theme;
+use App\Config\Theme;
 use App\Models\Database\UserNotificationDatabase;
 use System\App\Auth\CoreUser;
 use App\App\Session;
 use App\Models\Database\UserDatabase;
 use System\App\UserLogger;
 use App\Models\Database\PermissionMapDatabase;
-use system\Lang;
+use System\Lang;
 
 class User extends CoreUser
 {
@@ -156,7 +156,7 @@ class User extends CoreUser
             $app->user->setNotificationOptions($notificationOptions);
         }
 
-        $app->logger->info($app->user);
+        //$app->logger->info($app->user);
     }
 
     /**
@@ -203,7 +203,9 @@ class User extends CoreUser
      */
     public function setEmail($email)
     {
-        $this->email = $email;
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->email = $email;
+        }
         return $this;
     }
 
