@@ -36,6 +36,7 @@ use System\App\App;
 use System\Common\CommonApp;
 use System\Post;
 use System\Get;
+use System\Request;
 
 /**
  * @name CoreRouter
@@ -47,7 +48,6 @@ class Router
     /** @var array|null */
     public $customRoutes = null;
     private $logger;
-    private $request = null;
 
     /**
      *
@@ -67,11 +67,7 @@ class Router
          * so we can use it later
          */
         $this->route = new Route();
-        /**
-         * Lastly we need the request that the user
-         * made to the application
-         */
-        $this->request = $app->request;
+
 
         $this->includeCustomRoutes();
     }
@@ -167,7 +163,7 @@ class Router
          * First we pull the uri from the request supplied when the router
          * was instantiated.
          */
-        $uri = $this->request->uri;
+        $uri = Request::get()->uri;
         $this->logger->debug($uri);
         /*
          * Break up the request by slashes into /controller/method/data
