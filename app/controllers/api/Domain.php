@@ -33,9 +33,12 @@ namespace App\Controllers\Api;
  */
 
 use App\Api\AD;
+use App\Api\Ad\ADComputers;
 use App\Api\Ad\ADGroups;
 use App\Api\Ad\ADUsers;
 use App\Models\Database\DomainDatabase;
+use App\Models\Domain\DomainComputer;
+use App\Models\Domain\DomainUser;
 use System\App\LDAPLogger;
 use system\Post;
 
@@ -146,7 +149,8 @@ class Domain extends APIController
      */
     private function parseInput(string $input)
     {
-        return str_replace("%20", " ", $input);
+        return urldecode($input);
+        //return str_replace("%20", " ", $input);
     }
 
     /**
@@ -182,6 +186,23 @@ class Domain extends APIController
     }
 
     /**
+     * Prints an array of matching groups domain-wide
+     *
+     * @param string $searchTerm
+     */
+    public function autocompleteComputer(string $searchTerm)
+    {
+        $searchTerm = $this->parseInput($searchTerm);
+        $computers = AD::get()->listComputers($searchTerm);
+        if ($computers == false) {
+            $computers = [];
+        }
+        //return $groups;
+        return (["autocomplete" => $computers]);
+    }
+
+
+    /**
      * Prints an array of matching users and groups
      * respecting permissions
      *
@@ -204,8 +225,17 @@ class Domain extends APIController
         //$users = AD::get()->listStaffUsers($searchTerm);
         //$users = array_merge($users, AD::get()->listStudentUsers($searchTerm));
         $users2 = ADUsers::listUsers($searchTerm);
-
-        return (["autocomplete" => $users2]);
+        $list = [];
+        foreach ($users2 as $user) {
+            $domainUser = new DomainUser($user);
+            if ($domainUser->getDisplayName() != '' || $domainUser->getDisplayName() != ' ') {
+                $label = $domainUser->getDisplayName();
+            } else {
+                $label = $domainUser->getUsername();
+            }
+            $list [] = ["label" => $label, "value" => $domainUser->getUsername()];
+        }
+        return (["autocomplete" => $list]);
     }
 
     /**
@@ -240,5 +270,6 @@ class Domain extends APIController
 
 
     }
+
 
 }
