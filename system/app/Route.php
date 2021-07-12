@@ -158,7 +158,8 @@ class Route
      */
     private function preProcessData($data)
     {
-        return str_replace("%20", " ", $data);
+        return urldecode($data);
+        //return str_replace("%20", " ", $data);
 
     }
 
