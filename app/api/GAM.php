@@ -38,20 +38,17 @@ class GAM
 {
 
 //put your code here
+    /** @var GAM|null */
+    public static $instance;
     private $clientSecretFile;
     private $tokenPath;
     private $scopes;
-
     /** @var AppLogger The application logger */
     private $logger;
-
     /** @var \Google_Client The primary Google API client interface */
     private $googleClient;
     private $redirectUri;
     private $customerID;
-
-    /** @var GAM|null */
-    public static $instance;
 
     function __construct()
     {
@@ -64,7 +61,7 @@ class GAM
             $this->clientSecretFile = GAMPATH . DIRECTORY_SEPARATOR . 'client_secret.json';
             $this->tokenPath = GAMPATH . DIRECTORY_SEPARATOR . 'token.json';
             $this->customerID = "my_customer";
-            $this->redirectUri = 'https://' . $_SERVER['HTTP_HOST'] . '/settings/districts';
+            $this->redirectUri = 'https://' . $_SERVER['HTTP_HOST'] . '/settings/domain';
             $this->scopes = ["https://www.googleapis.com/auth/admin.directory.domain",
                 "https://www.googleapis.com/auth/admin.directory.customer",
                 "https://www.googleapis.com/auth/admin.directory.user",
@@ -77,16 +74,13 @@ class GAM
         }
     }
 
-    /**
-     *
-     * @return GAM
-     */
-    public static function get()
+    public function clientSecretExists()
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
+        if (file_exists($this->clientSecretFile)) {
+            return true;
+        } else {
+            return false;
         }
-        return self::$instance;
     }
 
     private function prepareGoogleClient()
@@ -125,18 +119,6 @@ class GAM
 //var_dump($this->googleClient->getRefreshToken());
     }
 
-    private function getAccessToken()
-    {
-// Refresh the token if possible, else fetch a new one.
-        if ($this->googleClient->getRefreshToken()) {
-            $this->googleClient->fetchAccessTokenWithRefreshToken($this->googleClient->getRefreshToken());
-        } else {
-// Request authorization from the user.
-
-            $this->authUrl = $this->googleClient->createAuthUrl();
-        }
-    }
-
     private function generateToken()
     {
 //var_dump($_GET["code"]);
@@ -157,6 +139,30 @@ class GAM
 // redirect back to settings
         header('Location: ' . filter_var($this->redirectUri, FILTER_SANITIZE_URL));
 //exit;
+    }
+
+    private function getAccessToken()
+    {
+// Refresh the token if possible, else fetch a new one.
+        if ($this->googleClient->getRefreshToken()) {
+            $this->googleClient->fetchAccessTokenWithRefreshToken($this->googleClient->getRefreshToken());
+        } else {
+// Request authorization from the user.
+
+            $this->authUrl = $this->googleClient->createAuthUrl();
+        }
+    }
+
+    /**
+     *
+     * @return GAM
+     */
+    public static function get()
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
     public function isAuthorized()
@@ -182,15 +188,6 @@ class GAM
         return "";
     }
 
-    public function clientSecretExists()
-    {
-        if (file_exists($this->clientSecretFile)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public function getDomainNames()
     {
         $service = new \Google_Service_Directory($this->googleClient);
@@ -212,7 +209,7 @@ class GAM
 
     public function getUser($username)
     {
-        $username = $username . "@branchburg.k12.nj.us";
+        $username = $username;
         echo "<br><br><br>";
         //echo $username;
 // Print the first 10 users in the domain.
