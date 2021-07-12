@@ -6,7 +6,10 @@ use App\Models\View\Javascript;
 use App\Models\View\Modal;
 
 echo $this->view("/layouts/head");
+
+
 ?>
+
 <script>
     let sessionTimer = null;
     let finalMinuteTimer = null;
@@ -29,6 +32,7 @@ echo $this->view("/layouts/head");
     echo $sessionExpireModal->print();
 
     ?>
+    <script src="/js/sessionManager.js"></script>
     <script>
         const channel = new BroadcastChannel('<?= AppDatabase::getAppAbbreviation() ?>-ADAMWebsite');
 
