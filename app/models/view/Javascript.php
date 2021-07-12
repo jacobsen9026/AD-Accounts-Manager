@@ -172,7 +172,7 @@ abstract class Javascript extends ViewModel
      *
      * @return string
      */
-    public static function buildAutocomplete(string $requestURL, string $targetID)
+    public static function buildAutocomplete(string $requestURL, string $targetID, int $resultsShown = 5)
     {
         $script = ' $(function (e) {
         var ' . $targetID . ' = function (request, response) {
@@ -193,10 +193,28 @@ abstract class Javascript extends ViewModel
         $("#' . $targetID . '").autocomplete({
             source: ' . $targetID . ',
             select: selectItem,
-            delay:350,
+            delay:450,
             minLength: 1,
             change: function() {
                 $("#' . $targetID . '").css("display", 2);
+            },
+            open: function(event, ui){
+                var $input = $(event.target),
+                    $results = $input.autocomplete("widget"),
+                    top = $results.position().top,
+                    height = $results.height(),
+                    inputHeight = $input.height(),
+                    newTop = top - height - inputHeight,
+                    leftBelow = $(document).height()- top - height ;
+                console.log("height");
+                console.log(height);
+                console.log("top");
+                console.log(top);
+                console.log("leftBelow");
+                console.log(leftBelow);
+                if(height>=leftBelow+15){
+                    $results.css("top", newTop + "px");
+                }
             }
 
         });
