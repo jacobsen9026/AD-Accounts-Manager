@@ -46,13 +46,16 @@ abstract class Lang
 
     private static function getTargetLang()
     {
-        $requestedLang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
-
+        if (key_exists("HTTP_ACCEPT_LANGUAGE", $_SERVER)) {
+            $requestedLang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        } else {
+            $requestedLang = DEFAULT_LANG;
+        }
         if (self::langExists($requestedLang)) {
 
-            $target = '\app\lang\\' . $requestedLang . '\\' . strtoupper($requestedLang) . 'Common';
+            $target = '\App\Lang\\' . $requestedLang . '\\' . strtoupper($requestedLang) . 'Common';
         } else {
-            $target = '\app\lang\\' . DEFAULT_LANG . '\\' . strtoupper(DEFAULT_LANG) . 'Common';
+            $target = '\App\Lang\\' . DEFAULT_LANG . '\\' . strtoupper(DEFAULT_LANG) . 'Common';
         }
         //echo $target;
 
