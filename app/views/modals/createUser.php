@@ -11,7 +11,8 @@ use System\Lang;
 
 $form = new Form("/users/create", "UserCreate");
 $button = new FormButton(Lang::get("Create"));
-$button->medium();
+$button->medium()
+    ->attachToForm($form);
 $fname = new FormText(Lang::get('First Name'), '', 'fname');
 $fname->medium();
 $mname = new FormText(Lang::get('Initials'), '', 'mname');
@@ -73,6 +74,9 @@ $ouInput = new FormText(Lang::get('OU'), "", "ou");
 $ouInput->autoCompleteOU()
     // ->appendIcon('<i class="fas fa-search"></i>')
     ->large();
+$groups = new FormText('Groups', 'Member Of', 'groups');
+$copyFrom = new FormText('Copy group memberships from', 'Enter a user to duplicate group membership from', 'copyFrom');
+$copyFrom->autoCompleteUsername();
 $form->addElementToNewRow($fname)
     ->addElementToCurrentRow($mname)
     ->addElementToNewRow($lname)
@@ -81,50 +85,73 @@ $form->addElementToNewRow($fname)
     ->addElementToNewRow($passwordInput)
     ->addElementToNewRow($description)
     ->addElementToNewRow($email)
+    ->addElementToNewRow($ouInput);
+$form2 = new Form();
+$form2->addElementToNewRow($logon)
+    ->addElementToCurrentRow($passwordInput)
+    ->addElementToNewRow($email)
     ->addElementToNewRow($ouInput)
-    ->addElementToNewRow($button);
+    ->addElementToNewRow($logonScript)
+    ->addElementToNewRow($homeDrive)
+    ->addElementToCurrentRow($homePath);
+$form3 = new Form();
+$form3->addElementToNewRow($logon)
+    ->addElementToCurrentRow($passwordInput)
+    ->addElementToNewRow($email)
+    ->addElementToNewRow($ouInput)
+    ->addElementToNewRow($logonScript)
+    ->addElementToNewRow($homeDrive)
+    ->addElementToCurrentRow($homePath);
+$form3->attachToForm($form);
+$form4 = new Form();
+$form4->addElementToNewRow($groups)
+    ->addElementToCurrentRow($copyFrom);
+$form4->attachToForm($form);
 //echo $form->print();
 ?>
-<form action="/users/create" method="post" name="UserCreate" id="UserCreateForm">
+<!--<form action="/users/create" method="post" name="UserCreate" id="UserCreateForm">-->
 
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#general" role="tab" aria-controls="home"
-               aria-selected="true">General</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="address-tab" data-toggle="tab" href="#address" role="tab" aria-controls="Address"
-               aria-selected="false">Address</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="account-tab" data-toggle="tab" href="#account" role="tab" aria-controls="account"
-               aria-selected="false">Account</a>
-        </li>
-    </ul>
-    <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
-            <?php
-            echo $fname->print();
-            echo $mname->print();
-            echo $lname->print();
-            echo $fullname->print();
-            echo $description->print();
-            ?>
-        </div>
-        <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">......</div>
-        <div class="tab-pane fade" id="account" role="tabpanel" aria-labelledby="account-tab">
-            <?php
-            echo $logon->print();
-            echo $passwordInput->print();
-            echo $email->print();
-            echo $ouInput->print();
-            echo $logonScript->print();
-            echo $homeDrive->print();
-            echo $homePath->print();
-            ?>
-        </div>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#general" role="tab" aria-controls="home"
+           aria-selected="true">General</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="address-tab" data-toggle="tab" href="#address" role="tab" aria-controls="Address"
+           aria-selected="false">Address</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="account-tab" data-toggle="tab" href="#account" role="tab" aria-controls="account"
+           aria-selected="false">Account</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="groups-tab" data-toggle="tab" href="#groups" role="tab" aria-controls="groups"
+           aria-selected="false">Groups</a>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+        <?php
+        echo $form->print();
+        ?>
     </div>
-    <?= $button->print(); ?>
-</form>
+    <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
+        <?php
+        //echo $form2->print();
+        ?>
+    </div>
+    <div class="tab-pane fade" id="account" role="tabpanel" aria-labelledby="account-tab">
+        <?php
+        echo $form3->print();
+        ?>
+    </div>
+    <div class="tab-pane fade" id="groups" role="tabpanel" aria-labelledby="groups-tab">
+        <?php
+        echo $form4->print();
+        ?>
+    </div>
+</div>
+<?= $button->print(); ?>
+<!--</form>-->
 
 
