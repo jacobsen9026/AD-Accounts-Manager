@@ -85,4 +85,13 @@ class FormText extends \System\App\Forms\FormText
         return $this;
     }
 
+    public function autoCompleteComputerName()
+    {
+        $this->autocomplete = true;
+        $script = Javascript::buildAutocomplete(self::DOMAIN_API_URL . '/autocompleteComputer/', $this->getId());
+        $this->setScript($script);
+        return $this;
+
+    }
+
 }
