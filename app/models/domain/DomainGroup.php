@@ -35,7 +35,10 @@ namespace App\Models\Domain;
 
 use Adldap\Models\Group;
 use Adldap\Models\User;
+use App\Api\Ad\ADApi;
+use App\Api\Ad\ADConnection;
 use App\Api\Ad\ADGroups;
+use App\Api\Ad\ADUsers;
 use App\Models\User\PermissionHandler;
 use App\Models\User\PermissionLevel;
 use System\App\AppException;
@@ -51,6 +54,8 @@ class DomainGroup extends ADModel
      */
     public $activeDirectory;
     public $id;
+    protected $members;
+    protected $memberList;
 
     /**
      * DomainUser constructor.
@@ -95,10 +100,68 @@ class DomainGroup extends ADModel
         return $parents;
     }
 
+    public function countMembers()
+    {
+
+        $group = ADConnection::getConnectionProvider()->search()->select('member')->raw()->find($this->activeDirectory->getAccountName());
+        //var_dump($group['member']);
+        return $group['member']['count'];
+
+
+        if (!isset($this->members)) {
+            $this->members = $this->activeDirectory->getMembers();
+        }
+        return count($this->members);
+    }
+
+    public function getPaginatedMembers($pageSize = 10, $page = 0)
+    {
+
+
+        //var_dump($members);
+        $from = $page * $pageSize;
+        $to = $pageSize + $from;
+        $range = "member;range=$from-$to";
+        $group = ADConnection::getConnectionProvider()->search()->select($range)->raw()->find($this->activeDirectory->getAccountName());
+
+// Retrieve the group.
+
+        //var_dump($range);
+        //var_dump($group);
+// Remove the count from the member array.
+        unset($group[$range]['count']);
+
+// The array of group members distinguished names.
+        //var_dump(key_exists($range, $group));
+        // var_dump(key_exists("member;range=0-*", $group));
+        if (key_exists($range, $group)) {
+            $members = $group[$range];
+        } else if (key_exists("member;range=0-*", $group)) {
+            $members = $group['member;range=0-*'];
+        }
+        //var_dump($members);
+        // return $members;
+        $return = [];
+        foreach ($members as $member) {
+            try {
+                $user = ADUsers::getUserByDN($member);
+                $return[] = $member;
+            } catch (AppException $e) {
+            }
+
+        }
+
+        return $return;
+    }
+
+
     public function getMembers()
     {
         $members = [];
-        foreach ($this->activeDirectory->getMembers() as $groupMember) {
+        if (!isset($this->members)) {
+            $this->members = $this->activeDirectory->getMembers();
+        }
+        foreach ($this->members as $groupMember) {
             if ($groupMember instanceof User) {
                 $this->logger->debug($groupMember);
                 try {
@@ -128,7 +191,6 @@ class DomainGroup extends ADModel
         }
         return $children;
     }
-
 
     public function addMember($distinguishedName)
     {
@@ -163,17 +225,18 @@ class DomainGroup extends ADModel
         return self::getOUFromDN($this->activeDirectory->getDistinguishedName());
     }
 
+    public function delete()
+    {
+        $this->activeDirectory->delete();
+    }
+
+
     public function getDistinguishedName()
     {
         if (is_null($this->activeDirectory)) {
             return null;
         }
         return $this->activeDirectory->getDn();
-    }
-
-    public function delete()
-    {
-        $this->activeDirectory->delete();
     }
 
 
