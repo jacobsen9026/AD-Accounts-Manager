@@ -150,6 +150,11 @@ abstract class DatabaseModel extends Model implements DatabaseModelInterface
         return false;
     }
 
+    public static function clearCache()
+    {
+        self::$cache = [];
+    }
+
     /**
      * The calling object MUST have a TABLE_NAME constant
      * defined with the value of the name for the table
@@ -238,7 +243,7 @@ abstract class DatabaseModel extends Model implements DatabaseModelInterface
                 }
             }
         } else {
-            if (strlen(self::$cache[static::TABLE_NAME][$id][$column]) < 1000) {
+            if (is_string(self::$cache[static::TABLE_NAME][$id][$column]) && strlen(self::$cache[static::TABLE_NAME][$id][$column]) < 1000) {
                 DatabaseLogger::get()->info('Retreiving value from cache for ' . $column . ': ' . self::$cache[static::TABLE_NAME][$id][$column]);
             } else {
                 DatabaseLogger::get()->info('Retreiving value from cache for ' . $column);
