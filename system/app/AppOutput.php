@@ -42,10 +42,7 @@ class AppOutput
 //put your code here
     private $body;
     private $ajax = [];
-    /**
-     * @var Request
-     */
-    private $request;
+
 
     /**
      *
@@ -61,14 +58,35 @@ class AppOutput
      */
     private $loggers = [];
 
-    public function __construct()
-    {
-        $this->request = Request::get();
-    }
 
     public function getBody()
     {
         return $this->body;
+    }
+
+    public function setBody($body)
+    {
+        // var_dump($this->app->request->getType());
+        if (Request::get()->getType() == 'ajax') {
+            $this->addAjax($body);
+        } elseif (Request::get()->getType() == 'http') {
+            //var_dump($body);
+            $this->body = $body;
+        }
+    }
+
+    public function addAjax($array)
+    {
+        //var_dump($array);
+        //var_dump(backTrace());
+        if (!empty($this->ajax)) {
+            $this->ajax = array_merge($this->ajax, $array);
+        } else {
+            $this->ajax = $array;
+        }
+        //var_dump($this->ajax);
+        //var_dump($this->body);
+        return $this;
     }
 
     public function getAjax()
@@ -82,24 +100,11 @@ class AppOutput
         return $this;
     }
 
-
-    public function setBody($body)
-    {
-        // var_dump($this->app->request->getType());
-        if ($this->request->getType() == 'ajax') {
-            $this->addAjax($body);
-        } elseif ($this->request->getType() == 'http') {
-            //var_dump($body);
-            $this->body = $body;
-        }
-    }
-
-
     public function appendBody($body)
     {
-        if ($this->request->getType() == 'ajax') {
+        if (Request::get()->getType() == 'ajax') {
             $this->addAjax($body);
-        } elseif ($this->request->getType() == 'http') {
+        } elseif (Request::get()->getType() == 'http') {
             //var_dump($body);
             $this->body .= $body;
         }
@@ -147,20 +152,6 @@ class AppOutput
             $varsR[] = $var;
         }
         return $vars;
-    }
-
-    public function addAjax($array)
-    {
-        //var_dump($array);
-        //var_dump(backTrace());
-        if (!empty($this->ajax)) {
-            $this->ajax = array_merge($this->ajax, $array);
-        } else {
-            $this->ajax = $array;
-        }
-        //var_dump($this->ajax);
-        //var_dump($this->body);
-        return $this;
     }
 
 }
