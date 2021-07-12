@@ -36,6 +36,7 @@ use App\App\App;
 use App\Models\User\User;
 use App\Controllers\Menu;
 use System\App\AppLogger;
+use System\Request;
 use System\Traits\Parser;
 
 class CommonLayout
@@ -81,7 +82,7 @@ class CommonLayout
     public function apply()
     {
 
-        $this->logger->info($this->app->request->type);
+        $this->logger->info(Request::get()->type);
 
 
         $this->layoutOutput = $this->getHeader();
