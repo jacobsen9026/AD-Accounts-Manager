@@ -34,6 +34,8 @@ namespace System\App\Forms;
 class FormDropdownOption extends FormElement
 {
 
+    use FormDataTargets;
+
     //put your code here
     protected bool $bold = false;
     private $selected = '';
@@ -81,6 +83,5 @@ class FormDropdownOption extends FormElement
         $this->bold = true;
         return $this;
     }
-
 
 }
