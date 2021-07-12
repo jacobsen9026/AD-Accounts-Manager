@@ -178,8 +178,9 @@ class CommonLogEntry
             $logEntry = $this->loggerName . " " . $this->getTimestamp() . ' '
                 . $this->getBacktrace()[0]['file'] . ':' . $this->getBacktrace()[0]['line']
                 . ' ' . $this->getMessage() . "\n";
-
-            File::appendToFile($this->logFile, $logEntry . "\n");
+            if (DEBUG_FILE) {
+                File::appendToFile($this->logFile, $logEntry . "\n");
+            }
         }
     }
 
