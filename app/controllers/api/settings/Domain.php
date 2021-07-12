@@ -90,8 +90,8 @@ class Domain extends APIController
     {
 
         $this->controller->editPost(1);
-        // $this->domain = DomainDatabase::getDomain($domainID);
-        // $this->domainID = $this->domain->getId();
+        DomainDatabase::clearCache();
+        $this->domain = DomainDatabase::getDomain($domainID);
 
         return $this->returnHTML($this->view('settings/domain/show') . $this->settingsSavedToast());
     }
