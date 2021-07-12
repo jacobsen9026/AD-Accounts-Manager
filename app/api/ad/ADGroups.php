@@ -24,7 +24,7 @@ class ADGroups extends ADApi
     public static function getGroup($groupName, $baseDN = null)
     {
         if (is_null($baseDN) or $baseDN === '') {
-            $baseDN = self::getOUFromDN(DomainDatabase::getAD_BaseDN());
+            $baseDN = DomainDatabase::getAD_BaseDN();
         }
 
         LDAPLogger::get()->info("Getting " . $groupName . " from Active Directory");
