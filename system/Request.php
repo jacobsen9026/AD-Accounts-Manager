@@ -34,6 +34,7 @@ namespace System;
 class Request
 {
 
+    protected static $instance;
     /**
      *
      * @var string
@@ -47,119 +48,13 @@ class Request
     private $id;
     private $ip;
 
-    private static $instance;
 
-    /**
-     *
-     * @param \SAM\App $core
-     */
     public function __construct()
     {
         if (self::$instance === null) {
             $this->buildRequest();
+            self::$instance = $this;
         }
-    }
-
-    public static function get()
-    {
-        if (self::$instance === null) {
-            return new self();
-        } else {
-            return self::$instance;
-        }
-    }
-
-    public
-    function getId()
-    {
-        return $this->id;
-    }
-
-    public
-    function getUri(): string
-    {
-        return $this->uri;
-    }
-
-    public
-    function getReferer()
-    {
-        return $this->referer;
-    }
-
-    public
-    function getType()
-    {
-        return $this->type;
-    }
-
-    public
-    function getServerName()
-    {
-        return $this->serverName;
-    }
-
-    public
-    function getProtocol()
-    {
-        return $this->protocol;
-    }
-
-    public
-    function setUri(string $uri)
-    {
-        $this->uri = $uri;
-        return $this;
-    }
-
-    public
-    function setReferer($referer)
-    {
-        $this->referer = $referer;
-        return $this;
-    }
-
-    public
-    function setType($type)
-    {
-        $this->type = $type;
-        return $this;
-    }
-
-
-    public
-    function setServerName($serverName)
-    {
-        $this->serverName = $serverName;
-        return $this;
-    }
-
-    public
-    function setProtocol($protocol)
-    {
-        $this->protocol = $protocol;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public
-    function getIp()
-    {
-        return $this->ip;
-    }
-
-    /**
-     * @param mixed $ip
-     *
-     * @return Request
-     */
-    public
-    function setIp($ip)
-    {
-        $this->ip = $ip;
-        return $this;
     }
 
     private
@@ -210,6 +105,108 @@ class Request
             $this->ip = $_SERVER["REMOTE_ADDR"];
         }
         return true;
+    }
+
+    public
+    function getUri(): string
+    {
+        return $this->uri;
+    }
+
+    public
+    function setUri(string $uri)
+    {
+        $this->uri = $uri;
+        return $this;
+    }
+
+    public static function get()
+    {
+        if (self::$instance === null) {
+            var_dump("new request");
+            return new self();
+        } else {
+            return self::$instance;
+        }
+    }
+
+    public
+    function getId()
+    {
+        return $this->id;
+    }
+
+    public
+    function getReferer()
+    {
+        return $this->referer;
+    }
+
+    public
+    function setReferer($referer)
+    {
+        $this->referer = $referer;
+        return $this;
+    }
+
+    public
+    function getType()
+    {
+        return $this->type;
+    }
+
+    public
+    function setType($type)
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public
+    function getServerName()
+    {
+        return $this->serverName;
+    }
+
+    public
+    function setServerName($serverName)
+    {
+        $this->serverName = $serverName;
+        return $this;
+    }
+
+    public
+    function getProtocol()
+    {
+        return $this->protocol;
+    }
+
+    public
+    function setProtocol($protocol)
+    {
+        $this->protocol = $protocol;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public
+    function getIp()
+    {
+        return $this->ip;
+    }
+
+    /**
+     * @param mixed $ip
+     *
+     * @return Request
+     */
+    public
+    function setIp($ip)
+    {
+        $this->ip = $ip;
+        return $this;
     }
 
 
