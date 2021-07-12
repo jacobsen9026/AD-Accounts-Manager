@@ -52,7 +52,7 @@ class FormCheckbox extends FormElement implements FormElementInterface
      */
     public function getElementHTML()
     {
-        $html = ' <input class="form-check-input" type="checkbox" value="' . $this->getValue() . '" id="' . $this->getId() . '">';
+        $html = ' <input class="form-check-input" type="checkbox" value="' . $this->getValue() . '" id="' . $this->getId() . '" name="' . $this->getName() . '">';
         return $html;
     }
 
