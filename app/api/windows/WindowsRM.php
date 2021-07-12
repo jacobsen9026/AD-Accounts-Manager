@@ -74,7 +74,7 @@ class WindowsRM
 
     public static function reboot(string $destination)
     {
-        $cmd = new WindowsCommand();
+        $cmd = new PowerShell();
         $cmd->setCmd('shutdown -r -m ' . $destination . ' -t 60');
         AppLogger::get()->info('Rebooting ' . $destination);
     }
@@ -128,7 +128,7 @@ class WindowsRM
     public function rebootWorkstation($hostname)
     {
 
-        $cmd = new WindowsCommand();
+        $cmd = new PowerShell();
         $cmd->setCmd("shutdown /r /t 30")
             ->setHostname($hostname);
     }
