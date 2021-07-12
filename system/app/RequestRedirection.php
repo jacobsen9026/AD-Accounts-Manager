@@ -26,6 +26,8 @@
 
 namespace System\App;
 
+use System\Request;
+
 /**
  *
  * @author cjacobsen
@@ -41,7 +43,7 @@ trait RequestRedirection
     {
         $app = \System\Core::getAppClass()::get();
 
-        if ($app->request->getType() != 'ajax') {
+        if (Request::get()->getType() != 'ajax') {
             if ($app->inDebugMode()) {
                 $app->appOutput->appendBody("In Debug Mode<br/>Would have redirected<br/>"
                     . "<a href='" . $url . "'>here</a>");
