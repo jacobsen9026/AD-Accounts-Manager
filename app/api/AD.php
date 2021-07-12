@@ -32,6 +32,7 @@ namespace App\Api;
  * @author cjacobsen
  */
 
+use App\App\App;
 use App\Models\Database\DomainDatabase;
 use App\Models\Domain\Domain;
 use Exception;
@@ -299,12 +300,9 @@ class AD
      */
     public function listDomainGroups($searchTerm)
     {
-//var_dump($searchTerm);
 
 
-        $filter = '(&(objectClass=group)'
-            . '(|(cn=*' . $searchTerm . '*)(sAMAccountName=*' . $searchTerm . '*)(description=*' . $searchTerm . '*)(mail=*' . $searchTerm . '*)))';
-//var_dump($filter);
+        $filter = '(&(objectClass=group)' . '(|(cn=*' . $searchTerm . '*)(sAMAccountName=*' . $searchTerm . '*)(description=*' . $searchTerm . '*)(mail=*' . $searchTerm . '*)))';
         return $this->listGroups($filter);
     }
 
@@ -404,7 +402,6 @@ class AD
         }
         return [];
     }
-
 
     /**
      * user requires Group Add permissions to list OU's
@@ -513,6 +510,7 @@ class AD
         if (is_null($base_dn)) {
             $base_dn = $this->baseDN;
         }
+        $this->logger->debug($filter);
         $result = ldap_list($this->connection, $base_dn, $filter, ["*"], 0, 50, 10);
         //var_dump($result);
         if ($result != false) {
@@ -530,6 +528,39 @@ class AD
             if ($result["count"] > 0) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    public function listComputers($searchTerm)
+    {
+        $filter = '(&(objectClass=computer)' . '(|(cn=*' . $searchTerm . '*)(sAMAccountName=*' . $searchTerm . '*)(name=*' . $searchTerm . '*)))';
+
+        $result = $this->query($filter, $this->domain->getAdBaseDN());
+        //$result = $this->query($filter, self::FQDNtoDN($this->domain->getAdFQDN()));
+        $this->logger->debug($result);
+        if ($result != false) {
+            if (key_exists("count", $result)) {
+                foreach ($result as $computer) {
+                    if (is_array($computer)) {
+                        if (key_exists("cn", $computer)) {
+                            $insert["label"] = $computer["cn"][0];
+                            $insert["value"] = $computer["cn"][0];
+                            //var_dump($computer);
+                            //continue;
+                            if (self::hasPermission(self::getOUFromDN($computer["distinguishedname"][0]), PermissionLevel::GROUPS, PermissionLevel::GROUP_READ)) {
+                                $computers[] = $computer["cn"][0];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (isset($computers)) {
+
+//var_dump($usernames);
+            sort($computers);
+            return $computers;
         }
         return false;
     }
