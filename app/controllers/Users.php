@@ -43,6 +43,8 @@ use App\Models\Audit\Action\User\ResetUserPasswordAuditAction;
 use App\Models\Audit\Action\User\SearchUserAuditAction;
 use App\Models\Audit\Action\User\UnlockUserAuditAction;
 use App\Models\Audit\Action\User\UploadUserPhotoAudtitAction;
+use App\Models\Database\AppDatabase;
+use App\Models\Database\DomainDatabase;
 use App\Models\Domain\DomainUser;
 use App\Models\User\PermissionHandler;
 use App\Models\User\PermissionLevel;
@@ -145,17 +147,23 @@ class Users extends Controller
     public function createPost()
     {
         if ($this->user->superAdmin) {
+            $fullName = Post::get('fullname');
             $username = Post::get('logonname');
+            $ou = Post::get('ou');
+            if ($ou == '') {
+                $ou = DomainDatabase::getAD_BaseDN();
+            }
+            $dn = 'CN=' . str_replace(", ", "\\, ", $fullName) . ',' . $ou;
             $newUser = ADConnection::get()->getDefaultProvider()->make()->user()
                 ->setAccountName($username);
-            $newUser->setCommonName(Post::get('fullname'))
+            $newUser->setCommonName($fullName)
                 ->setAttribute('givenName', Post::get('fname'))
-                ->setAttribute('initials', Post::get('mname'))
+                //->setAttribute('initials', Post::get('mname'))
                 ->setAttribute('sn', Post::get('lname'))
-                ->setDn('CN=' . Post::get('fullname') . ',' . Post::get('ou'))
-                ->setAttribute('mail', Post::get('email'))
-                ->setAttribute('description', Post::get('description'));
-            $newUser->setPassword(Post::get('password'));
+                ->setDn($dn)
+                ->setAttribute('mail', Post::get('email'));
+            //->setAttribute('description', Post::get('description'));
+            //$newUser->setPassword(Post::get('password'));
             // Get a new account control object for the user.
             $ac = $newUser->getUserAccountControlObject();
 
@@ -163,13 +171,21 @@ class Users extends Controller
 
             $ac->accountIsNormal();
 
-
+            //$newUser->setUserAccountControl($ac);
 // Set the account control on the user and save it.
 // Set the account control on the user and save it.
-            $newUser->setUserAccountControl($ac);
+            LDAPLogger::get()->debug($dn);
             LDAPLogger::get()->debug($newUser);
             $newUser->save();
+
+
             $user = new DomainUser($newUser->getAccountName());
+            $ac = $user->activeDirectory->getUserAccountControlObject();
+            $ac->accountIsNormal();
+            $user->activeDirectory->setUserAccountControl($ac);
+            $user->setPassword(Post::get('password'));
+            $user->save();
+            $user->enable();
             $this->audit(new CreateUserAuditAction($user));
             $this->redirect('/users/search/' . $user->getUsername());
 
@@ -231,7 +247,7 @@ class Users extends Controller
                     $ou = Post::get("ou");
                     if (PermissionHandler::hasPermission($ou, PermissionLevel::USERS, PermissionLevel::USER_CHANGE)) {
                         if (PermissionHandler::hasPermission($dn, PermissionLevel::USERS, PermissionLevel::USER_CHANGE)) {
-                            $domainUser = new DomainUser(ADUsers::getUserByDN($dn));
+                            $domainUser = new DomainUser($dn);
                             $this->logger->info($domainUser);
                             $domainUser->moveTo($ou);
 
