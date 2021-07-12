@@ -84,7 +84,7 @@ class FormText extends FormElement implements FormElementInterface
         $html .= '<div class="col px-0 "><div class="ui-widget">'
             . '<div class="pr-0 w-100 row mx-0">'
             . '<div class="d-inline-block col mx-auto px-0">'
-            . '<input type="' . $this->type . '" class="' . $this->getinputClasses() . '" name="' . $this->getName() . '" id="' . $this->getId() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" ' . $disable . ' ' . $autofocus . '>'
+            . '<input type="' . $this->type . '" class="' . $this->getinputClasses() . '" name="' . $this->getName() . '" id="' . $this->getId() . '" value="' . $this->value . '" placeholder="' . $this->placeholder . '" form="' . $this->getFormId() . '" ' . $disable . ' ' . $autofocus . '>'
             . '</div></div>';
         $html .= '</div></div>';
         return $html;
