@@ -13,6 +13,7 @@ class AuditEntry
     private $timestamp;
     private $username;
     private $ip;
+    private $action;
     /**
      * @var AuditAction
      */
@@ -27,15 +28,14 @@ class AuditEntry
      */
     public function __construct(Request $request = null, User $user = null, AuditAction $action = null)
     {
-        if($user!=null){
+        if ($user != null) {
             $this->username = $user->getUsername();
         }
-        $this->ip = $request->getIp();
+        $this->ip = Request::get()->getIp();
         $this->setTimestamp();
         $this->setAction($action);
 
     }
-
 
     /**
      * @return mixed
