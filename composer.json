@@ -1,13 +1,25 @@
 {
-    "require": {
-        "guzzlehttp/guzzle": "^5.3.1",
-        "phpmailer/phpmailer": "^6.1",
-        "adldap2/adldap2": "^10.2",
-        "visualappeal/php-auto-update": "^0.12.3",
-        "ext-zip": "*",
-        "ext-json": "*",
-        "ext-pdo": "*",
-        "directorytree/ldaprecord": "^1.7",
-      "ext-ldap": "*"
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/",
+      "System\\": "system/",
+      "Tests\\": "tests/"
     }
+  },
+  "require": {
+    "phpmailer/phpmailer": "^6.1",
+    "adldap2/adldap2": "^10.2",
+    "visualappeal/php-auto-update": "^0.12.3",
+    "ext-zip": "*",
+    "ext-json": "*",
+    "ext-pdo": "*",
+    "ext-ldap": "*",
+    "merlinthemagic/mts": "^1.1",
+    "ext-openssl": "*"
+  },
+  "require-dev": {
+    "codeception/codeception": "^4.1",
+    "codeception/module-phpbrowser": "^1.0.0",
+    "codeception/module-asserts": "^1.0.0"
+  }
 }
