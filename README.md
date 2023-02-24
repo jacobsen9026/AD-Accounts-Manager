@@ -1,7 +1,8 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors) 
 <img style="margin-bottom:-5em;" src="https://github.com/jacobsen9026/AD-Accounts-Manager/raw/master/.github/images/adam.png" width=800/>
 
-[Demo Website](http://demo.adam-app.gq/)
+This app is being rewritten for ASP Net Core. It's not quite ready for beta testing but it is being actively developed.
+[Find the new version here](https://github.com/Blazam-App/BLAZAM)
 
 [Documentation](https://jacobsen9026.github.io/AD-Accounts-Manager/)
 
