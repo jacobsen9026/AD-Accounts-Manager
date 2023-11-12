@@ -1,9 +1,10 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors) 
 <img style="margin-bottom:-5em;" src="https://github.com/jacobsen9026/AD-Accounts-Manager/raw/master/.github/images/adam.png" width=800/>
 
-This version has been deprecated, developement continues under ASP Net Core, under the new name BLAZAM.
+# This version has been deprecated, developement continues under ASP Net Core, with the new name BLAZAM.
 [Find the new version here](https://github.com/Blazam-App/BLAZAM)
 
+# ADAM
 [Documentation](https://jacobsen9026.github.io/AD-Accounts-Manager/)
 
 # Active Directory Accounts Manager
