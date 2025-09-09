@@ -30,7 +30,7 @@ nav:
           - 'app/groups/search.md'
 
 theme:
-  use_directory_urls: false
+  use_directory_urls: true
   name: material
   favicon: images/small-logo.png
   logo: images/small-logo.png
