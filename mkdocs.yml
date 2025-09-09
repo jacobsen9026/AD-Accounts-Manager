@@ -1,5 +1,5 @@
 docs_dir: 'docsource'
-site_dir: 'public/docs'
+site_dir: 'docs'
 site_name: ADAM Documentation
 nav:
   - Intro:
